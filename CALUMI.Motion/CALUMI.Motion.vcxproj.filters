@@ -1,0 +1,807 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>qml;cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hh;hpp;hxx;hm;inl;inc;xsd</Extensions>
+    </Filter>
+    <Filter Include="Resource Files">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>qrc;rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    </Filter>
+    <Filter Include="Form Files">
+      <UniqueIdentifier>{99349809-55BA-4b9d-BF79-8FDBB0286EB3}</UniqueIdentifier>
+      <Extensions>ui</Extensions>
+    </Filter>
+    <Filter Include="Translation Files">
+      <UniqueIdentifier>{639EADAA-A684-42e4-A9AD-28FC9BCB8F7C}</UniqueIdentifier>
+      <Extensions>ts</Extensions>
+    </Filter>
+    <Filter Include="_DebugDLLs">
+      <UniqueIdentifier>{0ee9dd03-5b1b-4f5b-992b-b14a0a69cb3a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="_ReleaseDLLs">
+      <UniqueIdentifier>{0ef77bd9-1e72-4960-9c32-36d534552054}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <QtRcc Include="CALUMIMotion.qrc">
+      <Filter>Resource Files</Filter>
+    </QtRcc>
+    <QtUic Include="CALUMIMotion.ui">
+      <Filter>Form Files</Filter>
+    </QtUic>
+    <QtMoc Include="CALUMIMotion.h">
+      <Filter>Header Files</Filter>
+    </QtMoc>
+    <ClCompile Include="CALUMIMotion.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <None Include="CALUMI.Motion.ico">
+      <Filter>Resource Files</Filter>
+    </None>
+    <ResourceCompile Include="CALUMI.Motion.rc">
+      <Filter>Resource Files</Filter>
+    </ResourceCompile>
+    <ClInclude Include="stdafx.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClCompile Include="stdafx.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="3rdPartyDirect\pugiXML\pugixml.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="AgxNodes\AgxNode.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="AgxNodes\SFBGS\AgxNtAnimationNode.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="AgxNodes\SFBGS\AgxNtAssignIState.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Widgets\AgxGraphicsView.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Models\AgxGraphModel.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Models\AgxGraphicsScene.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Widgets\StringEntryPopup.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="AgxNodes\AgxCommentNode.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Widgets\NodeGroupMenuPopup.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Models\AgxNodeGraphicsObject.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Widgets\CustomQTreeWidget.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Painter\AgxNodeGeometry.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Painter\AgxNodePainter.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Utilities\UndoRedoCommands.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Models\AgxNodeConnectionInteraction.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Models\AgxConnectionGraphicsObject.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Utilities\locateNode.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Models\AgxConnectionState.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Models\AgxNodeState.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Painter\AgxConnectionPainter.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Utilities\AgxJsonHelper.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Utilities\AgxDefinitions.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Widgets\AgxNodePropertiesWidget.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Widgets\AgxLineEdit.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Utilities\DialogPool.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Widgets\FilteredDropDownDialog.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Widgets\MultiVariableDialog.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Widgets\IAgxEmbedSceneData.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Widgets\TextEditDialog.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Widgets\AgxPropertyBlockWidget.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Utilities\PropertySheetEntryUtil.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="AgxNodes\SFBGS\AgxDebugNode.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Widgets\MiniGraphicsView.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Utilities\AgxNodeRegistry.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Widgets\AgxCommentWidget.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Utilities\guidUtil.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Widgets\BitfieldWidgetDialog.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Models\AgxPort.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Widgets\CALUMITabModule.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Widgets\SFBGS\SFBGS_SidebarContent.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Utilities\AgxGraphRegistry.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Widgets\SFBGS\SFBGS_GraphPropertiesDialogWidget.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Models\Blend\AgxBlendInputModel.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Widgets\Blend\AgxBlendInputView.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="AgxNodes\SFBGS\AgxNtMirrorModifier.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="AgxNodes\SFBGS\AgxNtRandomAnimationNode.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="AgxNodes\SFBGS\AgxNtDynamicAnimation.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="AgxNodes\SFBGS\AgxNtSwitchNode.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="AgxNodes\SFBGS\AgxNtPathingAnimations.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="AgxNodes\SFBGS\AgxNtMergeNode.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="AgxNodes\SFBGS\AgxNtAssignVariable.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="AgxNodes\SFBGS\AgxNtCopyBoneWeights.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="AgxNodes\SFBGS\AgxNtGraphRef.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="AgxNodes\SFBGS\AgxNtEmbeddedGraph.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="AgxNodes\SFBGS\AgxNtSwapGraph.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="AgxNodes\SFBGS\AgxNtBlendNode.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="AgxNodes\SFBGS\AgxNtSetPos.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="AgxNodes\SFBGS\AgxNtStaggerMeter.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="AgxNodes\SFBGS\AgxNtConvertBoneDataToVariables.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="AgxNodes\SFBGS\AgxNtClonePose.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="AgxNodes\SFBGS\AgxNtParticleSequence.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="AgxNodes\SFBGS\AgxNtLinearVariable.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="AgxNodes\SFBGS\AgxNtTimerEvent.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="AgxNodes\SFBGS\AgxNtMassSpringDampenVariable.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="AgxNodes\SFBGS\AgxNtRagdollGetUp.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="AgxNodes\SFBGS\AgxNtMomentumSwitchback.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="AgxNodes\SFBGS\AgxNtRootTwist.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="AgxNodes\SFBGS\AgxNtStateVariableControl.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="AgxNodes\SFBGS\AgxNtAnimationImpactSelector.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="AgxNodes\SFBGS\AgxNtDualDirectAt.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="AgxNodes\SFBGS\AgxNtGamebryoSequence.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="AgxNodes\SFBGS\AgxNtTwoBoneIK.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="AgxNodes\SFBGS\AgxNtNormalizeRotation.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="AgxNodes\SFBGS\AgxNtVariableCombiner.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="AgxNodes\SFBGS\AgxNtCurvedPathBlender.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="AgxNodes\SFBGS\AgxNtSpeedScale.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="AgxNodes\SFBGS\AgxNtFootIK.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="AgxNodes\SFBGS\AgxNtLocomotionBlend.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="AgxNodes\SFBGS\AgxNtTranslationAdjustment.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="AgxNodes\SFBGS\AgxNtMultiFootIK.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="AgxNodes\SFBGS\AgxNtMomentumAnimation.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="AgxNodes\SFBGS\AgxNtSetOrient.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="AgxNodes\SFBGS\AgxNtEvaluateConditionVariable.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="AgxNodes\SFBGS\AgxNtRigSwitch.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="AgxNodes\SFBGS\AgxNtEffectSequence.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="AgxNodes\SFBGS\AgxNtDirectAt.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="AgxNodes\SFBGS\AgxNtEventController.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="AgxNodes\SFBGS\AgxNtPhysicsContactListener.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="AgxNodes\SFBGS\AgxNtEveryNEventsModifier.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="AgxNodes\SFBGS\AgxNtPairedAnimation.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="AgxNodes\SFBGS\AgxNtDynamicGraphReference.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="AgxNodes\SFBGS\AgxNtTagPropagation.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="AgxNodes\SFBGS\AgxNtCumulativeAnimation.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="AgxNodes\SFBGS\AgxNtRotationVariable.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="AgxNodes\SFBGS\AgxNtBoneConstraint.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="AgxNodes\SFBGS\AgxNtPostBoneModifierControl.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="AgxNodes\SFBGS\AgxNtRagdollDrive.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Application\CALUMIMotionApplication.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="main.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Widgets\Dialog\AgxProgressDialog.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Utilities\SettingsRegistry.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Widgets\Logger\AgxLogger.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Utilities\AgxNodeDelegateModelRegistry.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Widgets\Settings\SettingsDialog.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Painter\AgxNodeStyle.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Painter\AgxConnectionStyle.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Painter\AgxGraphicsViewStyle.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="3rdPartyDirect\pugiXML\LICENSE.md" />
+    <None Include="Localization\motion_de.qm" />
+    <None Include="Localization\motion_es.qm" />
+    <None Include="Localization\motion_fr.qm" />
+    <None Include="Localization\motion_ru.qm" />
+    <None Include="Localization\motion_uk.qm" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="3rdPartyDirect\pugiXML\pugiconfig.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="3rdPartyDirect\pugiXML\pugixml.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="AgxNodes\AgxCommentNode.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Painter\AgxNodeGeometry.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Painter\AgxNodePainter.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Painter\QColorHelper.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Utilities\UndoRedoCommands.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Models\AgxNodeConnectionInteraction.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Utilities\locateNode.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Models\AgxConnectionState.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Models\AgxNodeState.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Painter\AgxConnectionPainter.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Utilities\AgxJsonHelper.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Widgets\IAgxEmbedSceneData.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Utilities\PropertySheetEntryUtil.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Utilities\AgxNodeRegistry.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Utilities\guidUtil.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Utilities\AgxGraphRegistry.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Interfaces\IButtonBox.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Utilities\SettingsRegistry.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="resource.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="version.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Utilities\AgxNodeDelegateModelRegistry.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Utilities\AgxDictionary.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Painter\AgxNodeStyle.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Painter\AgxStyle.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Painter\AgxStyleCollection.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Painter\AgxConnectionStyle.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Painter\AgxGraphicsViewStyle.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Utilities\AgxConnectionIdUtils.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Utilities\Hash\AgxConnectionIdHash.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Utilities\Hash\QUuidStdHash.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="3rdPartyDirect\pugiXML\readme.txt" />
+    <Text Include="AgxNodes\AgxNodes" />
+  </ItemGroup>
+  <ItemGroup>
+    <QtMoc Include="AgxNodes\AgxNode.h">
+      <Filter>Header Files</Filter>
+    </QtMoc>
+    <QtMoc Include="AgxNodes\SFBGS\AgxNtAnimationNode.h">
+      <Filter>Header Files</Filter>
+    </QtMoc>
+    <QtMoc Include="AgxNodes\SFBGS\AgxNtAssignIState.h">
+      <Filter>Header Files</Filter>
+    </QtMoc>
+    <QtMoc Include="Widgets\AgxGraphicsView.h">
+      <Filter>Header Files</Filter>
+    </QtMoc>
+    <QtMoc Include="Models\AgxGraphModel.h">
+      <Filter>Header Files</Filter>
+    </QtMoc>
+    <QtMoc Include="Models\AgxGraphicsScene.h">
+      <Filter>Header Files</Filter>
+    </QtMoc>
+    <QtMoc Include="Widgets\StringEntryPopup.h">
+      <Filter>Header Files</Filter>
+    </QtMoc>
+    <QtMoc Include="Widgets\NodeGroupMenuPopup.h">
+      <Filter>Header Files</Filter>
+    </QtMoc>
+    <QtMoc Include="Models\AgxNodeGraphicsObject.h">
+      <Filter>Header Files</Filter>
+    </QtMoc>
+    <QtMoc Include="Widgets\CustomQTreeWidget.h">
+      <Filter>Header Files</Filter>
+    </QtMoc>
+    <QtMoc Include="Models\AgxConnectionGraphicsObject.h">
+      <Filter>Header Files</Filter>
+    </QtMoc>
+    <QtMoc Include="Widgets\AgxNodePropertiesWidget.h">
+      <Filter>Header Files</Filter>
+    </QtMoc>
+    <QtMoc Include="Widgets\AgxLineEdit.h">
+      <Filter>Header Files</Filter>
+    </QtMoc>
+    <QtMoc Include="Widgets\FilteredDropDownDialog.h">
+      <Filter>Header Files</Filter>
+    </QtMoc>
+    <QtMoc Include="Utilities\DialogPool.h">
+      <Filter>Header Files</Filter>
+    </QtMoc>
+    <QtMoc Include="Widgets\MultiVariableDialog.h">
+      <Filter>Header Files</Filter>
+    </QtMoc>
+    <QtMoc Include="Widgets\AgxCommentWidget.h">
+      <Filter>Header Files</Filter>
+    </QtMoc>
+    <QtMoc Include="Widgets\TextEditDialog.h">
+      <Filter>Header Files</Filter>
+    </QtMoc>
+    <QtMoc Include="Widgets\AgxPropertyBlockWidget.h">
+      <Filter>Header Files</Filter>
+    </QtMoc>
+    <QtMoc Include="AgxNodes\SFBGS\AgxDebugNode.h">
+      <Filter>Header Files</Filter>
+    </QtMoc>
+    <QtMoc Include="Widgets\MiniGraphicsView.h">
+      <Filter>Header Files</Filter>
+    </QtMoc>
+    <QtMoc Include="Widgets\BitfieldWidgetDialog.h">
+      <Filter>Header Files</Filter>
+    </QtMoc>
+    <QtMoc Include="Widgets\CALUMITabModule.h">
+      <Filter>Header Files</Filter>
+    </QtMoc>
+    <QtMoc Include="Models\AgxPort.h">
+      <Filter>Header Files</Filter>
+    </QtMoc>
+    <QtMoc Include="Widgets\SFBGS\SFBGS_SidebarContent.h">
+      <Filter>Header Files</Filter>
+    </QtMoc>
+    <QtMoc Include="Utilities\AgxDefinitions.h">
+      <Filter>Header Files</Filter>
+    </QtMoc>
+    <QtMoc Include="Widgets\SFBGS\SFBGS_GraphPropertiesDialogWidget.h">
+      <Filter>Header Files</Filter>
+    </QtMoc>
+    <QtMoc Include="Models\Blend\AgxBlendInputModel.h">
+      <Filter>Header Files</Filter>
+    </QtMoc>
+    <QtMoc Include="Widgets\Blend\AgxBlendInputView.h">
+      <Filter>Header Files</Filter>
+    </QtMoc>
+    <QtMoc Include="AgxNodes\SFBGS\AgxNtMirrorModifier.h">
+      <Filter>Header Files</Filter>
+    </QtMoc>
+    <QtMoc Include="AgxNodes\SFBGS\AgxNtRandomAnimationNode.h">
+      <Filter>Header Files</Filter>
+    </QtMoc>
+    <QtMoc Include="AgxNodes\SFBGS\AgxNtDynamicAnimation.h">
+      <Filter>Header Files</Filter>
+    </QtMoc>
+    <QtMoc Include="AgxNodes\SFBGS\AgxNtSwitchNode.h">
+      <Filter>Header Files</Filter>
+    </QtMoc>
+    <QtMoc Include="AgxNodes\SFBGS\AgxNtPathingAnimations.h">
+      <Filter>Header Files</Filter>
+    </QtMoc>
+    <QtMoc Include="AgxNodes\SFBGS\AgxNtMergeNode.h">
+      <Filter>Header Files</Filter>
+    </QtMoc>
+    <QtMoc Include="AgxNodes\SFBGS\AgxNtAssignVariable.h">
+      <Filter>Header Files</Filter>
+    </QtMoc>
+    <QtMoc Include="AgxNodes\SFBGS\AgxNtCopyBoneWeights.h">
+      <Filter>Header Files</Filter>
+    </QtMoc>
+    <QtMoc Include="AgxNodes\SFBGS\AgxNtGraphRef.h">
+      <Filter>Header Files</Filter>
+    </QtMoc>
+    <QtMoc Include="AgxNodes\SFBGS\AgxNtEmbeddedGraph.h">
+      <Filter>Header Files</Filter>
+    </QtMoc>
+    <QtMoc Include="AgxNodes\SFBGS\AgxNtSwapGraph.h">
+      <Filter>Header Files</Filter>
+    </QtMoc>
+    <QtMoc Include="AgxNodes\SFBGS\AgxNtBlendNode.h">
+      <Filter>Header Files</Filter>
+    </QtMoc>
+    <QtMoc Include="AgxNodes\SFBGS\AgxNtSetPos.h">
+      <Filter>Header Files</Filter>
+    </QtMoc>
+    <QtMoc Include="AgxNodes\SFBGS\AgxNtStaggerMeter.h">
+      <Filter>Header Files</Filter>
+    </QtMoc>
+    <QtMoc Include="AgxNodes\SFBGS\AgxNtConvertBoneDataToVariables.h">
+      <Filter>Header Files</Filter>
+    </QtMoc>
+    <QtMoc Include="AgxNodes\SFBGS\AgxNtClonePose.h">
+      <Filter>Header Files</Filter>
+    </QtMoc>
+    <QtMoc Include="AgxNodes\SFBGS\AgxNtParticleSequence.h">
+      <Filter>Header Files</Filter>
+    </QtMoc>
+    <QtMoc Include="AgxNodes\SFBGS\AgxNtLinearVariable.h">
+      <Filter>Header Files</Filter>
+    </QtMoc>
+    <QtMoc Include="AgxNodes\SFBGS\AgxNtTimerEvent.h">
+      <Filter>Header Files</Filter>
+    </QtMoc>
+    <QtMoc Include="AgxNodes\SFBGS\AgxNtMassSpringDampenVariable.h">
+      <Filter>Header Files</Filter>
+    </QtMoc>
+    <QtMoc Include="AgxNodes\SFBGS\AgxNtRagdollGetUp.h">
+      <Filter>Header Files</Filter>
+    </QtMoc>
+    <QtMoc Include="AgxNodes\SFBGS\AgxNtMomentumSwitchback.h">
+      <Filter>Header Files</Filter>
+    </QtMoc>
+    <QtMoc Include="AgxNodes\SFBGS\AgxNtRootTwist.h">
+      <Filter>Header Files</Filter>
+    </QtMoc>
+    <QtMoc Include="AgxNodes\SFBGS\AgxNtStateVariableControl.h">
+      <Filter>Header Files</Filter>
+    </QtMoc>
+    <QtMoc Include="AgxNodes\SFBGS\AgxNtAnimationImpactSelector.h">
+      <Filter>Header Files</Filter>
+    </QtMoc>
+    <QtMoc Include="AgxNodes\SFBGS\AgxNtDualDirectAt.h">
+      <Filter>Header Files</Filter>
+    </QtMoc>
+    <QtMoc Include="AgxNodes\SFBGS\AgxNtGamebryoSequence.h">
+      <Filter>Header Files</Filter>
+    </QtMoc>
+    <QtMoc Include="AgxNodes\SFBGS\AgxNtTwoBoneIK.h">
+      <Filter>Header Files</Filter>
+    </QtMoc>
+    <QtMoc Include="AgxNodes\SFBGS\AgxNtNormalizeRotation.h">
+      <Filter>Header Files</Filter>
+    </QtMoc>
+    <QtMoc Include="AgxNodes\SFBGS\AgxNtVariableCombiner.h">
+      <Filter>Header Files</Filter>
+    </QtMoc>
+    <QtMoc Include="AgxNodes\SFBGS\AgxNtCurvedPathBlender.h">
+      <Filter>Header Files</Filter>
+    </QtMoc>
+    <QtMoc Include="AgxNodes\SFBGS\AgxNtSpeedScale.h">
+      <Filter>Header Files</Filter>
+    </QtMoc>
+    <QtMoc Include="AgxNodes\SFBGS\AgxNtFootIK.h">
+      <Filter>Header Files</Filter>
+    </QtMoc>
+    <QtMoc Include="AgxNodes\SFBGS\AgxNtLocomotionBlend.h">
+      <Filter>Header Files</Filter>
+    </QtMoc>
+    <QtMoc Include="AgxNodes\SFBGS\AgxNtTranslationAdjustment.h">
+      <Filter>Header Files</Filter>
+    </QtMoc>
+    <QtMoc Include="AgxNodes\SFBGS\AgxNtMultiFootIK.h">
+      <Filter>Header Files</Filter>
+    </QtMoc>
+    <QtMoc Include="AgxNodes\SFBGS\AgxNtMomentumAnimation.h">
+      <Filter>Header Files</Filter>
+    </QtMoc>
+    <QtMoc Include="AgxNodes\SFBGS\AgxNtSetOrient.h">
+      <Filter>Header Files</Filter>
+    </QtMoc>
+    <QtMoc Include="AgxNodes\SFBGS\AgxNtEvaluateConditionVariable.h">
+      <Filter>Header Files</Filter>
+    </QtMoc>
+    <QtMoc Include="AgxNodes\SFBGS\AgxNtRigSwitch.h">
+      <Filter>Header Files</Filter>
+    </QtMoc>
+    <QtMoc Include="AgxNodes\SFBGS\AgxNtEffectSequence.h">
+      <Filter>Header Files</Filter>
+    </QtMoc>
+    <QtMoc Include="Widgets\AgxSidebarContent.h">
+      <Filter>Header Files</Filter>
+    </QtMoc>
+    <QtMoc Include="AgxNodes\SFBGS\AgxNtDirectAt.h">
+      <Filter>Header Files</Filter>
+    </QtMoc>
+    <QtMoc Include="AgxNodes\SFBGS\AgxNtEventController.h">
+      <Filter>Header Files</Filter>
+    </QtMoc>
+    <QtMoc Include="AgxNodes\SFBGS\AgxNtPhysicsContactListener.h">
+      <Filter>Header Files</Filter>
+    </QtMoc>
+    <QtMoc Include="AgxNodes\SFBGS\AgxNtEveryNEventsModifier.h">
+      <Filter>Header Files</Filter>
+    </QtMoc>
+    <QtMoc Include="AgxNodes\SFBGS\AgxNtPairedAnimation.h">
+      <Filter>Header Files</Filter>
+    </QtMoc>
+    <QtMoc Include="AgxNodes\SFBGS\AgxNtDynamicGraphReference.h">
+      <Filter>Header Files</Filter>
+    </QtMoc>
+    <QtMoc Include="AgxNodes\SFBGS\AgxNtTagPropagation.h">
+      <Filter>Header Files</Filter>
+    </QtMoc>
+    <QtMoc Include="AgxNodes\SFBGS\AgxNtCumulativeAnimation.h">
+      <Filter>Header Files</Filter>
+    </QtMoc>
+    <QtMoc Include="AgxNodes\SFBGS\AgxNtRotationVariable.h">
+      <Filter>Header Files</Filter>
+    </QtMoc>
+    <QtMoc Include="AgxNodes\SFBGS\AgxNtBoneConstraint.h">
+      <Filter>Header Files</Filter>
+    </QtMoc>
+    <QtMoc Include="AgxNodes\SFBGS\AgxNtPostBoneModifierControl.h">
+      <Filter>Header Files</Filter>
+    </QtMoc>
+    <QtMoc Include="AgxNodes\SFBGS\AgxNtRagdollDrive.h">
+      <Filter>Header Files</Filter>
+    </QtMoc>
+    <QtMoc Include="Application\CALUMIMotionApplication.h">
+      <Filter>Header Files</Filter>
+    </QtMoc>
+    <QtMoc Include="Widgets\Dialog\AgxProgressDialog.h">
+      <Filter>Header Files</Filter>
+    </QtMoc>
+    <QtMoc Include="Widgets\Logger\AgxLogger.h">
+      <Filter>Header Files</Filter>
+    </QtMoc>
+    <QtMoc Include="Widgets\Settings\SettingsDialog.h">
+      <Filter>Header Files</Filter>
+    </QtMoc>
+  </ItemGroup>
+  <ItemGroup>
+    <QtUic Include="Widgets\StringEntryPopup.ui">
+      <Filter>Form Files</Filter>
+    </QtUic>
+    <QtUic Include="Widgets\NodeGroupMenuPopup.ui">
+      <Filter>Form Files</Filter>
+    </QtUic>
+    <QtUic Include="Widgets\FilteredDropDownDialog.ui">
+      <Filter>Form Files</Filter>
+    </QtUic>
+    <QtUic Include="Widgets\MultiVariableDialog.ui">
+      <Filter>Form Files</Filter>
+    </QtUic>
+    <QtUic Include="Widgets\TextEditDialog.ui">
+      <Filter>Form Files</Filter>
+    </QtUic>
+    <QtUic Include="Widgets\Settings\SettingsDialog.ui">
+      <Filter>Form Files</Filter>
+    </QtUic>
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="Resources\BasicIcon.ico">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="Resources\BasicIcon50Purple.ico">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="Resources\NASA_ISS_LongExposure.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="Resources\PatchRender.ico">
+      <Filter>Resource Files</Filter>
+    </Image>
+  </ItemGroup>
+  <ItemGroup>
+    <QtTranslation Include="Localization\motion_es.ts">
+      <Filter>Translation Files</Filter>
+    </QtTranslation>
+    <QtTranslation Include="Localization\motion_fr.ts">
+      <Filter>Translation Files</Filter>
+    </QtTranslation>
+    <QtTranslation Include="Localization\motion_de.ts">
+      <Filter>Translation Files</Filter>
+    </QtTranslation>
+    <QtTranslation Include="Localization\motion_uk.ts">
+      <Filter>Translation Files</Filter>
+    </QtTranslation>
+    <QtTranslation Include="Localization\motion_ru.ts">
+      <Filter>Translation Files</Filter>
+    </QtTranslation>
+  </ItemGroup>
+</Project>

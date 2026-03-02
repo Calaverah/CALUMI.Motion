@@ -1,0 +1,19 @@
+<RCC>
+    <qresource prefix="/CALUMIMotion">
+        <file>Resources/DefaultStyle.json</file>
+        <file>Resources/info-tooltip.svg</file>
+        <file>Localization/motion_de.qm</file>
+        <file>Localization/motion_es.qm</file>
+        <file>Localization/motion_fr.qm</file>
+        <file>Localization/motion_ru.qm</file>
+        <file>Localization/motion_uk.qm</file>
+    </qresource>
+    <qresource prefix="/icons">
+        <file>Resources/BasicIcon.ico</file>
+        <file>Resources/BasicIcon50Purple.ico</file>
+        <file>Resources/PatchRender.ico</file>
+    </qresource>
+    <qresource prefix="/Images">
+        <file>Resources/NASA_ISS_LongExposure.png</file>
+    </qresource>
+</RCC>

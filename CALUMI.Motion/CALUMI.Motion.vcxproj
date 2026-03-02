@@ -1,0 +1,455 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="17.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|x64">
+      <Configuration>Debug</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|x64">
+      <Configuration>Release</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{DF28041D-BE4F-463D-A6F0-678CEEA9E6A6}</ProjectGuid>
+    <Keyword>QtVS_v304</Keyword>
+    <WindowsTargetPlatformVersion Condition="'$(Configuration)|$(Platform)' == 'Debug|x64'">10.0</WindowsTargetPlatformVersion>
+    <WindowsTargetPlatformVersion Condition="'$(Configuration)|$(Platform)' == 'Release|x64'">10.0</WindowsTargetPlatformVersion>
+    <QtMsBuild Condition="'$(QtMsBuild)'=='' OR !Exists('$(QtMsBuild)\qt.targets')">$(MSBuildProjectDirectory)\QtMsBuild</QtMsBuild>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x64'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <PlatformToolset>v143</PlatformToolset>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x64'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <PlatformToolset>v143</PlatformToolset>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Condition="Exists('$(QtMsBuild)\qt_defaults.props')">
+    <Import Project="$(QtMsBuild)\qt_defaults.props" />
+  </ImportGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x64'" Label="QtSettings">
+    <QtInstall>6.10.1_msvc2022_64</QtInstall>
+    <QtModules>core;gui;widgets</QtModules>
+    <QtBuildConfig>debug</QtBuildConfig>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x64'" Label="QtSettings">
+    <QtInstall>6.10.1_msvc2022_64</QtInstall>
+    <QtModules>core;gui;widgets</QtModules>
+    <QtBuildConfig>release</QtBuildConfig>
+  </PropertyGroup>
+  <Target Name="QtMsBuildNotFound" BeforeTargets="CustomBuild;ClCompile" Condition="!Exists('$(QtMsBuild)\qt.targets') or !Exists('$(QtMsBuild)\qt.props')">
+    <Message Importance="High" Text="QtMsBuild: could not locate qt.targets, qt.props; project may not build correctly." />
+  </Target>
+  <ImportGroup Label="ExtensionSettings" />
+  <ImportGroup Label="Shared" />
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)' == 'Debug|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="$(QtMsBuild)\Qt.props" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)' == 'Release|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="$(QtMsBuild)\Qt.props" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x64'">
+    <IncludePath>$(IncludePath)</IncludePath>
+    <ExternalIncludePath>$(ExternalIncludePath)</ExternalIncludePath>
+    <LibraryPath>$(LibraryPath)</LibraryPath>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x64'">
+    <IncludePath>$(IncludePath)</IncludePath>
+    <ExternalIncludePath>$(ExternalIncludePath)</ExternalIncludePath>
+    <LibraryPath>$(LibraryPath)</LibraryPath>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <ClCompile>
+      <LanguageStandard>stdcpp23</LanguageStandard>
+      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalUsingDirectories>
+      </AdditionalUsingDirectories>
+      <PreprocessorDefinitions>DEBUGBUILD;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+    </ClCompile>
+    <Link>
+      <AdditionalLibraryDirectories>
+      </AdditionalLibraryDirectories>
+      <AdditionalDependencies>%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
+    <ResourceCompile>
+      <PreprocessorDefinitions>%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ResourceOutputFileName>$(IntDir)$(ProjectName).res</ResourceOutputFileName>
+    </ResourceCompile>
+    <ProjectReference>
+      <UseLibraryDependencyInputs>false</UseLibraryDependencyInputs>
+    </ProjectReference>
+    <QtUic>
+      <Translate>
+      </Translate>
+    </QtUic>
+    <QtTranslation>
+      <QmOutputDir>$(ProjectDir)Localization</QmOutputDir>
+    </QtTranslation>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <ClCompile>
+      <LanguageStandard>stdcpp23</LanguageStandard>
+      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalUsingDirectories>
+      </AdditionalUsingDirectories>
+      <PreprocessorDefinitions>RELEASEBUILD;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+    </ClCompile>
+    <Link>
+      <AdditionalLibraryDirectories>
+      </AdditionalLibraryDirectories>
+      <AdditionalDependencies>%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
+    <ResourceCompile>
+      <PreprocessorDefinitions>%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ResourceOutputFileName>$(IntDir)$(ProjectName).res</ResourceOutputFileName>
+    </ResourceCompile>
+    <ProjectReference>
+      <UseLibraryDependencyInputs>false</UseLibraryDependencyInputs>
+    </ProjectReference>
+    <QtUic>
+      <Translate>
+      </Translate>
+    </QtUic>
+    <QtTranslation>
+      <QmOutputDir>$(ProjectDir)Localization</QmOutputDir>
+      <BuildAction>false</BuildAction>
+    </QtTranslation>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x64'" Label="Configuration">
+    <ClCompile>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <PrecompiledHeaderFile>stdafx.h</PrecompiledHeaderFile>
+      <WarningLevel>Level3</WarningLevel>
+      <SDLCheck>true</SDLCheck>
+      <ConformanceMode>true</ConformanceMode>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+    </Link>
+    <QtMoc>
+      <PrependInclude>stdafx.h;%(PrependInclude)</PrependInclude>
+    </QtMoc>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x64'" Label="Configuration">
+    <ClCompile>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <PrecompiledHeaderFile>stdafx.h</PrecompiledHeaderFile>
+      <WarningLevel>Level3</WarningLevel>
+      <SDLCheck>true</SDLCheck>
+      <ConformanceMode>true</ConformanceMode>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <GenerateDebugInformation>false</GenerateDebugInformation>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+    </Link>
+    <QtMoc>
+      <PrependInclude>stdafx.h;%(PrependInclude)</PrependInclude>
+    </QtMoc>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClCompile Include="AgxNodes\SFBGS\AgxNtAnimationImpactSelector.cpp" />
+    <ClCompile Include="AgxNodes\SFBGS\AgxNtAssignVariable.cpp" />
+    <ClCompile Include="AgxNodes\SFBGS\AgxNtBlendNode.cpp" />
+    <ClCompile Include="AgxNodes\SFBGS\AgxNtBoneConstraint.cpp" />
+    <ClCompile Include="AgxNodes\SFBGS\AgxNtClonePose.cpp" />
+    <ClCompile Include="AgxNodes\SFBGS\AgxNtConvertBoneDataToVariables.cpp" />
+    <ClCompile Include="AgxNodes\SFBGS\AgxNtCopyBoneWeights.cpp" />
+    <ClCompile Include="AgxNodes\SFBGS\AgxNtCumulativeAnimation.cpp" />
+    <ClCompile Include="AgxNodes\SFBGS\AgxNtCurvedPathBlender.cpp" />
+    <ClCompile Include="AgxNodes\SFBGS\AgxNtDirectAt.cpp" />
+    <ClCompile Include="AgxNodes\SFBGS\AgxNtDualDirectAt.cpp" />
+    <ClCompile Include="AgxNodes\SFBGS\AgxNtDynamicAnimation.cpp" />
+    <ClCompile Include="AgxNodes\SFBGS\AgxNtDynamicGraphReference.cpp" />
+    <ClCompile Include="AgxNodes\SFBGS\AgxNtEffectSequence.cpp" />
+    <ClCompile Include="AgxNodes\SFBGS\AgxNtEmbeddedGraph.cpp" />
+    <ClCompile Include="AgxNodes\SFBGS\AgxNtEvaluateConditionVariable.cpp" />
+    <ClCompile Include="AgxNodes\SFBGS\AgxNtEventController.cpp" />
+    <ClCompile Include="AgxNodes\SFBGS\AgxNtEveryNEventsModifier.cpp" />
+    <ClCompile Include="AgxNodes\SFBGS\AgxNtFootIK.cpp" />
+    <ClCompile Include="AgxNodes\SFBGS\AgxNtGamebryoSequence.cpp" />
+    <ClCompile Include="AgxNodes\SFBGS\AgxNtGraphRef.cpp" />
+    <ClCompile Include="AgxNodes\SFBGS\AgxNtLinearVariable.cpp" />
+    <ClCompile Include="AgxNodes\SFBGS\AgxNtLocomotionBlend.cpp" />
+    <ClCompile Include="AgxNodes\SFBGS\AgxNtMassSpringDampenVariable.cpp" />
+    <ClCompile Include="AgxNodes\SFBGS\AgxNtMergeNode.cpp" />
+    <ClCompile Include="AgxNodes\SFBGS\AgxNtMirrorModifier.cpp" />
+    <ClCompile Include="AgxNodes\SFBGS\AgxNtMomentumAnimation.cpp" />
+    <ClCompile Include="AgxNodes\SFBGS\AgxNtMomentumSwitchback.cpp" />
+    <ClCompile Include="AgxNodes\SFBGS\AgxNtMultiFootIK.cpp" />
+    <ClCompile Include="AgxNodes\SFBGS\AgxNtNormalizeRotation.cpp" />
+    <ClCompile Include="AgxNodes\SFBGS\AgxNtPairedAnimation.cpp" />
+    <ClCompile Include="AgxNodes\SFBGS\AgxNtParticleSequence.cpp" />
+    <ClCompile Include="AgxNodes\SFBGS\AgxNtPathingAnimations.cpp" />
+    <ClCompile Include="AgxNodes\SFBGS\AgxNtPhysicsContactListener.cpp" />
+    <ClCompile Include="AgxNodes\SFBGS\AgxNtPostBoneModifierControl.cpp" />
+    <ClCompile Include="AgxNodes\SFBGS\AgxNtRagdollDrive.cpp" />
+    <ClCompile Include="AgxNodes\SFBGS\AgxNtRagdollGetUp.cpp" />
+    <ClCompile Include="AgxNodes\SFBGS\AgxNtRandomAnimationNode.cpp" />
+    <ClCompile Include="AgxNodes\SFBGS\AgxNtRigSwitch.cpp" />
+    <ClCompile Include="AgxNodes\SFBGS\AgxNtRootTwist.cpp" />
+    <ClCompile Include="AgxNodes\SFBGS\AgxNtRotationVariable.cpp" />
+    <ClCompile Include="AgxNodes\SFBGS\AgxNtSetOrient.cpp" />
+    <ClCompile Include="AgxNodes\SFBGS\AgxNtSetPos.cpp" />
+    <ClCompile Include="AgxNodes\SFBGS\AgxNtSpeedScale.cpp" />
+    <ClCompile Include="AgxNodes\SFBGS\AgxNtStaggerMeter.cpp" />
+    <ClCompile Include="AgxNodes\SFBGS\AgxNtStateVariableControl.cpp" />
+    <ClCompile Include="AgxNodes\SFBGS\AgxNtSwapGraph.cpp" />
+    <ClCompile Include="AgxNodes\SFBGS\AgxNtSwitchNode.cpp" />
+    <ClCompile Include="AgxNodes\SFBGS\AgxNtTagPropagation.cpp" />
+    <ClCompile Include="AgxNodes\SFBGS\AgxNtTimerEvent.cpp" />
+    <ClCompile Include="AgxNodes\SFBGS\AgxNtTranslationAdjustment.cpp" />
+    <ClCompile Include="AgxNodes\SFBGS\AgxNtTwoBoneIK.cpp" />
+    <ClCompile Include="AgxNodes\SFBGS\AgxNtVariableCombiner.cpp" />
+    <ClCompile Include="Application\CALUMIMotionApplication.cpp" />
+    <ClCompile Include="Models\Blend\AgxBlendInputModel.cpp" />
+    <ClCompile Include="Painter\AgxConnectionStyle.cpp" />
+    <ClCompile Include="Painter\AgxGraphicsViewStyle.cpp" />
+    <ClCompile Include="Painter\AgxNodeStyle.cpp" />
+    <ClCompile Include="Utilities\AgxNodeDelegateModelRegistry.cpp" />
+    <ClCompile Include="Utilities\SettingsRegistry.cpp" />
+    <ClCompile Include="Widgets\Blend\AgxBlendInputView.cpp" />
+    <ClCompile Include="Widgets\Dialog\AgxProgressDialog.cpp" />
+    <ClCompile Include="Widgets\Logger\AgxLogger.cpp" />
+    <ClCompile Include="Widgets\Settings\SettingsDialog.cpp" />
+    <ClCompile Include="Widgets\SFBGS\SFBGS_GraphPropertiesDialogWidget.cpp" />
+    <ClCompile Include="Utilities\AgxGraphRegistry.cpp" />
+    <ClCompile Include="Widgets\CALUMITabModule.cpp" />
+    <ClCompile Include="Models\AgxPort.cpp" />
+    <ClCompile Include="Widgets\BitfieldWidgetDialog.cpp" />
+    <ClCompile Include="Utilities\AgxNodeRegistry.cpp" />
+    <ClCompile Include="AgxNodes\SFBGS\AgxDebugNode.cpp" />
+    <ClCompile Include="Utilities\guidUtil.cpp" />
+    <ClCompile Include="Utilities\PropertySheetEntryUtil.cpp" />
+    <ClCompile Include="Widgets\AgxPropertyBlockWidget.cpp" />
+    <ClCompile Include="Widgets\AgxCommentWidget.cpp">
+      <DynamicSource Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">input</DynamicSource>
+      <QtMocFileName Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">%(Filename).moc</QtMocFileName>
+      <DynamicSource Condition="'$(Configuration)|$(Platform)'=='Release|x64'">input</DynamicSource>
+      <QtMocFileName Condition="'$(Configuration)|$(Platform)'=='Release|x64'">%(Filename).moc</QtMocFileName>
+    </ClCompile>
+    <ClCompile Include="Utilities\DialogPool.cpp" />
+    <ClCompile Include="Widgets\AgxLineEdit.cpp" />
+    <ClCompile Include="Widgets\AgxNodePropertiesWidget.cpp" />
+    <ClCompile Include="Utilities\AgxDefinitions.cpp" />
+    <ClCompile Include="Painter\AgxConnectionPainter.cpp" />
+    <ClCompile Include="AgxNodes\AgxCommentNode.cpp" />
+    <ClCompile Include="AgxNodes\AgxNode.cpp" />
+    <ClCompile Include="AgxNodes\SFBGS\AgxNtAnimationNode.cpp" />
+    <ClCompile Include="Models\AgxConnectionGraphicsObject.cpp" />
+    <ClCompile Include="Models\AgxConnectionState.cpp" />
+    <ClCompile Include="Models\AgxNodeConnectionInteraction.cpp" />
+    <ClCompile Include="Models\AgxNodeState.cpp" />
+    <ClCompile Include="Painter\AgxNodeGeometry.cpp" />
+    <ClCompile Include="Painter\AgxNodePainter.cpp" />
+    <ClCompile Include="Utilities\AgxJsonHelper.cpp" />
+    <ClCompile Include="Utilities\locateNode.cpp" />
+    <ClCompile Include="Utilities\UndoRedoCommands.cpp" />
+    <ClCompile Include="Widgets\CustomQTreeWidget.cpp" />
+    <ClCompile Include="Models\AgxGraphicsScene.cpp" />
+    <ClCompile Include="Models\AgxGraphModel.cpp" />
+    <ClCompile Include="Models\AgxNodeGraphicsObject.cpp" />
+    <ClCompile Include="Widgets\AgxGraphicsView.cpp" />
+    <ClCompile Include="Widgets\FilteredDropDownDialog.cpp" />
+    <ClCompile Include="Widgets\IAgxEmbedSceneData.cpp" />
+    <ClCompile Include="Widgets\MiniGraphicsView.cpp" />
+    <ClCompile Include="Widgets\MultiVariableDialog.cpp" />
+    <ClCompile Include="Widgets\NodeGroupMenuPopup.cpp" />
+    <ClCompile Include="Widgets\SFBGS\SFBGS_SidebarContent.cpp" />
+    <ClCompile Include="Widgets\StringEntryPopup.cpp" />
+    <ClCompile Include="Widgets\TextEditDialog.cpp" />
+    <None Include="Localization\motion_de.qm" />
+    <None Include="Localization\motion_es.qm" />
+    <None Include="Localization\motion_fr.qm" />
+    <None Include="Localization\motion_ru.qm" />
+    <None Include="Localization\motion_uk.qm" />
+    <QtMoc Include="Widgets\Settings\SettingsDialog.h" />
+    <QtMoc Include="Widgets\Logger\AgxLogger.h" />
+    <QtMoc Include="Widgets\SFBGS\SFBGS_SidebarContent.h" />
+    <QtMoc Include="Widgets\MiniGraphicsView.h" />
+    <QtMoc Include="Widgets\TextEditDialog.h" />
+    <QtMoc Include="Widgets\AgxCommentWidget.h" />
+    <QtMoc Include="Widgets\AgxPropertyBlockWidget.h" />
+    <QtMoc Include="AgxNodes\SFBGS\AgxDebugNode.h" />
+    <QtMoc Include="Widgets\BitfieldWidgetDialog.h" />
+    <QtMoc Include="Widgets\CALUMITabModule.h" />
+    <QtMoc Include="AgxNodes\SFBGS\AgxNtMirrorModifier.h" />
+    <QtMoc Include="AgxNodes\SFBGS\AgxNtRandomAnimationNode.h" />
+    <QtMoc Include="AgxNodes\SFBGS\AgxNtDynamicAnimation.h" />
+    <QtMoc Include="AgxNodes\SFBGS\AgxNtSwitchNode.h" />
+    <QtMoc Include="AgxNodes\SFBGS\AgxNtPathingAnimations.h" />
+    <QtMoc Include="AgxNodes\SFBGS\AgxNtMergeNode.h" />
+    <QtMoc Include="AgxNodes\SFBGS\AgxNtAssignVariable.h" />
+    <QtMoc Include="AgxNodes\SFBGS\AgxNtCopyBoneWeights.h" />
+    <QtMoc Include="AgxNodes\SFBGS\AgxNtGraphRef.h" />
+    <QtMoc Include="AgxNodes\SFBGS\AgxNtEmbeddedGraph.h" />
+    <QtMoc Include="AgxNodes\SFBGS\AgxNtSwapGraph.h" />
+    <QtMoc Include="AgxNodes\SFBGS\AgxNtBlendNode.h" />
+    <QtMoc Include="AgxNodes\SFBGS\AgxNtSetPos.h" />
+    <QtMoc Include="AgxNodes\SFBGS\AgxNtStaggerMeter.h" />
+    <QtMoc Include="AgxNodes\SFBGS\AgxNtConvertBoneDataToVariables.h" />
+    <QtMoc Include="AgxNodes\SFBGS\AgxNtClonePose.h" />
+    <QtMoc Include="AgxNodes\SFBGS\AgxNtParticleSequence.h" />
+    <QtMoc Include="AgxNodes\SFBGS\AgxNtLinearVariable.h" />
+    <QtMoc Include="AgxNodes\SFBGS\AgxNtTimerEvent.h" />
+    <QtMoc Include="AgxNodes\SFBGS\AgxNtMassSpringDampenVariable.h" />
+    <QtMoc Include="AgxNodes\SFBGS\AgxNtRagdollGetUp.h" />
+    <QtMoc Include="AgxNodes\SFBGS\AgxNtMomentumSwitchback.h" />
+    <QtMoc Include="AgxNodes\SFBGS\AgxNtRootTwist.h" />
+    <QtMoc Include="AgxNodes\SFBGS\AgxNtStateVariableControl.h" />
+    <QtMoc Include="AgxNodes\SFBGS\AgxNtAnimationImpactSelector.h" />
+    <QtMoc Include="AgxNodes\SFBGS\AgxNtDualDirectAt.h" />
+    <QtMoc Include="AgxNodes\SFBGS\AgxNtGamebryoSequence.h" />
+    <QtMoc Include="AgxNodes\SFBGS\AgxNtTwoBoneIK.h" />
+    <QtMoc Include="AgxNodes\SFBGS\AgxNtNormalizeRotation.h" />
+    <QtMoc Include="AgxNodes\SFBGS\AgxNtVariableCombiner.h" />
+    <QtMoc Include="AgxNodes\SFBGS\AgxNtCurvedPathBlender.h" />
+    <QtMoc Include="AgxNodes\SFBGS\AgxNtSpeedScale.h" />
+    <QtMoc Include="AgxNodes\SFBGS\AgxNtFootIK.h" />
+    <QtMoc Include="AgxNodes\SFBGS\AgxNtLocomotionBlend.h" />
+    <QtMoc Include="AgxNodes\SFBGS\AgxNtTranslationAdjustment.h" />
+    <QtMoc Include="AgxNodes\SFBGS\AgxNtMultiFootIK.h" />
+    <QtMoc Include="AgxNodes\SFBGS\AgxNtMomentumAnimation.h" />
+    <QtMoc Include="AgxNodes\SFBGS\AgxNtSetOrient.h" />
+    <QtMoc Include="AgxNodes\SFBGS\AgxNtEvaluateConditionVariable.h" />
+    <QtMoc Include="AgxNodes\SFBGS\AgxNtRigSwitch.h" />
+    <QtMoc Include="AgxNodes\SFBGS\AgxNtEffectSequence.h" />
+    <QtMoc Include="AgxNodes\SFBGS\AgxNtDirectAt.h" />
+    <QtMoc Include="AgxNodes\SFBGS\AgxNtEventController.h" />
+    <QtMoc Include="AgxNodes\SFBGS\AgxNtPhysicsContactListener.h" />
+    <QtMoc Include="AgxNodes\SFBGS\AgxNtEveryNEventsModifier.h" />
+    <QtMoc Include="AgxNodes\SFBGS\AgxNtPairedAnimation.h" />
+    <QtMoc Include="AgxNodes\SFBGS\AgxNtDynamicGraphReference.h" />
+    <QtMoc Include="AgxNodes\SFBGS\AgxNtTagPropagation.h" />
+    <QtMoc Include="AgxNodes\SFBGS\AgxNtCumulativeAnimation.h" />
+    <QtMoc Include="AgxNodes\SFBGS\AgxNtRotationVariable.h" />
+    <QtMoc Include="AgxNodes\SFBGS\AgxNtBoneConstraint.h" />
+    <QtMoc Include="AgxNodes\SFBGS\AgxNtPostBoneModifierControl.h" />
+    <QtMoc Include="AgxNodes\SFBGS\AgxNtRagdollDrive.h" />
+    <QtMoc Include="Application\CALUMIMotionApplication.h" />
+    <ClInclude Include="Interfaces\IButtonBox.h" />
+    <QtMoc Include="Models\AgxPort.h" />
+    <QtMoc Include="Widgets\SFBGS\SFBGS_GraphPropertiesDialogWidget.h" />
+    <QtMoc Include="Models\Blend\AgxBlendInputModel.h" />
+    <ClInclude Include="Painter\AgxConnectionStyle.h" />
+    <ClInclude Include="Painter\AgxGraphicsViewStyle.h" />
+    <ClInclude Include="Painter\AgxNodeStyle.h" />
+    <ClInclude Include="Painter\AgxStyle.h" />
+    <ClInclude Include="Painter\AgxStyleCollection.h" />
+    <ClInclude Include="resource.h" />
+    <ClInclude Include="Utilities\AgxConnectionIdUtils.h" />
+    <ClInclude Include="Utilities\AgxDictionary.h" />
+    <ClInclude Include="Utilities\AgxGraphRegistry.h" />
+    <ClInclude Include="Utilities\AgxNodeDelegateModelRegistry.h" />
+    <ClInclude Include="Utilities\AgxNodeRegistry.h" />
+    <ClInclude Include="Utilities\guidUtil.h" />
+    <ClInclude Include="Utilities\Hash\AgxConnectionIdHash.h" />
+    <ClInclude Include="Utilities\Hash\QUuidStdHash.h" />
+    <ClInclude Include="Utilities\PropertySheetEntryUtil.h" />
+    <QtMoc Include="Widgets\Blend\AgxBlendInputView.h" />
+    <QtMoc Include="Widgets\AgxSidebarContent.h" />
+    <QtMoc Include="Widgets\Dialog\AgxProgressDialog.h" />
+    <ClInclude Include="Utilities\SettingsRegistry.h" />
+    <ClInclude Include="version.h" />
+    <ClInclude Include="Widgets\IAgxEmbedSceneData.h" />
+    <QtMoc Include="Widgets\MultiVariableDialog.h" />
+    <QtMoc Include="Widgets\FilteredDropDownDialog.h" />
+    <QtMoc Include="Widgets\AgxLineEdit.h" />
+    <QtMoc Include="Models\AgxConnectionGraphicsObject.h" />
+    <QtMoc Include="Widgets\AgxNodePropertiesWidget.h" />
+    <ClInclude Include="Painter\AgxConnectionPainter.h" />
+    <ClInclude Include="Models\AgxConnectionState.h" />
+    <ClInclude Include="Models\AgxNodeConnectionInteraction.h" />
+    <ClInclude Include="Models\AgxNodeState.h" />
+    <QtMoc Include="Utilities\DialogPool.h" />
+    <ClInclude Include="Utilities\AgxJsonHelper.h" />
+    <ClInclude Include="Utilities\locateNode.h" />
+    <ClInclude Include="Utilities\UndoRedoCommands.h" />
+    <QtMoc Include="Widgets\NodeGroupMenuPopup.h" />
+    <QtMoc Include="Widgets\StringEntryPopup.h" />
+    <QtMoc Include="Widgets\AgxGraphicsView.h" />
+    <QtRcc Include="CALUMIMotion.qrc" />
+    <QtUic Include="CALUMIMotion.ui" />
+    <QtMoc Include="CALUMIMotion.h" />
+    <ClCompile Include="3rdPartyDirect\pugiXML\pugixml.cpp" />
+    <ClCompile Include="AgxNodes\SFBGS\AgxNtAssignIState.cpp" />
+    <ClCompile Include="CALUMIMotion.cpp" />
+    <ClCompile Include="main.cpp">
+      <DynamicSource Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">input</DynamicSource>
+      <QtMocFileName Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">%(Filename).moc</QtMocFileName>
+      <DynamicSource Condition="'$(Configuration)|$(Platform)'=='Release|x64'">input</DynamicSource>
+      <QtMocFileName Condition="'$(Configuration)|$(Platform)'=='Release|x64'">%(Filename).moc</QtMocFileName>
+    </ClCompile>
+    <None Include="3rdPartyDirect\pugiXML\LICENSE.md" />
+    <None Include="CALUMI.Motion.ico" />
+    <QtUic Include="Widgets\FilteredDropDownDialog.ui" />
+    <QtUic Include="Widgets\MultiVariableDialog.ui" />
+    <QtUic Include="Widgets\NodeGroupMenuPopup.ui" />
+    <QtUic Include="Widgets\Settings\SettingsDialog.ui" />
+    <QtUic Include="Widgets\StringEntryPopup.ui" />
+    <QtUic Include="Widgets\TextEditDialog.ui" />
+    <ResourceCompile Include="CALUMI.Motion.rc">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+      </ExcludedFromBuild>
+    </ResourceCompile>
+    <ClInclude Include="3rdPartyDirect\pugiXML\pugiconfig.hpp" />
+    <ClInclude Include="3rdPartyDirect\pugiXML\pugixml.hpp" />
+    <QtMoc Include="AgxNodes\AgxNode.h" />
+    <QtMoc Include="AgxNodes\SFBGS\AgxNtAnimationNode.h" />
+    <QtMoc Include="AgxNodes\SFBGS\AgxNtAssignIState.h" />
+    <QtMoc Include="Models\AgxGraphModel.h" />
+    <QtMoc Include="Models\AgxGraphicsScene.h" />
+    <ClInclude Include="AgxNodes\AgxCommentNode.h" />
+    <QtMoc Include="Utilities\AgxDefinitions.h" />
+    <QtMoc Include="Models\AgxNodeGraphicsObject.h" />
+    <QtMoc Include="Widgets\CustomQTreeWidget.h" />
+    <ClInclude Include="Painter\AgxNodeGeometry.h" />
+    <ClInclude Include="Painter\AgxNodePainter.h" />
+    <ClInclude Include="Painter\QColorHelper.h" />
+    <ClInclude Include="stdafx.h" />
+    <ClCompile Include="stdafx.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)' == 'Debug|x64'">Create</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)' == 'Release|x64'">Create</PrecompiledHeader>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="3rdPartyDirect\pugiXML\readme.txt" />
+    <Text Include="AgxNodes\AgxNodes" />
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="Resources\BasicIcon.ico" />
+    <Image Include="Resources\BasicIcon50Purple.ico" />
+    <Image Include="Resources\NASA_ISS_LongExposure.png" />
+    <Image Include="Resources\PatchRender.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <QtTranslation Include="Localization\motion_de.ts" />
+    <QtTranslation Include="Localization\motion_es.ts" />
+    <QtTranslation Include="Localization\motion_fr.ts" />
+    <QtTranslation Include="Localization\motion_ru.ts" />
+    <QtTranslation Include="Localization\motion_uk.ts" />
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Condition="Exists('$(QtMsBuild)\qt.targets')">
+    <Import Project="$(QtMsBuild)\qt.targets" />
+  </ImportGroup>
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>

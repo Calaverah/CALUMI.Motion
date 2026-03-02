@@ -1,0 +1,25 @@
+#pragma once
+#pragma warning(push,0)
+#include <QObject>
+#pragma warning(pop)
+#include "..\AgxNode.h"
+
+namespace SFBGS {
+	class AgxNtEveryNEventsModifier : public SFBGSNode
+	{
+		Q_OBJECT
+
+	public:
+		AgxNtEveryNEventsModifier(AgxGraphModel* rootGraphRef);
+		~AgxNtEveryNEventsModifier() = default;
+
+		// Inherited via AgxNode
+		QString name() const override;
+		QString caption() const override;
+		unsigned int nPorts(AgxPortType portType) const override;
+
+		AgxNodeType GetNodeType() const override;
+
+	};
+
+}
