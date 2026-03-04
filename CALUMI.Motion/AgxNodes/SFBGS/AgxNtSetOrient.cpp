@@ -9,7 +9,7 @@ namespace SFBGS {
 
 
         _PropertyEntries.push_back(AgxPropertyEntryDefinition(&AgxDictionary::Name, "Set Orient", AgxColumnTypes::BasicString));
-        _PropertyEntries.push_back(AgxPropertyEntryDefinition(&AgxDictionary::Type, _TypeList.at(0), AgxColumnTypes::CustomDropDown, _TypeList));
+        _PropertyEntries.push_back(AgxPropertyEntryDefinition(&AgxDictionary::Type, _TypeList.at(0)().tag, AgxColumnTypes::CustomDropDown, _TypeList));
         _PropertyEntries.push_back(AgxPropertyEntryDefinition(&AgxDictionary::OrientVar, "", AgxColumnTypes::CustomFloat));
         _PropertyEntries.push_back(AgxPropertyEntryDefinition(&AgxDictionary::TurnAnimCameraVar, "", AgxColumnTypes::CustomFloat));
         _PropertyEntries.push_back(AgxPropertyEntryDefinition(&AgxDictionary::IsUsingCodeDrivenRotation, "", AgxColumnTypes::CustomBool));

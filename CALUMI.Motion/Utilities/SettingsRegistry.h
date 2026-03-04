@@ -1,7 +1,7 @@
 ﻿#pragma once
 
 #pragma warning(push,0)
-//#include "QtNodes/internal/NodeDelegateModelRegistry.hpp
+
 #pragma warning(pop)
 
 #include "Utilities/AgxDefinitions.h"
@@ -47,7 +47,6 @@ class SettingsRegistry
 {
 private:
 	SettingsRegistry();
-
 	~SettingsRegistry();
 
 public:
@@ -61,9 +60,6 @@ public:
 		static SettingsRegistry instance;
 		return instance;
 	}
-
-	QString IniPath() const;
-	//QSettings& Settings();
 
 	QString LastDirectory(AgxGameType type = AgxGameType::None) const;
 	void SetLastDirectory(const QString& dir, AgxGameType type = AgxGameType::None);
@@ -101,9 +97,14 @@ public:
 	inline bool UseSavedConsoledGeometry() const { return _rememberConsoleGeometry; }
 	inline void SetUseSavedConsoledGeometry(bool setting) { _rememberConsoleGeometry = setting; }
 
+	QSet<QString> GetCustomCategories(AgxGameType game = AgxGameType::SFBGS, bool withDefault = true) const;
+	void AddCustomCatgeory(const QString& item, AgxGameType game = AgxGameType::SFBGS);
+
 private:
 	void SetDefaultLanguage();
+	QString IniPath() const;
 
+	//Generic
 private:
 	QString _iniPath;
 	QSettings* _settings = nullptr;
@@ -124,7 +125,11 @@ private:
 	bool _rememberMainGeometry = true;
 	bool _rememberConsoleGeometry = true;
 
+	QSet<QString> _categories_Default;
+
+	//SFBGS
 private:
 	QString _defaultRelDataPath_SFBGS = R"(Data\Meshes\AnimTextData\Tables\Graphs\)";
+	QSet<QString> _categories_SFBGS;
 
 };

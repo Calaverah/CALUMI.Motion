@@ -62,6 +62,12 @@ void AgxGraphicsViewStyle::loadJson(QJsonObject const& json)
 
     QJsonObject obj = nodeStyleValues.toObject();
 
+    if (obj.isEmpty())
+    {
+        qWarning() << "Failed to parse view style Json file. Exiting view style creation and leaving existing values.";
+        return;
+    }
+
     FLOW_VIEW_STYLE_READ_COLOR(obj, BackgroundColor);
     FLOW_VIEW_STYLE_READ_COLOR(obj, FineGridColor);
     FLOW_VIEW_STYLE_READ_COLOR(obj, CoarseGridColor);

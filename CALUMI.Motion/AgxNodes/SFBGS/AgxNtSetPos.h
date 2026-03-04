@@ -29,6 +29,9 @@ namespace SFBGS {
 
 	private:
 
-		QStringList _VariableTypeList = { "Start Position","End Position"};
+		QList<TermRef> _VariableTypeList = { 
+			&AgxDictionary::StartPosition,
+			&AgxDictionary::EndPosition
+		};
 	};
 }

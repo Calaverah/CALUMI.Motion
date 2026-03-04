@@ -53,7 +53,7 @@ private:
 
 	void ForceRefresh();
 
-	void SetUpCustomDropDown(AgxLineEdit* line, const QStringList& list, const QStringList& keyPath);
+	void SetUpCustomDropDown(AgxLineEdit* line, const QList<TermRef>& list, const QStringList& keyPath);
 
 protected:
 	void showEvent(QShowEvent* event) override;

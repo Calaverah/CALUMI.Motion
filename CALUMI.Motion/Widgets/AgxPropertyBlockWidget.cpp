@@ -5,6 +5,7 @@
 #include "Models/AgxGraphicsScene.h"
 #include "Widgets/IAgxEmbedSceneData.h"
 #include "Utilities/AgxDefinitions.h"
+#include "Dialog/AgxSimpleDialog.h"
 
 static int GetColumnWidth(const AgxColumnTypes& type) {
 	
@@ -83,6 +84,7 @@ AgxPropertyBlockWidget::AgxPropertyBlockWidget(TermRef ref, AgxPropertyBlockData
 	connect(_dataRef, &AgxPropertyBlockData::RowRemoved, this, &AgxPropertyBlockWidget::OnRowRemoved);
 
 	connect(addButton, &ModifiedPushButton::CustomPressSignal, _dataRef, [this, ref]() {
+		//
 		if (auto iagx = dynamic_cast<IAgxEmbedSceneData*>(this->parent()))
 		{
 			iagx->SendAddRowToPropertyBlockDataCommand(ref().tag, _dataRef->GetRowCount());
@@ -147,33 +149,27 @@ void AgxPropertyBlockWidget::ForceRefresh()
 	}
 }
 
-void AgxPropertyBlockWidget::SetUpCustomDropDown(AgxLineEdit* line, const QStringList& list, const QStringList& keyPath)
+void AgxPropertyBlockWidget::SetUpCustomDropDown(AgxLineEdit* line, const QList<TermRef>& list, const QStringList& keyPath)
 {
 	connect(line, &AgxLineEdit::DoubleClicked, line, [this, line, list, keyPath]() {
-		auto popup = new MultiVariableDialog();
 
-		if (list.isEmpty())
-			popup->GetComboBox()->addItem("<none>");
-		else
-			popup->GetComboBox()->addItems(list);
+		QStringList stringList;
+		int current = 0;
 
-		if (line->text().isEmpty()) {
-			popup->GetComboBox()->setCurrentIndex(0);
-		} else {
-			popup->GetComboBox()->setCurrentText(line->text());
+		for (auto term : list) {
+			if (term && term().tag.compare(line->text(), Qt::CaseInsensitive) == 0)
+				current = list.indexOf(term);
 		}
 
-		if (popup->exec() == QDialog::Accepted)
-		{
+		if (auto result = AgxSimpleDialog::GetDropDown(this, "Select Entry", "", list, current, false)) {
 			if (auto iagx = dynamic_cast<IAgxEmbedSceneData*>(this->parent()))
 			{
 				QJsonObject input;
-				input["value"] = popup->GetValue();
+				input["value"] = result().tag;
 				iagx->SendInsertPropertySheetDataCommand(QStringListToQJsonObject(keyPath, input));
 			}
 		}
 
-		popup->deleteLater();
 			});
 }
 
@@ -194,7 +190,7 @@ void AgxPropertyBlockWidget::ConstructRow(int index)
 
 		if (_dataRef->GetColumnDefinition(j).columnType == AgxColumnTypes::CustomDropDown)
 		{
-			SetUpCustomDropDown(line, _dataRef->GetColumnDefinition(j).customDropDownList, keyPath);
+			SetUpCustomDropDown(line, _dataRef->GetColumnDefinition(j).CustomDropDownList(), keyPath);
 		}
 
 		//line->RefreshTooltip(rowRef->at(j).Value);
@@ -327,6 +323,8 @@ void ModifiedPushButton::mousePressEvent(QMouseEvent* event)
 	if (!block)
 	{
 		//QPushButton::mousePressEvent(event);
+		QTimer::singleShot(0, this, &ModifiedPushButton::animateClick);
+		//animateClick();
 		Q_EMIT CustomPressSignal();
 		block = true;
 		QTimer::singleShot(500, this, &ModifiedPushButton::ResetBlock);

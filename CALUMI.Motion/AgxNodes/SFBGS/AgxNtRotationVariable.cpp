@@ -10,7 +10,7 @@ namespace SFBGS {
         _PropertyEntries.push_back(AgxPropertyEntryDefinition(&AgxDictionary::ControlVariable, "", AgxColumnTypes::CustomFloat));
         _PropertyEntries.push_back(AgxPropertyEntryDefinition(&AgxDictionary::DesiredValue, "", AgxColumnTypes::CustomFloat));
         _PropertyEntries.push_back(AgxPropertyEntryDefinition(&AgxDictionary::Speed, "CurrentSpeed", AgxColumnTypes::CustomFloat));
-        _PropertyEntries.push_back(AgxPropertyEntryDefinition(&AgxDictionary::RotationType, _RotationList.at(0), AgxColumnTypes::CustomDropDown, _RotationList));
+        _PropertyEntries.push_back(AgxPropertyEntryDefinition(&AgxDictionary::RotationType, _RotationList.at(0)().tag, AgxColumnTypes::CustomDropDown, _RotationList));
         _PropertyEntries.push_back(AgxPropertyEntryDefinition(&AgxDictionary::UseRadians, "False", AgxColumnTypes::BasicBool));
 
         _BlockOrder = { &AgxDictionary::EnterEvents, &AgxDictionary::ExitEvents };

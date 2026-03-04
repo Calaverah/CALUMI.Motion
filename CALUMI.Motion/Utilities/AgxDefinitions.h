@@ -240,32 +240,27 @@ class AgxPropertyEntryDefinition  : public QObject
 public:
     QString value;
     AgxColumnTypes columnType = AgxColumnTypes::BasicString;
-    QStringList customDropDownList = {};
 
     bool propertyEnabled = true;
     bool isPresent = true;
 
 private:
-
+    QList<TermRef> customDropDownList = {};
     TermRef _tagReference = nullptr;
-    QString _tag;
-    QString _label;
 
 public:
-    /*AgxPropertyEntryDefinition(const QString& tag, const QString& value, const AgxColumnTypes& columnType = AgxColumnTypes::BasicString, const QStringList& customDropDownList = {}, bool isPresent = true)
-        : _tag(tag), _label(tag), value(value), columnType(columnType), customDropDownList(customDropDownList), isPresent(isPresent) {
-        if (customDropDownList.isEmpty()) this->customDropDownList = { "<none>" };
-    }*/
-
-    AgxPropertyEntryDefinition(TermRef ref, const QString& value, const AgxColumnTypes& columnType = AgxColumnTypes::BasicString, const QStringList& customDropDownList = {}, bool isPresent = true)
-        : _tagReference(ref), value(value), columnType(columnType), customDropDownList(customDropDownList), isPresent(isPresent) {
-        if (customDropDownList.isEmpty()) this->customDropDownList = { "<none>" };
+    AgxPropertyEntryDefinition(TermRef ref, const QString& value, const AgxColumnTypes& columnType = AgxColumnTypes::BasicString, const QList<TermRef>& customDropDownList = {}, bool isPresent = true)
+        : _tagReference(ref), value(value), columnType(columnType), isPresent(isPresent) {
+        for (auto entry : customDropDownList) {
+            if (entry)
+                this->customDropDownList.append(entry);
+            else
+                this->customDropDownList.append(&AgxDictionary::ErrorTerm);
+        }
     }
 
     AgxPropertyEntryDefinition(const AgxPropertyEntryDefinition& other) {
         _tagReference = other._tagReference;
-        _tag = other._tag;
-        _label = other._label;
         value = other.value;
         columnType = other.columnType;
         customDropDownList = other.customDropDownList;
@@ -275,8 +270,6 @@ public:
 
     inline AgxPropertyEntryDefinition& operator=(const AgxPropertyEntryDefinition& other) {
         _tagReference = other._tagReference;
-        _tag = other._tag;
-        _label = other._label;
         value = other.value;
         columnType = other.columnType;
         customDropDownList = other.customDropDownList;
@@ -289,15 +282,17 @@ public:
         if (_tagReference) 
             return _tagReference().tag; 
 
-        return _tag;
+        return AgxDictionary::ErrorTerm().tag;
     }
 
     inline QString Label() const {
         if (_tagReference)
             return _tagReference().translation;
 
-        return _label;
+        return AgxDictionary::ErrorTerm().translation;
     }
+
+    inline QList<TermRef> CustomDropDownList() const { return customDropDownList; }
 
 signals:
     void StateUpdated(bool enabled);

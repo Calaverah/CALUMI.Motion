@@ -28,6 +28,6 @@ namespace SFBGS {
 		std::shared_ptr<AgxPort> _AddPort(AgxPortType portType, AgxPortIndex index, QJsonObject data) override;
 
 	private:
-		QStringList _VariableTypeList = { "Standard","Parametric","Layer"};
+		QList<TermRef> _VariableTypeList = { &AgxDictionary::Standard,&AgxDictionary::Parametric,&AgxDictionary::Layer};
 	};
 }

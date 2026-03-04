@@ -23,6 +23,9 @@ namespace SFBGS {
 
 		//non instanced is true 4 times total but only on graph type 1 (state machine?)
 
+	private:
+		QList<TermRef> _dropDownList = { &AgxDictionary::Assign, &AgxDictionary::Increment,&AgxDictionary::Decrement };
+
 	};
 
 }

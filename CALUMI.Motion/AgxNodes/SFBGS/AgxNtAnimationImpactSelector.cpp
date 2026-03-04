@@ -15,29 +15,29 @@ namespace SFBGS {
         AgxPropertyBlockData fwdBlockData({
                                         AgxPropertyEntryDefinition(&AgxDictionary::BlankEntry, "", AgxColumnTypes::BasicString),
                                         AgxPropertyEntryDefinition(&AgxDictionary::ForwardTagName, "", AgxColumnTypes::BasicString),
-                                        AgxPropertyEntryDefinition(&AgxDictionary::BodyPart, _BodyPartList.at(0), AgxColumnTypes::CustomDropDown, _BodyPartList),
-                                        AgxPropertyEntryDefinition(&AgxDictionary::Impact, _ImpactList.at(0), AgxColumnTypes::CustomDropDown, _ImpactList)
+                                        AgxPropertyEntryDefinition(&AgxDictionary::BodyPart, _BodyPartList.at(0)().tag, AgxColumnTypes::CustomDropDown, _BodyPartList),
+                                        AgxPropertyEntryDefinition(&AgxDictionary::Impact, _ImpactList.at(0)().tag, AgxColumnTypes::CustomDropDown, _ImpactList)
                                           }, nullptr);
 
         AgxPropertyBlockData leftBlockData({
                                         AgxPropertyEntryDefinition(&AgxDictionary::BlankEntry, "", AgxColumnTypes::BasicString),
                                         AgxPropertyEntryDefinition(&AgxDictionary::LeftTagName, "", AgxColumnTypes::BasicString),
-                                        AgxPropertyEntryDefinition(&AgxDictionary::BodyPart, _BodyPartList.at(0), AgxColumnTypes::CustomDropDown, _BodyPartList),
-                                        AgxPropertyEntryDefinition(&AgxDictionary::Impact, _ImpactList.at(0), AgxColumnTypes::CustomDropDown, _ImpactList)
+                                        AgxPropertyEntryDefinition(&AgxDictionary::BodyPart, _BodyPartList.at(0)().tag, AgxColumnTypes::CustomDropDown, _BodyPartList),
+                                        AgxPropertyEntryDefinition(&AgxDictionary::Impact, _ImpactList.at(0)().tag, AgxColumnTypes::CustomDropDown, _ImpactList)
                                            }, nullptr);
 
         AgxPropertyBlockData backBlockData({
                                         AgxPropertyEntryDefinition(&AgxDictionary::BlankEntry, "", AgxColumnTypes::BasicString),
                                         AgxPropertyEntryDefinition(&AgxDictionary::BackTagName, "", AgxColumnTypes::BasicString),
-                                        AgxPropertyEntryDefinition(&AgxDictionary::BodyPart, _BodyPartList.at(0), AgxColumnTypes::CustomDropDown, _BodyPartList),
-                                        AgxPropertyEntryDefinition(&AgxDictionary::Impact, _ImpactList.at(0), AgxColumnTypes::CustomDropDown, _ImpactList)
+                                        AgxPropertyEntryDefinition(&AgxDictionary::BodyPart, _BodyPartList.at(0)().tag, AgxColumnTypes::CustomDropDown, _BodyPartList),
+                                        AgxPropertyEntryDefinition(&AgxDictionary::Impact, _ImpactList.at(0)().tag, AgxColumnTypes::CustomDropDown, _ImpactList)
                                            }, nullptr);
 
         AgxPropertyBlockData rightBlockData({
                                         AgxPropertyEntryDefinition(&AgxDictionary::BlankEntry, "", AgxColumnTypes::BasicString),
                                         AgxPropertyEntryDefinition(&AgxDictionary::RightTagName, "", AgxColumnTypes::BasicString),
-                                        AgxPropertyEntryDefinition(&AgxDictionary::BodyPart, _BodyPartList.at(0), AgxColumnTypes::CustomDropDown, _BodyPartList),
-                                        AgxPropertyEntryDefinition(&AgxDictionary::Impact, _ImpactList.at(0), AgxColumnTypes::CustomDropDown, _ImpactList)
+                                        AgxPropertyEntryDefinition(&AgxDictionary::BodyPart, _BodyPartList.at(0)().tag, AgxColumnTypes::CustomDropDown, _BodyPartList),
+                                        AgxPropertyEntryDefinition(&AgxDictionary::Impact, _ImpactList.at(0)().tag, AgxColumnTypes::CustomDropDown, _ImpactList)
                                             }, nullptr);
 
         _PropertyBlocks.insert(&AgxDictionary::Forward, fwdBlockData);

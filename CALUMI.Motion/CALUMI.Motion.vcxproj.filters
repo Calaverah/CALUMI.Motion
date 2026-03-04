@@ -379,6 +379,9 @@
     <ClCompile Include="Painter\AgxGraphicsViewStyle.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Widgets\Dialog\AgxSimpleDialog.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="3rdPartyDirect\pugiXML\LICENSE.md" />
@@ -750,6 +753,9 @@
       <Filter>Header Files</Filter>
     </QtMoc>
     <QtMoc Include="Widgets\Settings\SettingsDialog.h">
+      <Filter>Header Files</Filter>
+    </QtMoc>
+    <QtMoc Include="Widgets\Dialog\AgxSimpleDialog.h">
       <Filter>Header Files</Filter>
     </QtMoc>
   </ItemGroup>

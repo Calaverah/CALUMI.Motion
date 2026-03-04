@@ -2,10 +2,9 @@
 #pragma warning(push,0)
 #include <qobject.h>
 
-#include "Utilities/Hash/AgxConnectionIdHash.h"
-//#include "QtNodes/internal/StyleCollection.hpp
-//#include "QtNodes/internal/NodeDelegateModelRegistry.hpp
 #pragma warning(pop)
+
+#include "Utilities/Hash/AgxConnectionIdHash.h"
 #include "Utilities/AgxDefinitions.h"
 #include "AgxNodes/AgxNode.h"
 #include "Painter/QColorHelper.h"
@@ -70,6 +69,7 @@ public:
     void insertPropertySheetData(QJsonObject data);
     QJsonObject getPropertySheetData(AgxNodeId nodeId, bool cleared = false);
     QJsonObject getPropertySheetData(bool cleared = false);
+    QJsonObject getPropertySheetData(bool cleared = false) const;
 
     AgxPropertyBlockData* getPropertyBlock(const QString& block);
     AgxPropertyBlockData* getPropertyBlock(TermRef ref);
@@ -218,10 +218,10 @@ private:
          * index. For such connections the new "post-insertion" addresses are computed
          * and stored until the function AbstractGraphModel::portsInserted is called.
          */
-        virtual void portsAboutToBeInserted(AgxNodeId const nodeId,
-                                    AgxPortType const portType,
-                                    AgxPortIndex const first,
-                                    AgxPortIndex const last);
+        virtual void portsAboutToBeInserted(const AgxNodeId& nodeId,
+                                            const AgxPortType& portType,
+                                            const AgxPortIndex& first,
+                                            const AgxPortIndex& last);
 
         /**
          * Function re-creates the connections that were shifted during the port
@@ -307,7 +307,6 @@ private:
     AgxGraphType _graphType = AgxGraphType::UNDEFINED;
     QString _graphRelDataPath;
     QString _category = "NONE";
-    //bool _isRoot = true;
     AgxGraphModel* _rootReference = nullptr;
 
     std::shared_ptr<AgxNodeDelegateModelRegistry> _registry;

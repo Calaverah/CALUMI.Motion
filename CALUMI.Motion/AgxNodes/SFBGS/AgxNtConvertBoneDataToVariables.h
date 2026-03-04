@@ -28,6 +28,6 @@ namespace SFBGS {
 		std::shared_ptr<AgxPort> _AddPort(AgxPortType portType, AgxPortIndex index, QJsonObject data) override;
 
 	private:
-		QStringList _DropDown = {"X","Y","Z"};
+		QList<TermRef> _DropDown = { &AgxDictionary::X, &AgxDictionary::Y, &AgxDictionary::Z};
 	};
 }

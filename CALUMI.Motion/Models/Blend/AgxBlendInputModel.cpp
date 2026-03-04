@@ -21,7 +21,7 @@ QString AgxBlendInputModel::getWeightValue(int row)
 	return item(row, 1)->data(Qt::DisplayRole).toString();
 }
 
-size_t AgxBlendInputModel::getDataRowCount() const
+int AgxBlendInputModel::getDataRowCount() const
 {
 	return rowCount();
 }

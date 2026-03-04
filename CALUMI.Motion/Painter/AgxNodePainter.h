@@ -3,25 +3,13 @@
 #pragma warning(push,0)
 #include <QIcon>
 #include <QtGui/QPainter>
+#pragma warning(pop)
 
-//#include "QtNodes/internal/AbstractNodePainter.hpp
-////#include "QtNodes/internal/Definitions.hpp
-//#include "QtNodes/internal/NodeStyle.hpp
-//#include "QtNodes/internal/NodeDelegateModel.hpp
 #include <AgxNodes/AgxNode.h>
 #include <Utilities/AgxDefinitions.h>
 #include <cstdint>
 
-#pragma warning(pop)
 
-namespace QtNodes {
-
-	class BasicGraphicsScene;
-	class GraphModel;
-	class NodeGeometry;
-	class NodeGraphicsObject;
-	class NodeState;
-}
 class AgxNodeGraphicsObject;
 class AgxNodeGeometry;
 class AgxGraphModel;

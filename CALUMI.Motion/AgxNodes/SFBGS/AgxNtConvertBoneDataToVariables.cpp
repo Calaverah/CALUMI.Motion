@@ -12,7 +12,7 @@ namespace SFBGS {
             AgxPropertyBlockData blockDef({
                 AgxPropertyEntryDefinition(&AgxDictionary::BlankEntry, "", AgxColumnTypes::BasicString),
                 AgxPropertyEntryDefinition(&AgxDictionary::BoneName,"",AgxColumnTypes::BasicString),
-                AgxPropertyEntryDefinition(&AgxDictionary::Axis,"X",AgxColumnTypes::CustomDropDown, _DropDown),
+                AgxPropertyEntryDefinition(&AgxDictionary::Axis,_DropDown.at(0)().tag,AgxColumnTypes::CustomDropDown, _DropDown),
                 AgxPropertyEntryDefinition(&AgxDictionary::VariableOut,"",AgxColumnTypes::CustomFloat)
                                           }, nullptr);
 

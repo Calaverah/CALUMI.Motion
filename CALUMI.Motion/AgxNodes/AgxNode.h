@@ -2,7 +2,7 @@
 #pragma warning(push,0)
 #include <QPointer>
 #include <QObject>
-//#include "QtNodes/internal/NodeDelegateModel.hpp
+
 #pragma warning(pop)
 #include "Utilities/AgxDefinitions.h"
 #include "Widgets/AgxNodePropertiesWidget.h"

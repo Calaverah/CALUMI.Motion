@@ -539,6 +539,31 @@ QJsonObject AgxGraphModel::getPropertySheetData(bool cleared)
     return output;
 }
 
+QJsonObject AgxGraphModel::getPropertySheetData(bool cleared) const
+{
+    QJsonObject output;
+
+    QJsonObject blocks;
+    for (int i = 0; i < _PropertyBlocks.size(); i++)
+    {
+        auto key = _PropertyBlocks.keys().at(i);
+        blocks[key().tag] = _PropertyBlocks.value(key).getPropertyBlockData(cleared);
+    }
+    output["property-blocks"] = blocks;
+
+
+    for (int i = 0; i < _PropertyEntries.size(); i++)
+    {
+        QString key = _PropertyEntries.at(i).Tag();
+        QJsonObject pobj;
+        pobj["value"] = cleared ? "" : _PropertyEntries[i].value;
+        pobj["isPresent"] = cleared ? false : _PropertyEntries[i].isPresent;
+        output[key] = pobj;
+    }
+
+    return output;
+}
+
 void AgxGraphModel::addPropertyBlockEntry(AgxNodeId nodeId, QString block, int index, const QList<AgxPropertyBlockData::Entry>& data)
 {
     if (auto agxNode = _models[nodeId].get())
@@ -1115,7 +1140,10 @@ QJsonObject AgxGraphModel::save() const
     sceneJson["game-type"] = AgxGameTypeToString(_gameType);
 
     sceneJson["graph-category"] = _category;
+    sceneJson["graph-type"] = AgxGraphTypeAsString(_graphType);
+
     
+    sceneJson["properties"] = getPropertySheetData();
 
     return sceneJson;
 }
@@ -1223,6 +1251,29 @@ void AgxGraphModel::loadNode(QJsonObject const& nodeJson)
 
 void AgxGraphModel::load(QJsonObject const& jsonDocument)
 {
+    if (jsonDocument.contains("game-type")) _gameType = AgxGameTypeFromString(jsonDocument["game-type"].toString());
+    else _gameType = AgxGameType::None;
+
+    if (jsonDocument.contains("graph-category")) _category = jsonDocument["graph-category"].toString();
+    else _category = "NONE";
+
+    AgxGraphType type;
+    if (jsonDocument.contains("graph-type")) {
+        type = static_cast<AgxGraphType>(jsonDocument.value("graph-type").toString("0").toUInt());
+    } else {
+        type = AgxGetDefaultGraphType(_gameType);
+    }
+
+    SetNewGraphProperties(type);
+
+    QCoreApplication::processEvents();
+
+    if (jsonDocument.contains("properties")) {
+
+        insertPropertySheetData(jsonDocument["properties"].toObject());
+
+    }
+
     QJsonArray nodesJsonArray = jsonDocument["nodes"].toArray();
 
     for (QJsonValueRef nodeJson : nodesJsonArray) {
@@ -1252,13 +1303,6 @@ void AgxGraphModel::load(QJsonObject const& jsonDocument)
         addConnection(connId);
     }
 
-    if (jsonDocument.contains("game-type")) _gameType = AgxGameTypeFromString(jsonDocument["game-type"].toString());
-    else _gameType = AgxGameType::None;
-
-    if (jsonDocument.contains("graph-category")) _category = jsonDocument["graph-category"].toString();
-    else _category = "NONE";
-
-
     QCoreApplication::processEvents();
 }
 
@@ -1282,7 +1326,7 @@ void AgxGraphModel::load(pugi::xml_node& xmlNode)
         }
     }
 
-    Q_EMIT statusUpdate(0.1);
+    Q_EMIT statusUpdate(0.1f);
 
     if (xmlNode.child("Link_Style")) {
         //blockSignals(true);
@@ -1306,7 +1350,7 @@ void AgxGraphModel::load(pugi::xml_node& xmlNode)
         xmlConnections.append(nodeConnections);
     }
 
-    Q_EMIT statusUpdate(0.15);
+    Q_EMIT statusUpdate(0.15f);
 
     for (auto& node : xmlNode.children("node")) 
     {
@@ -1336,7 +1380,7 @@ void AgxGraphModel::load(pugi::xml_node& xmlNode)
         contentProc++;
     }
 
-    Q_EMIT statusUpdate(0.6);
+    Q_EMIT statusUpdate(0.6f);
 
     for (auto& xmlComment : xmlNode.children("comment")) {
         auto nodeId = addNode("COMMENT");
@@ -1393,7 +1437,7 @@ void AgxGraphModel::load(pugi::xml_node& xmlNode)
         }
     }
 
-    Q_EMIT statusUpdate(0.7);
+    Q_EMIT statusUpdate(0.7f);
 
     for (AgxNodeId id = 0; id < xmlConnections.size(); id++) {
         auto keys = xmlConnections.at(id).keys();
@@ -1433,7 +1477,7 @@ void AgxGraphModel::load(pugi::xml_node& xmlNode)
         pEntry.SetIsPresent(false);
     }
 
-    Q_EMIT statusUpdate(0.85);
+    Q_EMIT statusUpdate(0.85f);
 
     for (auto& propertySheet : xmlNode.children("property_sheet")) {
         if (_stricmp(propertySheet.child("column").child_value("header"), "Property") == 0) {
@@ -1528,7 +1572,7 @@ void AgxGraphModel::portsAboutToBeDeleted(AgxNodeId const nodeId, AgxPortType co
         }
     }
 
-    std::size_t const nRemovedPorts = clampedLast - first + 1;
+    size_t const nRemovedPorts = clampedLast - first + 1;
 
     for (AgxPortIndex portIndex = clampedLast + 1; portIndex < portCount; ++portIndex) {
         std::unordered_set<AgxConnectionId> conns = connections(nodeId, portType, portIndex);
@@ -1549,14 +1593,14 @@ void AgxGraphModel::portsAboutToBeDeleted(AgxNodeId const nodeId, AgxPortType co
 
 void AgxGraphModel::portsDeleted()
 {
-    for (auto const connectionId : _shiftedByDynamicPortsConnections) {
+    for (const auto& connectionId : _shiftedByDynamicPortsConnections) {
         addConnection(connectionId);
     }
 
     _shiftedByDynamicPortsConnections.clear();
 }
 
-void AgxGraphModel::portsAboutToBeInserted(AgxNodeId const nodeId, AgxPortType const portType, AgxPortIndex const first, AgxPortIndex const last)
+void AgxGraphModel::portsAboutToBeInserted(const AgxNodeId& nodeId, const AgxPortType& portType, const AgxPortIndex& first, const AgxPortIndex& last)
 {
     _shiftedByDynamicPortsConnections.clear();
 

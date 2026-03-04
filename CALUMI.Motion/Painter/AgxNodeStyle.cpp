@@ -25,7 +25,7 @@ AgxNodeStyle::AgxNodeStyle(QString jsonText) {
     loadJsonText(jsonText);
 }
 
-AgxNodeStyle::AgxNodeStyle(QJsonObject const& json) {
+AgxNodeStyle::AgxNodeStyle(const QJsonObject& json) {
     loadJson(json);
 }
 
@@ -84,10 +84,16 @@ void AgxNodeStyle::setNodeStyle(QString jsonText)
             values[#variable] = variable; \
     }
 
-void AgxNodeStyle::loadJson(QJsonObject const& json) {
+void AgxNodeStyle::loadJson(const QJsonObject& json) {
     QJsonValue nodeStyleValues = json["NodeStyle"];
 
     QJsonObject obj = nodeStyleValues.toObject();
+
+    if(obj.isEmpty()) 
+    {
+        qWarning() << "Failed to parse node style Json file. Exiting node style creation and leaving existing values.";
+        return;
+    }
 
     NODE_STYLE_READ_COLOR(obj, NormalBoundaryColor);
     NODE_STYLE_READ_COLOR(obj, SelectedBoundaryColor);
@@ -95,8 +101,9 @@ void AgxNodeStyle::loadJson(QJsonObject const& json) {
     NODE_STYLE_READ_COLOR(obj, GradientColor1);
     NODE_STYLE_READ_COLOR(obj, GradientColor2);
     NODE_STYLE_READ_COLOR(obj, GradientColor3);
-    NODE_STYLE_READ_COLOR(obj, ShadowColor);
-    NODE_STYLE_READ_BOOL(obj, ShadowEnabled);
+    NODE_STYLE_READ_COLOR(obj, AlternateStateColor);
+    //NODE_STYLE_READ_COLOR(obj, ShadowColor);
+    //NODE_STYLE_READ_BOOL(obj, ShadowEnabled);
     NODE_STYLE_READ_COLOR(obj, FontColor);
     NODE_STYLE_READ_COLOR(obj, FontColorFaded);
     NODE_STYLE_READ_COLOR(obj, ConnectionPointColor);
@@ -120,8 +127,9 @@ QJsonObject AgxNodeStyle::toJson() const {
     NODE_STYLE_WRITE_COLOR(obj, GradientColor1);
     NODE_STYLE_WRITE_COLOR(obj, GradientColor2);
     NODE_STYLE_WRITE_COLOR(obj, GradientColor3);
-    NODE_STYLE_WRITE_COLOR(obj, ShadowColor);
-    NODE_STYLE_WRITE_BOOL(obj, ShadowEnabled);
+    NODE_STYLE_WRITE_COLOR(obj, AlternateStateColor);
+    //NODE_STYLE_WRITE_COLOR(obj, ShadowColor);
+    //NODE_STYLE_WRITE_BOOL(obj, ShadowEnabled);
     NODE_STYLE_WRITE_COLOR(obj, FontColor);
     NODE_STYLE_WRITE_COLOR(obj, FontColorFaded);
     NODE_STYLE_WRITE_COLOR(obj, ConnectionPointColor);

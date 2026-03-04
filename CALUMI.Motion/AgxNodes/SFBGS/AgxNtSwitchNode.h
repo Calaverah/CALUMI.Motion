@@ -23,6 +23,17 @@ namespace SFBGS {
 		std::shared_ptr<AgxPort> _AddPort(AgxPortType portType, AgxPortIndex index, QJsonObject data) override;
 
 		//only seen on graph type 0
+	private:
+		QList<TermRef> _eventList = {
+			&AgxDictionary::Event,
+			&AgxDictionary::Variable,
+			&AgxDictionary::EventandVariable
+		};
+		QList<TermRef> _fixList = {
+			&AgxDictionary::DoNothing,
+			&AgxDictionary::Prefix,
+			&AgxDictionary::Suffix
+		};
 	};
 
 }

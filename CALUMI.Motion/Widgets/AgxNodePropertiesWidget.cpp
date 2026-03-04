@@ -12,7 +12,7 @@
 #include "Models/AgxPort.h"
 #include "CALUMIMotion.h"
 #include "MiniGraphicsView.h"
-
+#include "Widgets/Dialog/AgxSimpleDialog.h"
 
 AgxNodePropertiesWidget::AgxNodePropertiesWidget(QWidget* parent, bool bblockSignals) : QWidget(parent), IAgxEmbedSceneData()
 {
@@ -48,7 +48,7 @@ AgxNodePropertiesWidget::AgxNodePropertiesWidget(QWidget* parent, bool bblockSig
 	setMinimumSize(10, 10);
 	QString objname = "AgxNodeProp";
 	setObjectName(objname);
-	setStyleSheet("QWidget{ padding: 1px;} QWidget#" + objname + " {background-color: transparent}");
+	setStyleSheet("QWidget#" + objname + " {background-color: transparent; padding: 1px;}");
 
 	Q_EMIT BroadcastWidth(size().width());
 }
@@ -57,29 +57,24 @@ AgxNodePropertiesWidget::~AgxNodePropertiesWidget()
 {
 }
 
-void AgxNodePropertiesWidget::SetUpCustomDropDown(AgxLineEdit* line, const QStringList& list, const QStringList& keyPath)
+void AgxNodePropertiesWidget::SetUpCustomDropDown(AgxLineEdit* line, const QList<TermRef>& list, const QStringList& keyPath)
 {
 	connect(line, &AgxLineEdit::DoubleClicked, line, [this,line,list, keyPath]() {
-						auto popup = new MultiVariableDialog();
+						
+						QStringList stringList;
+						int current = 0;
 
-						if (list.isEmpty())
-							popup->GetComboBox()->addItem("<none>");
-						else
-							popup->GetComboBox()->addItems(list);
-
-						if (line->text().isEmpty()) {
-							popup->GetComboBox()->setCurrentIndex(0);
-						} else {
-							popup->GetComboBox()->setCurrentText(line->text());
+						for (auto term : list) {
+							if (term && term().tag.compare(line->text(), Qt::CaseInsensitive) == 0)
+								current = list.indexOf(term);
 						}
 
-						if (popup->exec() == QDialog::Accepted)
-						{
+						if (auto result = AgxSimpleDialog::GetDropDown(this, "Select Entry", "", list, current, false)) {
 							QJsonObject input;
-							input["value"] = popup->GetValue();
+							input["value"] = result().tag;
 							SendInsertPropertySheetDataCommand(QStringListToQJsonObject(keyPath, input));
 						}
-						popup->deleteLater();
+
 				  });
 
 	Q_EMIT BroadcastWidth(size().width());
@@ -102,7 +97,7 @@ QList<AgxLineEdit*> AgxNodePropertiesWidget::CreatePropertyEntries(QVector<AgxPr
 
 		if (dataRefItem.columnType == AgxColumnTypes::CustomDropDown)
 		{
-			SetUpCustomDropDown(output, dataRefItem.customDropDownList, {key});
+			SetUpCustomDropDown(output, dataRefItem.CustomDropDownList(), {key});
 		}
 
 		QHBoxLayout* containerLayout = new QHBoxLayout();
@@ -208,7 +203,7 @@ QList<AgxLineEdit*> AgxNodePropertiesWidget::CreatePropertyEntries(QVector<AgxPr
 
 		if (dataRefItem.columnType == AgxColumnTypes::CustomDropDown)
 		{
-			SetUpCustomDropDown(output, dataRefItem.customDropDownList, { key });
+			SetUpCustomDropDown(output, dataRefItem.CustomDropDownList(), { key });
 		}
 
 		QHBoxLayout* containerLayout = new QHBoxLayout();
@@ -318,7 +313,7 @@ QList<AgxLineEdit*> AgxNodePropertiesWidget::CreatePropertyEntries(QVector<AgxPr
 
 		if (dataRefItem.columnType == AgxColumnTypes::CustomDropDown)
 		{
-			SetUpCustomDropDown(output, dataRefItem.customDropDownList, path);
+			SetUpCustomDropDown(output, dataRefItem.CustomDropDownList(), path);
 		}
 
 		QHBoxLayout* containerLayout = new QHBoxLayout();
@@ -503,7 +498,7 @@ QList<QLabel*> AgxNodePropertiesWidget::CreateHiddenEntries(QMap<TermRef, QPair<
 
 QLabel* AgxNodePropertiesWidget::CreateGuidLabel(const QUuid* value, AgxNode* signalSender, bool split)
 {
-	QLabel* output = new QLabel(value->toString());
+	QLabel* output = new QLabel(value->toString(QUuid::StringFormat::WithoutBraces));
 
 	//bool flip = _hiddenRightFormLayout->rowCount() < _hiddenLeftFormLayout->rowCount();
 	if (split && !_nextEntryLeft)
@@ -574,26 +569,39 @@ ModifiedPushButton* AgxNodePropertiesWidget::CreateFlagEntry(const QString& titl
 	return button;
 }
 
-AgxLineEdit* AgxNodePropertiesWidget::CreateSimpleLineEdit(QString* sourceData, AgxPort* signalSender, const QString& label, bool split, QStringList path)
+AgxLineEdit* AgxNodePropertiesWidget::CreateSimpleLineEdit(QString* sourceData, AgxPort* signalSender, TermRef label, bool split, QStringList path)
 {
 	AgxLineEdit* output = AgxWidgetUtil::CreateEntry(AgxColumnTypes::BasicString, path, this);
 	output->blockSignals(true);
 	output->setText(*sourceData);
 	output->blockSignals(false);
+	
+	QLabel* labelObj = new QLabel(QString());
+
+	if (label) {
+		labelObj->setText(label().translation);
+	}
+
 	//bool flip = _hiddenRightFormLayout->rowCount() < _hiddenLeftFormLayout->rowCount();
 	if (split && !_nextEntryLeft)
 	{
-		_hiddenRightFormLayout->addRow(label, output);
+		_hiddenRightFormLayout->addRow(labelObj, output);
 		_nextEntryLeft = true;
 	} else {
-		_hiddenLeftFormLayout->addRow(label, output);
+		_hiddenLeftFormLayout->addRow(labelObj, output);
 		_nextEntryLeft = false;
 	}
 	connect(signalSender, &AgxPort::PropertySheetUpdated, output, [output, sourceData]() {
-		output->blockSignals(true);
-		output->setText(*sourceData);
-		output->blockSignals(false);
-			});
+							output->blockSignals(true);
+							output->setText(*sourceData);
+							output->blockSignals(false);
+																						 });
+
+	connect(this, &AgxNodePropertiesWidget::LanguageChanged, labelObj, [labelObj, label]() { 
+							if (label) {
+								labelObj->setText(label().translation);
+							}
+																						   });
 
 	Q_EMIT BroadcastWidth(size().width());
 	return output;

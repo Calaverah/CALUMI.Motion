@@ -28,11 +28,11 @@ namespace SFBGS {
 		std::shared_ptr<AgxPort> _AddPort(AgxPortType portType, AgxPortIndex index, QJsonObject data) override;
 
 	private:
-		QStringList _TypeList = { 
-			"Start Orient",
-			"End Orient",
-			"Turn Animation",
-			"Turn Animation Modify Translation"
+		QList<TermRef> _TypeList = { 
+			&AgxDictionary::StartOrient,
+			&AgxDictionary::EndOrient,
+			&AgxDictionary::TurnAnimation,
+			&AgxDictionary::TurnAnimationModifyTranslation
 		};
 	};
 }

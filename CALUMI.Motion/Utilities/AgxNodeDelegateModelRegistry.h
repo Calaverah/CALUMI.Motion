@@ -1,12 +1,4 @@
 #pragma once
-#pragma once
-
-//#include <QtNodes/internal/Export.hpp
-//#include <QtNodes/internal/NodeData.hpp
-//#include <QtNodes/internal/NodeDelegateModel.hpp
-//#include <QtNodes/internal/QStringStdHash.hpp
-
-//#include <QtCore/QString>
 
 #include <functional>
 #include <memory>

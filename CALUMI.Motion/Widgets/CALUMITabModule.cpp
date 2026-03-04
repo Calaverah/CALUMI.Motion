@@ -42,12 +42,12 @@ void CALUMITabModule::CALUMITabModuleConstructorHelper(QWidget* content, QWidget
 	_rightScrollArea->setVerticalScrollBarPolicy(Qt::ScrollBarAsNeeded);
 	_rightScrollArea->setWidgetResizable(true);
 
-	Q_EMIT statusUpdate(0.05, "Building Property Sidebar");
+	Q_EMIT statusUpdate(0.05f, "Building Property Sidebar");
 	//QApplication::processEvents();
 
 	ResetSideBar_Right();
 
-	Q_EMIT statusUpdate(0.15, "Creating Tab Widgets");
+	Q_EMIT statusUpdate(0.15f, "Creating Tab Widgets");
 	//QApplication::processEvents();
 
 	_centralLayout->addWidget(_leftAreaParent);

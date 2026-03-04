@@ -2,13 +2,11 @@
 #include "AgxNodeGraphicsObject.h"
 #include "Utilities/UndoRedoCommands.h"
 #pragma warning(push,0)
-//#include "QtNodes/internal/NodeConnectionInteraction.hpp
-//#include "QtNodes/internal/AbstractGraphModel.hpp
 #include <QGraphicsEffect>
-#include <QtWidgets/QtWidgets>
-#include "Utilities/AgxConnectionIdUtils.h"
-//#include <QtNodes/internal/AbstractNodePainter.hpp
+#include <QtWidgets>
 #pragma warning(pop)
+
+#include "Utilities/AgxConnectionIdUtils.h"
 #include "Widgets/AgxNodePropertiesWidget.h"
 #include "Painter/AgxNodePainter.h"
 #include "Models/AgxNodeConnectionInteraction.h"

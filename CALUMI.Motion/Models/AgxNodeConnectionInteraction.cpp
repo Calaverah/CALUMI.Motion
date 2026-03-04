@@ -1,9 +1,9 @@
 #include "stdafx.h"
 #include "AgxNodeConnectionInteraction.h"
 #pragma warning(push,0)
-//#include "QtNodes/internal/ConnectionGraphicsObject.hpp
-//#include "QtNodes/internal/NodeGraphicsObject.hpp
-//#include "QtNodes/internal/BasicGraphicsScene.hpp
+
+
+
 #include "Utilities/AgxConnectionIdUtils.h"
 #pragma warning(pop)
 #include "Painter/AgxNodeGeometry.h"

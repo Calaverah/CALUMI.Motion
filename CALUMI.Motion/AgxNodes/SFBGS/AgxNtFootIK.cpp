@@ -17,7 +17,7 @@ namespace SFBGS {
         _PropertyEntries.push_back(AgxPropertyEntryDefinition(&AgxDictionary::KneeRBoneName,   "", AgxColumnTypes::BasicString));
         _PropertyEntries.push_back(AgxPropertyEntryDefinition(&AgxDictionary::AnkleRBoneName,  "", AgxColumnTypes::BasicString));
         _PropertyEntries.push_back(AgxPropertyEntryDefinition(&AgxDictionary::ToeRBoneName,    "", AgxColumnTypes::BasicString));
-        _PropertyEntries.push_back(AgxPropertyEntryDefinition(&AgxDictionary::Axis, _AxisList.at(0), AgxColumnTypes::CustomDropDown, _AxisList));
+        _PropertyEntries.push_back(AgxPropertyEntryDefinition(&AgxDictionary::Axis, _AxisList.at(0)().tag, AgxColumnTypes::CustomDropDown, _AxisList));
         _PropertyEntries.push_back(AgxPropertyEntryDefinition(&AgxDictionary::AngleLMultiplier, "-1", AgxColumnTypes::BasicInteger));
         _PropertyEntries.push_back(AgxPropertyEntryDefinition(&AgxDictionary::AngleRMultiplier, "-1", AgxColumnTypes::BasicInteger));
         _PropertyEntries.push_back(AgxPropertyEntryDefinition(&AgxDictionary::MinBendAngle, "30", AgxColumnTypes::BasicFloat));

@@ -6,7 +6,7 @@ namespace SFBGS {
     {
         _nameProperty = QStringLiteral("Assign Variable");
         _PropertyEntries.push_back(AgxPropertyEntryDefinition(&AgxDictionary::Name, "Assign Variable", AgxColumnTypes::BasicString));
-        _PropertyEntries.push_back(AgxPropertyEntryDefinition(&AgxDictionary::Operation, "Assign", AgxColumnTypes::CustomDropDown,{"Assign","Increment","Decrement"}));
+        _PropertyEntries.push_back(AgxPropertyEntryDefinition(&AgxDictionary::Operation, _dropDownList.at(0)().tag, AgxColumnTypes::CustomDropDown, _dropDownList));
         _PropertyEntries.push_back(AgxPropertyEntryDefinition(&AgxDictionary::OnlyAssignOnce, "True", AgxColumnTypes::BasicBool));
         _PropertyEntries.push_back(AgxPropertyEntryDefinition(&AgxDictionary::SyncOnlyTransitionOut, "False", AgxColumnTypes::BasicBool));
 

@@ -17,7 +17,7 @@ AgxPort_SFBGS::~AgxPort_SFBGS()
 void AgxPort_SFBGS::SetName(const QString& str) { 
 	name = str;
 	if(_ContentWidget)
-		_ContentWidget->SetTitle(std::format("[Port] {}", Caption().toStdString()).c_str());
+		_ContentWidget->SetTitle(QString("[Port] %1").arg(Caption()));
 }
 
 void AgxPort_SFBGS::InsertData(const QJsonObject& data)
@@ -43,13 +43,13 @@ void AgxPort_SFBGS::InsertData(const QJsonObject& data)
 
 	if (data.contains("property-entries-enabled"))
 	{
-		_PropertyEntriesEnabled = _stricmp("True", data["property-entries-enabled"].toString().toStdString().c_str()) == 0 ? true : false;
+		_PropertyEntriesEnabled = data["property-entries-enabled"].toString().compare("True") == 0 ? true : false;
 	}
 
 	if (data.contains("blend-input")) 
 	{
 		QJsonObject blendInput = data["blend-input"].toObject();
-		for (size_t i = 0; i < blendInput.size(); i++)
+		for (qsizetype i = 0; i < blendInput.size(); i++)
 		{
 			bool ok = false;
 			int idx = blendInput.keys().at(i).toInt(&ok);
@@ -102,7 +102,7 @@ void AgxPort_SFBGS::Load(const QJsonObject& data) {
 		}
 
 		int count = _BlendInput->getDataRowCount();
-		while (count < maxIdx + 1) {
+		while (count < static_cast<size_t>(maxIdx) + 1) {
 			_BlendInput->addDataRow(count);
 			count = _BlendInput->getDataRowCount();
 		}
@@ -184,8 +184,8 @@ QJsonObject AgxPort_SFBGS::Save() const {
 		QJsonObject blendInput;
 		for (size_t idx = 0; idx < _BlendInput->rowCount(); idx++) {
 			QJsonObject obj;
-			obj["range"] = _BlendInput->getRangeValue(idx);
-			obj["weight"] = _BlendInput->getWeightValue(idx);
+			obj["range"] = _BlendInput->getRangeValue(static_cast<int>(idx));
+			obj["weight"] = _BlendInput->getWeightValue(static_cast<int>(idx));
 			blendInput[std::to_string(idx).c_str()] = obj;
 		}
 		output["blend-input"] = blendInput;
@@ -229,7 +229,7 @@ QWidget* AgxPort_SFBGS::GetEmbeddedWidget()
 		connect(this, &AgxPort::PropertySheetUpdated, _ContentWidget, [this]() { _ContentWidget->SetTitle(std::format("[Port] {}", Caption().toStdString()).c_str()); });
 		
 		AgxNodePropertiesWidget* inputName = new AgxNodePropertiesWidget();
-		auto nameLine = inputName->CreateSimpleLineEdit(&name, this, "", false, { "in-ports" , std::to_string(_portId).c_str(), "name"});
+		auto nameLine = inputName->CreateSimpleLineEdit(&name, this, nullptr, false, { "in-ports" , std::to_string(_portId).c_str(), "name"});
 		QCheckBox tempBox;
 		inputName->setContentsMargins(0, 0, tempBox.sizeHint().width() + 11, 0);
 		nameLine->setPlaceholderText("Name");

@@ -7,7 +7,7 @@ namespace SFBGS {
         _nameProperty = QStringLiteral("Tag Propagation Node");
         _PropertyEntries.push_back(AgxPropertyEntryDefinition(&AgxDictionary::Name, "Tag Propagation", AgxColumnTypes::BasicString));
         _PropertyEntries.push_back(AgxPropertyEntryDefinition(&AgxDictionary::TagSyncSystem, "", AgxColumnTypes::BasicString));
-        _PropertyEntries.push_back(AgxPropertyEntryDefinition(&AgxDictionary::TypeofPropagation, _PropList.at(1), AgxColumnTypes::CustomDropDown, _PropList));
+        _PropertyEntries.push_back(AgxPropertyEntryDefinition(&AgxDictionary::TypeofPropagation, _PropList.at(1)().tag, AgxColumnTypes::CustomDropDown, _PropList));
 
         _BlockOrder = { &AgxDictionary::EnterEvents, &AgxDictionary::ExitEvents };
     }

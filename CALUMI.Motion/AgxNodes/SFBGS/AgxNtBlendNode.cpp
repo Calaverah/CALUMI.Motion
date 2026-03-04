@@ -8,7 +8,7 @@ namespace SFBGS {
 
         _PropertyEntries.push_back(AgxPropertyEntryDefinition(&AgxDictionary::Name, "", AgxColumnTypes::BasicString));
         _PropertyEntries.push_back(AgxPropertyEntryDefinition(&AgxDictionary::VariableName, "", AgxColumnTypes::CustomFloat));
-        _PropertyEntries.push_back(AgxPropertyEntryDefinition(&AgxDictionary::VariableType, _VariableTypeList.at(0), AgxColumnTypes::CustomDropDown,_VariableTypeList));
+        _PropertyEntries.push_back(AgxPropertyEntryDefinition(&AgxDictionary::VariableType, _VariableTypeList.at(0)().tag, AgxColumnTypes::CustomDropDown, _VariableTypeList));
         _PropertyEntries.push_back(AgxPropertyEntryDefinition(&AgxDictionary::SyncVariable, "", AgxColumnTypes::CustomInteger));
         _PropertyEntries.push_back(AgxPropertyEntryDefinition(&AgxDictionary::InputLockTime, "-1", AgxColumnTypes::BasicFloat));
         _PropertyEntries.push_back(AgxPropertyEntryDefinition(&AgxDictionary::RangeMin, "0", AgxColumnTypes::BasicFloat));

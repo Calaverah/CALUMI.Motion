@@ -24,10 +24,10 @@ namespace SFBGS {
 
 
 	private:
-		QStringList _dropdown = { 
-			"Walk",		//0
-			//unk		//1 - jog?
-			"Run" };	//2
+		QList<TermRef> _dropdown = { 
+			&AgxDictionary::Walk,					//0
+			&AgxDictionary::Jog,					//1 - unconfirmed
+			&AgxDictionary::Run };					//2
 
 		//non instanced only once on graph type 0. Never seen on graph type 1
 	};

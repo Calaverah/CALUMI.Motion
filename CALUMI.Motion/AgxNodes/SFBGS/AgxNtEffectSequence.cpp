@@ -17,7 +17,7 @@ namespace SFBGS {
         _PropertyEntries.push_back(AgxPropertyEntryDefinition(&AgxDictionary::SequenceCurrentFrameIndex, "", AgxColumnTypes::CustomInteger));
         _PropertyEntries.push_back(AgxPropertyEntryDefinition(&AgxDictionary::SpeedMultiplier, "", AgxColumnTypes::CustomFloat));
         _PropertyEntries.push_back(AgxPropertyEntryDefinition(&AgxDictionary::Weight, "", AgxColumnTypes::CustomFloat));
-        _PropertyEntries.push_back(AgxPropertyEntryDefinition(&AgxDictionary::BlendModeFunction, _ModeList.at(0), AgxColumnTypes::CustomDropDown, _ModeList));
+        _PropertyEntries.push_back(AgxPropertyEntryDefinition(&AgxDictionary::BlendModeFunction, _ModeList.at(0)().tag, AgxColumnTypes::CustomDropDown, _ModeList));
         _PropertyEntries.push_back(AgxPropertyEntryDefinition(&AgxDictionary::BlendOutFrames, "0", AgxColumnTypes::BasicInteger));
         _PropertyEntries.push_back(AgxPropertyEntryDefinition(&AgxDictionary::HasLoopingSegment, "False", AgxColumnTypes::BasicBool));
         _PropertyEntries.push_back(AgxPropertyEntryDefinition(&AgxDictionary::InitializeSequenceOnLoad, "False", AgxColumnTypes::BasicBool));
@@ -67,7 +67,7 @@ namespace SFBGS {
 
         for (auto& entry : _PropertyEntries)
         {
-            if (entry.Tag() == "Blend Mode Function" && entry.value != _ModeList.at(0))
+            if ((entry.Tag().compare("Blend Mode Function") == 0) && entry.value != _ModeList.at(0)().tag)
             {
                 if (validState.state() == AgxNodeValidationState::State::Valid) validState._state = AgxNodeValidationState::State::Warning;
 

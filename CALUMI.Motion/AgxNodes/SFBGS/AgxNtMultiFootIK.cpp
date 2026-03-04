@@ -9,7 +9,7 @@ namespace SFBGS {
 
         
         _PropertyEntries.push_back(AgxPropertyEntryDefinition(&AgxDictionary::Name, "", AgxColumnTypes::BasicString));
-        _PropertyEntries.push_back(AgxPropertyEntryDefinition(&AgxDictionary::BendAxis, _AxisList.at(0), AgxColumnTypes::CustomDropDown, _AxisList));
+        _PropertyEntries.push_back(AgxPropertyEntryDefinition(&AgxDictionary::BendAxis, _AxisList.at(0)().tag, AgxColumnTypes::CustomDropDown, _AxisList));
         _PropertyEntries.push_back(AgxPropertyEntryDefinition(&AgxDictionary::MinBendAngle, "30", AgxColumnTypes::BasicFloat));
         _PropertyEntries.push_back(AgxPropertyEntryDefinition(&AgxDictionary::MaxBendAngle, "90", AgxColumnTypes::BasicFloat));
         _PropertyEntries.push_back(AgxPropertyEntryDefinition(&AgxDictionary::FinalBoneAxisIndex, "0", AgxColumnTypes::BasicInteger));

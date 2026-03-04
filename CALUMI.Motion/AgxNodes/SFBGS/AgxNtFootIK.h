@@ -28,7 +28,7 @@ namespace SFBGS {
 		std::shared_ptr<AgxPort> _AddPort(AgxPortType portType, AgxPortIndex index, QJsonObject data) override;
 
 	private:
-		QStringList _AxisList = { "X","Y","Z" };
+		QList<TermRef> _AxisList = { &AgxDictionary::X,&AgxDictionary::Y,&AgxDictionary::Z };
 
 	};
 }

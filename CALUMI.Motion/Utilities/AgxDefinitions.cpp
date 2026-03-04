@@ -2395,7 +2395,7 @@ unsigned int AgxPropertyBlockData::GetColumnCount() const
 
 void AgxPropertyBlockData::insertPropertyBlockData(const QJsonObject& data)
 {
-	int inputSize = 0;
+	unsigned int inputSize = 0;
 	for (int i = 0; i < data.size(); i++)
 	{
 		bool ok;
@@ -2439,7 +2439,12 @@ QJsonObject AgxPropertyBlockData::getPropertyBlockData(bool cleared) const
 		{
 			QJsonObject entry;
 			entry["value"] = data.at(i).at(j).Value;
-			entry["type"] = GetAgxColumnTypeAsString(data.at(i).at(j).Type);
+			
+			if(GetColumnType(i) == AgxColumnTypes::BasicMultiVar || GetColumnType(i) == AgxColumnTypes::CustomMultiVar)
+			{
+				entry["type"] = GetAgxColumnTypeAsString(data.at(i).at(j).Type);
+			}
+
 			row[std::to_string(j).c_str()] = entry;
 		}
 		output[std::to_string(i).c_str()] = row;
@@ -2531,7 +2536,7 @@ void AgxPropertyBlockData::SetRow(int index, const QStringList& data)
 	QList<Entry> input = GetDefaultRow();
 	auto count = data.size() > input.size() ? input.size() : data.size();
 
-	for (size_t i = 0; i < count; i++) {
+	for (qsizetype i = 0; i < count; i++) {
 		input[i].Value = data.at(i);
 	}
 

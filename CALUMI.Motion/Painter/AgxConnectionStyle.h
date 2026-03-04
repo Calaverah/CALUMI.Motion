@@ -38,15 +38,15 @@ public:
     bool useDataDefinedColors() const;
 
 private:
-    QColor ConstructionColor;
-    QColor NormalColor;
-    QColor SelectedColor;
-    QColor SelectedHaloColor;
-    QColor HoveredColor;
+    QColor ConstructionColor = QColor(Qt::gray);
+    QColor NormalColor = QColor(Qt::darkCyan);
+    QColor SelectedColor = QColor(100, 100, 100);
+    QColor SelectedHaloColor = QColor(Qt::cyan);
+    QColor HoveredColor = QColor(Qt::lightGray);
 
-    float LineWidth;
-    float ConstructionLineWidth;
-    float PointDiameter;
+    float LineWidth = 3.0f;
+    float ConstructionLineWidth = 2.0f;
+    float PointDiameter = 10.0f;
 
-    bool UseDataDefinedColors;
+    bool UseDataDefinedColors = false;
 };

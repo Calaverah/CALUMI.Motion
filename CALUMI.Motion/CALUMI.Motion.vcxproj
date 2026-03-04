@@ -39,11 +39,13 @@
     <QtInstall>6.10.1_msvc2022_64</QtInstall>
     <QtModules>core;gui;widgets</QtModules>
     <QtBuildConfig>debug</QtBuildConfig>
+    <QtDeploy>false</QtDeploy>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x64'" Label="QtSettings">
     <QtInstall>6.10.1_msvc2022_64</QtInstall>
     <QtModules>core;gui;widgets</QtModules>
     <QtBuildConfig>release</QtBuildConfig>
+    <QtDeploy>true</QtDeploy>
   </PropertyGroup>
   <Target Name="QtMsBuildNotFound" BeforeTargets="CustomBuild;ClCompile" Condition="!Exists('$(QtMsBuild)\qt.targets') or !Exists('$(QtMsBuild)\qt.props')">
     <Message Importance="High" Text="QtMsBuild: could not locate qt.targets, qt.props; project may not build correctly." />
@@ -227,6 +229,7 @@
     <ClCompile Include="Utilities\SettingsRegistry.cpp" />
     <ClCompile Include="Widgets\Blend\AgxBlendInputView.cpp" />
     <ClCompile Include="Widgets\Dialog\AgxProgressDialog.cpp" />
+    <ClCompile Include="Widgets\Dialog\AgxSimpleDialog.cpp" />
     <ClCompile Include="Widgets\Logger\AgxLogger.cpp" />
     <ClCompile Include="Widgets\Settings\SettingsDialog.cpp" />
     <ClCompile Include="Widgets\SFBGS\SFBGS_GraphPropertiesDialogWidget.cpp" />
@@ -368,6 +371,7 @@
     <QtMoc Include="Widgets\Dialog\AgxProgressDialog.h" />
     <ClInclude Include="Utilities\SettingsRegistry.h" />
     <ClInclude Include="version.h" />
+    <QtMoc Include="Widgets\Dialog\AgxSimpleDialog.h" />
     <ClInclude Include="Widgets\IAgxEmbedSceneData.h" />
     <QtMoc Include="Widgets\MultiVariableDialog.h" />
     <QtMoc Include="Widgets\FilteredDropDownDialog.h" />

@@ -9,7 +9,7 @@ namespace SFBGS {
         _PropertyEntries.push_back(AgxPropertyEntryDefinition(&AgxDictionary::Name, "", AgxColumnTypes::BasicString));
         _PropertyEntries.push_back(AgxPropertyEntryDefinition(&AgxDictionary::SequenceName, "", AgxColumnTypes::BasicString));
         _PropertyEntries.push_back(AgxPropertyEntryDefinition(&AgxDictionary::WeightorVariable, "", AgxColumnTypes::CustomFloat));
-        _PropertyEntries.push_back(AgxPropertyEntryDefinition(&AgxDictionary::BlendModeFunction, _BlendList.at(0), AgxColumnTypes::CustomDropDown, _BlendList));
+        _PropertyEntries.push_back(AgxPropertyEntryDefinition(&AgxDictionary::BlendModeFunction, _BlendList.at(0)().tag, AgxColumnTypes::CustomDropDown, _BlendList));
         _PropertyEntries.push_back(AgxPropertyEntryDefinition(&AgxDictionary::TimePercent, "", AgxColumnTypes::CustomFloat));
         _PropertyEntries.push_back(AgxPropertyEntryDefinition(&AgxDictionary::BlendOutFrames, "0", AgxColumnTypes::BasicInteger));
         _PropertyEntries.push_back(AgxPropertyEntryDefinition(&AgxDictionary::SyncOnlyTransitionOut, "False", AgxColumnTypes::BasicBool));

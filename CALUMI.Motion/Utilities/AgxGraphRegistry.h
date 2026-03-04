@@ -1,7 +1,7 @@
 #pragma once
 
 #pragma warning(push,0)
-//#include "QtNodes/internal/NodeDelegateModelRegistry.hpp
+
 #pragma warning(pop)
 
 #include "Utilities/AgxDefinitions.h"

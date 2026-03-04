@@ -420,6 +420,8 @@ static AgxColumnTypes GetTypeRequest() {
 	//else if (button == strButton) return AgxColumnTypes::BasicString;
 	else if (button == boolButton) return AgxColumnTypes::BasicBool;
 	else if (button == vecButton) return AgxColumnTypes::BasicVector;
+
+	return AgxColumnTypes::Default;
 }
 
 AgxLineEdit* AgxWidgetUtil::CreateBasicMuliVarEntry(const QStringList& keyPath, QObject* target, bool autoConnect)

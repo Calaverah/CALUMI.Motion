@@ -1,8 +1,8 @@
 #include "stdafx.h"
 #include "CALUMIMotion.h"
 #pragma warning(push,0)
-//#include "QtNodes/internal/NodeDelegateModelRegistry.hpp
-//#include "QtNodes/internal/Definitions.hpp
+
+//
 #include <QtWidgets/QApplication>
 #pragma warning(pop)
 #include <AgxNodes/AgxNodes>
@@ -21,6 +21,8 @@
 int main(int argc, char* argv[])
 {
     CALUMIMotionApplication app(argc, argv);
+
+    //app.setStyle("windows");
 
     QPixmap pixmap(":/Images/Resources/NASA_ISS_LongExposure.png");
     QSplashScreen splash = QSplashScreen(pixmap);

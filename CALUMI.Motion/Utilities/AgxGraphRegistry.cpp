@@ -44,7 +44,7 @@ AgxGraphDefinition AgxGraphRegistry::SFBGS_BuildGraph_StateMachine()
 
 	output._hasDefault = true;
 
-	output._defaultEntries.push_back(AgxPropertyEntryDefinition(&AgxDictionary::StartSelectionMethod, "", AgxColumnTypes::CustomDropDown,{"Default","Sync","Variable"}));
+	output._defaultEntries.push_back(AgxPropertyEntryDefinition(&AgxDictionary::StartSelectionMethod, AgxDictionary::Default().tag, AgxColumnTypes::CustomDropDown, {&AgxDictionary::Default,&AgxDictionary::Sync,&AgxDictionary::Variable}));
 	output._defaultEntries.push_back(AgxPropertyEntryDefinition(&AgxDictionary::StartSelectionVariable, "", AgxColumnTypes::CustomInteger));
 	output._defaultEntries.push_back(AgxPropertyEntryDefinition(&AgxDictionary::MaintainSyncSelectionVariableWhenExiting, "False", AgxColumnTypes::BasicBool));
 	output._defaultEntries.push_back(AgxPropertyEntryDefinition(&AgxDictionary::UpdateWhileInactive, "False", AgxColumnTypes::BasicBool));

@@ -30,10 +30,10 @@ namespace SFBGS {
 		std::shared_ptr<AgxPort> _AddPort(AgxPortType portType, AgxPortIndex index, QJsonObject data) override;
 
 	private:
-		QStringList _BlendList = {
-			"None",
-			"Weight",
-			"One Minus Weight"
+		QList<TermRef> _BlendList = {
+			&AgxDictionary::None,
+			&AgxDictionary::Weight,
+			&AgxDictionary::OneMinusWeight
 		};
 		
 	};

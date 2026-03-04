@@ -21,19 +21,19 @@ namespace SFBGS {
             AgxPropertyBlockData whileMovingTags({ 
                 AgxPropertyEntryDefinition(&AgxDictionary::BlankEntry, "", AgxColumnTypes::BasicString),
                 AgxPropertyEntryDefinition(&AgxDictionary::Tags,"",AgxColumnTypes::BasicString), 
-                AgxPropertyEntryDefinition(&AgxDictionary::SpeedClassification,_dropdown.at(0),AgxColumnTypes::CustomDropDown,_dropdown) //note walk index = 0, run = 2 and 1 is unused and unknown. Maybe 1 is Jog. Who knows
+                AgxPropertyEntryDefinition(&AgxDictionary::SpeedClassification,_dropdown.at(0)().tag,AgxColumnTypes::CustomDropDown,_dropdown) 
                                                }, nullptr);
 
             AgxPropertyBlockData moveToStopTags({
                 AgxPropertyEntryDefinition(&AgxDictionary::BlankEntry, "", AgxColumnTypes::BasicString),
                 AgxPropertyEntryDefinition(&AgxDictionary::Tags,"",AgxColumnTypes::BasicString),
-                AgxPropertyEntryDefinition(&AgxDictionary::SpeedClassification,_dropdown.at(0),AgxColumnTypes::CustomDropDown,_dropdown) //note walk index = 0, run = 2 and 1 is unused and unknown. Maybe 1 is Jog. Who knows
+                AgxPropertyEntryDefinition(&AgxDictionary::SpeedClassification,_dropdown.at(0)().tag,AgxColumnTypes::CustomDropDown,_dropdown) 
                                                  }, nullptr);
 
             AgxPropertyBlockData standToMoveTags({
                 AgxPropertyEntryDefinition(&AgxDictionary::BlankEntry, "", AgxColumnTypes::BasicString),
                 AgxPropertyEntryDefinition(&AgxDictionary::Tags,"",AgxColumnTypes::BasicString),
-                AgxPropertyEntryDefinition(&AgxDictionary::SpeedClassification,_dropdown.at(0),AgxColumnTypes::CustomDropDown,_dropdown) //note walk index = 0, run = 2 and 1 is unused and unknown. Maybe 1 is Jog. Who knows
+                AgxPropertyEntryDefinition(&AgxDictionary::SpeedClassification,_dropdown.at(0)().tag,AgxColumnTypes::CustomDropDown,_dropdown) 
                                                 }, nullptr);
             
 

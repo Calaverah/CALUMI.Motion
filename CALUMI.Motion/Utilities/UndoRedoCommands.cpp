@@ -875,6 +875,8 @@ void AddRowToPropertyBlockDataCommand::redo()
 
     if (_model)
         _scene->agxGraphModel().addPropertyBlockEntry(_block, _index);
+
+    qDebug() << "Scene: " << _scene<< " Add Row Command-> id: " << _nodeId << " block: " << _block << " index: " << _index;
 }
 
 RemoveRowFromPropertyBlockDataCommand::RemoveRowFromPropertyBlockDataCommand(AgxGraphicsScene* scene, const AgxNodeId& nodeId, const QString& block, int index) : _scene(scene), _model(nullptr), _nodeId(nodeId), _block(block), _index(index)
@@ -1030,6 +1032,7 @@ AgxSetGraphCategory::AgxSetGraphCategory(AgxGraphModel* model, const QString& ne
 
     _oldCat = _model->getGraphCategory();
     setText(std::format("Set Graph Category: {} -> {}", _oldCat.toStdString().c_str(), _newCat.toStdString().c_str()).c_str());
+    qDebug() << text();
 }
 
 void AgxSetGraphCategory::undo()

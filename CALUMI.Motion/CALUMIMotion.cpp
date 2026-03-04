@@ -10,7 +10,7 @@
 #include "Widgets/MultiVariableDialog.h"
 #include "Widgets/CALUMITabModule.h"
 #include "Widgets/SFBGS/SFBGS_GraphPropertiesDialogWidget.h"
-//#include <QOpenGLWidget>
+
 #include <Widgets/Dialog/AgxProgressDialog.h>
 #include <Utilities/SettingsRegistry.h>
 #include "Application/CALUMIMotionApplication.h"

@@ -1,6 +1,8 @@
 #include "stdafx.h"
 #include "SFBGS_GraphPropertiesDialogWidget.h"
 #include "Utilities/UndoRedoCommands.h"
+#include "Widgets/Dialog/AgxSimpleDialog.h"
+#include "Utilities/SettingsRegistry.h"
 
 SFBGS_GraphPropertiesDialogWidget::SFBGS_GraphPropertiesDialogWidget(AgxGraphicsScene& scene, QWidget* parent)
 {
@@ -10,10 +12,28 @@ SFBGS_GraphPropertiesDialogWidget::SFBGS_GraphPropertiesDialogWidget(AgxGraphics
 	QHBoxLayout* graphCategoryLayout = new QHBoxLayout();
 	QLabel* graphCategoryLabel = new QLabel("Category: ");
 	QComboBox* graphCategoryCombo = new QComboBox();
-	graphCategoryCombo->insertItems(0, { "<none>","<custom>" });
-	auto tempList = _categoryList.values();
-	tempList.sort();
-	graphCategoryCombo->insertItems(2, tempList);
+	graphCategoryCombo->insertItems(0, { "<none>" });
+	QString comboBoxValue = graphCategoryCombo->currentText();
+
+	QSet<QString> catSet = _categoryList;
+	catSet.unite(SettingsRegistry::GetInstance().GetCustomCategories(AgxGameType::SFBGS, true));
+	QString currentCategory = scene.agxGraphModel().getGraphCategory();
+
+	if(currentCategory.compare("NONE",Qt::CaseInsensitive) != 0 && currentCategory.compare("<none>",Qt::CaseInsensitive) != 0)
+	{
+		if (!catSet.contains(currentCategory)) {
+			SettingsRegistry::GetInstance().AddCustomCatgeory(currentCategory, AgxGameType::SFBGS);
+			catSet.insert(currentCategory);
+		}
+		comboBoxValue = currentCategory;
+	}
+
+	QStringList comboList = catSet.values();
+	comboList.sort(Qt::CaseInsensitive);
+
+	graphCategoryCombo->insertItems(1, comboList);
+	graphCategoryCombo->setCurrentText(currentCategory);
+
 	graphCategoryCombo->setMaximumHeight(graphCategoryLabel->height()-5);
 	graphCategoryLayout->addWidget(graphCategoryLabel, 1, Qt::AlignLeft | Qt::AlignBottom);
 	graphCategoryLayout->addWidget(graphCategoryCombo, 0, Qt::AlignLeft | Qt::AlignBottom);
@@ -44,84 +64,43 @@ SFBGS_GraphPropertiesDialogWidget::SFBGS_GraphPropertiesDialogWidget(AgxGraphics
 		{
 			bool res = false;
 			int current = scenePtr->agxGraphModel().getGraphType() == AgxGraphType::SFBGS_Default ? 1 : 0;
-			QString result = QInputDialog::getItem(this, "Graph Types", "Select New Type", { "Default","State Machine" }, current, false, &res);
+			//QString result = QInputDialog::getItem(this, "Graph Types", "Select New Type", { "Default","State Machine" }, current, false, &res);
+
+			TermRef refResult = AgxSimpleDialog::GetDropDown(this, tr("Graph Types"), tr("Select New Graph Type"), {&AgxDictionary::Default, &AgxDictionary::StateMachine}, current, false, &res);
+
 			if (res) {
-				if (result == "Default" && scenePtr->agxGraphModel().getGraphType() != AgxGraphType::SFBGS_Default) { scenePtr->undoStack().push(new SetNewGraphPropertiesCommand(scenePtr, AgxGraphType::SFBGS_Default)); }
-				else if (result == "State Machine" && scenePtr->agxGraphModel().getGraphType() != AgxGraphType::SFBGS_StateMachine) { scenePtr->undoStack().push(new SetNewGraphPropertiesCommand(scenePtr, AgxGraphType::SFBGS_StateMachine)); }
+				if (refResult == &AgxDictionary::Default && scenePtr->agxGraphModel().getGraphType() != AgxGraphType::SFBGS_Default) { 
+					scenePtr->undoStack().push(new SetNewGraphPropertiesCommand(scenePtr, AgxGraphType::SFBGS_Default)); 
+				} 
+				else if (refResult == &AgxDictionary::StateMachine && scenePtr->agxGraphModel().getGraphType() != AgxGraphType::SFBGS_StateMachine) { 
+					scenePtr->undoStack().push(new SetNewGraphPropertiesCommand(scenePtr, AgxGraphType::SFBGS_StateMachine)); 
+				}
 			}
 			}
 			});
 
-	QString currentCategory = scene.agxGraphModel().getGraphCategory();
-	if(currentCategory != "NONE")
-	{
-		if (!_categoryList.contains(currentCategory))
-		{
-			_categoryList.insert(currentCategory);
-			graphCategoryCombo->clear();
-			graphCategoryCombo->insertItems(0, { "<none>","<custom>" });
-			auto tempList = _categoryList.values();
-			tempList.sort();
-			graphCategoryCombo->insertItems(2, tempList);
-		}
-
-		graphCategoryCombo->setCurrentText(currentCategory);
-	}
 
 	AgxGraphModel* modelRef = &scene.agxGraphModel();
 	if(modelRef)
 		connect(modelRef, &AgxGraphModel::PropertySheetUpdated, graphCategoryCombo, [this, modelRef, graphCategoryCombo]() {
-		QString text = modelRef->getGraphCategory();
-				if (text == "NONE" || text == "<custom>")
-					text = "<none>";
-				graphCategoryCombo->blockSignals(true);
-				graphCategoryCombo->setCurrentText(text);
-				graphCategoryCombo->blockSignals(false);
-			});
+										QString text = modelRef->getGraphCategory();
+										if (text == "NONE")
+											text = "<none>";
+										graphCategoryCombo->blockSignals(true);
+										graphCategoryCombo->setCurrentText(text);
+										graphCategoryCombo->blockSignals(false);
+																															});
 
 	connect(graphCategoryCombo, &QComboBox::currentTextChanged, this, [this, &scene, graphCategoryCombo](const QString& text) {
-				QString output = text;
-				if (output == "<custom>")
-				{
-					QInputDialog dialog;
-					dialog.setWindowTitle("Custom Input");
-					dialog.setLabelText("Enter Category:");
-					dialog.show();
-					
-					if (auto lineEdit = dialog.findChild<QLineEdit*>()) {
-						qDebug() << "TEST";
-						QRegularExpression rex("^[a-zA-Z0-9_]+$");
-						QValidator* valdr = new QRegularExpressionValidator(rex, lineEdit);
-						lineEdit->setValidator(valdr);
-					}
+										QString output = text;
 
-					if (dialog.exec() == QDialog::Accepted) {
-						output = dialog.textValue();
-					}
-				}
+										if (output.compare("<none>", Qt::CaseInsensitive) == 0)
+										{
+											output = "NONE";
+										}
 
-				if (text == "<none>" || output == "<none>")
-				{
-					output = "NONE";
-				}
-				
-				//scene.agxGraphModel().setGraphCategory(output);
-				scene.undoStack().push(new AgxSetGraphCategory(&scene.agxGraphModel(), output));
-
-				graphCategoryCombo->blockSignals(true);
-				if (!_categoryList.contains(output) && output != "NONE")
-				{
-					_categoryList.insert(output);
-					graphCategoryCombo->clear();
-					graphCategoryCombo->insertItems(0, { "<none>","<custom>" });
-					auto tempList = _categoryList.values();
-					tempList.sort();
-					graphCategoryCombo->insertItems(2, tempList);
-				}
-
-				graphCategoryCombo->setCurrentText(output);
-				graphCategoryCombo->blockSignals(false);
-			});
+										scene.undoStack().push(new AgxSetGraphCategory(&scene.agxGraphModel(), output));
+																																});
 
 	_mainLayout->addLayout(graphCategoryLayout,0,0);
 	_mainLayout->addLayout(graphTypeLayout,1,0);

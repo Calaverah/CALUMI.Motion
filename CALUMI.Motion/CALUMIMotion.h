@@ -1,8 +1,6 @@
 #pragma once
 #pragma warning(push,0)
 #include <QtWidgets/QMainWindow>
-//#include "QtNodes/internal/NodeDelegateModelRegistry.hpp
-//#include "QtNodes/internal/GraphicsView.hpp
 #include "ui_CALUMIMotion.h"
 #pragma warning(pop)
 

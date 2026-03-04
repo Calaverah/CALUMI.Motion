@@ -26,10 +26,10 @@ namespace SFBGS {
 		std::shared_ptr<AgxPort> _AddPort(AgxPortType portType, AgxPortIndex index, QJsonObject data) override;
 
 	private:
-		QStringList _ModeList = {
-		"None",
-		"Weight",
-		"One Minus Weight"
+		QList<TermRef> _ModeList = {
+		&AgxDictionary::None,
+		&AgxDictionary::Weight,
+		&AgxDictionary::OneMinusWeight
 		};
 	};
 

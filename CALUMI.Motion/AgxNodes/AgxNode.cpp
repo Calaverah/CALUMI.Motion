@@ -16,17 +16,16 @@ AgxNode::~AgxNode()
 
 AgxNode::AgxNode(AgxGraphModel* rootGraphRef) : _nodeStyle(AgxStyleCollection::nodeStyle()), _NodePropertiesWidget(nullptr), _nextPortId{0}, _RootGraphReference(rootGraphRef)
 {
-    AgxNodeStyle style;
-    style.GradientColor0 = { 70,70,70 };
+    //AgxNodeStyle style;
+    /*style.GradientColor0 = { 70,70,70 };
     style.GradientColor1 = { 70,70,70 };
     style.GradientColor2 = { 70,70,70 };
-    style.GradientColor3 = { 70,70,70 };
-    style.HoveredPenWidth = 2.25f;
-    style.PenWidth = 1.2f;
-    style.Opacity = 1.0f;
-    style.ShadowEnabled = false;
-    setNodeStyle(style);
-
+    style.GradientColor3 = { 70,70,70 };*/
+    //style.HoveredPenWidth = 2.25f;
+    //style.PenWidth = 1.2f;
+    //style.Opacity = 1.0f;
+    //style.ShadowEnabled = false;
+    //setNodeStyle(style);
 }
 
 void AgxNode::SetNameProperty(QString newName)
@@ -353,7 +352,7 @@ AgxPropertyBlockData* AgxNode::getPropertyBlock(TermRef ref) {
 AgxPropertyBlockData* AgxNode::getPropertyBlock(const QString& block)
 {
     for (auto blockTermRef : _PropertyBlocks.keys()) {
-        if (blockTermRef().tag.compare(block, Qt::CaseInsensitive)) {
+        if (blockTermRef().tag.compare(block, Qt::CaseInsensitive) == 0) {
             return &_PropertyBlocks[blockTermRef];
         }
     }
@@ -762,7 +761,7 @@ void SFBGSNode::load(pugi::xml_node& xmlNode)
     }
 
     blockSignals(false);
-    Q_EMIT statusUpdate(0.05);
+    Q_EMIT statusUpdate(0.05f);
     blockSignals(true);
 
     if (xmlNode.child("noninstanced"))
@@ -828,7 +827,7 @@ void SFBGSNode::load(pugi::xml_node& xmlNode)
             auto connectionToGraph = QObject::connect(_EmbeddedGraphModel.get(), &AgxGraphModel::statusUpdate, this, [this](float loadPercentage, const QString& message) { Q_EMIT statusUpdate(0.2 + 0.4 * loadPercentage, message); });
 
             blockSignals(false);
-            Q_EMIT statusUpdate(0.2, "Loading Embedded Graph Node");
+            Q_EMIT statusUpdate(0.2f, "Loading Embedded Graph Node");
             blockSignals(true);
 
             _EmbeddedGraphModel->load(xmlGraph);
@@ -839,7 +838,7 @@ void SFBGSNode::load(pugi::xml_node& xmlNode)
         xmlNode.remove_child("graph");
     } else {
         blockSignals(false);
-        Q_EMIT statusUpdate(0.2);
+        Q_EMIT statusUpdate(0.2f);
         blockSignals(true);
 
         if (xmlNode.child("graph")) AmmendValidationState("NON EMBEDDED TYPE HAS GRAPH!", AgxNodeValidationState::State::Error);
@@ -909,7 +908,7 @@ void SFBGSNode::load(pugi::xml_node& xmlNode)
         Q_EMIT port->PropertySheetUpdated();
     }
     blockSignals(false);
-    Q_EMIT statusUpdate(0.7);
+    Q_EMIT statusUpdate(0.7f);
     blockSignals(true);
 
     for (auto& outputNode : xmlNode.children("output"))
@@ -946,7 +945,7 @@ void SFBGSNode::load(pugi::xml_node& xmlNode)
         //xmlNode.remove_child(outputNode);
     }
     blockSignals(false);
-    Q_EMIT statusUpdate(0.8);
+    Q_EMIT statusUpdate(0.8f);
     blockSignals(true);
 
     unsigned int blockCount = 0;
@@ -995,7 +994,7 @@ void SFBGSNode::load(pugi::xml_node& xmlNode)
     }
 
     blockSignals(false);
-    Q_EMIT statusUpdate(0.9);
+    Q_EMIT statusUpdate(0.9f);
     blockSignals(true);
 
     _nextPortId = maxPortId;

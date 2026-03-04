@@ -14,15 +14,14 @@ public:
     virtual ~AgxStyle() = default;
 
 public:
-    virtual void loadJson(QJsonObject const& json) = 0;
+    virtual void loadJson(const QJsonObject& json) = 0;
 
     virtual QJsonObject toJson() const = 0;
 
     /// Loads from utf-8 byte array.
-    virtual void loadJsonFromByteArray(QByteArray const& byteArray)
+    virtual void loadJsonFromByteArray(const QByteArray& byteArray)
     {
         auto json = QJsonDocument::fromJson(byteArray).object();
-
         loadJson(json);
     }
 

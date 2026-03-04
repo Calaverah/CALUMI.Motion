@@ -18,7 +18,7 @@ public:
 	QString getRangeValue(int row);
 	QString getWeightValue(int row);
 
-	size_t getDataRowCount() const;
+	int getDataRowCount() const;
 
 private:
 	void modifyRangeValue(int row, QString value);

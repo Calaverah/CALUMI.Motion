@@ -9,10 +9,6 @@
 #include "Painter/AgxConnectionStyle.h"
 #include <Utilities/AgxDefinitions.h>
 
-namespace QtNodes {
-    class AbstractGraphModel;
-}
-
 class AgxGraphicsScene;
 class AgxGraphModel;
 

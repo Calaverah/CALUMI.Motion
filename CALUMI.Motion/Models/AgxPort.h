@@ -84,7 +84,7 @@ public:
 		_PropertyEntries.push_back(AgxPropertyEntryDefinition(&AgxDictionary::Priority, "0", AgxColumnTypes::BasicInteger));
 		_PropertyEntries.push_back(AgxPropertyEntryDefinition(&AgxDictionary::AllowSelfTransition, "False", AgxColumnTypes::BasicBool));
 		_PropertyEntries.push_back(AgxPropertyEntryDefinition(&AgxDictionary::DoNotFollowSyncGroup, "False", AgxColumnTypes::BasicBool));
-		_PropertyEntries.push_back(AgxPropertyEntryDefinition(&AgxDictionary::TransitionType, "Smooth", AgxColumnTypes::CustomDropDown, { "Smooth","Linear" }));
+		_PropertyEntries.push_back(AgxPropertyEntryDefinition(&AgxDictionary::TransitionType, AgxDictionary::Smooth().tag, AgxColumnTypes::CustomDropDown, {&AgxDictionary::Smooth,&AgxDictionary::Linear}));
 		_PropertyEntriesEnabled = false;
 	}
 
@@ -104,6 +104,7 @@ protected:
 	//Property Sheet Widget
 	QPointer<SFBGS_SidebarContentItem> _ContentWidget;
 	//QPointer<QWidget> _EmbeddedWidget;
+
 };
 
 #pragma endregion

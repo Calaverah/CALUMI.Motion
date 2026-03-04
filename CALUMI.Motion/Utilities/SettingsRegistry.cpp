@@ -35,6 +35,17 @@ SettingsRegistry::SettingsRegistry()
 	if (_settings->contains("Log/UseSaveGeometry"))
 		SetUseSavedConsoledGeometry(_settings->value("Log/UseSaveGeometry").toBool());
 
+	{
+		QStringList catList = _settings->value("Categories", QStringList()).toStringList();
+		_categories_Default = QSet<QString>(catList.begin(), catList.end());
+	}
+
+	{
+		QStringList catList = _settings->value("SFBGS/Categories", QStringList()).toStringList();
+		_categories_SFBGS = QSet<QString>(catList.begin(), catList.end());
+	}
+
+
 }
 
 SettingsRegistry::~SettingsRegistry()
@@ -64,6 +75,12 @@ void SettingsRegistry::SyncSettings() const
 	_settings->setValue("Log/UseSaveGeometry", _rememberConsoleGeometry);
 	_settings->setValue("UseSaveGeometry", _rememberMainGeometry);
 
+	if(!_categories_Default.isEmpty())
+		_settings->setValue("Categories", _categories_Default.values());
+	
+	if(!_categories_SFBGS.isEmpty())
+		_settings->setValue("SFBGS/Categories", _categories_SFBGS.values());
+	
 	_dataStorage->setValue("LastVersion", QCoreApplication::applicationVersion());
 
 	_settings->sync();
@@ -110,11 +127,6 @@ QString SettingsRegistry::IniPath() const
 {
 	return _iniPath;
 }
-
-//QSettings& SettingsRegistry::Settings()
-//{
-//	return *_settings;
-//}
 
 QString SettingsRegistry::LastDirectory(AgxGameType type) const
 {
@@ -217,7 +229,49 @@ void SettingsRegistry::SetLanguage(LanguageCode code)
 
 }
 
+QSet<QString> SettingsRegistry::GetCustomCategories(AgxGameType game, bool withDefault) const
+{
+	QSet<QString> customList;
 
+	if (withDefault)
+	{
+		customList.unite(_categories_Default);
+	}
+
+	switch (game)
+	{
+		case AgxGameType::SFBGS:
+			customList.unite(_categories_SFBGS);
+			break;
+	}
+
+	QString none;
+
+	for (auto& string : customList) {
+		if (string.compare("none", Qt::CaseInsensitive) == 0 || string.compare("<none>", Qt::CaseInsensitive) == 0) {
+			none = string;
+		}
+	}
+
+	if (!none.isEmpty()) {
+		customList.remove(none);
+	}
+
+	return customList;
+}
+
+void SettingsRegistry::AddCustomCatgeory(const QString& item, AgxGameType game)
+{
+	switch (game)
+	{
+		case AgxGameType::SFBGS:
+			_categories_SFBGS.insert(item);
+			break;
+		default:
+			_categories_Default.insert(item);
+			break;
+	}
+}
 
 void SettingsRegistry::SetDefaultLanguage()
 {

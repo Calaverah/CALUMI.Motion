@@ -6,17 +6,9 @@
 #include <QPointF>
 #include <QPointer>
 #include <QUuid>
-//#include "QtNodes/internal/Export.hpp
-////#include "QtNodes/internal/Definitions.hpp
-//#include "QtNodes/internal/NodeData.hpp
+
 #pragma warning(pop)
 
-//#include "AgxNodeGraphicsObject.h"
-
-namespace QtNodes {
-    class ConnectionGraphicsObject;
-    class NodeGraphicsObject;
-}
 class AgxNodeGraphicsObject;
 class AgxConnectionGraphicsObject;
 

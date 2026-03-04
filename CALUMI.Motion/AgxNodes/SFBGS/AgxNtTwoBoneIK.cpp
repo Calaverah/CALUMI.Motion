@@ -11,7 +11,7 @@ namespace SFBGS {
         _PropertyEntries.push_back(AgxPropertyEntryDefinition(&AgxDictionary::BendBoneName, "", AgxColumnTypes::BasicString));
         _PropertyEntries.push_back(AgxPropertyEntryDefinition(&AgxDictionary::SourceBoneName, "", AgxColumnTypes::BasicString));
         _PropertyEntries.push_back(AgxPropertyEntryDefinition(&AgxDictionary::DisableVariable, "", AgxColumnTypes::CustomInteger));
-        _PropertyEntries.push_back(AgxPropertyEntryDefinition(&AgxDictionary::Axis, _AxisList.at(0), AgxColumnTypes::CustomDropDown,_AxisList));
+        _PropertyEntries.push_back(AgxPropertyEntryDefinition(&AgxDictionary::Axis, _AxisList.at(0)().tag, AgxColumnTypes::CustomDropDown, _AxisList));
         _PropertyEntries.push_back(AgxPropertyEntryDefinition(&AgxDictionary::AngleMultiplier, "1", AgxColumnTypes::BasicInteger));
         _PropertyEntries.push_back(AgxPropertyEntryDefinition(&AgxDictionary::TargetBoneName, "", AgxColumnTypes::BasicString));
         _PropertyEntries.push_back(AgxPropertyEntryDefinition(&AgxDictionary::BlendOnOfftime, "0.1", AgxColumnTypes::BasicFloat));

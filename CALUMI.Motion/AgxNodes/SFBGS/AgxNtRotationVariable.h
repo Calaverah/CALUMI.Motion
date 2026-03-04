@@ -23,12 +23,12 @@ namespace SFBGS {
 		std::shared_ptr<AgxPort> _AddPort(AgxPortType portType, AgxPortIndex index, QJsonObject data) override;
 
 	private:
-		QStringList _RotationList = {
-			"Shortest Direction",
-			"Longest Direction",
-			"Zero to One",
-			"Looping Left",
-			"Looping Right"
+		QList<TermRef> _RotationList = {
+			&AgxDictionary::ShortestDirection,
+			&AgxDictionary::LongestDirection,
+			&AgxDictionary::ZerotoOne,
+			&AgxDictionary::LoopingLeft,
+			&AgxDictionary::LoopingRight
 		};
 	};
 

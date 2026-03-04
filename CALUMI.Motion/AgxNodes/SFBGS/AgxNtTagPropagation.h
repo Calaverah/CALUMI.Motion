@@ -23,10 +23,10 @@ namespace SFBGS {
 		std::shared_ptr<AgxPort> _AddPort(AgxPortType portType, AgxPortIndex index, QJsonObject data) override;
 
 	private:
-		QStringList _PropList = { 
-			"UNKNOWN",
-			"Propagate Tag Upstream",
-			"Receive Tag from Downstream"
+		QList<TermRef> _PropList = { 
+			&AgxDictionary::UNKNOWN,
+			&AgxDictionary::PropagateTagUpstream,
+			&AgxDictionary::ReceiveTagfromDownstream
 		};
 	};
 

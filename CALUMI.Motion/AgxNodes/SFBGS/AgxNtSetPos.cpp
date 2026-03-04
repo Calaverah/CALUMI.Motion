@@ -7,7 +7,7 @@ namespace SFBGS {
         _nameProperty = QStringLiteral("Set Pos");
 
         _PropertyEntries.push_back(AgxPropertyEntryDefinition(&AgxDictionary::Name, "Set Pos", AgxColumnTypes::BasicString));
-        _PropertyEntries.push_back(AgxPropertyEntryDefinition(&AgxDictionary::Type, _VariableTypeList.at(0), AgxColumnTypes::CustomDropDown, _VariableTypeList));
+        _PropertyEntries.push_back(AgxPropertyEntryDefinition(&AgxDictionary::Type, _VariableTypeList.at(0)().tag, AgxColumnTypes::CustomDropDown, _VariableTypeList));
         _PropertyEntries.push_back(AgxPropertyEntryDefinition(&AgxDictionary::Time, "-1", AgxColumnTypes::BasicFloat));
         _PropertyEntries.push_back(AgxPropertyEntryDefinition(&AgxDictionary::PositionVar, "DesiredLocation", AgxColumnTypes::CustomVector));
         _PropertyEntries.push_back(AgxPropertyEntryDefinition(&AgxDictionary::OrientedOffset, "0;0;0", AgxColumnTypes::BasicVector));

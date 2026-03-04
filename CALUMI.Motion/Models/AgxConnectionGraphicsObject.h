@@ -5,17 +5,13 @@
 #include <QUuid>
 #include <QGraphicsObject>
 #include "AgxConnectionState.h"
-////#include "QtNodes/internal/Definitions.hpp
+
 #pragma warning(pop)
 
 
 
 class QGraphicsSceneMouseEvent;
 
-namespace QtNodes {
-	class AbstractGraphModel;
-	class BasicGraphicsScene;
-}
 class AgxGraphicsScene;
 class AgxGraphModel;
 

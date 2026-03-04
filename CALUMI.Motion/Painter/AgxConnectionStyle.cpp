@@ -97,6 +97,12 @@ void AgxConnectionStyle::loadJson(QJsonObject const& json)
 
     QJsonObject obj = nodeStyleValues.toObject();
 
+    if (obj.isEmpty())
+    {
+        qWarning() << "Failed to parse view connection Json file. Exiting connection style creation and leaving existing values.";
+        return;
+    }
+
     CONNECTION_STYLE_READ_COLOR(obj, ConstructionColor);
     CONNECTION_STYLE_READ_COLOR(obj, NormalColor);
     CONNECTION_STYLE_READ_COLOR(obj, SelectedColor);

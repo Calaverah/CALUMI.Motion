@@ -29,34 +29,61 @@ namespace SFBGS {
 		std::shared_ptr<AgxPort> _AddPort(AgxPortType portType, AgxPortIndex index, QJsonObject data) override;
 
 	private:
-		QStringList _BodyPartList = {
-			"TORSO",				//0
-			"HEAD_1",				//1
-			"EYE_1",				//2 //Unconfirmed
-			"LOOKAT_1",				//3 //Unconfirmed
-			"FLY_GRAB",				//4 //Unconfirmed
-			"HEAD_2",				//5 //Unconfirmed
-			"LEFT_ARM_1",			//6
-			"LEFT_ARM_2",			//7 //Unconfirmed
-			"RIGHT_ARM_1",			//8
-			"RIGHT_ARM_2",			//9 //Unconfirmed
-			"LEFT_LEG_1",			//10
-			"LEFT_LEG_2",			//11
-			"LEFT_LEG_3",			//12
-			"RIGHT_LEG_1",			//13
-			"RIGHT_LEG_2",			//14
-			"RIGHT_LEG_3",			//15
-			"BRAIN",				//16 //Unconfirmed
-			"WEAPON",				//17 //Unconfirmed
-			"ROOT",					//18 //Unconfirmed
-			"COM",					//19 //Unconfirmed
-			"PELVIS",				//20
-			"CAMERA",				//21 //Unconfirmed
-			"ROOT",					//22 //Unconfirmed
-			"LEFT_FOOT",			//23
-			"RIGHT_FOOT",			//24
-			"FACE_TARGET_SOURCE"	//25 //Unconfirmed
+		inline static AgxTerm TORSO() {return					{"TORSO",				QObject::tr("Torso") };}				//0		
+		inline static AgxTerm HEAD_1() { return					{ "HEAD_1",				QObject::tr("Head 1") }; }				//1		
+		inline static AgxTerm EYE_1() { return					{ "EYE_1",				QObject::tr("Eye 1") }; }				//2 //Unconfirmed		
+		inline static AgxTerm LOOKAT_1() { return				{ "LOOKAT_1",			QObject::tr("LookAt 1") }; }			//3 //Unconfirmed			
+		inline static AgxTerm FLY_GRAB() { return				{ "FLY_GRAB",			QObject::tr("Fly Grab") }; }			//4 //Unconfirmed			
+		inline static AgxTerm HEAD_2() { return					{ "HEAD_2",				QObject::tr("Head 2") }; }				//5 //Unconfirmed		
+		inline static AgxTerm LEFT_ARM_1() { return				{ "LEFT_ARM_1",			QObject::tr("Left Arm 1") }; }			//6			
+		inline static AgxTerm LEFT_ARM_2() { return				{ "LEFT_ARM_2",			QObject::tr("Left Arm 2") }; }			//7 //Unconfirmed			
+		inline static AgxTerm RIGHT_ARM_1() { return			{ "RIGHT_ARM_1",		QObject::tr("Right Arm 1") }; }			//8			
+		inline static AgxTerm RIGHT_ARM_2() { return			{ "RIGHT_ARM_2",		QObject::tr("Right Arm 2") }; }			//9 //Unconfirmed			
+		inline static AgxTerm LEFT_LEG_1() { return				{ "LEFT_LEG_1",			QObject::tr("Left Leg 1") }; }			//10			
+		inline static AgxTerm LEFT_LEG_2() { return				{ "LEFT_LEG_2",			QObject::tr("Left Leg 2") }; }			//11			
+		inline static AgxTerm LEFT_LEG_3() { return				{ "LEFT_LEG_3",			QObject::tr("Left Leg 3") }; }			//12			
+		inline static AgxTerm RIGHT_LEG_1() { return			{ "RIGHT_LEG_1",		QObject::tr("Right Leg 1") }; }			//13			
+		inline static AgxTerm RIGHT_LEG_2() { return			{ "RIGHT_LEG_2",		QObject::tr("Right Leg 2") }; }			//14			
+		inline static AgxTerm RIGHT_LEG_3() { return			{ "RIGHT_LEG_3",		QObject::tr("Right Leg 3") }; }			//15			
+		inline static AgxTerm BRAIN() { return					{ "BRAIN",				QObject::tr("Brain") }; }				//16 //Unconfirmed		
+		inline static AgxTerm WEAPON() { return					{ "WEAPON",				QObject::tr("Weapon") }; }				//17 //Unconfirmed		
+		inline static AgxTerm ROOT() { return					{ "ROOT",				QObject::tr("Root") }; }				//18 //Unconfirmed		
+		inline static AgxTerm COM() { return					{ "COM",				QObject::tr("Center Of Mass") }; }		//19 //Unconfirmed				
+		inline static AgxTerm PELVIS() { return					{ "PELVIS",				QObject::tr("Pelvis") }; }				//20		
+		inline static AgxTerm CAMERA() { return					{ "CAMERA",				QObject::tr("Camera") }; }				//21 //Unconfirmed		
+		inline static AgxTerm OFFSET_ROOT() { return			{ "OFFSET_ROOT",		QObject::tr("Offset Root") }; }			//22 //Unconfirmed			
+		inline static AgxTerm LEFT_FOOT() { return				{ "LEFT_FOOT",			QObject::tr("Left Foot") }; }			//23			
+		inline static AgxTerm RIGHT_FOOT() { return				{ "RIGHT_FOOT",			QObject::tr("Right Foot") }; }			//24			
+		inline static AgxTerm FACE_TARGET_SOURCE() { return		{ "FACE_TARGET_SOURCE", QObject::tr("Face Target Source") }; }	//25 //Unconfirmed					
+
+		QList<TermRef> _BodyPartList = {
+			&TORSO,			
+			&HEAD_1,		
+			&EYE_1,			
+			&LOOKAT_1,		
+			&FLY_GRAB,		
+			&HEAD_2,		
+			&LEFT_ARM_1,	
+			&LEFT_ARM_2,	
+			&RIGHT_ARM_1,	
+			&RIGHT_ARM_2,	
+			&LEFT_LEG_1,	
+			&LEFT_LEG_2,	
+			&LEFT_LEG_3,	
+			&RIGHT_LEG_1,	
+			&RIGHT_LEG_2,	
+			&RIGHT_LEG_3,	
+			&BRAIN,			
+			&WEAPON,		
+			&ROOT,			
+			&COM,			
+			&PELVIS,		
+			&CAMERA,		
+			&OFFSET_ROOT,	
+			&LEFT_FOOT,			
+			&RIGHT_FOOT,			
+			&FACE_TARGET_SOURCE	
 		};
-		QStringList _ImpactList = { "Small","Medium","Large" };
+		QList<TermRef> _ImpactList = { &AgxDictionary::Small,&AgxDictionary::Medium,&AgxDictionary::Large };
 	};
 }

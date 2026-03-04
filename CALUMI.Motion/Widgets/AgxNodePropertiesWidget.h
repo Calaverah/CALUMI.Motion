@@ -35,7 +35,7 @@ public:
 	QList<QLabel*> CreateHiddenEntries(QMap<TermRef, QPair<AgxColumnTypes, QString>>* dataRef, AgxGraphModel* signalSender, bool split = true, const QList<TermRef>& priorityOrder = {});
 	QLabel* CreateGuidLabel(const QUuid* value, AgxNode* signalSender, bool split = true);
 	ModifiedPushButton* CreateFlagEntry(const QString& title, AgxNode* signalSender, AgxFlagField* dataRef);
-	AgxLineEdit* CreateSimpleLineEdit(QString* defaultText, AgxPort* signalSender, const QString& label = "", bool split = true, QStringList path = {});
+	AgxLineEdit* CreateSimpleLineEdit(QString* defaultText, AgxPort* signalSender, TermRef label = nullptr, bool split = true, QStringList path = {});
 
 	AgxPropertyBlockWidget* CreatePropetryBlock(TermRef blockName, AgxPropertyBlockData& dataRef);
 
@@ -45,7 +45,7 @@ public:
 
 protected:
 	void mousePressEvent(QMouseEvent* event) override;
-	void SetUpCustomDropDown(AgxLineEdit* line, const QStringList& list, const QStringList& keyPath);
+	void SetUpCustomDropDown(AgxLineEdit* line, const QList<TermRef>& list, const QStringList& keyPath);
 	void ForceRefresh();
 	void changeEvent(QEvent* event) override;
 

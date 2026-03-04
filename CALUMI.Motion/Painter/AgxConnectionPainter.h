@@ -2,7 +2,7 @@
 #pragma warning(push,0)
 #include <QtGui/QPainter>
 #include <QtGui/QPainterPath>
-////#include "QtNodes/internal/Definitions.hpp
+
 #include "AgxConnectionStyle.h"
 #pragma warning(pop)
 
@@ -19,9 +19,6 @@ private:
     void drawSketchLine(QPainter* painter, AgxConnectionGraphicsObject const& cgo) const;
     void drawHoveredOrSelected(QPainter* painter, AgxConnectionGraphicsObject const& cgo) const;
     void drawNormalLine(QPainter* painter, AgxConnectionGraphicsObject const& cgo) const;
-//#ifdef NODE_DEBUG_DRAWING
-//    void debugDrawing(QPainter* painter, ConnectionGraphicsObject const& cgo) const;
-//#endif
 
     AgxConnectionStyle _connectionStyle;
 };
