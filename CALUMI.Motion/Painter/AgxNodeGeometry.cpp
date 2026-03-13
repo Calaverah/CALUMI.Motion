@@ -6,7 +6,7 @@
 #include "AgxStyleCollection.h"
 #pragma warning(pop)
 
-AgxNodeGeometry::AgxNodeGeometry(AgxGraphModel& graphModel) : _portSize(20), _portSpasing(10), _fontMetrics(QFont()), _boldFontMetrics(QFont()), _graphModel(graphModel)
+AgxNodeGeometry::AgxNodeGeometry(AgxGraphModel& graphModel) : _portSize(20), _portSpacing(10), _fontMetrics(QFont()), _boldFontMetrics(QFont()), _graphModel(graphModel)
 {
     QFont f;
     f.setBold(true);
@@ -19,7 +19,7 @@ QRect AgxNodeGeometry::groupIconPosition(AgxNodeId const nodeId) const
 {
 	QSize size = _graphModel.nodeData<QSize>(nodeId, AgxNodeRole::Size);
 	unsigned int rectSize = 7;
-	return QRect(size.width() - _portSpasing, _portSpasing, rectSize, rectSize);
+	return QRect(size.width() - _portSpacing, _portSpacing, rectSize, rectSize);
 }
 
 QRectF AgxNodeGeometry::agxPortTextRect(AgxNodeId const nodeId, AgxPortType const portType, AgxPortIndex const portIndex) const
@@ -68,7 +68,7 @@ unsigned int AgxNodeGeometry::maxVerticalPortsExtent(AgxNodeId const nodeId) con
     unsigned int nOutPorts = _graphModel.nodeData<unsigned int>(nodeId, AgxNodeRole::OutPortCount);
 
     unsigned int maxNumOfEntries = std::max(nInPorts, nOutPorts);
-    unsigned int step = _portSize + _portSpasing;
+    unsigned int step = _portSize + _portSpacing;
 
     return step * maxNumOfEntries;
 }
@@ -111,7 +111,7 @@ QRectF AgxNodeGeometry::boundingRect(AgxNodeId const nodeId) const
 {
     QSize s = size(nodeId);
 
-    qreal marginSize = 2.0 * _portSpasing;
+    qreal marginSize = 2.0 * _portSpacing;
     QMargins margins(marginSize, marginSize, marginSize, marginSize);
 
     QRectF r(QPointF(0, 0), s);
@@ -123,7 +123,7 @@ QRectF AgxNodeGeometry::collapsedBoundingRect(const AgxNodeId& nodeId) const
 {
     QSize s = collapsedSize(nodeId);
 
-    qreal marginSize = 2.0 * _portSpasing;
+    qreal marginSize = 2.0 * _portSpacing;
     QMargins margins(marginSize, marginSize, marginSize, marginSize);
 
     QRectF r(QPointF(0, 0), s);
@@ -148,19 +148,19 @@ void AgxNodeGeometry::recomputeSize(AgxNodeId const nodeId) const
 
     height += capRect.height();
 
-    height += _portSpasing; // space above caption
-    height += _portSpasing; // space below caption
+    height += _portSpacing; // space above caption
+    height += _portSpacing; // space below caption
 
     unsigned int inPortWidth = maxPortsTextAdvance(nodeId, AgxPortType::In);
     unsigned int outPortWidth = maxPortsTextAdvance(nodeId, AgxPortType::Out);
 
-    unsigned int width = inPortWidth + outPortWidth + 4 * _portSpasing;
+    unsigned int width = inPortWidth + outPortWidth + 4 * _portSpacing;
 
     if (auto w = _graphModel.nodeData<QWidget*>(nodeId, AgxNodeRole::Widget)) {
         width += w->width();
     }
 
-    width = std::max(width, static_cast<unsigned int>(capRect.width()) + 2 * _portSpasing);
+    width = std::max(width, static_cast<unsigned int>(capRect.width()) + 2 * _portSpacing);
 
     QSize size(width, height);
 
@@ -176,12 +176,12 @@ QSize AgxNodeGeometry::collapsedSize(AgxNodeId const nodeId) const {
 
     height += capRect.height();
 
-    height += _portSpasing; // space above caption
-    height += _portSpasing; // space below caption
+    height += _portSpacing; // space above caption
+    height += _portSpacing; // space below caption
 
-    unsigned int width = 6 * _portSpasing;
+    unsigned int width = 6 * _portSpacing;
 
-    width = std::max(width, static_cast<unsigned int>(capRect.width()) + 3 * _portSpasing);
+    width = std::max(width, static_cast<unsigned int>(capRect.width()) + 3 * _portSpacing);
 
     return QSize(width, height);
 }
@@ -191,7 +191,7 @@ QPointF AgxNodeGeometry::collapsedPortPosition(const AgxNodeId& nodeId, const Ag
     double totalHeight = 0.0;
 
     totalHeight += captionRect(nodeId).height()/2;
-    totalHeight += _portSpasing;
+    totalHeight += _portSpacing;
 
     QSize size = collapsedSize(nodeId);
     QPointF result;
@@ -226,14 +226,14 @@ QPointF AgxNodeGeometry::portPosition(AgxNodeId const nodeId, AgxPortType const 
 
     if (collapsed) return collapsedPortPosition(nodeId, portType);
 
-    unsigned int const step = _portSize + _portSpasing;
+    unsigned int const step = _portSize + _portSpacing;
 
     QPointF result;
 
     double totalHeight = 0.0;
 
     totalHeight += captionRect(nodeId).height();
-    totalHeight += _portSpasing;
+    totalHeight += _portSpacing;
 
     totalHeight += step * portIndex;
     totalHeight += step / 2.0;
@@ -284,11 +284,11 @@ QPointF AgxNodeGeometry::portTextPosition(AgxNodeId const nodeId, AgxPortType co
 
     switch (portType) {
         case AgxPortType::In:
-            p.setX(_portSpasing);
+            p.setX(_portSpacing);
             break;
 
         case AgxPortType::Out:
-            p.setX(size.width() - _portSpasing - rect.width());
+            p.setX(size.width() - _portSpacing - rect.width());
             break;
 
         default:
@@ -302,7 +302,7 @@ QPointF AgxNodeGeometry::captionPosition(AgxNodeId const nodeId) const
 {
     QSize size = _graphModel.nodeData<QSize>(nodeId, AgxNodeRole::Size);
     return QPointF(0.5 * (size.width() - captionRect(nodeId).width()),
-                   0.5 * _portSpasing + captionRect(nodeId).height());
+                   0.5 * _portSpacing + captionRect(nodeId).height());
 }
 
 QPair<QPointF, QPointF> AgxNodeGeometry::dualCaptionPosition(const AgxNodeId& nodeId, const QString& title, const QString& subtitle, bool collapsed) const
@@ -314,10 +314,10 @@ QPair<QPointF, QPointF> AgxNodeGeometry::dualCaptionPosition(const AgxNodeId& no
 
 
     QPointF titlePos(0.5 * (size.width() - tRect.width()),
-                     0.5 * _portSpasing + tRect.height());
+                     0.5 * _portSpacing + tRect.height());
 
     QPointF subtitlePos(0.5 * (size.width() - stRect.width()),
-                        0.5 * _portSpasing + tRect.height()+stRect.height());
+                        0.5 * _portSpacing + tRect.height()+stRect.height());
 
     return { titlePos, subtitlePos };
 }
@@ -343,7 +343,7 @@ QRectF AgxNodeGeometry::captionRect(AgxNodeId const nodeId) const
 
     if (!collapsed) {
 
-        QString subName = _graphModel.nodeData<QString>(nodeId, AgxNodeRole::SubCaption);
+        QString subName = ShortenString(_graphModel.nodeData<QString>(nodeId, AgxNodeRole::SubCaption),30);
         if (!subName.isEmpty()) {
 
             QRectF output = _fontMetrics.boundingRect(subName);
@@ -365,10 +365,10 @@ QPointF AgxNodeGeometry::widgetPosition(AgxNodeId const nodeId) const
         // If the widget wants to use as much vertical space as possible,
         // place it immediately after the caption.
         if (w->sizePolicy().verticalPolicy() & QSizePolicy::ExpandFlag) {
-            return QPointF(2.0 * _portSpasing + maxPortsTextAdvance(nodeId, AgxPortType::In),
-                           _portSpasing + captionHeight);
+            return QPointF(2.0 * _portSpacing + maxPortsTextAdvance(nodeId, AgxPortType::In),
+                           _portSpacing + captionHeight);
         } else {
-            return QPointF(2.0 * _portSpasing + maxPortsTextAdvance(nodeId, AgxPortType::In),
+            return QPointF(2.0 * _portSpacing + maxPortsTextAdvance(nodeId, AgxPortType::In),
                            (captionHeight + size.height() - w->height()) / 2.0);
         }
     }
@@ -381,7 +381,7 @@ QRect AgxNodeGeometry::resizeHandleRect(AgxNodeId const nodeId) const
 
     unsigned int rectSize = 7;
 
-    return QRect(size.width() - _portSpasing, size.height() - _portSpasing, rectSize, rectSize);
+    return QRect(size.width() - _portSpacing, size.height() - _portSpacing, rectSize, rectSize);
 }
 
 AgxPortIndex AgxNodeGeometry::checkPortHit(AgxNodeId const nodeId, AgxPortType const portType, QPointF const nodePoint) const

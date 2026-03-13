@@ -26,7 +26,7 @@ AgxGraphDefinition AgxGraphRegistry::SFBGS_BuildGraph_BlendTree()
 
 	AgxPropertyBlockData swapGraph({ 
 		AgxPropertyEntryDefinition(&AgxDictionary::BlankEntry,"",AgxColumnTypes::BasicString),
-		AgxPropertyEntryDefinition(&AgxDictionary::Event,"",AgxColumnTypes::Event), 
+		AgxPropertyEntryDefinition(&AgxDictionary::x_SwapEvents_x,"",AgxColumnTypes::Event),
 		AgxPropertyEntryDefinition(&AgxDictionary::BlendTime,"0",AgxColumnTypes::BasicFloat)}, nullptr);
 
 	output._defaultBlocks.insert(&AgxDictionary::SwapGraphEvents, swapGraph);
@@ -57,18 +57,18 @@ AgxGraphDefinition AgxGraphRegistry::SFBGS_BuildGraph_StateMachine()
 	AgxPropertyBlockData enterEvents({
 		AgxPropertyEntryDefinition(&AgxDictionary::BlankEntry,"",AgxColumnTypes::BasicString),
 		AgxPropertyEntryDefinition(&AgxDictionary::NonInstanced,"False",AgxColumnTypes::BasicBool),
-		AgxPropertyEntryDefinition(&AgxDictionary::Event,"",AgxColumnTypes::Event),
+		AgxPropertyEntryDefinition(&AgxDictionary::x_EnterEvents_x,"",AgxColumnTypes::Event),
 		AgxPropertyEntryDefinition(&AgxDictionary::Payload,"",AgxColumnTypes::BasicString) }, nullptr);
 
 	AgxPropertyBlockData exitEvents({
 		AgxPropertyEntryDefinition(&AgxDictionary::BlankEntry,"",AgxColumnTypes::BasicString),
 		AgxPropertyEntryDefinition(&AgxDictionary::NonInstanced,"False",AgxColumnTypes::BasicBool),
-		AgxPropertyEntryDefinition(&AgxDictionary::Event,"",AgxColumnTypes::Event),
+		AgxPropertyEntryDefinition(&AgxDictionary::x_ExitEvents_x,"",AgxColumnTypes::Event),
 		AgxPropertyEntryDefinition(&AgxDictionary::Payload,"",AgxColumnTypes::BasicString) }, nullptr);
 
 	AgxPropertyBlockData swapGraph({
 		AgxPropertyEntryDefinition(&AgxDictionary::BlankEntry,"",AgxColumnTypes::BasicString),
-		AgxPropertyEntryDefinition(&AgxDictionary::Event,"False",AgxColumnTypes::Event),
+		AgxPropertyEntryDefinition(&AgxDictionary::x_SwapEvents_x,"False",AgxColumnTypes::Event),
 		AgxPropertyEntryDefinition(&AgxDictionary::BlendTime,"0",AgxColumnTypes::BasicFloat) }, nullptr);
 
 	output._defaultBlocks.insert(&AgxDictionary::States, states);

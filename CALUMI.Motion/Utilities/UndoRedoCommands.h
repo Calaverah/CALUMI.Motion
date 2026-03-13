@@ -1,9 +1,6 @@
 #pragma once
 
 #pragma warning(push,0)
-////
-
-
 #include <QtCore/QJsonObject>
 #include <QtCore/QPointF>
 #include <QUndoCommand>
@@ -404,6 +401,21 @@ private:
     QSet<AgxNodeId> _selectedNodes;
     QList<AgxConnectionId> _selectedConnections;
     bool _toHide;
+};
+
+class AgxSetGraphTitleCommand : public QUndoCommand
+{
+public:
+    AgxSetGraphTitleCommand(AgxGraphModel* model, const QString& newTitle);
+
+    void undo() override;
+    void redo() override;
+
+private:
+    AgxGraphModel* _model;
+    QString _newTitle;
+    QString _oldTitle;
+
 };
 
 #pragma endregion

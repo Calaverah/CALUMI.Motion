@@ -5,6 +5,9 @@
 SettingsRegistry::SettingsRegistry()
 {
 	_iniPath = QApplication::applicationDirPath() + "/CALUMIMotionPrefs.ini";
+	_themePath = QApplication::applicationDirPath() + "/themes/";
+	CreateDirectoryIfNDef(_themePath);
+
 	_settings = new QSettings(_iniPath, QSettings::IniFormat);
 	_dataStorage = new QSettings(QApplication::applicationDirPath() + "/appcache.ini", QSettings::IniFormat);
 
@@ -45,6 +48,32 @@ SettingsRegistry::SettingsRegistry()
 		_categories_SFBGS = QSet<QString>(catList.begin(), catList.end());
 	}
 
+	{
+		HighlightingRule rule;
+
+		QColor symColor = _settings->value("Colors/Symbol").toString();
+		symColor = symColor.isValid() ? symColor : _symColorDefault;
+		symColor.setAlphaF(1.0f);
+
+		QColor decodedColor = _settings->value("Colors/Decoded").toString();
+		decodedColor = decodedColor.isValid() ? decodedColor : _decodedColorDefault;
+		decodedColor.setAlphaF(1.0f);
+
+		_symbolFormat.setForeground(symColor);
+		rule.pattern = QRegularExpression(R"([<=>&])");
+		rule.format = _symbolFormat;
+		_highlightingRules.append(rule);
+
+		_decodedFormat.setForeground(decodedColor);
+		rule.pattern = QRegularExpression(R"(!.*?!)");
+		rule.format = _decodedFormat;
+		_highlightingRules.append(rule);
+	}
+
+	{
+		if (_settings->contains("Theme"))
+			_themeFileName = _settings->value("Theme").toString();
+	}
 
 }
 
@@ -82,6 +111,13 @@ void SettingsRegistry::SyncSettings() const
 		_settings->setValue("SFBGS/Categories", _categories_SFBGS.values());
 	
 	_dataStorage->setValue("LastVersion", QCoreApplication::applicationVersion());
+
+	
+	_settings->setValue("Colors/Symbol", GetSymbolColor().name());
+	
+	_settings->setValue("Colors/Decoded", GetDecodedColor().name());
+
+	_settings->setValue("Theme", _themeFileName);
 
 	_settings->sync();
 	_dataStorage->sync();
@@ -126,6 +162,41 @@ QString SettingsRegistry::GetSavedVersion()
 QString SettingsRegistry::IniPath() const
 {
 	return _iniPath;
+}
+
+bool SettingsRegistry::CreateDirectoryIfNDef(const QString& fileString)
+{
+	QString dirPath = QFileInfo(fileString).absolutePath();
+
+	QDir dir;
+	if (!dir.mkpath(dirPath))
+	{
+		qCritical() << "Could not create directory path: " << dirPath;
+		return false;
+	}
+
+	qInfo() << "Directory found: " << dirPath;
+	return true;
+}
+
+void SettingsRegistry::SetSymbolColor(QColor color)
+{
+	_highlightingRules[0].format.setForeground(color);
+}
+
+const QColor& SettingsRegistry::GetSymbolColor() const
+{
+	return _highlightingRules.at(0).format.foreground().color();
+}
+
+void SettingsRegistry::SetDecodedColor(QColor color)
+{
+	_highlightingRules[1].format.setForeground(color);
+}
+
+const QColor& SettingsRegistry::GetDecodedColor() const
+{
+	return _highlightingRules.at(1).format.foreground().color();
 }
 
 QString SettingsRegistry::LastDirectory(AgxGameType type) const
@@ -188,13 +259,11 @@ void SettingsRegistry::SaveRelativeDataPath(AgxGameType type, const QString& pat
 
 void SettingsRegistry::SetLanguage(LanguageCode code)
 {
+	if (code == _language) return;
+
 	QString prefixPath = ":/CALUMIMotion/Localization/";
 	QString file;
 
-	/*if (_translator) {
-		QCoreApplication::removeTranslator(_translator);
-		_translator->deleteLater();
-	}*/
 
 	switch (code)
 	{
@@ -270,6 +339,29 @@ void SettingsRegistry::AddCustomCatgeory(const QString& item, AgxGameType game)
 		default:
 			_categories_Default.insert(item);
 			break;
+	}
+}
+
+QString SettingsRegistry::GetThemeFilePath() const
+{
+	return _themePath + _themeFileName;
+}
+
+QString SettingsRegistry::GetThemeFileName() const
+{
+	return _themeFileName;
+}
+
+void SettingsRegistry::SetThemeFileName(const QString& path)
+{
+	QFileInfo file(path);
+	
+	auto fileName = file.fileName();
+	
+	if(_themeFileName != fileName)
+	{
+		_themeFileName = fileName;
+		qInfo() << "Theme Change Requires Application Restart!";
 	}
 }
 

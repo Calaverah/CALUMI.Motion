@@ -17,7 +17,7 @@ namespace SFBGS {
                 AgxPropertyEntryDefinition(&AgxDictionary::BlankEntry, "", AgxColumnTypes::BasicString),
                 AgxPropertyEntryDefinition(&AgxDictionary::BindingType,"",AgxColumnTypes::BasicString),
                 AgxPropertyEntryDefinition(&AgxDictionary::BindingName,"",AgxColumnTypes::BasicString),
-                AgxPropertyEntryDefinition(&AgxDictionary::BindingVariable,"",AgxColumnTypes::BasicString)
+                AgxPropertyEntryDefinition(&AgxDictionary::BindingValue,"",AgxColumnTypes::BasicString)
                                           }, nullptr);
 
             _PropertyBlocks.insert(&AgxDictionary::Bindings, blockDef1);

@@ -11,7 +11,7 @@ namespace SFBGS {
         _PropertyEntries.push_back(AgxPropertyEntryDefinition(&AgxDictionary::Time, "-1", AgxColumnTypes::BasicFloat));
         _PropertyEntries.push_back(AgxPropertyEntryDefinition(&AgxDictionary::PositionVar, "DesiredLocation", AgxColumnTypes::CustomVector));
         _PropertyEntries.push_back(AgxPropertyEntryDefinition(&AgxDictionary::OrientedOffset, "0;0;0", AgxColumnTypes::BasicVector));
-        _PropertyEntries.push_back(AgxPropertyEntryDefinition(&AgxDictionary::MaxCorrectedVel, "100000", AgxColumnTypes::BasicFloat));
+        _PropertyEntries.push_back(AgxPropertyEntryDefinition(&AgxDictionary::MaxCorrectionVel, "100000", AgxColumnTypes::BasicFloat));
         _PropertyEntries.push_back(AgxPropertyEntryDefinition(&AgxDictionary::MaxPostCorrectionVel, "0", AgxColumnTypes::BasicFloat));
         _PropertyEntries.push_back(AgxPropertyEntryDefinition(&AgxDictionary::AlignmentBone, "-1", AgxColumnTypes::BasicFloat));
         _PropertyEntries.push_back(AgxPropertyEntryDefinition(&AgxDictionary::DisableWhenInactive, "False", AgxColumnTypes::BasicBool));

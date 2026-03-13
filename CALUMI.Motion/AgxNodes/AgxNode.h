@@ -10,6 +10,7 @@
 #include "Models/AgxPort.h"
 #include "Utilities/AgxDictionary.h"
 #include "Painter/AgxStyleCollection.h"
+#include "Utilities/AgxFormat.h"
 
 struct AgxNodeDataType
 {
@@ -139,6 +140,8 @@ public:
 
 	virtual AgxNodeType GetNodeType() const = 0;
 	virtual QString name() const = 0;
+	virtual inline QString typeName() const { return name(); }
+	virtual inline QString nameProperty() const { return _nameProperty; }
 
 	virtual QString caption() const = 0;
 	virtual bool captionVisible() const { return true; }
@@ -158,9 +161,9 @@ public:
 	virtual inline const QString& getGroupId() const { return _groupName; }
 	virtual inline void setGroupId(const QString& groupId) { _groupName = groupId; }
 	
+	virtual inline void save(pugi::xml_node& parent, QVector<AgxConnectionId> connections, QVector<AgxNodeId> sortedIds, QPointF pos) {}
 	virtual QJsonObject save() const;
-	//virtual pugi::xml_node saveAsXML() const;
-	virtual void load(QJsonObject const&);
+	virtual void load(const QJsonObject& data);
 
 	//destructive load operation. removes read elements and alerts on any data leftover
 	virtual void load(pugi::xml_node& xmlNode);
@@ -322,6 +325,7 @@ protected:
 	};
 
 public:
+	void save(pugi::xml_node& parent, QVector<AgxConnectionId> connections, QVector<AgxNodeId> sortedIds, QPointF pos) override;
 	QJsonObject save() const override;
 	void load(QJsonObject const&) override;
 	void load(pugi::xml_node& xmlNode) override;

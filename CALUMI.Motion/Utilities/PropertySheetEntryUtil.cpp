@@ -1,26 +1,21 @@
 #include "stdafx.h"
 #include "PropertySheetEntryUtil.h"
 
-static AgxLineEdit* CreateLineEdit(bool readOnly = true)
+static AgxLineEditContainer* CreateLineEdit(bool readOnly = true)
 {
-	AgxLineEdit* lineEdit = new AgxLineEdit();
+	AgxLineEditContainer* lineEditContainer = new AgxLineEditContainer();
 	
 	
-	lineEdit->setFixedWidth(200);
-	lineEdit->setTextMargins(6, 0, 6, 0);
-	
+	lineEditContainer->setContentFixedWidth(200);
 
 	if(readOnly)
-	{
-		lineEdit->setReadOnly(true);
-		lineEdit->SetUpDoubleClickEdit();
-		lineEdit->setFocusPolicy(Qt::FocusPolicy::NoFocus);
-	}
+		lineEditContainer->setAsButton(false);
+	
 
-	return lineEdit;
+	return lineEditContainer;
 }
 
-AgxLineEdit* AgxWidgetUtil::CreateEntry(AgxColumnTypes type, const QStringList& keyPath, QObject* target, bool autoConnect)
+AgxLineEditContainer* AgxWidgetUtil::CreateEntry(AgxColumnTypes type, const QStringList& keyPath, QObject* target, bool autoConnect)
 {
 
 	if (autoConnect && !target) return nullptr;
@@ -69,7 +64,7 @@ AgxLineEdit* AgxWidgetUtil::CreateEntry(AgxColumnTypes type, const QStringList& 
 }
 
 
-AgxLineEdit* AgxWidgetUtil::CreateBasicStringEntry(const QStringList& keyPath, QObject* target, AgxVarType varType, bool negativeAllowed, bool autoConnect)
+AgxLineEditContainer* AgxWidgetUtil::CreateBasicStringEntry(const QStringList& keyPath, QObject* target, AgxVarType varType, bool negativeAllowed, bool autoConnect)
 {
 	auto iAgx = dynamic_cast<IAgxEmbedSceneData*>(target);
 
@@ -92,10 +87,8 @@ AgxLineEdit* AgxWidgetUtil::CreateBasicStringEntry(const QStringList& keyPath, Q
 			}
 			break;
 		case AgxVarType::Boolean:
-			lineEdit->setReadOnly(true);
-			lineEdit->setFocusPolicy(Qt::FocusPolicy::NoFocus);
-			lineEdit->SetUpDoubleClickEdit();
-			lineEdit->connect(lineEdit, &AgxLineEdit::DoubleClicked, lineEdit, [lineEdit, iAgx, keyPath, autoConnect]() { 
+			lineEdit->setAsButton(false);
+			lineEdit->connect(lineEdit, &AgxLineEditContainer::ContentDoubleClicked, lineEdit, [lineEdit, iAgx, keyPath, autoConnect]() { 
 								QString text = lineEdit->text() == "True" ? "False" : "True";
 								if (autoConnect && iAgx)
 								{
@@ -108,10 +101,8 @@ AgxLineEdit* AgxWidgetUtil::CreateBasicStringEntry(const QStringList& keyPath, Q
 			if (autoConnect) autoConnect = false;
 			break;
 		case AgxVarType::Vector:
-			lineEdit->setReadOnly(true);
-			lineEdit->setFocusPolicy(Qt::FocusPolicy::NoFocus);
-			lineEdit->SetUpDoubleClickEdit();
-			lineEdit->connect(lineEdit, &AgxLineEdit::DoubleClicked, lineEdit, [lineEdit, iAgx, keyPath, autoConnect]() {
+			lineEdit->setAsButton(false);
+			lineEdit->connect(lineEdit, &AgxLineEditContainer::ContentDoubleClicked, lineEdit, [lineEdit, iAgx, keyPath, autoConnect]() {
 								MultiVariableDialog* dialog = new MultiVariableDialog();
 								dialog->SetCustomVector(true, false);
 								dialog->DisableComboBox();
@@ -133,7 +124,7 @@ AgxLineEdit* AgxWidgetUtil::CreateBasicStringEntry(const QStringList& keyPath, Q
 	}
 	
 	if (autoConnect)
-		target->connect(lineEdit, &AgxLineEdit::editingFinished, target, [iAgx, lineEdit, keyPath]() {
+		target->connect(lineEdit, &AgxLineEditContainer::ContentEditingFinished, target, [iAgx, lineEdit, keyPath]() {
 		
 
 		if (iAgx)
@@ -150,14 +141,14 @@ AgxLineEdit* AgxWidgetUtil::CreateBasicStringEntry(const QStringList& keyPath, Q
 	return lineEdit;
 }
 
-AgxLineEdit* AgxWidgetUtil::CreateEventEntry(const QStringList& keyPath, QObject* target, bool autoConnect)
+AgxLineEditContainer* AgxWidgetUtil::CreateEventEntry(const QStringList& keyPath, QObject* target, bool autoConnect)
 {
 	auto iAgx = dynamic_cast<IAgxEmbedSceneData*>(target);
 
 	auto lineEdit = CreateLineEdit();
 
 	if(autoConnect)
-		target->connect(lineEdit, &AgxLineEdit::DoubleClicked, target, [iAgx, lineEdit, keyPath]() {
+		target->connect(lineEdit, &AgxLineEditContainer::ContentDoubleClicked, target, [iAgx, lineEdit, keyPath]() {
 
 		auto dialog = DialogPool_SFBGS::GetInstance().GetEventEntryDialog(lineEdit->text());
 		if (dialog->exec() == QDialog::Accepted) {
@@ -175,13 +166,13 @@ AgxLineEdit* AgxWidgetUtil::CreateEventEntry(const QStringList& keyPath, QObject
 	return lineEdit;
 }
 
-AgxLineEdit* AgxWidgetUtil::CreateFloatVarEntry(const QStringList& keyPath, QObject* target, bool autoConnect)
+AgxLineEditContainer* AgxWidgetUtil::CreateFloatVarEntry(const QStringList& keyPath, QObject* target, bool autoConnect)
 {
 	auto iAgx = dynamic_cast<IAgxEmbedSceneData*>(target);
 
-	AgxLineEdit* lineEdit = CreateLineEdit();
+	AgxLineEditContainer* lineEdit = CreateLineEdit();
 	if (autoConnect)
-		target->connect(lineEdit, &AgxLineEdit::DoubleClicked, target, [iAgx, lineEdit, keyPath]() {
+		target->connect(lineEdit, &AgxLineEditContainer::ContentDoubleClicked, target, [iAgx, lineEdit, keyPath]() {
 
 		auto dialog = DialogPool_SFBGS::GetInstance().GetFloatVariableEntryDialog(lineEdit->text());
 		if (dialog->exec() == QDialog::Accepted) {
@@ -199,14 +190,14 @@ AgxLineEdit* AgxWidgetUtil::CreateFloatVarEntry(const QStringList& keyPath, QObj
 	return lineEdit;
 }
 
-AgxLineEdit* AgxWidgetUtil::CreateIntegerVarEntry(const QStringList& keyPath, QObject* target, bool autoConnect)
+AgxLineEditContainer* AgxWidgetUtil::CreateIntegerVarEntry(const QStringList& keyPath, QObject* target, bool autoConnect)
 {
 	auto iAgx = dynamic_cast<IAgxEmbedSceneData*>(target);
 
-	AgxLineEdit* lineEdit = CreateLineEdit();
+	AgxLineEditContainer* lineEdit = CreateLineEdit();
 
 	if (autoConnect)
-		target->connect(lineEdit, &AgxLineEdit::DoubleClicked, target, [iAgx, lineEdit, keyPath]() {
+		target->connect(lineEdit, &AgxLineEditContainer::ContentDoubleClicked, target, [iAgx, lineEdit, keyPath]() {
 
 		auto dialog = DialogPool_SFBGS::GetInstance().GetIntegerVariableEntryDialog(lineEdit->text());
 		if (dialog->exec() == QDialog::Accepted) {
@@ -224,14 +215,14 @@ AgxLineEdit* AgxWidgetUtil::CreateIntegerVarEntry(const QStringList& keyPath, QO
 	return lineEdit;
 }
 
-AgxLineEdit* AgxWidgetUtil::CreateBooleanVarEntry(const QStringList& keyPath, QObject* target, bool autoConnect)
+AgxLineEditContainer* AgxWidgetUtil::CreateBooleanVarEntry(const QStringList& keyPath, QObject* target, bool autoConnect)
 {
 	auto iAgx = dynamic_cast<IAgxEmbedSceneData*>(target);
 
-	AgxLineEdit* lineEdit = CreateLineEdit();
+	AgxLineEditContainer* lineEdit = CreateLineEdit();
 
 	if(autoConnect)
-		target->connect(lineEdit, &AgxLineEdit::DoubleClicked, target, [iAgx, lineEdit, keyPath]() {
+		target->connect(lineEdit, &AgxLineEditContainer::ContentDoubleClicked, target, [iAgx, lineEdit, keyPath]() {
 
 		auto dialog = DialogPool_SFBGS::GetInstance().GetBooleanVariableEntryDialog(lineEdit->text());
 		if (dialog->exec() == QDialog::Accepted) {
@@ -249,14 +240,14 @@ AgxLineEdit* AgxWidgetUtil::CreateBooleanVarEntry(const QStringList& keyPath, QO
 	return lineEdit;
 }
 
-AgxLineEdit* AgxWidgetUtil::CreateVectorVarEntry(const QStringList& keyPath, QObject* target, bool autoConnect)
+AgxLineEditContainer* AgxWidgetUtil::CreateVectorVarEntry(const QStringList& keyPath, QObject* target, bool autoConnect)
 {
 	auto iAgx = dynamic_cast<IAgxEmbedSceneData*>(target);
 
-	AgxLineEdit* lineEdit = CreateLineEdit();
+	AgxLineEditContainer* lineEdit = CreateLineEdit();
 
 	if(autoConnect)
-		target->connect(lineEdit, &AgxLineEdit::DoubleClicked, target, [iAgx, lineEdit, keyPath]() {
+		target->connect(lineEdit, &AgxLineEditContainer::ContentDoubleClicked, target, [iAgx, lineEdit, keyPath]() {
 
 		auto dialog = DialogPool_SFBGS::GetInstance().GetVectorVariableEntryDialog(lineEdit->text());
 		if (dialog->exec() == QDialog::Accepted) {
@@ -274,14 +265,14 @@ AgxLineEdit* AgxWidgetUtil::CreateVectorVarEntry(const QStringList& keyPath, QOb
 	return lineEdit;
 }
 
-AgxLineEdit* AgxWidgetUtil::CreatePrefixEntry(const QStringList& keyPath, QObject* target, bool autoConnect)
+AgxLineEditContainer* AgxWidgetUtil::CreatePrefixEntry(const QStringList& keyPath, QObject* target, bool autoConnect)
 {
 	auto iAgx = dynamic_cast<IAgxEmbedSceneData*>(target);
 
-	AgxLineEdit* lineEdit = CreateLineEdit();
+	AgxLineEditContainer* lineEdit = CreateLineEdit();
 
 	if(autoConnect)
-		target->connect(lineEdit, &AgxLineEdit::DoubleClicked, target, [iAgx, lineEdit, keyPath]() {
+		target->connect(lineEdit, &AgxLineEditContainer::ContentDoubleClicked, target, [iAgx, lineEdit, keyPath]() {
 
 		auto dialog = DialogPool_SFBGS::GetInstance().GetPrefixDialog(lineEdit->text());
 		if (dialog->exec() == QDialog::Accepted) {
@@ -299,14 +290,14 @@ AgxLineEdit* AgxWidgetUtil::CreatePrefixEntry(const QStringList& keyPath, QObjec
 	return lineEdit;
 }
 
-AgxLineEdit* AgxWidgetUtil::CreateSuffixEntry(const QStringList& keyPath, QObject* target, bool autoConnect)
+AgxLineEditContainer* AgxWidgetUtil::CreateSuffixEntry(const QStringList& keyPath, QObject* target, bool autoConnect)
 {
 	auto iAgx = dynamic_cast<IAgxEmbedSceneData*>(target);
 
-	AgxLineEdit* lineEdit = CreateLineEdit();
+	AgxLineEditContainer* lineEdit = CreateLineEdit();
 
 	if (autoConnect)
-		target->connect(lineEdit, &AgxLineEdit::DoubleClicked, target, [iAgx, lineEdit, keyPath]() {
+		target->connect(lineEdit, &AgxLineEditContainer::ContentDoubleClicked, target, [iAgx, lineEdit, keyPath]() {
 
 		auto dialog = DialogPool_SFBGS::GetInstance().GetSuffixDialog(lineEdit->text());
 		if (dialog->exec() == QDialog::Accepted) {
@@ -324,14 +315,14 @@ AgxLineEdit* AgxWidgetUtil::CreateSuffixEntry(const QStringList& keyPath, QObjec
 	return lineEdit;
 }
 
-AgxLineEdit* AgxWidgetUtil::CreateSyncEntry(const QStringList& keyPath, QObject* target, bool autoConnect)
+AgxLineEditContainer* AgxWidgetUtil::CreateSyncEntry(const QStringList& keyPath, QObject* target, bool autoConnect)
 {
 	auto iAgx = dynamic_cast<IAgxEmbedSceneData*>(target);
 
-	AgxLineEdit* lineEdit = CreateLineEdit();
+	AgxLineEditContainer* lineEdit = CreateLineEdit();
 
 	if (autoConnect)
-		target->connect(lineEdit, &AgxLineEdit::DoubleClicked, target, [iAgx, lineEdit, keyPath]() {
+		target->connect(lineEdit, &AgxLineEditContainer::ContentDoubleClicked, target, [iAgx, lineEdit, keyPath]() {
 
 		auto dialog = DialogPool_SFBGS::GetInstance().GetSyncVariableDialog(lineEdit->text());
 		if (dialog->exec() == QDialog::Accepted) {
@@ -349,14 +340,14 @@ AgxLineEdit* AgxWidgetUtil::CreateSyncEntry(const QStringList& keyPath, QObject*
 	return lineEdit;
 }
 
-AgxLineEdit* AgxWidgetUtil::CreateStateEntry(const QStringList& keyPath, QObject* target, bool autoConnect)
+AgxLineEditContainer* AgxWidgetUtil::CreateStateEntry(const QStringList& keyPath, QObject* target, bool autoConnect)
 {
 	auto iAgx = dynamic_cast<IAgxEmbedSceneData*>(target);
 
-	AgxLineEdit* lineEdit = CreateLineEdit();
+	AgxLineEditContainer* lineEdit = CreateLineEdit();
 
 	if (autoConnect)
-		target->connect(lineEdit, &AgxLineEdit::DoubleClicked, target, [iAgx, lineEdit, keyPath]() {
+		target->connect(lineEdit, &AgxLineEditContainer::ContentDoubleClicked, target, [iAgx, lineEdit, keyPath]() {
 
 		auto dialog = DialogPool_SFBGS::GetInstance().GetStateVariableDialog(lineEdit->text());
 		if (dialog->exec() == QDialog::Accepted) {
@@ -374,14 +365,14 @@ AgxLineEdit* AgxWidgetUtil::CreateStateEntry(const QStringList& keyPath, QObject
 	return lineEdit;
 }
 
-AgxLineEdit* AgxWidgetUtil::CreateActionEntry(const QStringList& keyPath, QObject* target, bool autoConnect)
+AgxLineEditContainer* AgxWidgetUtil::CreateActionEntry(const QStringList& keyPath, QObject* target, bool autoConnect)
 {
 	auto iAgx = dynamic_cast<IAgxEmbedSceneData*>(target);
 
-	AgxLineEdit* lineEdit = CreateLineEdit();
+	AgxLineEditContainer* lineEdit = CreateLineEdit();
 
 	if (autoConnect)
-		target->connect(lineEdit, &AgxLineEdit::DoubleClicked, target, [iAgx, lineEdit, keyPath]() {
+		target->connect(lineEdit, &AgxLineEditContainer::ContentDoubleClicked, target, [iAgx, lineEdit, keyPath]() {
 
 		auto dialog = DialogPool_SFBGS::GetInstance().GetActionVariableDialog(lineEdit->text());
 		if (dialog->exec() == QDialog::Accepted) {
@@ -424,14 +415,14 @@ static AgxColumnTypes GetTypeRequest() {
 	return AgxColumnTypes::Default;
 }
 
-AgxLineEdit* AgxWidgetUtil::CreateBasicMuliVarEntry(const QStringList& keyPath, QObject* target, bool autoConnect)
+AgxLineEditContainer* AgxWidgetUtil::CreateBasicMuliVarEntry(const QStringList& keyPath, QObject* target, bool autoConnect)
 {
 	auto iAgx = dynamic_cast<IAgxEmbedSceneData*>(target);
 
-	AgxLineEdit* lineEdit = CreateLineEdit();
+	AgxLineEditContainer* lineEdit = CreateLineEdit();
 
 	if (autoConnect)
-		target->connect(lineEdit, &AgxLineEdit::DoubleClicked, target, [iAgx, lineEdit, keyPath]() {
+		target->connect(lineEdit, &AgxLineEditContainer::ContentDoubleClicked, target, [iAgx, lineEdit, keyPath]() {
 		
 		QJsonObject input;
 
@@ -509,14 +500,14 @@ AgxLineEdit* AgxWidgetUtil::CreateBasicMuliVarEntry(const QStringList& keyPath, 
 	return lineEdit;
 }
 
-AgxLineEdit* AgxWidgetUtil::CreateCustomMuliVarEntry(const QStringList& keyPath, QObject* target, bool autoConnect)
+AgxLineEditContainer* AgxWidgetUtil::CreateCustomMuliVarEntry(const QStringList& keyPath, QObject* target, bool autoConnect)
 {
 	auto iAgx = dynamic_cast<IAgxEmbedSceneData*>(target);
 
-	AgxLineEdit* lineEdit = CreateLineEdit();
+	AgxLineEditContainer* lineEdit = CreateLineEdit();
 
 	if (autoConnect)
-		target->connect(lineEdit, &AgxLineEdit::DoubleClicked, target, [iAgx, lineEdit, keyPath]() {
+		target->connect(lineEdit, &AgxLineEditContainer::ContentDoubleClicked, target, [iAgx, lineEdit, keyPath]() {
 
 		QJsonObject input;
 

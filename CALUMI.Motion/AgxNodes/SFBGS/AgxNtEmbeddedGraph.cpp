@@ -49,6 +49,19 @@ namespace SFBGS {
         return QStringLiteral("NT_EMBEDDED_GRAPH");
     }
 
+    QString AgxNtEmbeddedGraph::typeName() const
+    {
+        switch (_EmbeddedGraphModel->getGraphType())
+        {
+            case AgxGraphType::SFBGS_StateMachine:
+                return QStringLiteral("NT_STATE_MACHINE_EMBEDDED");
+            case AgxGraphType::SFBGS_Default:
+                return QStringLiteral("NT_BLEND_TREE_EMBEDDED");
+            default:
+                return name();
+        }
+    }
+
     QString AgxNtEmbeddedGraph::caption() const
     {
         switch (_EmbeddedGraphModel->getGraphType())
@@ -62,20 +75,25 @@ namespace SFBGS {
         }
     }
 
-    QString AgxNtEmbeddedGraph::SubCaption() const
+    QString AgxNtEmbeddedGraph::SubCaptionUnformatted() const
     {
         if (_EmbeddedGraphModel) {
             switch (_EmbeddedGraphModel->getGraphType())
             {
                 case AgxGraphType::SFBGS_StateMachine:
-                    return QString("%1 (%2)").arg(_PropertyEntries.at(1).value).arg(GetPropertyValue(_SFBGS_Properties, AgxDictionary::UserId().tag, "?"));
+                    return _PropertyEntries.at(1).value;
                     break;
                 case AgxGraphType::SFBGS_Default:
-                    return QString("%1 (%2)").arg(_PropertyEntries.at(0).value).arg(GetPropertyValue(_SFBGS_Properties, AgxDictionary::UserId().tag, "?"));
+                    return _PropertyEntries.at(0).value;
                     break;
             }
         }
         return "Undefined Graph";
+    }
+
+    QString AgxNtEmbeddedGraph::SubCaption() const
+    {
+        return QString("%1 (%2)").arg(SubCaptionUnformatted()).arg(GetPropertyValue(_SFBGS_Properties, AgxDictionary::UserId().tag, "?"));
     }
 
     unsigned int AgxNtEmbeddedGraph::nPorts(AgxPortType portType) const
@@ -177,7 +195,7 @@ namespace SFBGS {
         if (_EmbeddedGraphScene)
         {
             connect(this, &AgxNode::PropertySheetUpdated, _EmbeddedGraphScene.get(), [this]() {
-                        QString tabTitle = SubCaption().isEmpty() ? "graph" : SubCaption();
+                        QString tabTitle = SubCaptionUnformatted().isEmpty() ? "graph" : SubCaptionUnformatted();
                         _EmbeddedGraphScene->agxGraphModel().SetGraphTitle("embedded_" + tabTitle, false);
                     });
         }

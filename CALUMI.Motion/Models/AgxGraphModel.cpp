@@ -965,9 +965,15 @@ void AgxGraphModel::SetModelFilePath(const QString& file)
 void AgxGraphModel::SetGraphTitle(const QString& title, bool root)
 {
     if(root)
+    {
         _rootReference->_agxGraphTitle = title.isEmpty() ? "untitled" : title;
+        Q_EMIT _rootReference->PropertySheetUpdated();
+    }
     else
+    {
         _agxGraphTitle = title.isEmpty() ? "untitled" : title;
+        Q_EMIT PropertySheetUpdated();
+    }
 
     if (auto cApp = dynamic_cast<CALUMIMotionApplication*>(QCoreApplication::instance()))
     {
@@ -1114,7 +1120,7 @@ QJsonObject AgxGraphModel::save() const
     if (_rootReference == this || !_rootReference) {
         QJsonArray versionArray = {MAJORVAL, MINORVAL, PATCHVAL, REVISIONVAL};
         sceneJson["file-version"] = versionArray;
-        sceneJson["file-type"] = AgxFileTypeToString(AgxFileType::Behavior);
+        sceneJson["file-type"] = AgxFileTypeToString(AgxFileType::BehaviorFile);
     }
 
     QJsonArray nodesJsonArray;
@@ -1148,9 +1154,67 @@ QJsonObject AgxGraphModel::save() const
     return sceneJson;
 }
 
-pugi::xml_node AgxGraphModel::save_xml() const
+void AgxGraphModel::save(pugi::xml_node& parent) const
 {
-    return pugi::xml_node();
+    AgxAppendValue(parent, "Link_Style", AgxGraphRegistry::GetInstance().GetGraphDefinition(_graphType)._tags.value("Link_Style"), AgxFormat::NewLine, 0);
+
+    //Nodes
+    {
+        auto nodeList = allNodeIds().values();
+        std::sort(nodeList.begin(), nodeList.end());
+
+        QVector<AgxCommentNode*> commentNodes;
+
+        for (auto& nodeId : nodeList)
+        {
+            if (_models.at(nodeId).get()->GetNodeType() == AgxNodeType::Comment) 
+            {
+                if (auto cNodePtr = dynamic_cast<AgxCommentNode*>(_models.at(nodeId).get())) commentNodes.push_back(cNodePtr);
+                continue;
+            }
+
+            auto conns = allConnectionIds(nodeId);
+
+            _models.at(nodeId).get()->save(parent, QVector<AgxConnectionId>({ conns.begin(), conns.end() }), nodeList, nodeData(nodeId, AgxNodeRole::Position).toPointF());
+        }
+
+        for (auto& group : GetNodeGroupAssignmentList())
+        {
+            if (group.first.isEmpty() || group.first.compare("none", Qt::CaseInsensitive) == 0 || group.first.compare("<none>", Qt::CaseInsensitive) == 0) continue;
+
+            auto groupObject = AgxAppend(parent, "node_group", AgxFormat::NewLine,0);
+            AgxAppendValue(groupObject, "name", group.first, { AgxFormat::NewLine, AgxFormat::Indent }, 1);
+            AgxAppendValue(groupObject, "collapsed", "False", {AgxFormat::NewLine, AgxFormat::Indent}, 1);
+
+            for (auto& gNodeId : group.second)
+            {
+                auto nodeObject = AgxAppend(groupObject, "node", { AgxFormat::NewLine, AgxFormat::Indent }, 1);
+                AgxAppendValue(nodeObject, "idx", QString("%1").arg(nodeList.indexOf(gNodeId) + 1), AgxFormat::None, 0);
+            }
+
+            AgxCloseNode(groupObject, false, false, 0);
+        }
+
+        for (auto& comment : commentNodes)
+        {
+            auto commentObject = AgxAppend(parent, "comment", AgxFormat::NewLine, 0);
+            AgxAppendValue(commentObject, "text", comment->_text, AgxFormat::None, 0);
+            auto position = nodeData(comment->_nodeIdRef, AgxNodeRole::Position).toPointF();
+            auto target = comment->_target;
+            AgxAppendValue(commentObject, "X", CleanUpDecimals(QString("%1").arg(position.x() / SFBGSxScalar, 0, 'f', 5)), AgxFormat::None, 0);
+            AgxAppendValue(commentObject, "Y", CleanUpDecimals(QString("%1").arg(position.y() / SFBGSyScalar,0, 'f', 5)), AgxFormat::None, 0);
+            AgxAppendValue(commentObject, "TargetX", CleanUpDecimals(QString("%1").arg(target.x()/ SFBGSxScalar,0, 'f', 5)), AgxFormat::None, 0);
+            AgxAppendValue(commentObject, "TargetY", CleanUpDecimals(QString("%1").arg(target.y()/ SFBGSyScalar,0, 'f', 5)), AgxFormat::None, 0);
+        }
+    }
+    
+    FormatBasicPropertySheet(parent, _PropertyEntries);
+
+    for (auto& blockKey : _BlockOrder)
+    {
+        FormatPropertyBlock(parent, _PropertyBlocks[blockKey]);
+    }
+
 }
 
 void AgxGraphModel::loadNode(QJsonObject const& nodeJson)
@@ -1323,6 +1387,9 @@ void AgxGraphModel::load(pugi::xml_node& xmlNode)
         if (xmlNode.child("Name")) {
             _graphRelDataPath = xmlNode.child_value("Name");
             xmlNode.remove_child("Name");
+
+            QFileInfo relFile(_graphRelDataPath);
+            SetGraphTitle(relFile.baseName());
         }
     }
 
@@ -1364,7 +1431,7 @@ void AgxGraphModel::load(pugi::xml_node& xmlNode)
             QString xpos = node.child("pos_x") ? node.child_value("pos_x") : "0";
             QString ypos = node.child("pos_y") ? node.child_value("pos_y") : "0";
 
-            QPointF pos(2*xpos.toDouble(), ypos.toDouble());
+            QPointF pos(SFBGSxScalar *xpos.toDouble(), SFBGSyScalar *ypos.toDouble());
             setNodeData(nodeId, AgxNodeRole::Position, pos);
 
             auto connectionToNode = QObject::connect(agxNode, &AgxNode::statusUpdate, [this, contentSize, contentProc](float loadPercentage, const QString& message) { 
@@ -1397,7 +1464,7 @@ void AgxGraphModel::load(pugi::xml_node& xmlNode)
                     QString x = xmlComment.child_value("TargetX");
                     auto value = x.toDouble(&ok);
                     value = ok ? value : 0.0;
-                    targetF.setX(2*value);
+                    targetF.setX(SFBGSxScalar *value);
                     //xmlComment.remove_child("TargetX");
                 }
                 if (xmlComment.child("TargetY")) {
@@ -1406,7 +1473,7 @@ void AgxGraphModel::load(pugi::xml_node& xmlNode)
                     QString y = xmlComment.child_value("TargetY");
                     auto value = y.toDouble(&ok);
                     value = ok ? value : 0.0;
-                    targetF.setY(value);
+                    targetF.setY(SFBGSyScalar *value);
                     //xmlComment.remove_child("TargetY");
                 }
                 cNode->_target = targetF;
@@ -1418,7 +1485,7 @@ void AgxGraphModel::load(pugi::xml_node& xmlNode)
                     QString x = xmlComment.child_value("X");
                     auto value = x.toDouble(&ok);
                     value = ok ? value : 0.0;
-                    posF.setX(2*value);
+                    posF.setX(SFBGSxScalar*value);
                     //xmlComment.remove_child("X");
                 }
                 if (xmlComment.child("Y")) {
@@ -1426,7 +1493,7 @@ void AgxGraphModel::load(pugi::xml_node& xmlNode)
                     QString y = xmlComment.child_value("Y");
                     auto value = y.toDouble(&ok);
                     value = ok ? value : 0.0;
-                    posF.setY(value);
+                    posF.setY(SFBGSyScalar *value);
                     //xmlComment.remove_child("Y");
                 }
                 setNodeData(nodeId, AgxNodeRole::Position, posF);
@@ -1459,7 +1526,7 @@ void AgxGraphModel::load(pugi::xml_node& xmlNode)
     size_t grpCount = 1;
     for (auto& groupXml : xmlNode.children("node_group")) {
         QString NameStr = groupXml.child_value("name");
-        NameStr = NameStr.isEmpty() ? std::format("Import Group {}", grpCount).c_str() : NameStr;
+        NameStr = NameStr.isEmpty() ? QString("Import Group %1").arg(grpCount) : NameStr;
         CreateNodeGroup(NameStr);
         for (auto& nodeRef : groupXml.children("node")) {
             QString nIdx = nodeRef.child_value("idx");

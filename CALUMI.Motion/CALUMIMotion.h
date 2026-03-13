@@ -61,6 +61,7 @@ private:
     void BuildItemSelectionMenu();
     void BuildFileInOutMenu();
     void BuildSettingsMenu();
+    void BuildGraphEditMenu();
 
 public slots:
     void Create_SFBGSTab(std::shared_ptr<AgxGraphicsScene> scene = nullptr, std::shared_ptr<AgxGraphModel> model = nullptr);

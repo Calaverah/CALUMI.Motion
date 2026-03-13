@@ -47,6 +47,15 @@ public:
 	inline static AgxTerm DefaultState() { return { "default_state", QObject::tr("Default State") }; }
 
 
+	inline static AgxTerm x_StandtoMoveTags_x() { return {"Stand to Move Tags", QObject::tr("Tag")}; }
+	inline static AgxTerm x_MovetoStopTags_x() { return {"Move to Stop Tags", QObject::tr("Tag")}; }
+	inline static AgxTerm x_WhileMovingTags_x() { return {"While Moving Tags", QObject::tr("Tag")}; }
+	
+	inline static AgxTerm x_SwapEvents_x() { return {"Swap Graph Events", QObject::tr("Event")}; }
+	inline static AgxTerm x_EnterEvents_x() { return {"Enter Events", QObject::tr("Event")}; }
+	inline static AgxTerm x_ExitEvents_x() { return {"Exit Events", QObject::tr("Event")}; }
+	inline static AgxTerm EnterEvents() { return { "Enter Events", QObject::tr("Enter Events") }; }
+	inline static AgxTerm ExitEvents() { return { "Exit Events", QObject::tr("Exit Events") }; }
 
 	inline static AgxTerm Ankle() { return { "Ankle", QObject::tr("Ankle") }; }
 	inline static AgxTerm AssignedValue() { return { "Assigned Value", QObject::tr("Assigned Value") }; }
@@ -97,7 +106,7 @@ public:
 	inline static AgxTerm BoneVariance() { return { "Bone Variance", QObject::tr("Bone Variance") }; }
 	inline static AgxTerm BindingType() { return { "Binding Type", QObject::tr("Binding Type") }; }
 	inline static AgxTerm BindingName() { return { "Binding Name", QObject::tr("Binding Name") }; }
-	inline static AgxTerm BindingVariable() { return { "Binding Variable", QObject::tr("Binding Variable") }; }
+	inline static AgxTerm BindingValue() { return { "Binding Value", QObject::tr("Binding Value") }; }
 	inline static AgxTerm BoneNames() { return { "Bone Names", QObject::tr("Bone Names") }; }
 	inline static AgxTerm Back() { return { "Back", QObject::tr("Back") }; }
 	inline static AgxTerm Bones() { return { "Bones", QObject::tr("Bones") }; }
@@ -191,8 +200,6 @@ public:
 	inline static AgxTerm EHip() { return { "EHip", QObject::tr("EHip") }; }
 	inline static AgxTerm EKnee() { return { "EKnee", QObject::tr("EKnee") }; }
 	inline static AgxTerm EAnkle() { return { "EAnkle", QObject::tr("EAnkle") }; }
-	inline static AgxTerm EnterEvents() { return { "Enter Events", QObject::tr("Enter Events") }; }
-	inline static AgxTerm ExitEvents() { return { "Exit Events", QObject::tr("Exit Events") }; }
 	inline static AgxTerm EndPosition() { return { "End Position", QObject::tr("End Position") }; }
 
 	inline static AgxTerm FinalBoneAxisIndex() { return { "Final Bone Axis Index", QObject::tr("Final Bone Axis Index") }; }
@@ -285,14 +292,16 @@ public:
 	inline static AgxTerm Mirror() { return { "Mirror", QObject::tr("Mirror") }; }
 	inline static AgxTerm MinScale() { return { "Min Scale", QObject::tr("Min Scale") }; }
 	inline static AgxTerm MaxScale() { return { "Max Scale", QObject::tr("Max Scale") }; }
-	inline static AgxTerm MaxCorrectedVel() { return { "Max Corrected Vel", QObject::tr("Max Corrected Vel") }; }
+	inline static AgxTerm MaxCorrectionVel() { return { "Max Correction Vel", QObject::tr("Max Correction Vel") }; }
 	inline static AgxTerm MaxPostCorrectionVel() { return { "Max Post Correction Vel", QObject::tr("Max Post Correction Vel") }; }
 	inline static AgxTerm MaxCorrectionSpeed() { return { "Max Correction Speed", QObject::tr("Max Correction Speed") }; }
 	inline static AgxTerm Mass() { return { "Mass", QObject::tr("Mass") }; }
 	inline static AgxTerm MassOverride() { return { "Mass Override", QObject::tr("Mass Override") }; }
 	inline static AgxTerm MinTimes() { return { "Min Times", QObject::tr("Min Times") }; }
-	inline static AgxTerm Mintime() { return { "Min time", QObject::tr("Min time") }; }
-	inline static AgxTerm Maxtime() { return { "Max time", QObject::tr("Max time") }; }
+	inline static AgxTerm Mintime() { return { "Min time", QObject::tr("Min Time") }; }
+	inline static AgxTerm MinTime() { return { "Min Time", QObject::tr("Min Time") }; }
+	inline static AgxTerm Maxtime() { return { "Max time", QObject::tr("Max Time") }; }
+	inline static AgxTerm MaxTime() { return { "Max Time", QObject::tr("Max Time") }; }
 	inline static AgxTerm MaxTimes() { return { "Max Times", QObject::tr("Max Times") }; }
 	inline static AgxTerm MaxBlendTime() { return { "Max Blend Time", QObject::tr("Max Blend Time") }; }
 	inline static AgxTerm MaxCumulativeAnimation() { return { "Max Cumulative Animation", QObject::tr("Max Cumulative Animation") }; }
@@ -347,11 +356,12 @@ public:
 	inline static AgxTerm Priority() { return { "Priority", QObject::tr("Priority") }; }
 	inline static AgxTerm Payload() { return { "Payload", QObject::tr("Payload") }; }
 	inline static AgxTerm Prefix() { return { "Prefix", QObject::tr("Prefix") }; }
-	inline static AgxTerm Param() { return { "Param", QObject::tr("Param") }; }
+	inline static AgxTerm Param() { return { "Param", QObject::tr("Parameter") }; }
 	inline static AgxTerm Parametric() { return { "Parametric", QObject::tr("Parametric") }; }
 	inline static AgxTerm PickWeight() { return { "Pick Weight", QObject::tr("Pick Weight") }; }
 	inline static AgxTerm PickWeights() { return { "Pick Weights", QObject::tr("Pick Weights") }; }
 	inline static AgxTerm PropagateTagUpstream() { return { "Propagate Tag Upstream", QObject::tr("Propagate Tag Upstream") }; }
+	inline static AgxTerm PairedAnimNameRoot() { return { "Paired Anim Name Root", QObject::tr("Paired Anim Name Root") }; }
 	
 	inline static AgxTerm RandomizeStartPoint() { return { "Randomize Start Point", QObject::tr("Randomize Start Point") }; }
 	inline static AgxTerm RangeMin() { return { "Range Min", QObject::tr("Range Min") }; }
@@ -375,6 +385,7 @@ public:
 	inline static AgxTerm ResetEventName() { return { "Reset Event Name", QObject::tr("Reset Event Name") }; }
 	inline static AgxTerm RightTagName() { return { "Right Tag Name", QObject::tr("Right Tag Name") }; }
 	inline static AgxTerm RigPath() { return { "Rig Path", QObject::tr("Rig Path") }; }
+	inline static AgxTerm RigName() { return { "Rig Name", QObject::tr("Rig Name") }; }
 	inline static AgxTerm Right() { return { "Right", QObject::tr("Right") }; }
 	inline static AgxTerm Run() { return { "Run", QObject::tr("Run") }; }
 	inline static AgxTerm ReceiveTagfromDownstream() { return { "Receive Tag from Downstream", QObject::tr("Receive Tag from Downstream") }; }
@@ -428,6 +439,7 @@ public:
 	
 	inline static AgxTerm Tag() { return { "Tag", QObject::tr("Tag") }; }
 	inline static AgxTerm TagName() { return { "TagName", QObject::tr("Tag Name") }; }
+	inline static AgxTerm Tag_Name() { return { "Tag Name", QObject::tr("Tag Name") }; }
 	inline static AgxTerm TagAlteration() { return { "Tag Alteration", QObject::tr("Tag Alteration") }; }
 	inline static AgxTerm TagSyncSystem() { return { "Tag Sync System", QObject::tr("Tag Sync System") }; }
 	inline static AgxTerm TypeofPropagation() { return { "Type of Propagation", QObject::tr("Type of Propagation") }; }

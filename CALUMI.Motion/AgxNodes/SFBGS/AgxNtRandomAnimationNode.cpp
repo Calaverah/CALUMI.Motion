@@ -25,7 +25,7 @@ namespace SFBGS {
             AgxPropertyBlockData pickWgt({ 
                 AgxPropertyEntryDefinition(&AgxDictionary::BlankEntry, "", AgxColumnTypes::BasicString),
                 AgxPropertyEntryDefinition(&AgxDictionary::PickWeight,"0",AgxColumnTypes::BasicFloat), 
-                AgxPropertyEntryDefinition(&AgxDictionary::TagName,"",AgxColumnTypes::BasicString)}, nullptr);
+                AgxPropertyEntryDefinition(&AgxDictionary::Tag_Name,"",AgxColumnTypes::BasicString)}, nullptr);
 
             _PropertyBlocks.insert(&AgxDictionary::PickWeights, pickWgt);
             

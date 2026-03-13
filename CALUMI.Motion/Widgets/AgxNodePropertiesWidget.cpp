@@ -44,22 +44,22 @@ AgxNodePropertiesWidget::AgxNodePropertiesWidget(QWidget* parent, bool bblockSig
 	_MainVBoxLayout->setHorizontalSizeConstraint(QLayout::SetMinimumSize);
 	setLayout(_MainVBoxLayout);
 	setContentsMargins(3, 3, 3, 3);
-	setSizePolicy(QSizePolicy::Preferred, QSizePolicy::MinimumExpanding);
+	setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::MinimumExpanding);
 	setMinimumSize(10, 10);
 	QString objname = "AgxNodeProp";
 	setObjectName(objname);
 	setStyleSheet("QWidget#" + objname + " {background-color: transparent; padding: 1px;}");
 
-	Q_EMIT BroadcastWidth(size().width());
+	SendWidthAdjustment();
 }
 
 AgxNodePropertiesWidget::~AgxNodePropertiesWidget()
 {
 }
 
-void AgxNodePropertiesWidget::SetUpCustomDropDown(AgxLineEdit* line, const QList<TermRef>& list, const QStringList& keyPath)
+void AgxNodePropertiesWidget::SetUpCustomDropDown(AgxLineEditContainer* line, const QList<TermRef>& list, const QStringList& keyPath)
 {
-	connect(line, &AgxLineEdit::DoubleClicked, line, [this,line,list, keyPath]() {
+	connect(line, &AgxLineEditContainer::ContentDoubleClicked, line, [this,line,list, keyPath]() {
 						
 						QStringList stringList;
 						int current = 0;
@@ -77,87 +77,65 @@ void AgxNodePropertiesWidget::SetUpCustomDropDown(AgxLineEdit* line, const QList
 
 				  });
 
-	Q_EMIT BroadcastWidth(size().width());
+	SendWidthAdjustment();
 }
 
-QList<AgxLineEdit*> AgxNodePropertiesWidget::CreatePropertyEntries(QVector<AgxPropertyEntryDefinition>* dataRef, AgxNode* signalSender, bool split)
+QList<AgxLineEditContainer*> AgxNodePropertiesWidget::CreatePropertyEntries(QVector<AgxPropertyEntryDefinition>* dataRef, AgxNode* signalSender, bool split)
 {
-	QList<AgxLineEdit*> outputList;
+	QList<AgxLineEditContainer*> outputList;
 	for (int i = 0; i < dataRef->size(); i++)
 	{
 		auto& dataRefItem = (*dataRef)[i];
 		QString key = dataRefItem.Tag();
-		
-		//if (dataRefItem.columnType == AgxColumnTypes::CommentBox) continue;
 
 		auto output = AgxWidgetUtil::CreateEntry(dataRefItem.columnType, {key}, this);
 
 
-		output->setText(dataRefItem.value);
+		output->setContentText(dataRefItem.value);
 
 		if (dataRefItem.columnType == AgxColumnTypes::CustomDropDown)
 		{
 			SetUpCustomDropDown(output, dataRefItem.CustomDropDownList(), {key});
 		}
 
-		QHBoxLayout* containerLayout = new QHBoxLayout();
-		QCheckBox* checkBox = new QCheckBox();
-		checkBox->setMinimumHeight(output->minimumHeight());
-
-		containerLayout->addWidget(output);
-		containerLayout->addWidget(checkBox);
-		containerLayout->setContentsMargins(0, 0, 0, 0);
-		QWidget* container = new QWidget();
-		container->setContentsMargins(0, 0, 0, 0);
-		container->setLayout(containerLayout);
-
-		//bool flip = _RightFormLayout->rowCount() < _LeftFormLayout->rowCount();
-
 		if (split && !_nextEntryLeft)
 		{
-			_RightFormLayout->addRow(dataRefItem.Label(), container);
-			_RightFormLayout->setRowVisible(container, dataRefItem.propertyEnabled);
-			connect(&dataRefItem, &AgxPropertyEntryDefinition::StateUpdated, _RightFormLayout, [this, container](bool enabled) {
-						_RightFormLayout->setRowVisible(container, enabled);
+			_RightFormLayout->addRow(dataRefItem.Label(), output);
+			_RightFormLayout->setRowVisible(output, dataRefItem.propertyEnabled);
+			connect(&dataRefItem, &AgxPropertyEntryDefinition::StateUpdated, _RightFormLayout, [this, output](bool enabled) {
+						_RightFormLayout->setRowVisible(output, enabled);
 					});
-			if (QLabel* label = dynamic_cast<QLabel*>(_RightFormLayout->labelForField(container)))
+			if (QLabel* label = dynamic_cast<QLabel*>(_RightFormLayout->labelForField(output)))
 			{
-				//checkBox->setChecked(dataRefItem.isPresent);
 				label->setEnabled(dataRefItem.isPresent);
-				output->setEnabled(dataRefItem.isPresent);
-				connect(&dataRefItem, &AgxPropertyEntryDefinition::PresentUpdated, label, [this, label, output, checkBox](bool enabled) {
+				output->setContentState(dataRefItem.isPresent);
+				
+				connect(&dataRefItem, &AgxPropertyEntryDefinition::PresentUpdated, label, [this, label, output](bool enabled) {
 						label->setEnabled(enabled);
-						output->setEnabled(enabled);
-						if (checkBox->isChecked() != enabled) {
-							checkBox->blockSignals(true);
-							checkBox->setChecked(enabled);
-							checkBox->blockSignals(false);
-						}
+						output->setContentState(enabled);
 						});
+				
 				connect(this, &AgxNodePropertiesWidget::LanguageChanged, label, [label, &dataRefItem]() {
 							label->setText(dataRefItem.Label());
 						});
 			}
 			_nextEntryLeft = true;
 		} else {
-			_LeftFormLayout->addRow(dataRefItem.Label(), container);
-			_LeftFormLayout->setRowVisible(container, dataRefItem.propertyEnabled);
-			connect(&dataRefItem, &AgxPropertyEntryDefinition::StateUpdated, _RightFormLayout, [this, container](bool enabled) {
-						_LeftFormLayout->setRowVisible(container, enabled);
+			_LeftFormLayout->addRow(dataRefItem.Label(), output);
+			_LeftFormLayout->setRowVisible(output, dataRefItem.propertyEnabled);
+			connect(&dataRefItem, &AgxPropertyEntryDefinition::StateUpdated, _RightFormLayout, [this, output](bool enabled) {
+						_LeftFormLayout->setRowVisible(output, enabled);
 					});
-			if (QLabel* label = dynamic_cast<QLabel*>(_LeftFormLayout->labelForField(container)))
+			if (QLabel* label = dynamic_cast<QLabel*>(_LeftFormLayout->labelForField(output)))
 			{
 				label->setEnabled(dataRefItem.isPresent);
-				output->setEnabled(dataRefItem.isPresent);
-				connect(&dataRefItem, &AgxPropertyEntryDefinition::PresentUpdated, label, [this, label, output, checkBox](bool enabled) {
+				output->setContentState(dataRefItem.isPresent);
+				
+				connect(&dataRefItem, &AgxPropertyEntryDefinition::PresentUpdated, label, [this, label, output](bool enabled) {
 						label->setEnabled(enabled);
-						output->setEnabled(enabled);
-						if (checkBox->isChecked() != enabled) {
-							checkBox->blockSignals(true);
-							checkBox->setChecked(enabled);
-							checkBox->blockSignals(false);
-						}
+						output->setContentState(enabled);
 						});
+
 				connect(this, &AgxNodePropertiesWidget::LanguageChanged, label, [label, &dataRefItem]() {
 					label->setText(dataRefItem.Label());
 						});
@@ -165,32 +143,31 @@ QList<AgxLineEdit*> AgxNodePropertiesWidget::CreatePropertyEntries(QVector<AgxPr
 			_nextEntryLeft = false;
 		}
 		
-		checkBox->setChecked(dataRefItem.isPresent);
+		output->setContentState(dataRefItem.isPresent);
 		
-		connect(checkBox, &QCheckBox::checkStateChanged, &dataRefItem, [this, &dataRefItem, checkBox, key] {
+		connect(output, &AgxLineEditContainer::ContentStateChanged, &dataRefItem, [this, &dataRefItem, key](bool enabled) {
 					QJsonObject input;
-					input["isPresent"] = checkBox->isChecked();
+					input["isPresent"] = enabled;
 					SendInsertPropertySheetDataCommand(QStringListToQJsonObject({ key }, input));
 				});
 
 		connect(signalSender, &AgxNode::PropertySheetUpdated, output, [output, &dataRefItem]() {
-			output->blockSignals(true);
-			output->setText(dataRefItem.value);
-			output->RefreshTooltip(dataRefItem.value);
-			output->blockSignals(false);
+			output->setContentText(dataRefItem.value);
+			output->RefreshContentTooltip(dataRefItem.value);
 				});
 		
 
 		outputList.append(output);
 	}
 
-	Q_EMIT BroadcastWidth(size().width());
+
+	SendWidthAdjustment();
 	return outputList;
 }
 
-QList<AgxLineEdit*> AgxNodePropertiesWidget::CreatePropertyEntries(QVector<AgxPropertyEntryDefinition>* dataRef, AgxGraphModel* signalSender, bool split)
+QList<AgxLineEditContainer*> AgxNodePropertiesWidget::CreatePropertyEntries(QVector<AgxPropertyEntryDefinition>* dataRef, AgxGraphModel* signalSender, bool split)
 {
-	QList<AgxLineEdit*> outputList;
+	QList<AgxLineEditContainer*> outputList;
 	for (int i = 0; i < dataRef->size(); i++)
 	{
 		auto& dataRefItem = (*dataRef)[i];
@@ -199,106 +176,92 @@ QList<AgxLineEdit*> AgxNodePropertiesWidget::CreatePropertyEntries(QVector<AgxPr
 		auto output = AgxWidgetUtil::CreateEntry(dataRefItem.columnType, { key }, this);
 
 
-		output->setText(dataRefItem.value);
+		output->setContentText(dataRefItem.value);
 
 		if (dataRefItem.columnType == AgxColumnTypes::CustomDropDown)
 		{
 			SetUpCustomDropDown(output, dataRefItem.CustomDropDownList(), { key });
 		}
 
-		QHBoxLayout* containerLayout = new QHBoxLayout();
-		QCheckBox* checkBox = new QCheckBox();
-		checkBox->setMinimumHeight(output->minimumHeight());
-
-		containerLayout->addWidget(output);
-		containerLayout->addWidget(checkBox);
-		containerLayout->setContentsMargins(0, 0, 0, 0);
-		QWidget* container = new QWidget();
-		container->setContentsMargins(0, 0, 0, 0);
-		container->setLayout(containerLayout);
-
-		//bool flip = _RightFormLayout->rowCount() < _LeftFormLayout->rowCount();
+		QLabel* entryLabel = new QLabel(dataRefItem.Label());
 
 		if (split && !_nextEntryLeft)
 		{
-			_RightFormLayout->addRow(dataRefItem.Label(), container);
-			_RightFormLayout->setRowVisible(container, dataRefItem.propertyEnabled);
-			connect(&dataRefItem, &AgxPropertyEntryDefinition::StateUpdated, _RightFormLayout, [this, container](bool enabled) {
-				_RightFormLayout->setRowVisible(container, enabled);
+			_RightFormLayout->addRow(entryLabel, output);
+			_RightFormLayout->setRowVisible(output, dataRefItem.propertyEnabled);
+			connect(&dataRefItem, &AgxPropertyEntryDefinition::StateUpdated, _RightFormLayout, [this, output](bool enabled) {
+				_RightFormLayout->setRowVisible(output, enabled);
 					});
-			if (QLabel* label = dynamic_cast<QLabel*>(_RightFormLayout->labelForField(container)))
+			//if (QLabel* label = dynamic_cast<QLabel*>(_RightFormLayout->labelForField(output)))
 			{
 				//checkBox->setChecked(dataRefItem.isPresent);
-				label->setEnabled(dataRefItem.isPresent);
-				output->setEnabled(dataRefItem.isPresent);
-				connect(&dataRefItem, &AgxPropertyEntryDefinition::PresentUpdated, label, [this, label, output, checkBox](bool enabled) {
-					label->setEnabled(enabled);
-					output->setEnabled(enabled);
-					if (checkBox->isChecked() != enabled) {
-						checkBox->blockSignals(true);
-						checkBox->setChecked(enabled);
-						checkBox->blockSignals(false);
-					}
+				entryLabel->setEnabled(dataRefItem.isPresent);
+				//output->setEnabledState(dataRefItem.isPresent);
+				output->setContentState(dataRefItem.isPresent);
+				connect(&dataRefItem, &AgxPropertyEntryDefinition::PresentUpdated, entryLabel, [this, entryLabel, output](bool enabled) {
+					
+					entryLabel->setEnabled(enabled);
+					output->setContentState(enabled);
+					
 						});
-				connect(this, &AgxNodePropertiesWidget::LanguageChanged, label, [label, &dataRefItem]() {
-					label->setText(dataRefItem.Label());
+
+				connect(this, &AgxNodePropertiesWidget::LanguageChanged, entryLabel, [entryLabel, &dataRefItem]() {
+					
+					entryLabel->setText(dataRefItem.Label());
+					
 						});
 			}
 			_nextEntryLeft = true;
 		} else {
-			_LeftFormLayout->addRow(dataRefItem.Label(), container);
-			_LeftFormLayout->setRowVisible(container, dataRefItem.propertyEnabled);
-			connect(&dataRefItem, &AgxPropertyEntryDefinition::StateUpdated, _LeftFormLayout, [this, container](bool enabled) {
-				_LeftFormLayout->setRowVisible(container, enabled);
+			_LeftFormLayout->addRow(dataRefItem.Label(), output);
+			_LeftFormLayout->setRowVisible(output, dataRefItem.propertyEnabled);
+			connect(&dataRefItem, &AgxPropertyEntryDefinition::StateUpdated, _LeftFormLayout, [this, output](bool enabled) {
+				_LeftFormLayout->setRowVisible(output, enabled);
 					});
-			if (QLabel* label = dynamic_cast<QLabel*>(_LeftFormLayout->labelForField(container)))
+			//if (QLabel* label = dynamic_cast<QLabel*>(_LeftFormLayout->labelForField(output)))
 			{
-				label->setEnabled(dataRefItem.isPresent);
-				output->setEnabled(dataRefItem.isPresent);
-				connect(&dataRefItem, &AgxPropertyEntryDefinition::PresentUpdated, label, [this, label, output, checkBox](bool enabled) {
-					label->setEnabled(enabled);
-					output->setEnabled(enabled);
-					if (checkBox->isChecked() != enabled) {
-						checkBox->blockSignals(true);
-						checkBox->setChecked(enabled);
-						checkBox->blockSignals(false);
-					}
+				entryLabel->setEnabled(dataRefItem.isPresent);
+				output->setContentState(dataRefItem.isPresent);
+				
+				connect(&dataRefItem, &AgxPropertyEntryDefinition::PresentUpdated, entryLabel, [this, entryLabel, output](bool enabled) {
+					
+					entryLabel->setEnabled(enabled);
+					output->setContentState(enabled);
+					
 						});
-				connect(this, &AgxNodePropertiesWidget::LanguageChanged, label, [label, &dataRefItem]() {
-					label->setText(dataRefItem.Label());
+				connect(this, &AgxNodePropertiesWidget::LanguageChanged, entryLabel, [entryLabel, &dataRefItem]() {
+					entryLabel->setText(dataRefItem.Label());
 						});
 			}
 			_nextEntryLeft = false;
 		}
 
-		checkBox->setChecked(dataRefItem.isPresent);
+		output->setContentState(dataRefItem.isPresent);
 
-		connect(checkBox, &QCheckBox::checkStateChanged, &dataRefItem, [this, &dataRefItem, checkBox, key] {
+		connect(output, &AgxLineEditContainer::ContentStateChanged, &dataRefItem, [this, &dataRefItem, key](bool enabled) {
 			QJsonObject input;
-			input["isPresent"] = checkBox->isChecked();
+			input["isPresent"] = enabled;
 			SendInsertPropertySheetDataCommand(QStringListToQJsonObject({ key }, input));
 				});
 
 		connect(signalSender, &AgxGraphModel::PropertySheetUpdated, output, [output, dataRef, i]() {
 			if (dataRef->size() <= i) return;
 
-			output->blockSignals(true);
-			output->setText(dataRef->at(i).value);
-			output->RefreshTooltip(dataRef->at(i).value);
-			output->blockSignals(false);
+			output->setContentText(dataRef->at(i).value);
+			output->RefreshContentTooltip(dataRef->at(i).value);
 				});
 		outputList.append(output);
 	}
 
-	Q_EMIT BroadcastWidth(size().width());
+	SendWidthAdjustment();
 	return outputList;
 }
 
-QList<AgxLineEdit*> AgxNodePropertiesWidget::CreatePropertyEntries(QVector<AgxPropertyEntryDefinition>* dataRef, AgxPort* signalSender, bool split, QStringList path)
+QList<AgxLineEditContainer*> AgxNodePropertiesWidget::CreatePropertyEntries(QVector<AgxPropertyEntryDefinition>* dataRef, AgxPort* signalSender, bool split, QStringList path)
 {
 	path.append("temp");
 
-	QList<AgxLineEdit*> outputList;
+	QList<AgxLineEditContainer*> outputList;
 	for (int i = 0; i < dataRef->size(); i++)
 	{
 		auto& dataRefItem = (*dataRef)[i];
@@ -309,96 +272,88 @@ QList<AgxLineEdit*> AgxNodePropertiesWidget::CreatePropertyEntries(QVector<AgxPr
 
 		auto output = AgxWidgetUtil::CreateEntry(dataRefItem.columnType, path, this);
 
-		output->setText(dataRefItem.value);
+		output->setContentText(dataRefItem.value);
 
 		if (dataRefItem.columnType == AgxColumnTypes::CustomDropDown)
 		{
 			SetUpCustomDropDown(output, dataRefItem.CustomDropDownList(), path);
 		}
 
-		QHBoxLayout* containerLayout = new QHBoxLayout();
-		QCheckBox* checkBox = new QCheckBox();
-		checkBox->setMinimumHeight(output->minimumHeight());
-
-		containerLayout->addWidget(output);
-		containerLayout->addWidget(checkBox);
-		containerLayout->setContentsMargins(0, 0, 0, 0);
-		QWidget* container = new QWidget();
-		container->setContentsMargins(0, 0, 0, 0);
-		container->setLayout(containerLayout);
-
-		//bool flip = _RightFormLayout->rowCount() < _LeftFormLayout->rowCount();
-
 		if (split && !_nextEntryLeft)
 		{
-			_RightFormLayout->addRow(dataRefItem.Label(), container);
-			_RightFormLayout->setRowVisible(container, dataRefItem.propertyEnabled);
-			connect(&dataRefItem, &AgxPropertyEntryDefinition::StateUpdated, _RightFormLayout, [this, container](bool enabled) {
-				_RightFormLayout->setRowVisible(container, enabled);
+			_RightFormLayout->addRow(dataRefItem.Label(), output);
+			_RightFormLayout->setRowVisible(output, dataRefItem.propertyEnabled);
+			connect(&dataRefItem, &AgxPropertyEntryDefinition::StateUpdated, _RightFormLayout, [this, output](bool enabled) {
+				_RightFormLayout->setRowVisible(output, enabled);
 					});
-			if (QLabel* label = dynamic_cast<QLabel*>(_RightFormLayout->labelForField(container)))
+			if (QLabel* label = dynamic_cast<QLabel*>(_RightFormLayout->labelForField(output)))
 			{
-				//checkBox->setChecked(dataRefItem.isPresent);
+
 				label->setEnabled(dataRefItem.isPresent);
-				output->setEnabled(dataRefItem.isPresent);
-				connect(&dataRefItem, &AgxPropertyEntryDefinition::PresentUpdated, label, [this, label, output, checkBox](bool enabled) {
+				output->setContentState(dataRefItem.isPresent);
+
+				connect(&dataRefItem, &AgxPropertyEntryDefinition::PresentUpdated, label, [this, label, output](bool enabled) {
+					
 					label->setEnabled(enabled);
-					output->setEnabled(enabled);
-					if (checkBox->isChecked() != enabled) {
-						checkBox->blockSignals(true);
-						checkBox->setChecked(enabled);
-						checkBox->blockSignals(false);
-					}
+					output->setContentState(enabled);
+					
 						});
+				
 				connect(this, &AgxNodePropertiesWidget::LanguageChanged, label, [label, &dataRefItem]() {
+				
 					label->setText(dataRefItem.Label());
+					
 						});
 			}
 			_nextEntryLeft = true;
 		} else {
-			_LeftFormLayout->addRow(dataRefItem.Label(), container);
-			_LeftFormLayout->setRowVisible(container, dataRefItem.propertyEnabled);
-			connect(&dataRefItem, &AgxPropertyEntryDefinition::StateUpdated, _LeftFormLayout, [this, container](bool enabled) {
-				_LeftFormLayout->setRowVisible(container, enabled);
+			_LeftFormLayout->addRow(dataRefItem.Label(), output);
+			_LeftFormLayout->setRowVisible(output, dataRefItem.propertyEnabled);
+			connect(&dataRefItem, &AgxPropertyEntryDefinition::StateUpdated, _LeftFormLayout, [this, output](bool enabled) {
+				_LeftFormLayout->setRowVisible(output, enabled);
 					});
-			if (QLabel* label = dynamic_cast<QLabel*>(_LeftFormLayout->labelForField(container)))
+			if (QLabel* label = dynamic_cast<QLabel*>(_LeftFormLayout->labelForField(output)))
 			{
 				label->setEnabled(dataRefItem.isPresent);
-				output->setEnabled(dataRefItem.isPresent);
-				connect(&dataRefItem, &AgxPropertyEntryDefinition::PresentUpdated, label, [this, label, output, checkBox](bool enabled) {
+				output->setContentState(dataRefItem.isPresent);
+				
+				connect(&dataRefItem, &AgxPropertyEntryDefinition::PresentUpdated, label, [this, label, output](bool enabled) {
+				
 					label->setEnabled(enabled);
-					output->setEnabled(enabled);
-					if (checkBox->isChecked() != enabled) {
-						checkBox->blockSignals(true);
-						checkBox->setChecked(enabled);
-						checkBox->blockSignals(false);
-					}
+					output->setContentState(enabled);
+					
 						});
+				
 				connect(this, &AgxNodePropertiesWidget::LanguageChanged, label, [label, &dataRefItem]() {
+				
 					label->setText(dataRefItem.Label());
+					
 						});
 			}
 			_nextEntryLeft = false;
 		}
 
-		checkBox->setChecked(dataRefItem.isPresent);
+		output->setContentState(dataRefItem.isPresent);
 
-		connect(checkBox, &QCheckBox::checkStateChanged, &dataRefItem, [this, &dataRefItem, checkBox, path] {
+		connect(output, &AgxLineEditContainer::ContentStateChanged, &dataRefItem, [this, &dataRefItem, path](bool enabled) {
+			
 			QJsonObject input;
-			input["isPresent"] = checkBox->isChecked();
+			input["isPresent"] = enabled;
 			SendInsertPropertySheetDataCommand(QStringListToQJsonObject(path, input));
+			
 				});
 
 		connect(signalSender, &AgxPort::PropertySheetUpdated, output, [output, &dataRefItem]() {
-			output->blockSignals(true);
-			output->setText(dataRefItem.value);
-			output->RefreshTooltip(dataRefItem.value);
-			output->blockSignals(false);
+
+			output->setContentText(dataRefItem.value);
+			output->RefreshContentTooltip(dataRefItem.value);
+
 				});
+
 		outputList.append(output);
 	}
 
-	Q_EMIT BroadcastWidth(size().width());
+	SendWidthAdjustment();
 	return outputList;
 }
 
@@ -446,7 +401,7 @@ QList<QLabel*> AgxNodePropertiesWidget::CreateHiddenEntries(QMap<TermRef, QPair<
 		outputList.append(entry);
 	}
 
-	Q_EMIT BroadcastWidth(size().width());
+	SendWidthAdjustment();
 	return outputList;
 }
 
@@ -492,7 +447,7 @@ QList<QLabel*> AgxNodePropertiesWidget::CreateHiddenEntries(QMap<TermRef, QPair<
 		outputList.append(entry);
 	}
 
-	Q_EMIT BroadcastWidth(size().width());
+	SendWidthAdjustment();
 	return outputList;
 }
 
@@ -516,7 +471,7 @@ QLabel* AgxNodePropertiesWidget::CreateGuidLabel(const QUuid* value, AgxNode* si
 			});
 	output->setEnabled(false);
 
-	Q_EMIT BroadcastWidth(size().width());
+	SendWidthAdjustment();
 	return output;
 }
 
@@ -565,15 +520,15 @@ ModifiedPushButton* AgxNodePropertiesWidget::CreateFlagEntry(const QString& titl
 			});
 	_nextEntryLeft = false;
 
-	Q_EMIT BroadcastWidth(size().width());
+	SendWidthAdjustment();
 	return button;
 }
 
-AgxLineEdit* AgxNodePropertiesWidget::CreateSimpleLineEdit(QString* sourceData, AgxPort* signalSender, TermRef label, bool split, QStringList path)
+AgxLineEditContainer* AgxNodePropertiesWidget::CreateSimpleLineEdit(QString* sourceData, AgxPort* signalSender, TermRef label, bool split, QStringList path)
 {
-	AgxLineEdit* output = AgxWidgetUtil::CreateEntry(AgxColumnTypes::BasicString, path, this);
+	AgxLineEditContainer* output = AgxWidgetUtil::CreateEntry(AgxColumnTypes::BasicString, path, this);
 	output->blockSignals(true);
-	output->setText(*sourceData);
+	output->setContentText(*sourceData);
 	output->blockSignals(false);
 	
 	QLabel* labelObj = new QLabel(QString());
@@ -593,7 +548,7 @@ AgxLineEdit* AgxNodePropertiesWidget::CreateSimpleLineEdit(QString* sourceData, 
 	}
 	connect(signalSender, &AgxPort::PropertySheetUpdated, output, [output, sourceData]() {
 							output->blockSignals(true);
-							output->setText(*sourceData);
+							output->setContentText(*sourceData);
 							output->blockSignals(false);
 																						 });
 
@@ -603,7 +558,7 @@ AgxLineEdit* AgxNodePropertiesWidget::CreateSimpleLineEdit(QString* sourceData, 
 							}
 																						   });
 
-	Q_EMIT BroadcastWidth(size().width());
+	SendWidthAdjustment();
 	return output;
 }
 
@@ -619,7 +574,9 @@ AgxPropertyBlockWidget* AgxNodePropertiesWidget::CreatePropetryBlock(TermRef blo
 				block->setVisible(enabled);
 			});
 
-	Q_EMIT BroadcastWidth(size().width());
+	connect(block, &AgxPropertyBlockWidget::RowsChanged, this, &AgxNodePropertiesWidget::SendWidthAdjustment);
+
+	SendWidthAdjustment();
 	return block;
 }
 
@@ -641,14 +598,14 @@ void AgxNodePropertiesWidget::CreateEmbeddedNodeGraphButton(std::shared_ptr<AgxG
 			
 				});
 	
-	Q_EMIT BroadcastWidth(size().width());
+	SendWidthAdjustment();
 	return;
 }
 
 void AgxNodePropertiesWidget::FinalizeWidget()
 {
 	blockSignals(false);
-	Q_EMIT BroadcastWidth(size().width());
+	SendWidthAdjustment();
 }
 
 void AgxNodePropertiesWidget::mousePressEvent(QMouseEvent* event)
@@ -687,4 +644,10 @@ void AgxNodePropertiesWidget::changeEvent(QEvent* event)
 	}
 
 	QWidget::changeEvent(event);
+}
+
+void AgxNodePropertiesWidget::SendWidthAdjustment()
+{
+	adjustSize();
+	Q_EMIT BroadcastWidth(size().width());
 }

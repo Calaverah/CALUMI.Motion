@@ -5,6 +5,8 @@
 #pragma warning(pop)
 
 #include "Utilities/AgxDefinitions.h"
+#include <qtranslator.h>
+#include <qsyntaxhighlighter.h>
 #include <QSettings>
 
 #pragma region Definitions
@@ -100,13 +102,24 @@ public:
 	QSet<QString> GetCustomCategories(AgxGameType game = AgxGameType::SFBGS, bool withDefault = true) const;
 	void AddCustomCatgeory(const QString& item, AgxGameType game = AgxGameType::SFBGS);
 
+	QString GetThemeFilePath() const;
+	QString GetThemeFileName() const;
+	void SetThemeFileName(const QString& path);
+
 private:
 	void SetDefaultLanguage();
 	QString IniPath() const;
+	static bool CreateDirectoryIfNDef(const QString& fileString);
+
+	friend class AgxStyle;
+	friend class AgxNodeStyle;
+	friend class AgxConnectionStyle;
+	friend class AgxGraphicsViewStyle;
 
 	//Generic
 private:
 	QString _iniPath;
+	QString _themePath;
 	QSettings* _settings = nullptr;
 	QSettings* _dataStorage = nullptr;
 	QString _lastDirectory;
@@ -127,9 +140,32 @@ private:
 
 	QSet<QString> _categories_Default;
 
+	QString _themeFileName;
+
 	//SFBGS
 private:
 	QString _defaultRelDataPath_SFBGS = R"(Data\Meshes\AnimTextData\Tables\Graphs\)";
 	QSet<QString> _categories_SFBGS;
+
+
+public:
+	struct HighlightingRule {
+		QRegularExpression pattern;
+		QTextCharFormat format;
+	};
+
+	void SetSymbolColor(QColor color);
+	const QColor& GetSymbolColor() const;
+	void SetDecodedColor(QColor color);
+	const QColor& GetDecodedColor() const;
+	inline const QVector<HighlightingRule>& GetHighlightingRules() { return _highlightingRules; }
+
+private:
+	QVector<HighlightingRule> _highlightingRules;
+	
+	QColor _symColorDefault = QColor(Qt::cyan);
+	QTextCharFormat _symbolFormat;
+	QColor _decodedColorDefault = QColor(Qt::red);
+	QTextCharFormat _decodedFormat;
 
 };

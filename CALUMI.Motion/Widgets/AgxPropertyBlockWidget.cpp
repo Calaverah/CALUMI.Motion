@@ -41,15 +41,15 @@ static int GetColumnWidth(const AgxColumnTypes& type) {
 	}
 }
 
-static void filter_1(QString& text) {
-	QRegularExpression regex("\\_.*\\_");
-	text.replace(regex, "");
-}
-
-static void filter_2(QString& text) {
-	QRegularExpression regex("\\~.*\\~");
-	text.replace(regex, "");
-}
+//static void filter_1(QString& text) {
+//	QRegularExpression regex("\\_.*\\_");
+//	text.replace(regex, "");
+//}
+//
+//static void filter_2(QString& text) {
+//	QRegularExpression regex("\\~.*\\~");
+//	text.replace(regex, "");
+//}
 
 AgxPropertyBlockWidget::AgxPropertyBlockWidget(TermRef ref, AgxPropertyBlockData& dataRef, QWidget* parent) : QWidget(parent), _grid(new QGridLayout()), _label(new QLabel(ref().translation)), _dataRef(&dataRef)
 {
@@ -102,11 +102,11 @@ AgxPropertyBlockWidget::AgxPropertyBlockWidget(TermRef ref, AgxPropertyBlockData
 		
 		int width = GetColumnWidth(dataRef.GetColumnDefinition(i).columnType);
 
-		filter_1(labelStr);
+		agxStringFilter_1(labelStr);
 
 		bool empty = labelStr.isEmpty();
 
-		filter_2(labelStr);
+		agxStringFilter_2(labelStr);
 
 		QLabel* label = new QLabel(labelStr);
 
@@ -122,7 +122,7 @@ AgxPropertyBlockWidget::AgxPropertyBlockWidget(TermRef ref, AgxPropertyBlockData
 		else
 			label->setMinimumWidth(width);
 		
-		label->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::Fixed);
+		//label->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::Fixed);
 		QSpacerItem* hSpacer = new QSpacerItem(10, 0, QSizePolicy::Fixed, QSizePolicy::Fixed);
 		
 		_grid->addItem(hSpacer, 0, i * 2);
@@ -149,9 +149,9 @@ void AgxPropertyBlockWidget::ForceRefresh()
 	}
 }
 
-void AgxPropertyBlockWidget::SetUpCustomDropDown(AgxLineEdit* line, const QList<TermRef>& list, const QStringList& keyPath)
+void AgxPropertyBlockWidget::SetUpCustomDropDown(AgxLineEditContainer* line, const QList<TermRef>& list, const QStringList& keyPath)
 {
-	connect(line, &AgxLineEdit::DoubleClicked, line, [this, line, list, keyPath]() {
+	connect(line, &AgxLineEditContainer::ContentDoubleClicked, line, [this, line, list, keyPath]() {
 
 		QStringList stringList;
 		int current = 0;
@@ -182,19 +182,20 @@ void AgxPropertyBlockWidget::ConstructRow(int index)
 		QStringList keyPath = { "property-blocks",_label->text(),std::to_string(index).c_str(),std::to_string(j).c_str() };
 
 		auto line = AgxWidgetUtil::CreateEntry(_dataRef->GetColumnType(j), keyPath, parent());
+		line->setCheckbox(false);
 
 		int width = GetColumnWidth(_dataRef->GetColumnDefinition(j).columnType);
 
-		line->setText(rowRef->at(j).Value);
-		line->setToolTip("[" + GetSFBGSVarStringFromColumnType(rowRef->at(j).Type) + "]");
+		line->setContentText(rowRef->at(j).Value);
+		line->RefreshContentTooltip("[" + GetSFBGSVarTypeFromColumnType(rowRef->at(j).Type).first + "]");
 
 		if (_dataRef->GetColumnDefinition(j).columnType == AgxColumnTypes::CustomDropDown)
 		{
 			SetUpCustomDropDown(line, _dataRef->GetColumnDefinition(j).CustomDropDownList(), keyPath);
 		}
 
-		//line->RefreshTooltip(rowRef->at(j).Value);
-		line->setAlignment(Qt::AlignLeft);
+
+		line->SetContentAlignment(Qt::AlignLeft);
 		
 		QString labelStr = j >= _dataRef->GetColumnCount() ? "-" : _dataRef->GetColumnDefinition(j).Tag();
 
@@ -203,19 +204,19 @@ void AgxPropertyBlockWidget::ConstructRow(int index)
 
 		if (labelStr.isEmpty())
 		{
-			line->setMinimumWidth(50);
-			line->setFixedWidth(50);
+			line->setContentMinWidth(50);
+			line->setContentFixedWidth(50);
 		}
 		else
-			line->setMinimumWidth(width);
+			line->setContentMinWidth(width);
 
-		line->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::Fixed);
+		//line->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::Fixed);
 		_grid->addWidget(line, index + 1, j * 2 + 1, Qt::AlignLeft);
 		connect(_dataRef, &AgxPropertyBlockData::DataUpdated, line, [this, line, index, j]() {
-			line->blockSignals(true);
-			line->setText(_dataRef->GetRow(index)->at(j).Value);
-			line->setToolTip("[" + GetSFBGSVarStringFromColumnType(_dataRef->GetRow(index)->at(j).Type) + "]");
-			line->blockSignals(false);
+
+			line->setContentText(_dataRef->GetRow(index)->at(j).Value);
+			line->RefreshContentTooltip("[" + GetSFBGSVarTypeFromColumnType(_dataRef->GetRow(index)->at(j).Type).first + "]");
+
 				});
 	}
 }
@@ -255,7 +256,7 @@ void AgxPropertyBlockWidget::OnRowAdded(int index)
 		ConstructRow(i);
 	}
 
-	//QTimer::singleShot(0, this, &AgxPropertyBlockWidget::ForceRefresh);
+	Q_EMIT RowsChanged();
 }
 
 void AgxPropertyBlockWidget::OnRowRemoved(int index)
@@ -267,8 +268,7 @@ void AgxPropertyBlockWidget::OnRowRemoved(int index)
 		ConstructRow(i);
 	}
 
-	//QTimer::singleShot(5, this, &AgxPropertyBlockWidget::ForceRefresh);
-	
+	Q_EMIT RowsChanged();
 }
 
 void AgxPropertyBlockWidget::ShowContextMenu(const QPoint& pos)

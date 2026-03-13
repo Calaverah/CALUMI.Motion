@@ -17,7 +17,7 @@ namespace SFBGS {
         AgxPropertyBlockData blockData({
                                         AgxPropertyEntryDefinition(&AgxDictionary::BlankEntry, "", AgxColumnTypes::BasicString),
                                         AgxPropertyEntryDefinition(&AgxDictionary::AnimTag, "", AgxColumnTypes::BasicString),
-                                        AgxPropertyEntryDefinition(&AgxDictionary::Mintime, "0.33", AgxColumnTypes::BasicFloat),
+                                        AgxPropertyEntryDefinition(&AgxDictionary::MinTime, "0.33", AgxColumnTypes::BasicFloat),
                                         AgxPropertyEntryDefinition(&AgxDictionary::Angle0to1, "0", AgxColumnTypes::BasicFloat)
                                        }, nullptr);
 

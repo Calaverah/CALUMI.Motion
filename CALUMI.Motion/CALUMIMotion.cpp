@@ -15,6 +15,7 @@
 #include <Utilities/SettingsRegistry.h>
 #include "Application/CALUMIMotionApplication.h"
 #include "Widgets/Settings/SettingsDialog.h"
+#include "Utilities/UndoRedoCommands.h"
 
 CALUMIMotion::CALUMIMotion(QWidget *parent) : QMainWindow(parent)
 {
@@ -273,6 +274,7 @@ void CALUMIMotion::GetEditMenu()
     BuildUndoViewMenu();
     BuildCutCopyPasteMenu();
     BuildItemSelectionMenu();
+    BuildGraphEditMenu();
     BuildSettingsMenu();
 }
 
@@ -442,8 +444,7 @@ void CALUMIMotion::BuildCenterViewMenu()
         centerView->setEnabled(false);
         connect(ui.menuView, &QMenu::aboutToHide, centerView, &QAction::deleteLater);
     }
-    else {
-        const auto view = GetAgxViewFromTab(ui.tabWidget->currentIndex());
+    else if(const auto view = GetAgxViewFromTab(ui.tabWidget->currentIndex())) {        
         QAction* actionRef = view->centerActionRef();
         ui.menuView->addAction(actionRef);
         connect(ui.menuView, &QMenu::aboutToHide, this, [this, view]() {
@@ -462,6 +463,31 @@ void CALUMIMotion::BuildSettingsMenu()
                                                                 dialog.exec();
                                                             });
 
+}
+
+void CALUMIMotion::BuildGraphEditMenu()
+{
+    if (ui.tabWidget->count() <= 0) return;
+
+    if (const auto view = GetAgxViewFromTab(ui.tabWidget->currentIndex())) {
+        QAction* newTitleAction = ui.menuEdit->addAction(tr("Edit Graph Title"));
+        connect(ui.menuEdit, &QMenu::aboutToHide, newTitleAction, &QAction::deleteLater);
+        connect(newTitleAction, &QAction::triggered, this, [this, view]() {
+            bool ok = false;
+            QString result = QInputDialog::getText(this, tr("Input New Graph Title"),
+                                  tr("Graph Title:"), QLineEdit::Normal,
+                                  view->pagxNodeScene()->agxGraphModel().GetGraphTitle(), &ok);
+
+            if (result.isEmpty() || !ok || view->pagxNodeScene()->agxGraphModel().GetGraphTitle().compare(result, Qt::CaseInsensitive) == 0) return;
+
+            result = cleanFileName(result, false, true);
+
+            view->pagxNodeScene()->undoStack().push(new AgxSetGraphTitleCommand(&view->pagxNodeScene()->agxGraphModel(), result));
+
+                });
+        QAction* sep = ui.menuEdit->addSeparator();
+        connect(ui.menuEdit, &QMenu::aboutToHide, sep, &QAction::deleteLater);
+    }
 }
 
 void CALUMIMotion::BuildItemSelectionMenu()
@@ -539,12 +565,15 @@ void CALUMIMotion::onSaveAs()
     if (!ui.tabWidget || ui.tabWidget->count() == 0) return;
 
     if (const auto view = GetAgxViewFromTab(ui.tabWidget->currentIndex())) {
-        QString iniFilePath = view->pagxNodeScene()->agxGraphModel().GetModelFilePath();
-        QFileInfo iniFileName(iniFilePath);
+        QString initialFilePath = view->pagxNodeScene()->agxGraphModel().GetModelFilePath();
+        QFileInfo initialFileName(initialFilePath);
+        
+        QString graphTitle = view->pagxNodeScene()->agxGraphModel().GetGraphTitle();
+        QString fileNameString = cleanFileName(graphTitle + ".agx");
 
-        QString fileNameString = iniFileName.fileName().isEmpty() ? "untitled.jagx" : iniFileName.fileName();
-        QString fileDirString = iniFileName.path().isEmpty() && iniFileName.dir().exists() ? QDir::homePath() : iniFileName.path();
-        QString fileStemString = iniFileName.baseName().isEmpty() ? "untitled" : iniFileName.baseName();
+        //QString fileNameString = initialFileName.fileName().isEmpty() ? "untitled.jagx" : initialFileName.fileName();
+        QString fileDirString = initialFileName.path().isEmpty() && initialFileName.dir().exists() ? QDir::homePath() : initialFileName.path();
+        QString fileStemString = initialFileName.baseName().isEmpty() ? "untitled" : initialFileName.baseName();
 
         QString filePath = QFileDialog::getSaveFileName(this, tr("Save Graph As"), fileDirString + "/" + fileNameString);
         if (filePath.isEmpty()) return;
@@ -592,12 +621,12 @@ void CALUMIMotion::onOpen()
         AgxFileType type = AgxFileTypeFromString(obj.value("file-type").toString());
         switch (type)
         {
-            case AgxFileType::Behavior:
+            case AgxFileType::BehaviorFile:
                 OpenFile_Behavior_SFBGS(obj);
                 break;
             case AgxFileType::UNKNOWN:
-            case AgxFileType::Animation:
-            case AgxFileType::AnimationX:
+            case AgxFileType::AnimationFile:
+            case AgxFileType::AnimationComponent:
             default:
                 QMessageBox::critical(this, tr("Error"), tr("Unable To Open File Type: ") + AgxFileTypeToString(type));
                 break;
@@ -679,7 +708,11 @@ void CALUMIMotion::ImportFile_Agx_SFBGS() {
 
         ui.tabWidget->addTab(module, "");
 
-        scene->agxGraphModel().SetGraphTitle(pathInfo.baseName());
+        //scene->agxGraphModel().SetGraphTitle(pathInfo.baseName());
+        if (auto cApp = dynamic_cast<CALUMIMotionApplication*>(QCoreApplication::instance()))
+        {
+            cApp->UpdateApplicationTabWidgets();
+        }
 
         Q_EMIT watcher->progressValueChanged(970);
 
@@ -733,7 +766,69 @@ void CALUMIMotion::ImportFile_Agx_SFBGS() {
 
 void CALUMIMotion::ExportFile_Agx_SFBGS()
 {
-    
+    if (ui.tabWidget->count() <= 0) 
+    {
+        return;
+    }
+
+    AgxGraphicsView* agxView = GetAgxViewFromTab(ui.tabWidget->currentIndex());
+
+    if (!agxView) 
+    {
+        qWarning() << "Export Agx File Called On Non AgxView Tab. Exiting Function...";
+        return;
+    }
+
+    const AgxGraphModel* agxModel = agxView->pagxNodeScene()->agxGraphModel().rootGraphReference();
+
+    if (!agxModel)
+    {
+        qCritical() << "Root Graph Is Null";
+        return;
+    }
+
+        QString graphTitle = agxModel->GetGraphTitle();
+        QString fileNameString = cleanFileName(graphTitle + ".agx");
+        QString filePathToOpen = SettingsRegistry::GetInstance().LastDirectory(AgxGameType::SFBGS) + "/" + fileNameString;
+
+    QString filePath = QFileDialog::getSaveFileName(this, tr("Export As Animation Behavior Graph"), filePathToOpen, tr("Agx Files (*.agx);;All files (*.*)"));
+    if (filePath.isEmpty()) return;
+    QSaveFile file(filePath);
+    if (!file.open(QIODevice::WriteOnly | QIODevice::Text)) { QMessageBox::critical(this, tr("Error"), tr("Could not save to file")); return; }
+
+    QString fileName = QFileInfo(file).baseName() + ".agx";
+
+    pugi::xml_document doc;
+    auto root = doc.append_child("root");
+
+    {
+        AgxAppendValue(root, "Name", SettingsRegistry::GetInstance().GetRelativeDataPath(AgxGameType::SFBGS) + fileName, AgxFormat::NewLine);
+
+        QString category = agxModel->getGraphCategory();
+        if (!category.isEmpty() && category.compare("None", Qt::CaseInsensitive) != 0 && category.compare("<none>", Qt::CaseInsensitive) != 0)
+            AgxAppendValue(root, "Category", category, AgxFormat::NewLine, 0);
+    }    
+
+    agxModel->save(root);
+
+    AgxCloseNode(root, false, false, 0);
+
+    std::stringstream buffer;
+    doc.save(buffer, "\t", pugi::format_no_declaration | pugi::format_raw);
+    buffer << char(0x0A);
+    std::string bufferData = buffer.str();
+    file.write(bufferData.c_str(), bufferData.size());
+
+    if (!file.commit())
+    {
+        QString msg = "File Could Not Be Exported...";
+        qCritical() << msg;
+        QMessageBox::critical(this, "Error", msg, QMessageBox::StandardButton::Ok);
+    }
+    else
+    {
+        qInfo() << "File Saved To: " << file.fileName();
+    }
 }
 
 void CALUMIMotion::OpenFile_Behavior_SFBGS(QJsonObject& object)

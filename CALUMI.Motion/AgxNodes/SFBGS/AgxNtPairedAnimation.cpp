@@ -11,7 +11,14 @@ namespace SFBGS {
         _PropertyEntries.push_back(AgxPropertyEntryDefinition(&AgxDictionary::VictimSuffix, "Victim", AgxColumnTypes::BasicString));
         _PropertyEntries.push_back(AgxPropertyEntryDefinition(&AgxDictionary::SyncOnlyTransitionOut, "False", AgxColumnTypes::BasicBool));
 
-        _BlockOrder = { &AgxDictionary::EnterEvents, &AgxDictionary::ExitEvents };
+        AgxPropertyBlockData entryBlock({
+            AgxPropertyEntryDefinition(&AgxDictionary::BlankEntry,"",AgxColumnTypes::BasicString),
+            AgxPropertyEntryDefinition(&AgxDictionary::PairedAnimNameRoot,"",AgxColumnTypes::BasicString)
+                                        }, nullptr);
+
+        _PropertyBlocks.insert(&AgxDictionary::Entries, entryBlock);
+
+        _BlockOrder = { &AgxDictionary::Entries, &AgxDictionary::EnterEvents, &AgxDictionary::ExitEvents };
     }
 
     QString AgxNtPairedAnimation::name() const

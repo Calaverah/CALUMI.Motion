@@ -18,31 +18,31 @@ namespace SFBGS {
         _PropertyEntries.push_back(AgxPropertyEntryDefinition(&AgxDictionary::SyncSystem, "SyncFootsteps", AgxColumnTypes::SyncSystem));
 
         {
-            AgxPropertyBlockData whileMovingTags({ 
+            AgxPropertyBlockData standToMoveTags({
                 AgxPropertyEntryDefinition(&AgxDictionary::BlankEntry, "", AgxColumnTypes::BasicString),
-                AgxPropertyEntryDefinition(&AgxDictionary::Tags,"",AgxColumnTypes::BasicString), 
+                AgxPropertyEntryDefinition(&AgxDictionary::x_StandtoMoveTags_x,"",AgxColumnTypes::BasicString),
                 AgxPropertyEntryDefinition(&AgxDictionary::SpeedClassification,_dropdown.at(0)().tag,AgxColumnTypes::CustomDropDown,_dropdown) 
                                                }, nullptr);
 
             AgxPropertyBlockData moveToStopTags({
                 AgxPropertyEntryDefinition(&AgxDictionary::BlankEntry, "", AgxColumnTypes::BasicString),
-                AgxPropertyEntryDefinition(&AgxDictionary::Tags,"",AgxColumnTypes::BasicString),
+                AgxPropertyEntryDefinition(&AgxDictionary::x_MovetoStopTags_x,"",AgxColumnTypes::BasicString),
                 AgxPropertyEntryDefinition(&AgxDictionary::SpeedClassification,_dropdown.at(0)().tag,AgxColumnTypes::CustomDropDown,_dropdown) 
                                                  }, nullptr);
 
-            AgxPropertyBlockData standToMoveTags({
+            AgxPropertyBlockData whileMovingTags({
                 AgxPropertyEntryDefinition(&AgxDictionary::BlankEntry, "", AgxColumnTypes::BasicString),
-                AgxPropertyEntryDefinition(&AgxDictionary::Tags,"",AgxColumnTypes::BasicString),
+                AgxPropertyEntryDefinition(&AgxDictionary::x_WhileMovingTags_x,"",AgxColumnTypes::BasicString),
                 AgxPropertyEntryDefinition(&AgxDictionary::SpeedClassification,_dropdown.at(0)().tag,AgxColumnTypes::CustomDropDown,_dropdown) 
                                                 }, nullptr);
             
 
 
-            _PropertyBlocks.insert(&AgxDictionary::WhileMoving, whileMovingTags);
-            _PropertyBlocks.insert(&AgxDictionary::MoveToStop, moveToStopTags);
             _PropertyBlocks.insert(&AgxDictionary::StandToMove, standToMoveTags);
+            _PropertyBlocks.insert(&AgxDictionary::MoveToStop, moveToStopTags);
+            _PropertyBlocks.insert(&AgxDictionary::WhileMoving, whileMovingTags);
 
-            _BlockOrder = { &AgxDictionary::WhileMoving, &AgxDictionary::MoveToStop, &AgxDictionary::StandToMove, &AgxDictionary::EnterEvents, &AgxDictionary::ExitEvents};
+            _BlockOrder = { &AgxDictionary::StandToMove, &AgxDictionary::MoveToStop, &AgxDictionary::WhileMoving, &AgxDictionary::EnterEvents, &AgxDictionary::ExitEvents};
         }
 
     }

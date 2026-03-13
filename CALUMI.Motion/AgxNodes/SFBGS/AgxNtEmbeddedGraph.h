@@ -22,6 +22,7 @@ namespace SFBGS {
 	public:
 		// Inherited via AgxNode
 		QString name() const override;
+		QString typeName() const override;
 		QString caption() const override;
 		QString SubCaption() const override;
 		unsigned int nPorts(AgxPortType portType) const override;
@@ -34,6 +35,8 @@ namespace SFBGS {
 		void SetUpNode(const AgxGameType& type) override;
 
 		std::shared_ptr<AgxPort> _AddPort(AgxPortType portType, AgxPortIndex index, QJsonObject data) override;
+	private:
+		QString SubCaptionUnformatted() const;
 
 	private:
 		MiniGraphicsView* _embGraphWidget = nullptr;

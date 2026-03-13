@@ -16,6 +16,7 @@ class AgxLineEdit;
 class AgxNode;
 class ModifiedPushButton;
 class AgxPort;
+class AgxLineEditContainer;
 
 
 
@@ -28,14 +29,14 @@ public:
 	~AgxNodePropertiesWidget();	
 
 public:
-	QList<AgxLineEdit*> CreatePropertyEntries(QVector<AgxPropertyEntryDefinition>* dataRef, AgxNode* signalSender, bool split = true);
-	QList<AgxLineEdit*> CreatePropertyEntries(QVector<AgxPropertyEntryDefinition>* dataRef, AgxGraphModel* signalSender, bool split = true);
-	QList<AgxLineEdit*> CreatePropertyEntries(QVector<AgxPropertyEntryDefinition>* dataRef, AgxPort* signalSender, bool split = true, QStringList path = {});
+	QList<AgxLineEditContainer*> CreatePropertyEntries(QVector<AgxPropertyEntryDefinition>* dataRef, AgxNode* signalSender, bool split = true);
+	QList<AgxLineEditContainer*> CreatePropertyEntries(QVector<AgxPropertyEntryDefinition>* dataRef, AgxGraphModel* signalSender, bool split = true);
+	QList<AgxLineEditContainer*> CreatePropertyEntries(QVector<AgxPropertyEntryDefinition>* dataRef, AgxPort* signalSender, bool split = true, QStringList path = {});
 	QList<QLabel*> CreateHiddenEntries(QMap<TermRef, QPair<AgxColumnTypes, QString>>* dataRef, AgxNode* signalSender, bool split = true, const QList<TermRef>& priorityOrder = {});
 	QList<QLabel*> CreateHiddenEntries(QMap<TermRef, QPair<AgxColumnTypes, QString>>* dataRef, AgxGraphModel* signalSender, bool split = true, const QList<TermRef>& priorityOrder = {});
 	QLabel* CreateGuidLabel(const QUuid* value, AgxNode* signalSender, bool split = true);
 	ModifiedPushButton* CreateFlagEntry(const QString& title, AgxNode* signalSender, AgxFlagField* dataRef);
-	AgxLineEdit* CreateSimpleLineEdit(QString* defaultText, AgxPort* signalSender, TermRef label = nullptr, bool split = true, QStringList path = {});
+	AgxLineEditContainer* CreateSimpleLineEdit(QString* defaultText, AgxPort* signalSender, TermRef label = nullptr, bool split = true, QStringList path = {});
 
 	AgxPropertyBlockWidget* CreatePropetryBlock(TermRef blockName, AgxPropertyBlockData& dataRef);
 
@@ -45,18 +46,21 @@ public:
 
 protected:
 	void mousePressEvent(QMouseEvent* event) override;
-	void SetUpCustomDropDown(AgxLineEdit* line, const QList<TermRef>& list, const QStringList& keyPath);
+	void SetUpCustomDropDown(AgxLineEditContainer* line, const QList<TermRef>& list, const QStringList& keyPath);
 	void ForceRefresh();
 	void changeEvent(QEvent* event) override;
 
+
 signals:
 	void ClearFocusSignal();
-	void BroadcastWidth(int width);
 	void LanguageChanged();
+	void BroadcastWidth(int width);
 
 public slots:
 	void SetHiddenEntries(bool hidden);
-		
+
+private slots:
+	void SendWidthAdjustment();
 
 private:
 	QVBoxLayout* _MainVBoxLayout = nullptr;

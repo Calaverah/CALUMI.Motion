@@ -37,7 +37,10 @@ void AgxNodeRegistry::SFBGS_BuildRegistry()
 {
 	_sfbgsRegistry = std::make_shared<AgxNodeDelegateModelRegistry>();
 	_sfbgsRegistry->registerModel<AgxCommentNode>("Extra");
+
+#ifdef DEBUGBUILD
 	_sfbgsRegistry->registerModel<SFBGS::AgxNtDebugNode>("Debug");
+#endif
 
 	_sfbgsRegistry->registerModel<SFBGS::AgxNtAnimationNode>("Animations");
 	_sfbgsRegistry->registerModel<SFBGS::AgxNtRandomAnimationNode>("Animations");

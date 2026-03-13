@@ -254,7 +254,7 @@ void AgxNodePainter::drawNodeCaption(QPainter* painter, AgxNodeGraphicsObject& n
     QFont f = painter->font();
 
     const QString title = _collapsed ? ShortenString(_model->nodeData(_nodeId, AgxNodeRole::Caption).toString()) : _model->nodeData(_nodeId, AgxNodeRole::Caption).toString();
-    const QString subtitle = _model->nodeData(_nodeId, AgxNodeRole::SubCaption).toString();
+    const QString subtitle = ShortenString(_model->nodeData(_nodeId, AgxNodeRole::SubCaption).toString(),30);
     auto Positions = _geometry->dualCaptionPosition(_nodeId, title, subtitle, _collapsed);
 
     if (!subtitle.isEmpty() && !_collapsed && _lod < 1) {

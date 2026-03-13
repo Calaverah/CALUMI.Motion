@@ -1,6 +1,7 @@
 #include "stdafx.h"
 #include "AgxDefinitions.h"
 #include "AgxDictionary.h"
+#include "AgxFormat.h"
 //#include <AgxNodes/AgxNodes>
 
 const QMap<QString, AgxEventType> AgxEventTypeMap = {
@@ -2294,22 +2295,17 @@ void AgxAnimationFlags::FromJson(const QJsonValue& data)
 		this->data.Wants_Full_Ragdoll = array.contains("Wants_Full_Ragdoll");
 }
 
-pugi::xml_node AgxAnimationFlags::ToXML()
+void AgxAnimationFlags::ToXML(pugi::xml_node& parent)
 {
-	pugi::xml_node output;
 	size_t copy = GetValue();
-	QStringList list = GetStringList(false);
+	QStringList list = GetStringList(true);
 	for (size_t i = 0; i < sizeof(copy) * 8; i++)
 	{
 		if (copy & 0b1) {
-			pugi::xml_node child;
-			child.set_value(list.at(i).toStdString().c_str());
-			output.append_child("flag");
+			auto flag = AgxAppendValue(parent, "flag", list.at(i), AgxFormat::None, 0);
 		}
 		copy >>= 1;
 	}
-
-	return output;
 }
 
 void AgxAnimationFlags::FromXML(pugi::xml_node& node)
@@ -2550,6 +2546,13 @@ QList<AgxPropertyBlockData::Entry>* AgxPropertyBlockData::GetRow(int index)
 	return &_data[index];
 }
 
+const QList<AgxPropertyBlockData::Entry>* AgxPropertyBlockData::GetRow(int index) const
+{
+	if (index < 0 || index >= _data.size()) return nullptr;
+
+	return &_data[index];
+}
+
 unsigned int AgxPropertyBlockData::GetRowCount() const
 {
 	return _data.size();
@@ -2593,12 +2596,14 @@ QString AgxFileTypeToString(const AgxFileType& type)
 {
 	switch (type)
 	{
-		case AgxFileType::Behavior:
+		case AgxFileType::BehaviorFile:
 			return "Behavior Graph";
-		case AgxFileType::Animation:
+		case AgxFileType::AnimationFile:
 			return "Animation File";
-		case AgxFileType::AnimationX:
-			return "Animation X File";
+		case AgxFileType::AnimationComponent:
+			return "Animation Component";
+		case AgxFileType::RigFile:
+			return "Rig File";
 		default:
 			return "UNKNOWN";
 	}
@@ -2606,12 +2611,17 @@ QString AgxFileTypeToString(const AgxFileType& type)
 
 AgxFileType AgxFileTypeFromString(const QString& str)
 {
-	if (str == "Behavior Graph" || str == "Behavior")
-		return AgxFileType::Behavior;
-	if (str == "Animation File" || str == "Animation")
-		return AgxFileType::Animation;
-	if (str == "Animation X File" || str == "Animation X" || str == "AnimationX")
-		return AgxFileType::AnimationX;
+	QString text = str;
+	text.remove(" ");
+
+	if (text.compare("BehaviorGraph",Qt::CaseInsensitive) == 0 || text.compare("Behavior",Qt::CaseInsensitive) == 0)
+		return AgxFileType::BehaviorFile;
+	if (text.compare("AnimationFile", Qt::CaseInsensitive) == 0 || text.compare("Animation", Qt::CaseInsensitive) == 0)
+		return AgxFileType::AnimationFile;
+	if (text.compare("AnimationComponentFile",Qt::CaseInsensitive) == 0 || text.compare("AnimationComponent", Qt::CaseInsensitive)==0)
+		return AgxFileType::AnimationComponent;
+	if (text.compare("Rig", Qt::CaseInsensitive) == 0 || text.compare("RigFile", Qt::CaseInsensitive) == 0)
+		return AgxFileType::RigFile;
 
 	return AgxFileType::UNKNOWN;
 }
@@ -2722,25 +2732,25 @@ AgxColumnTypes GetAgxBasicVarType(QString value)
 	}
 }
 
-QString GetSFBGSVarStringFromColumnType(AgxColumnTypes type)
+QPair<QString, AgxVarType> GetSFBGSVarTypeFromColumnType(AgxColumnTypes type)
 {
 	switch (type)
 	{
 		case AgxColumnTypes::BasicInteger:
 		case AgxColumnTypes::CustomInteger:
-			return "Integer";
+			return { "Integer", AgxVarType::Integer };
 		case AgxColumnTypes::BasicFloat:
 		case AgxColumnTypes::CustomFloat:
-			return "Float";
+			return { "Float", AgxVarType::Float };
 		case AgxColumnTypes::BasicBool:
 		case AgxColumnTypes::CustomBool:
-			return "Bool";
+			return { "Bool", AgxVarType::Boolean };
 		case AgxColumnTypes::BasicVector:
 		case AgxColumnTypes::CustomVector:
-			return "Vector";
+			return { "Vector", AgxVarType::Vector };
 		case AgxColumnTypes::BasicMultiVar:
 		case AgxColumnTypes::CustomMultiVar:
-			return "Any";
+			return { "Any", AgxVarType::Any};
 		case AgxColumnTypes::CustomDropDown:
 		case AgxColumnTypes::Event:
 		case AgxColumnTypes::Prefix:
@@ -2749,7 +2759,7 @@ QString GetSFBGSVarStringFromColumnType(AgxColumnTypes type)
 		case AgxColumnTypes::Action:
 		case AgxColumnTypes::SyncSystem:
 		default:
-			return "String";
+			return { "String", AgxVarType::String };
 	}
 }
 

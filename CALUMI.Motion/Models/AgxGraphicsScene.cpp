@@ -12,7 +12,7 @@
 #include <Application/CALUMIMotionApplication.h>
 #include <Utilities/AgxConnectionIdUtils.h>
 
-AgxGraphicsScene::AgxGraphicsScene(AgxGraphModel& graphModel, const QString& graphTitle, QObject* parent) : QGraphicsScene(parent)
+AgxGraphicsScene::AgxGraphicsScene(AgxGraphModel& graphModel, QObject* parent) : QGraphicsScene(parent)
 , _agxGraphModel(graphModel)
 , _agxNodeGeometry(std::make_unique<AgxNodeGeometry>(_agxGraphModel))
 , _agxNodePainter(std::make_unique<AgxNodePainter>())
@@ -21,8 +21,6 @@ AgxGraphicsScene::AgxGraphicsScene(AgxGraphModel& graphModel, const QString& gra
 , _undoStack(new QUndoStack(this))
 , _orientation(Qt::Horizontal)
 {
-    if (!graphTitle.isEmpty())
-        _agxGraphTitle = graphTitle;
 
     setItemIndexMethod(QGraphicsScene::NoIndex);
 

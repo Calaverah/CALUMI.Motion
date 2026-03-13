@@ -7,6 +7,8 @@
 #include <Utilities/AgxJsonHelper.h>
 #include <Models/Blend/AgxBlendInputModel.h>
 #include <Widgets/Blend/AgxBlendInputView.h>
+#include "Utilities/AgxFormat.h"
+#include "Widgets/AgxLineEdit.h"
 
 AgxNode::~AgxNode()
 {
@@ -16,16 +18,7 @@ AgxNode::~AgxNode()
 
 AgxNode::AgxNode(AgxGraphModel* rootGraphRef) : _nodeStyle(AgxStyleCollection::nodeStyle()), _NodePropertiesWidget(nullptr), _nextPortId{0}, _RootGraphReference(rootGraphRef)
 {
-    //AgxNodeStyle style;
-    /*style.GradientColor0 = { 70,70,70 };
-    style.GradientColor1 = { 70,70,70 };
-    style.GradientColor2 = { 70,70,70 };
-    style.GradientColor3 = { 70,70,70 };*/
-    //style.HoveredPenWidth = 2.25f;
-    //style.PenWidth = 1.2f;
-    //style.Opacity = 1.0f;
-    //style.ShadowEnabled = false;
-    //setNodeStyle(style);
+
 }
 
 void AgxNode::SetNameProperty(QString newName)
@@ -78,18 +71,18 @@ QJsonObject AgxNode::save() const
     return modelJson;
 }
 
-void AgxNode::load(QJsonObject const& p)
+void AgxNode::load(QJsonObject const& data)
 {
     blockSignals(true);
     
     if (CanSetNameProperty())
     {
-        QJsonValue s = p["nameProperty"];
+        QJsonValue s = data["nameProperty"];
         SetNameProperty(s.toString());
     }
-    setGroupId(p["groupId"].toString());
+    setGroupId(data["groupId"].toString());
 
-    QJsonObject pSheet = p["property-sheet"].toObject();
+    QJsonObject pSheet = data["property-sheet"].toObject();
     QJsonObject blockData = pSheet["property-blocks"].toObject();
 
     QJsonObject inPortData = pSheet["in-ports"].toObject();
@@ -114,15 +107,15 @@ void AgxNode::load(QJsonObject const& p)
 
     insertPropertySheetData(pSheet);
 
-    QJsonValue jCollapse = p["collapsed"];
+    QJsonValue jCollapse = data["collapsed"];
     if (jCollapse.toBool())
     {
         ToggleCollapse();
     }
 
-    if(_EmbeddedGraphModel.get() && p.contains("embedded-graph"))
+    if(_EmbeddedGraphModel.get() && data.contains("embedded-graph"))
     {
-        QJsonObject embeddedGraph = p["embedded-graph"].toObject();
+        QJsonObject embeddedGraph = data["embedded-graph"].toObject();
         _EmbeddedGraphModel->load(embeddedGraph);
     }
     blockSignals(false);
@@ -362,8 +355,7 @@ AgxPropertyBlockData* AgxNode::getPropertyBlock(const QString& block)
 void AgxNode::SetUpEmbeddedNodeGraph()
 {
     _EmbeddedGraphModel = std::make_shared<AgxGraphModel>(_gameType, _RootGraphReference);
-    QString tabTitle = SubCaption().isEmpty() ? "graph" : SubCaption();
-    _EmbeddedGraphScene = std::make_shared<AgxGraphicsScene>(*_EmbeddedGraphModel, "embedded_" + tabTitle);
+    _EmbeddedGraphScene = std::make_shared<AgxGraphicsScene>(*_EmbeddedGraphModel);
 }
 
 void AgxNode::CloseEmbeddedView()
@@ -662,6 +654,112 @@ void AgxNode::ResetPorts()
     SetPortCount(AgxPortType::In, 0);
     SetPortCount(AgxPortType::Out, 0);
     _nextPortId = 0;
+}
+
+void SFBGSNode::save(pugi::xml_node& parent, QVector<AgxConnectionId> connections, QVector<AgxNodeId> sortedIds, QPointF pos)
+{
+    auto nodeObject = AgxAppend(parent, "node", AgxFormat::NewLine, 0);
+
+    if(_SFBGS_Hidden[&AgxDictionary::DefaultState].second.compare("true", Qt::CaseInsensitive) == 0)
+        AgxAppendValue(nodeObject, AgxDictionary::DefaultState().tag, "True", AgxFormat::NewLine);
+
+    AgxAppendValue(nodeObject, AgxDictionary::NodeType().tag, typeName(), {AgxFormat::NewLine, AgxFormat::Indent},1);
+    AgxAppendValue(nodeObject, AgxDictionary::noninstanced().tag, _SFBGS_Hidden[&AgxDictionary::noninstanced].second == "-" ? "False" : _SFBGS_Hidden[&AgxDictionary::noninstanced].second, { AgxFormat::NewLine, AgxFormat::Indent }, 1);
+
+    auto flagsValue = _flags.GetValue();
+    if (flagsValue != 0) 
+    {
+        auto flagsObject = AgxAppend(nodeObject, "flags", { AgxFormat::NewLine, AgxFormat::Indent }, 1);
+        _flags.ToXML(flagsObject);
+    }
+
+    if (GetNodeType() == AgxNodeType::NT_BLEND_NODE)
+    {
+        AgxAppendValue(nodeObject, "divisions", QString("%1").arg(_Divisions), { AgxFormat::NewLine, AgxFormat::Indent }, 1);
+        for (auto& port : _In_Ports)
+        {
+            if (auto sfbgsPort = dynamic_cast<AgxPort_SFBGS*>(port.get()))
+            {
+                FormatBlendInput(nodeObject, sfbgsPort->GetBlendInput());
+            }
+        }
+    }
+    
+    AgxAppendValue(nodeObject, "name", nameProperty(), { AgxFormat::NewLine, AgxFormat::Indent }, 1);
+    AgxAppendValue(nodeObject, AgxDictionary::PosX().tag, CleanUpDecimals(QString("%1").arg(pos.x() / SFBGSxScalar, 0, 'f', 5)), { AgxFormat::NewLine, AgxFormat::Indent }, 1);
+    AgxAppendValue(nodeObject, AgxDictionary::PosY().tag, CleanUpDecimals(QString("%1").arg(pos.y() / SFBGSyScalar, 0, 'f', 5)), { AgxFormat::NewLine, AgxFormat::Indent }, 1);
+
+    QString eposx = _SFBGS_Hidden[&AgxDictionary::ExpPosX].second == "-" ? CleanUpDecimals(QString("%1").arg(pos.x() / SFBGSxScalar, 0, 'f', 5)) : _SFBGS_Hidden[&AgxDictionary::ExpPosX].second;
+    AgxAppendValue(nodeObject, AgxDictionary::ExpPosX().tag, eposx, { AgxFormat::NewLine, AgxFormat::Indent }, 1);
+    QString eposy = _SFBGS_Hidden[&AgxDictionary::ExpPosY].second == "-" ? CleanUpDecimals(QString("%1").arg(pos.y() / SFBGSyScalar, 0, 'f', 5)) : _SFBGS_Hidden[&AgxDictionary::ExpPosY].second;
+    AgxAppendValue(nodeObject, AgxDictionary::ExpPosY().tag, eposy, { AgxFormat::NewLine, AgxFormat::Indent }, 1);
+    
+    AgxAppendValue(nodeObject, AgxDictionary::UseColor().tag, _SFBGS_Hidden[&AgxDictionary::UseColor].second == "-" ? "False" : _SFBGS_Hidden[&AgxDictionary::UseColor].second, { AgxFormat::NewLine, AgxFormat::Indent }, 1);
+    AgxAppendValue(nodeObject, AgxDictionary::UserId().tag, GetPropertyValue(_SFBGS_Properties, AgxDictionary::UserId().tag, "0"), { AgxFormat::NewLine, AgxFormat::Indent }, 1);
+    AgxAppendValue(nodeObject, "collapsed", isCollapsed()? "True" : "False", { AgxFormat::NewLine, AgxFormat::Indent }, 1);
+    AgxAppendValue(nodeObject, "guid", getGuid().toString(QUuid::WithoutBraces), { AgxFormat::NewLine, AgxFormat::Indent }, 1);
+    
+    for (auto& port : _In_Ports)
+    {
+        auto input = AgxAppend(nodeObject, "input", { AgxFormat::NewLine, AgxFormat::Indent }, 1);
+        AgxAppendValue(input, "name", port.get()->Caption(false), AgxFormat::SpaceBefore);
+        AgxAppendValue(input, "id", QString("%1").arg(port.get()->GetId()), AgxFormat::SpaceBefore);
+        AgxAppendValue(input, "idx", QString("%1").arg(port.get()->GetPortIndex()), AgxFormat::SpaceBefore);
+        input.append_child(pugi::node_pcdata).set_value("\n");
+
+        
+        if(!port.get()->isConnected()) 
+        {
+            char lineEnd[2] = { 0x20, '\0' };
+            input.append_child(pugi::node_pcdata).set_value(lineEnd);
+        } 
+        else 
+        {
+            for (auto& connection : connections)
+            {
+                if (connection.inPortIndex != port.get()->GetPortIndex() || connection.inNodeId != _nodeIdRef) continue;
+
+                auto link = AgxAppend(input, "link", { AgxFormat::NewLine, AgxFormat::Indent }, 2);
+                AgxAppendValue(link, "node", QString("%1").arg(sortedIds.indexOf(connection.outNodeId) + 1), { AgxFormat::NewLine, AgxFormat::Indent }, 3);
+                AgxAppendValue(link, "output", QString("%1").arg(connection.outPortIndex), AgxFormat::SpaceBefore);
+                AgxAppendValue(link, "hidden", connection.isHidden ? "True" : "False", AgxFormat::SpaceBefore);
+                port.get()->SavePropertySheet(link);
+                AgxCloseNode(link, false, true, 2);
+                char lineEnd[3] = { 0x0A,0x20,'\0' };
+                input.append_child(pugi::node_pcdata).set_value(lineEnd);
+
+            }
+        }
+    }
+
+    for (auto& port : _Out_Ports)
+    {
+        auto output = AgxAppend(nodeObject, "output", { AgxFormat::NewLine, AgxFormat::Indent }, 1);
+
+        AgxAppendValue(output, "name", port.get()->Caption(false), AgxFormat::SpaceBefore);
+        AgxAppendValue(output, "id", QString("%1").arg(port.get()->GetId()), AgxFormat::SpaceBefore);
+        AgxAppendValue(output, "idx", QString("%1").arg(port.get()->GetPortIndex()), AgxFormat::SpaceBefore);
+        output.append_child(pugi::node_pcdata).set_value("\n");
+        output.append_child(pugi::node_pcdata).set_value(" ");
+    }
+
+    FormatBasicPropertySheet(nodeObject, _PropertyEntries);
+
+    for (auto& blockKey : _BlockOrder)
+    {
+        if (!_PropertyBlocks[blockKey].IsEnabledState()) continue;
+        
+        FormatPropertyBlock(nodeObject, _PropertyBlocks[blockKey]);
+    }
+
+    if (_EmbeddedGraphModel.get())
+    {
+        auto graphObject = AgxAppend(nodeObject, "graph", AgxFormat::NewLine, 0);
+        _EmbeddedGraphModel.get()->save(graphObject);
+        AgxCloseNode(graphObject, false, false, 0);
+    }
+
+    AgxCloseNode(nodeObject, false, false);
 }
 
 QJsonObject SFBGSNode::save() const
@@ -1038,8 +1136,8 @@ void SFBGSNode::insertPropertySheetData(const QJsonObject& data)
 
 
 
-    if (data.contains(AgxDictionary::GetInstance().UserId().tag)) {
-        SetPropertyValue(_SFBGS_Properties, AgxDictionary::GetInstance().UserId().tag, data.value(AgxDictionary::GetInstance().UserId().tag).toObject().value("value").toString());
+    if (data.contains(AgxDictionary::UserId().tag)) {
+        SetPropertyValue(_SFBGS_Properties, AgxDictionary::UserId().tag, data.value(AgxDictionary::UserId().tag).toObject().value("value").toString());
     }
 
     //SFBGS Entries
@@ -1059,7 +1157,7 @@ QJsonObject SFBGSNode::getPropertySheetData(bool cleared) const
 
     output["flags"] = _flags.ToJson();
 
-    output[AgxDictionary::GetInstance().UserId().tag] = GetPropertyValue(_SFBGS_Properties, AgxDictionary::GetInstance().UserId().tag);
+    output[AgxDictionary::UserId().tag] = GetPropertyValue(_SFBGS_Properties, AgxDictionary::UserId().tag);
 
     //output["Non Instanced"] = _SFBGS_Hidden["Non Instanced"].second;
     //output["Use Color"] = _SFBGS_Hidden["Use Color"].second;
@@ -1105,12 +1203,12 @@ SFBGSNode::SFBGSNode(AgxGraphModel* rootGraphReference) : guidObject(), AgxNode(
         AgxPropertyBlockData enterBlockDef({
             AgxPropertyEntryDefinition(&AgxDictionary::BlankEntry, "", AgxColumnTypes::BasicString),
             AgxPropertyEntryDefinition(&AgxDictionary::NonInstanced,"False",AgxColumnTypes::BasicBool),
-            AgxPropertyEntryDefinition(&AgxDictionary::Event,"",AgxColumnTypes::Event),
+            AgxPropertyEntryDefinition(&AgxDictionary::x_EnterEvents_x,"",AgxColumnTypes::Event),
             AgxPropertyEntryDefinition(&AgxDictionary::Payload,"",AgxColumnTypes::BasicString) }, nullptr);
         AgxPropertyBlockData exitBlockDef({
             AgxPropertyEntryDefinition(&AgxDictionary::BlankEntry, "", AgxColumnTypes::BasicString),
             AgxPropertyEntryDefinition(&AgxDictionary::NonInstanced,"False",AgxColumnTypes::BasicBool),
-            AgxPropertyEntryDefinition(&AgxDictionary::Event,"",AgxColumnTypes::Event),
+            AgxPropertyEntryDefinition(&AgxDictionary::x_ExitEvents_x,"",AgxColumnTypes::Event),
             AgxPropertyEntryDefinition(&AgxDictionary::Payload,"",AgxColumnTypes::BasicString) }, nullptr);
         enterBlockDef.SetEnabledState(false);
         exitBlockDef.SetEnabledState(false);
@@ -1203,7 +1301,11 @@ void SFBGSNode::InitializeWidget(bool split)
     _NodePropertiesWidget->CreateFlagEntry(tr("SFBGS Flags"), this, &_flags);
 
     _NodePropertiesWidget->CreateHiddenEntries(&_SFBGS_Hidden, this, true, _HiddenOrder);
-    _NodePropertiesWidget->CreatePropertyEntries(&_SFBGS_Properties, this, split);
+    auto sfbgsPropList = _NodePropertiesWidget->CreatePropertyEntries(&_SFBGS_Properties, this, split);
+    for (auto sfbgsProp : sfbgsPropList)
+    {
+        sfbgsProp->setCheckbox(false);
+    }
     _NodePropertiesWidget->CreatePropertyEntries(&_PropertyEntries, this, split);
     _NodePropertiesWidget->SetHiddenEntries(hiddenState);
     _NodePropertiesWidget->CreateGuidLabel(getGuidRef(), this, split);

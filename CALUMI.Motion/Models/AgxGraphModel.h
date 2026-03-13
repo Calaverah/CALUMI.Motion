@@ -161,7 +161,7 @@ public:
     virtual QJsonObject saveNode(AgxNodeId const nodeId) const;
 
     virtual QJsonObject save() const;
-    virtual pugi::xml_node save_xml() const;
+    virtual void save(pugi::xml_node& parent) const;
 
     /// @brief Creates a new node based on the informatoin in `nodeJson`.
     /**
@@ -330,4 +330,6 @@ private:
 
 private:
     QVector<AgxConnectionId> _shiftedByDynamicPortsConnections;
+
+    friend class SFBGS_GraphPropertiesDialogWidget;
 };

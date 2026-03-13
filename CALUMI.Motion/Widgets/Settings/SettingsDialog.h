@@ -2,6 +2,7 @@
 
 #include <QDialog>
 #include "ui_SettingsDialog.h"
+#include <Widgets/ColorBox/AgxColorBox.h>
 
 class SettingsRegistry;
 
@@ -31,5 +32,7 @@ private:
 		QObject::tr("Remember"),
 		QObject::tr("Always")
 	};
+
+	//AgxColorBox* _symbolColorBox;
 };
 

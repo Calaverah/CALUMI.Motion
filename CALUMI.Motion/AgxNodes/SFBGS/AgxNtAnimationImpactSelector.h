@@ -24,6 +24,8 @@ namespace SFBGS {
 		QString SubCaption() const override;
 		unsigned int nPorts(AgxPortType portType) const override;
 
+		inline bool CanSetNameProperty() const override { return false; }
+
 		AgxNodeType GetNodeType() const override;
 
 		std::shared_ptr<AgxPort> _AddPort(AgxPortType portType, AgxPortIndex index, QJsonObject data) override;

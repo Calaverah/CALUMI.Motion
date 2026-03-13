@@ -834,7 +834,10 @@ InsertPropertySheetDataCommand::InsertPropertySheetDataCommand(AgxGraphicsScene*
 void InsertPropertySheetDataCommand::undo()
 {
     if(_nodeId != InvalidNodeId)
+    {
         _scene->agxGraphModel().insertPropertySheetData(_nodeId, _oldIData);
+        Q_EMIT _scene->agxGraphModel().nodeUpdated(_nodeId);
+    }
 
     if (_model)
         _scene->agxGraphModel().insertPropertySheetData(_oldIData);
@@ -842,7 +845,10 @@ void InsertPropertySheetDataCommand::undo()
 void InsertPropertySheetDataCommand::redo()
 {
     if (_nodeId != InvalidNodeId)
+    {
         _scene->agxGraphModel().insertPropertySheetData(_nodeId, _newIData);
+        Q_EMIT _scene->agxGraphModel().nodeUpdated(_nodeId);
+    }
 
     if (_model)
         _scene->agxGraphModel().insertPropertySheetData(_newIData);
@@ -1096,4 +1102,30 @@ void AgxHideCommand::redo()
 {
     _scene->agxGraphModel().SetNodesCollapsed(_selectedNodes.values(), _toHide);
     _scene->setConnectionsHidden(_selectedConnections, _toHide);
+}
+
+AgxSetGraphTitleCommand::AgxSetGraphTitleCommand(AgxGraphModel* model, const QString& newTitle) : _model(model), _newTitle(newTitle)
+{
+    if (!_model)
+    {
+        qDebug() << "ERROR ON TITLE COMMAND NO MODEL PTR";
+        setObsolete(true);
+        return;
+    }
+
+    _oldTitle = _model->GetGraphTitle();
+    setText(QString("Set Graph Category: %1 -> %2").arg(_oldTitle).arg(_newTitle));
+    qDebug() << text();
+}
+
+void AgxSetGraphTitleCommand::undo()
+{
+    _model->SetGraphTitle(_oldTitle);
+    Q_EMIT _model->PropertySheetUpdated();
+}
+
+void AgxSetGraphTitleCommand::redo()
+{
+    _model->SetGraphTitle(_newTitle);
+    Q_EMIT _model->PropertySheetUpdated();
 }

@@ -1,0 +1,12 @@
+{
+  "version" :  [0,1,0,1],
+  "details": [
+    "Nodes now resize properly after subcaption is changed",
+    "Equations are now decoded to be more user friendly",
+    "Text edit boxes have appropriate size, and will resize/format with better line wrapping",
+    "Basic color option support added",
+    "Long node subcaption's will no longer make giant nodes...",
+    "Basic theme support added. Json format will change in the future and not all color names are supported (use rgb for better control), see MyCustomTheme.json for current format"
+  ]
+
+}

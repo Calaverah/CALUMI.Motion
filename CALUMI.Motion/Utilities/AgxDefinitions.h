@@ -30,9 +30,10 @@ AgxGameType AgxGameTypeFromString(const QString& string);
 enum class AgxFileType : uint8_t
 {
     UNKNOWN,
-    Behavior,
-    Animation,
-    AnimationX
+    BehaviorFile,
+    AnimationFile,
+    AnimationComponent,
+    RigFile
 };
 
 QString AgxFileTypeToString(const AgxFileType& type);
@@ -88,7 +89,7 @@ enum class AgxVarType : uint8_t {
     Undefined = 0xFF
 };
 
-QString GetSFBGSVarStringFromColumnType(AgxColumnTypes type);
+QPair<QString, AgxVarType> GetSFBGSVarTypeFromColumnType(AgxColumnTypes type);
 AgxVarType GetAgxVarTypeFromSFBGS(QString value);
 AgxVarType GetAgxVarTypeFromSFBGS(int value);
 
@@ -130,7 +131,7 @@ public:
     virtual void SetValue(size_t) = 0;
     virtual QJsonValue ToJson() const = 0;
     virtual void FromJson(const QJsonValue& data) = 0;
-    virtual pugi::xml_node ToXML() = 0;
+    virtual void ToXML(pugi::xml_node& parent) = 0;
     virtual void FromXML(pugi::xml_node& node) = 0;
     virtual bool IsEnabledState() const = 0;
     virtual void SetEnabledState(bool enabled) = 0;
@@ -193,7 +194,7 @@ public:
     // Inherited via AgxFlagField
     QJsonValue ToJson() const override;
     void FromJson(const QJsonValue& data) override;
-    pugi::xml_node ToXML() override;
+    void ToXML(pugi::xml_node& parent) override;
     void FromXML(pugi::xml_node& node) override;
 
 public:
@@ -334,6 +335,7 @@ public:
     void Reset();
 
     QList<Entry>* GetRow(int index);
+    const QList<Entry>* GetRow(int index) const;
     unsigned int GetRowCount() const;
 
     AgxColumnTypes GetColumnType(int column) const;

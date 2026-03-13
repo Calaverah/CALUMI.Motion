@@ -2,6 +2,7 @@
 #include "AgxGraphicsViewStyle.h"
 
 #include "AgxStyleCollection.h"
+#include <Utilities/SettingsRegistry.h>
 
 #include <QFile>
 #include <QJsonArray>
@@ -18,8 +19,19 @@ AgxGraphicsViewStyle::AgxGraphicsViewStyle() {
         // order fiasco: https://isocpp.org/wiki/faq/ctors#static-init-order
     initResources();
 
-    // This configuration is stored inside the compiled unit and is loaded statically
-    loadJsonFile(":/CALUMIMotion/Resources/DefaultStyle.json");
+    QString filePath = SettingsRegistry::GetInstance().GetThemeFilePath();
+    QFileInfo fileInfo(filePath);
+
+    if (!fileInfo.fileName().isEmpty() && fileInfo.exists())
+    {
+        loadJsonFile(filePath);
+    } else
+    {
+        qInfo() << "Loading Default Graph Theme";
+        // This configuration is stored inside the compiled unit and is loaded statically
+        // However we have a backup style in the initialization if all else fails
+        loadJsonFile(":/CALUMIMotion/Resources/DefaultStyle.json");
+    }
 }
 
 AgxGraphicsViewStyle::AgxGraphicsViewStyle(QString jsonText) {

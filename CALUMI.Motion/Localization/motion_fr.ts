@@ -17,225 +17,248 @@
 <context>
     <name>CALUMIMotion</name>
     <message>
-        <location filename="../CALUMIMotion.cpp" line="264"/>
+        <location filename="../CALUMIMotion.cpp" line="265"/>
         <source>About</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../CALUMIMotion.cpp" line="265"/>
+        <location filename="../CALUMIMotion.cpp" line="266"/>
         <source>&lt;b&gt;%1&lt;/b&gt;&lt;br/&gt;Version %2&lt;br/&gt;Copyright &amp;copy; 2026 %3&lt;br/&gt;All rights reserved</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../CALUMIMotion.cpp" line="290"/>
+        <location filename="../CALUMIMotion.cpp" line="292"/>
         <source>Hide Property Sidebar </source>
         <translation>Masquer Les Propriétés</translation>
     </message>
     <message>
-        <location filename="../CALUMIMotion.cpp" line="292"/>
+        <location filename="../CALUMIMotion.cpp" line="294"/>
         <source>Show Property Sidebar </source>
         <translation>Afficher Les Propriétés</translation>
     </message>
     <message>
-        <location filename="../CALUMIMotion.cpp" line="304"/>
-        <location filename="../CALUMIMotion.cpp" line="327"/>
+        <location filename="../CALUMIMotion.cpp" line="306"/>
+        <location filename="../CALUMIMotion.cpp" line="329"/>
         <source>Undo</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../CALUMIMotion.cpp" line="308"/>
-        <location filename="../CALUMIMotion.cpp" line="328"/>
+        <location filename="../CALUMIMotion.cpp" line="310"/>
+        <location filename="../CALUMIMotion.cpp" line="330"/>
         <source>Redo</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../CALUMIMotion.cpp" line="312"/>
+        <location filename="../CALUMIMotion.cpp" line="314"/>
         <source>Undo History</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../CALUMIMotion.cpp" line="314"/>
+        <location filename="../CALUMIMotion.cpp" line="316"/>
         <source>Redo History</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../CALUMIMotion.cpp" line="336"/>
+        <location filename="../CALUMIMotion.cpp" line="338"/>
         <source>Undo Stack</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../CALUMIMotion.cpp" line="338"/>
+        <location filename="../CALUMIMotion.cpp" line="340"/>
         <source>Redo Stack</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../CALUMIMotion.cpp" line="372"/>
-        <location filename="../CALUMIMotion.cpp" line="404"/>
+        <location filename="../CALUMIMotion.cpp" line="374"/>
+        <location filename="../CALUMIMotion.cpp" line="406"/>
         <source>Cut</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../CALUMIMotion.cpp" line="375"/>
-        <location filename="../CALUMIMotion.cpp" line="407"/>
+        <location filename="../CALUMIMotion.cpp" line="377"/>
+        <location filename="../CALUMIMotion.cpp" line="409"/>
         <source>Copy</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../CALUMIMotion.cpp" line="378"/>
+        <location filename="../CALUMIMotion.cpp" line="380"/>
         <source>Paste</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../CALUMIMotion.cpp" line="381"/>
-        <location filename="../CALUMIMotion.cpp" line="424"/>
+        <location filename="../CALUMIMotion.cpp" line="383"/>
+        <location filename="../CALUMIMotion.cpp" line="426"/>
         <source>Duplicate</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../CALUMIMotion.cpp" line="384"/>
-        <location filename="../CALUMIMotion.cpp" line="427"/>
+        <location filename="../CALUMIMotion.cpp" line="386"/>
+        <location filename="../CALUMIMotion.cpp" line="429"/>
         <source>Delete</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../CALUMIMotion.cpp" line="440"/>
+        <location filename="../CALUMIMotion.cpp" line="442"/>
         <source>Center View</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../CALUMIMotion.cpp" line="458"/>
+        <location filename="../CALUMIMotion.cpp" line="459"/>
         <source>Settings</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../CALUMIMotion.cpp" line="471"/>
+        <location filename="../CALUMIMotion.cpp" line="473"/>
+        <source>Edit Graph Title</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../CALUMIMotion.cpp" line="477"/>
+        <source>Input New Graph Title</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../CALUMIMotion.cpp" line="478"/>
+        <source>Graph Title:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../CALUMIMotion.cpp" line="497"/>
         <source>Select All</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../CALUMIMotion.cpp" line="475"/>
+        <location filename="../CALUMIMotion.cpp" line="501"/>
         <source>Select All Nodes</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../CALUMIMotion.cpp" line="479"/>
+        <location filename="../CALUMIMotion.cpp" line="505"/>
         <source>Select All Connections</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../CALUMIMotion.cpp" line="483"/>
+        <location filename="../CALUMIMotion.cpp" line="509"/>
         <source>Selection Filter</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../CALUMIMotion.cpp" line="527"/>
+        <location filename="../CALUMIMotion.cpp" line="553"/>
         <source>Saved .jagx File: </source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../CALUMIMotion.cpp" line="549"/>
+        <location filename="../CALUMIMotion.cpp" line="578"/>
         <source>Save Graph As</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../CALUMIMotion.cpp" line="552"/>
-        <location filename="../CALUMIMotion.cpp" line="574"/>
-        <location filename="../CALUMIMotion.cpp" line="585"/>
-        <location filename="../CALUMIMotion.cpp" line="602"/>
+        <location filename="../CALUMIMotion.cpp" line="581"/>
+        <location filename="../CALUMIMotion.cpp" line="603"/>
+        <location filename="../CALUMIMotion.cpp" line="614"/>
+        <location filename="../CALUMIMotion.cpp" line="631"/>
+        <location filename="../CALUMIMotion.cpp" line="797"/>
         <source>Error</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../CALUMIMotion.cpp" line="552"/>
+        <location filename="../CALUMIMotion.cpp" line="581"/>
+        <location filename="../CALUMIMotion.cpp" line="797"/>
         <source>Could not save to file</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../CALUMIMotion.cpp" line="557"/>
+        <location filename="../CALUMIMotion.cpp" line="586"/>
         <source>Saved .jagx File As: </source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../CALUMIMotion.cpp" line="568"/>
+        <location filename="../CALUMIMotion.cpp" line="597"/>
         <source>Open File</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../CALUMIMotion.cpp" line="568"/>
+        <location filename="../CALUMIMotion.cpp" line="597"/>
         <source>Motion Files (*.jagx);;All Files (*.*)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../CALUMIMotion.cpp" line="574"/>
+        <location filename="../CALUMIMotion.cpp" line="603"/>
         <source>Could not open file: </source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../CALUMIMotion.cpp" line="585"/>
+        <location filename="../CALUMIMotion.cpp" line="614"/>
         <source>Json Parsing Failed: </source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../CALUMIMotion.cpp" line="602"/>
+        <location filename="../CALUMIMotion.cpp" line="631"/>
         <source>Unable To Open File Type: </source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../CALUMIMotion.cpp" line="621"/>
+        <location filename="../CALUMIMotion.cpp" line="650"/>
         <source>Open Starfield Agx File</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../CALUMIMotion.cpp" line="621"/>
+        <location filename="../CALUMIMotion.cpp" line="650"/>
+        <location filename="../CALUMIMotion.cpp" line="794"/>
         <source>Agx Files (*.agx);;All files (*.*)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../CALUMIMotion.cpp" line="633"/>
+        <location filename="../CALUMIMotion.cpp" line="662"/>
         <source>File Content Warning</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../CALUMIMotion.cpp" line="633"/>
+        <location filename="../CALUMIMotion.cpp" line="662"/>
         <source>File is missing root and may not import properly...</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../CALUMIMotion.cpp" line="643"/>
+        <location filename="../CALUMIMotion.cpp" line="672"/>
         <source>Loading Agx File...</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../CALUMIMotion.cpp" line="662"/>
-        <location filename="../CALUMIMotion.cpp" line="765"/>
+        <location filename="../CALUMIMotion.cpp" line="691"/>
+        <location filename="../CALUMIMotion.cpp" line="860"/>
         <source>Processing Scene</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../CALUMIMotion.cpp" line="672"/>
-        <location filename="../CALUMIMotion.cpp" line="775"/>
+        <location filename="../CALUMIMotion.cpp" line="701"/>
+        <location filename="../CALUMIMotion.cpp" line="870"/>
         <source>Loading View</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../CALUMIMotion.cpp" line="701"/>
-        <location filename="../CALUMIMotion.cpp" line="804"/>
+        <location filename="../CALUMIMotion.cpp" line="734"/>
+        <location filename="../CALUMIMotion.cpp" line="899"/>
         <source>Finalizing View</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../CALUMIMotion.cpp" line="728"/>
-        <location filename="../CALUMIMotion.cpp" line="831"/>
+        <location filename="../CALUMIMotion.cpp" line="761"/>
+        <location filename="../CALUMIMotion.cpp" line="926"/>
         <source>Finished!</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../CALUMIMotion.cpp" line="746"/>
+        <location filename="../CALUMIMotion.cpp" line="794"/>
+        <source>Export As Animation Behavior Graph</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../CALUMIMotion.cpp" line="841"/>
         <source>Loading jagx Behavior File...</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../CALUMIMotion.cpp" line="877"/>
+        <location filename="../CALUMIMotion.cpp" line="972"/>
         <source>EMBEDDED GRAPH</source>
         <translation type="unfinished"></translation>
     </message>
@@ -555,7 +578,7 @@
     </message>
     <message>
         <location filename="../Utilities/AgxDictionary.h" line="46"/>
-        <location filename="../Utilities/AgxDictionary.h" line="320"/>
+        <location filename="../Utilities/AgxDictionary.h" line="329"/>
         <source>Non Instanced</source>
         <translation type="unfinished"></translation>
     </message>
@@ -565,1884 +588,1903 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../Utilities/AgxDictionary.h" line="51"/>
+        <location filename="../Utilities/AgxDictionary.h" line="60"/>
         <source>Ankle</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../Utilities/AgxDictionary.h" line="52"/>
+        <location filename="../Utilities/AgxDictionary.h" line="61"/>
         <source>Assigned Value</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../Utilities/AgxDictionary.h" line="53"/>
+        <location filename="../Utilities/AgxDictionary.h" line="62"/>
         <source>Anim Tag</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../Utilities/AgxDictionary.h" line="54"/>
+        <location filename="../Utilities/AgxDictionary.h" line="63"/>
         <source>Activate Variable</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../Utilities/AgxDictionary.h" line="55"/>
+        <location filename="../Utilities/AgxDictionary.h" line="64"/>
         <source>Activate Base Event List</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../Utilities/AgxDictionary.h" line="56"/>
+        <location filename="../Utilities/AgxDictionary.h" line="65"/>
         <source>Aim Vector Variable</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../Utilities/AgxDictionary.h" line="57"/>
+        <location filename="../Utilities/AgxDictionary.h" line="66"/>
         <source>Aim Heading Offset Output</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../Utilities/AgxDictionary.h" line="58"/>
+        <location filename="../Utilities/AgxDictionary.h" line="67"/>
         <source>Aim Pitch Offset Output</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../Utilities/AgxDictionary.h" line="59"/>
+        <location filename="../Utilities/AgxDictionary.h" line="68"/>
         <source>Allow No Effect</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../Utilities/AgxDictionary.h" line="60"/>
+        <location filename="../Utilities/AgxDictionary.h" line="69"/>
         <source>Ankle L Bone Name</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../Utilities/AgxDictionary.h" line="61"/>
+        <location filename="../Utilities/AgxDictionary.h" line="70"/>
         <source>Ankle R Bone Name</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../Utilities/AgxDictionary.h" line="62"/>
+        <location filename="../Utilities/AgxDictionary.h" line="71"/>
         <source>Angle L Multiplier</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../Utilities/AgxDictionary.h" line="63"/>
+        <location filename="../Utilities/AgxDictionary.h" line="72"/>
         <source>Angle R Multiplier</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../Utilities/AgxDictionary.h" line="64"/>
+        <location filename="../Utilities/AgxDictionary.h" line="73"/>
         <source>Axis</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../Utilities/AgxDictionary.h" line="65"/>
+        <location filename="../Utilities/AgxDictionary.h" line="74"/>
         <source>Angle Spring</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../Utilities/AgxDictionary.h" line="66"/>
+        <location filename="../Utilities/AgxDictionary.h" line="75"/>
         <source>Align Orient</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../Utilities/AgxDictionary.h" line="67"/>
+        <location filename="../Utilities/AgxDictionary.h" line="76"/>
         <source>Align Orient Percent</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../Utilities/AgxDictionary.h" line="68"/>
+        <location filename="../Utilities/AgxDictionary.h" line="77"/>
         <source>Active Blend Rate</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../Utilities/AgxDictionary.h" line="69"/>
+        <location filename="../Utilities/AgxDictionary.h" line="78"/>
         <source>Alignment Bone</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../Utilities/AgxDictionary.h" line="70"/>
-        <location filename="../Utilities/AgxDictionary.h" line="74"/>
+        <location filename="../Utilities/AgxDictionary.h" line="79"/>
+        <location filename="../Utilities/AgxDictionary.h" line="83"/>
         <source>Angle Multiplier</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../Utilities/AgxDictionary.h" line="71"/>
+        <location filename="../Utilities/AgxDictionary.h" line="80"/>
         <source>Allow Self Transition</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../Utilities/AgxDictionary.h" line="72"/>
+        <location filename="../Utilities/AgxDictionary.h" line="81"/>
         <source>Angle 0-1</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../Utilities/AgxDictionary.h" line="73"/>
+        <location filename="../Utilities/AgxDictionary.h" line="82"/>
         <source>Ankle Name</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../Utilities/AgxDictionary.h" line="75"/>
+        <location filename="../Utilities/AgxDictionary.h" line="84"/>
         <source>Assign Value</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../Utilities/AgxDictionary.h" line="76"/>
+        <location filename="../Utilities/AgxDictionary.h" line="85"/>
         <source>Assign</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../Utilities/AgxDictionary.h" line="78"/>
+        <location filename="../Utilities/AgxDictionary.h" line="87"/>
         <source>Blend Rate</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../Utilities/AgxDictionary.h" line="79"/>
+        <location filename="../Utilities/AgxDictionary.h" line="88"/>
         <source>Blend Forces</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../Utilities/AgxDictionary.h" line="80"/>
+        <location filename="../Utilities/AgxDictionary.h" line="89"/>
         <source>Bone Name</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../Utilities/AgxDictionary.h" line="81"/>
+        <location filename="../Utilities/AgxDictionary.h" line="90"/>
         <source>Bend Axis</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../Utilities/AgxDictionary.h" line="83"/>
+        <location filename="../Utilities/AgxDictionary.h" line="92"/>
         <source>Blend Time</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../Utilities/AgxDictionary.h" line="84"/>
+        <location filename="../Utilities/AgxDictionary.h" line="93"/>
         <source>Blend Mode Function</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../Utilities/AgxDictionary.h" line="85"/>
+        <location filename="../Utilities/AgxDictionary.h" line="94"/>
         <source>Blend Out Frames</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../Utilities/AgxDictionary.h" line="86"/>
+        <location filename="../Utilities/AgxDictionary.h" line="95"/>
         <source>Blend Out Time</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../Utilities/AgxDictionary.h" line="87"/>
+        <location filename="../Utilities/AgxDictionary.h" line="96"/>
         <source>Blend Tree Name</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../Utilities/AgxDictionary.h" line="88"/>
+        <location filename="../Utilities/AgxDictionary.h" line="97"/>
         <source>Blend On/Off time</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../Utilities/AgxDictionary.h" line="89"/>
+        <location filename="../Utilities/AgxDictionary.h" line="98"/>
         <source>Blend From Ragdoll Time</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../Utilities/AgxDictionary.h" line="90"/>
+        <location filename="../Utilities/AgxDictionary.h" line="99"/>
         <source>Blend rate when active</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../Utilities/AgxDictionary.h" line="91"/>
+        <location filename="../Utilities/AgxDictionary.h" line="100"/>
         <source>Blend rate when inactive</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../Utilities/AgxDictionary.h" line="92"/>
+        <location filename="../Utilities/AgxDictionary.h" line="101"/>
         <source>Bend Bone Name</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../Utilities/AgxDictionary.h" line="93"/>
+        <location filename="../Utilities/AgxDictionary.h" line="102"/>
         <source>Blend With Next</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../Utilities/AgxDictionary.h" line="94"/>
+        <location filename="../Utilities/AgxDictionary.h" line="103"/>
         <source>Blend Next Mult</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../Utilities/AgxDictionary.h" line="95"/>
+        <location filename="../Utilities/AgxDictionary.h" line="104"/>
         <source>Body Part</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../Utilities/AgxDictionary.h" line="96"/>
+        <location filename="../Utilities/AgxDictionary.h" line="105"/>
         <source>Back Tag Name</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../Utilities/AgxDictionary.h" line="97"/>
+        <location filename="../Utilities/AgxDictionary.h" line="106"/>
         <source>Bone Variance</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../Utilities/AgxDictionary.h" line="98"/>
+        <location filename="../Utilities/AgxDictionary.h" line="107"/>
         <source>Binding Type</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../Utilities/AgxDictionary.h" line="99"/>
+        <location filename="../Utilities/AgxDictionary.h" line="108"/>
         <source>Binding Name</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../Utilities/AgxDictionary.h" line="100"/>
-        <source>Binding Variable</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../Utilities/AgxDictionary.h" line="101"/>
+        <location filename="../Utilities/AgxDictionary.h" line="110"/>
         <source>Bone Names</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../Utilities/AgxDictionary.h" line="102"/>
+        <location filename="../Utilities/AgxDictionary.h" line="111"/>
         <source>Back</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../Utilities/AgxDictionary.h" line="103"/>
+        <location filename="../Utilities/AgxDictionary.h" line="112"/>
         <source>Bones</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../Utilities/AgxDictionary.h" line="104"/>
+        <location filename="../Utilities/AgxDictionary.h" line="113"/>
         <source>Bindings</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../Utilities/AgxDictionary.h" line="105"/>
+        <location filename="../Utilities/AgxDictionary.h" line="114"/>
         <source>Binding Variables</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../Utilities/AgxDictionary.h" line="107"/>
+        <location filename="../Utilities/AgxDictionary.h" line="116"/>
         <source>Core Body Bone Name</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../Utilities/AgxDictionary.h" line="108"/>
+        <location filename="../Utilities/AgxDictionary.h" line="117"/>
         <source>Chest Axis Index</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../Utilities/AgxDictionary.h" line="109"/>
+        <location filename="../Utilities/AgxDictionary.h" line="118"/>
         <source>Chest Location Bone</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../Utilities/AgxDictionary.h" line="110"/>
+        <location filename="../Utilities/AgxDictionary.h" line="119"/>
         <source>Chest Full Blend Max Angle</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../Utilities/AgxDictionary.h" line="111"/>
+        <location filename="../Utilities/AgxDictionary.h" line="120"/>
         <source>Clamp Heading Min</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../Utilities/AgxDictionary.h" line="112"/>
+        <location filename="../Utilities/AgxDictionary.h" line="121"/>
         <source>Clamp Heading Max</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../Utilities/AgxDictionary.h" line="113"/>
+        <location filename="../Utilities/AgxDictionary.h" line="122"/>
         <source>Clamp Pitch Min</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../Utilities/AgxDictionary.h" line="114"/>
+        <location filename="../Utilities/AgxDictionary.h" line="123"/>
         <source>Clamp Pitch Max</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../Utilities/AgxDictionary.h" line="115"/>
+        <location filename="../Utilities/AgxDictionary.h" line="124"/>
         <source>Clean Up Only</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../Utilities/AgxDictionary.h" line="116"/>
+        <location filename="../Utilities/AgxDictionary.h" line="125"/>
         <source>Control Variable</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../Utilities/AgxDictionary.h" line="119"/>
+        <location filename="../Utilities/AgxDictionary.h" line="128"/>
         <source>Current Cumulative Count</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../Utilities/AgxDictionary.h" line="120"/>
+        <location filename="../Utilities/AgxDictionary.h" line="129"/>
         <source>Cast Distance Up</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../Utilities/AgxDictionary.h" line="121"/>
+        <location filename="../Utilities/AgxDictionary.h" line="130"/>
         <source>Cast Distance Down</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../Utilities/AgxDictionary.h" line="122"/>
+        <location filename="../Utilities/AgxDictionary.h" line="131"/>
         <source>Cast Distance Up Variable</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../Utilities/AgxDictionary.h" line="123"/>
+        <location filename="../Utilities/AgxDictionary.h" line="132"/>
         <source>Cast Distance Down Variable</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../Utilities/AgxDictionary.h" line="124"/>
+        <location filename="../Utilities/AgxDictionary.h" line="133"/>
         <source>Current Speed</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../Utilities/AgxDictionary.h" line="125"/>
+        <location filename="../Utilities/AgxDictionary.h" line="134"/>
         <source>Current Direction</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../Utilities/AgxDictionary.h" line="126"/>
+        <location filename="../Utilities/AgxDictionary.h" line="135"/>
         <source>Contact Normal Blend Rate</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../Utilities/AgxDictionary.h" line="127"/>
+        <location filename="../Utilities/AgxDictionary.h" line="136"/>
         <source>Chance to Repick</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../Utilities/AgxDictionary.h" line="128"/>
+        <location filename="../Utilities/AgxDictionary.h" line="137"/>
         <source>Cross blend time</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../Utilities/AgxDictionary.h" line="129"/>
+        <location filename="../Utilities/AgxDictionary.h" line="138"/>
         <source>COM Blend Amount</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../Utilities/AgxDictionary.h" line="130"/>
+        <location filename="../Utilities/AgxDictionary.h" line="139"/>
         <source>Clamped Blend Time</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../Utilities/AgxDictionary.h" line="131"/>
+        <location filename="../Utilities/AgxDictionary.h" line="140"/>
         <source>Counter Attack Event</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../Utilities/AgxDictionary.h" line="132"/>
+        <location filename="../Utilities/AgxDictionary.h" line="141"/>
         <source>Counter Attack Threshold</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../Utilities/AgxDictionary.h" line="133"/>
+        <location filename="../Utilities/AgxDictionary.h" line="142"/>
         <source>Counter Attack Chance</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../Utilities/AgxDictionary.h" line="134"/>
+        <location filename="../Utilities/AgxDictionary.h" line="143"/>
         <source>Counter Attack Cooldown</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../Utilities/AgxDictionary.h" line="135"/>
+        <location filename="../Utilities/AgxDictionary.h" line="144"/>
         <source>Comment</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../Utilities/AgxDictionary.h" line="136"/>
+        <location filename="../Utilities/AgxDictionary.h" line="145"/>
         <source>Condition</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../Utilities/AgxDictionary.h" line="137"/>
+        <location filename="../Utilities/AgxDictionary.h" line="146"/>
         <source>C Heading Min</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../Utilities/AgxDictionary.h" line="138"/>
+        <location filename="../Utilities/AgxDictionary.h" line="147"/>
         <source>C Heading Max</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../Utilities/AgxDictionary.h" line="139"/>
+        <location filename="../Utilities/AgxDictionary.h" line="148"/>
         <source>C Pitch Min</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../Utilities/AgxDictionary.h" line="140"/>
+        <location filename="../Utilities/AgxDictionary.h" line="149"/>
         <source>C Pitch Max</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../Utilities/AgxDictionary.h" line="141"/>
+        <location filename="../Utilities/AgxDictionary.h" line="150"/>
         <source>Cancel Event</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../Utilities/AgxDictionary.h" line="142"/>
+        <location filename="../Utilities/AgxDictionary.h" line="151"/>
         <source>COM Height Min</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../Utilities/AgxDictionary.h" line="143"/>
+        <location filename="../Utilities/AgxDictionary.h" line="152"/>
         <source>CHip</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../Utilities/AgxDictionary.h" line="144"/>
+        <location filename="../Utilities/AgxDictionary.h" line="153"/>
         <source>CKnee</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../Utilities/AgxDictionary.h" line="145"/>
+        <location filename="../Utilities/AgxDictionary.h" line="154"/>
         <source>CAnkle</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../Utilities/AgxDictionary.h" line="147"/>
+        <location filename="../Utilities/AgxDictionary.h" line="156"/>
         <source>Decrement</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../Utilities/AgxDictionary.h" line="148"/>
+        <location filename="../Utilities/AgxDictionary.h" line="157"/>
         <source>Do Nothing</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../Utilities/AgxDictionary.h" line="149"/>
+        <location filename="../Utilities/AgxDictionary.h" line="158"/>
         <source>Dampen</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../Utilities/AgxDictionary.h" line="150"/>
+        <location filename="../Utilities/AgxDictionary.h" line="159"/>
         <source>Definition</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../Utilities/AgxDictionary.h" line="151"/>
+        <location filename="../Utilities/AgxDictionary.h" line="160"/>
         <source>Default</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../Utilities/AgxDictionary.h" line="152"/>
+        <location filename="../Utilities/AgxDictionary.h" line="161"/>
         <source>Do Not Follow Sync Group</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../Utilities/AgxDictionary.h" line="153"/>
+        <location filename="../Utilities/AgxDictionary.h" line="162"/>
         <source>Desired Speed Var</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../Utilities/AgxDictionary.h" line="154"/>
+        <location filename="../Utilities/AgxDictionary.h" line="163"/>
         <source>Disable When Inactive</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../Utilities/AgxDictionary.h" line="155"/>
+        <location filename="../Utilities/AgxDictionary.h" line="164"/>
         <source>Disable Before</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../Utilities/AgxDictionary.h" line="156"/>
+        <location filename="../Utilities/AgxDictionary.h" line="165"/>
         <source>Disable After</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../Utilities/AgxDictionary.h" line="157"/>
+        <location filename="../Utilities/AgxDictionary.h" line="166"/>
         <source>Dead Zone</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../Utilities/AgxDictionary.h" line="158"/>
+        <location filename="../Utilities/AgxDictionary.h" line="167"/>
         <source>Desired Direction</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../Utilities/AgxDictionary.h" line="159"/>
+        <location filename="../Utilities/AgxDictionary.h" line="168"/>
         <source>Desired Speed</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../Utilities/AgxDictionary.h" line="160"/>
+        <location filename="../Utilities/AgxDictionary.h" line="169"/>
         <source>Direction Var</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../Utilities/AgxDictionary.h" line="161"/>
+        <location filename="../Utilities/AgxDictionary.h" line="170"/>
         <source>Direction</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../Utilities/AgxDictionary.h" line="162"/>
+        <location filename="../Utilities/AgxDictionary.h" line="171"/>
         <source>Directions</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../Utilities/AgxDictionary.h" line="163"/>
+        <location filename="../Utilities/AgxDictionary.h" line="172"/>
         <source>Direction Is Radians</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../Utilities/AgxDictionary.h" line="164"/>
+        <location filename="../Utilities/AgxDictionary.h" line="173"/>
         <source>Dampen Override</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../Utilities/AgxDictionary.h" line="165"/>
+        <location filename="../Utilities/AgxDictionary.h" line="174"/>
         <source>DirectAtVector Variable</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../Utilities/AgxDictionary.h" line="166"/>
+        <location filename="../Utilities/AgxDictionary.h" line="175"/>
         <source>Disable Variable</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../Utilities/AgxDictionary.h" line="167"/>
+        <location filename="../Utilities/AgxDictionary.h" line="176"/>
         <source>Disable Heading Min</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../Utilities/AgxDictionary.h" line="168"/>
+        <location filename="../Utilities/AgxDictionary.h" line="177"/>
         <source>Disable Heading Max</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../Utilities/AgxDictionary.h" line="169"/>
+        <location filename="../Utilities/AgxDictionary.h" line="178"/>
         <source>Disable Heading Hysteresis</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../Utilities/AgxDictionary.h" line="170"/>
+        <location filename="../Utilities/AgxDictionary.h" line="179"/>
         <source>Discard Events</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../Utilities/AgxDictionary.h" line="171"/>
+        <location filename="../Utilities/AgxDictionary.h" line="180"/>
         <source>Down Error Bias</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../Utilities/AgxDictionary.h" line="172"/>
+        <location filename="../Utilities/AgxDictionary.h" line="181"/>
         <source>Desired Value</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../Utilities/AgxDictionary.h" line="173"/>
+        <location filename="../Utilities/AgxDictionary.h" line="182"/>
         <source>Disable Limits</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../Utilities/AgxDictionary.h" line="174"/>
+        <location filename="../Utilities/AgxDictionary.h" line="183"/>
         <source>Disable Custom Bones When Blending Out</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../Utilities/AgxDictionary.h" line="175"/>
+        <location filename="../Utilities/AgxDictionary.h" line="184"/>
         <source>Disable Events</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../Utilities/AgxDictionary.h" line="177"/>
+        <location filename="../Utilities/AgxDictionary.h" line="54"/>
+        <location filename="../Utilities/AgxDictionary.h" line="55"/>
+        <location filename="../Utilities/AgxDictionary.h" line="56"/>
+        <location filename="../Utilities/AgxDictionary.h" line="186"/>
         <source>Event</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../Utilities/AgxDictionary.h" line="178"/>
+        <location filename="../Utilities/AgxDictionary.h" line="187"/>
         <source>Event and Variable</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../Utilities/AgxDictionary.h" line="179"/>
+        <location filename="../Utilities/AgxDictionary.h" line="188"/>
         <source>End Orient</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../Utilities/AgxDictionary.h" line="180"/>
+        <location filename="../Utilities/AgxDictionary.h" line="189"/>
         <source>Entries</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../Utilities/AgxDictionary.h" line="181"/>
+        <location filename="../Utilities/AgxDictionary.h" line="190"/>
         <source>Evaluated Condition</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../Utilities/AgxDictionary.h" line="182"/>
+        <location filename="../Utilities/AgxDictionary.h" line="191"/>
         <source>Extra Name</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../Utilities/AgxDictionary.h" line="183"/>
+        <location filename="../Utilities/AgxDictionary.h" line="192"/>
         <source>Enable Events</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../Utilities/AgxDictionary.h" line="184"/>
+        <location filename="../Utilities/AgxDictionary.h" line="193"/>
         <source>Event List</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../Utilities/AgxDictionary.h" line="185"/>
+        <location filename="../Utilities/AgxDictionary.h" line="194"/>
         <source>Event Name</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../Utilities/AgxDictionary.h" line="186"/>
+        <location filename="../Utilities/AgxDictionary.h" line="195"/>
         <source>End Value</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../Utilities/AgxDictionary.h" line="187"/>
+        <location filename="../Utilities/AgxDictionary.h" line="196"/>
         <source>Enforce DirectAt Limits</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../Utilities/AgxDictionary.h" line="188"/>
+        <location filename="../Utilities/AgxDictionary.h" line="197"/>
         <source>Enumerate Tag</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../Utilities/AgxDictionary.h" line="189"/>
+        <location filename="../Utilities/AgxDictionary.h" line="198"/>
         <source>Event Sent After Max Iterations</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../Utilities/AgxDictionary.h" line="190"/>
+        <location filename="../Utilities/AgxDictionary.h" line="199"/>
         <source>Event to Reset All Cumulative Animations</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../Utilities/AgxDictionary.h" line="191"/>
+        <location filename="../Utilities/AgxDictionary.h" line="200"/>
         <source>EHip</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../Utilities/AgxDictionary.h" line="192"/>
+        <location filename="../Utilities/AgxDictionary.h" line="201"/>
         <source>EKnee</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../Utilities/AgxDictionary.h" line="193"/>
+        <location filename="../Utilities/AgxDictionary.h" line="202"/>
         <source>EAnkle</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../Utilities/AgxDictionary.h" line="194"/>
+        <location filename="../Utilities/AgxDictionary.h" line="57"/>
         <source>Enter Events</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../Utilities/AgxDictionary.h" line="195"/>
+        <location filename="../Utilities/AgxDictionary.h" line="58"/>
         <source>Exit Events</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../Utilities/AgxDictionary.h" line="196"/>
-        <source>End Position</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../Utilities/AgxDictionary.h" line="198"/>
-        <source>Final Bone Axis Index</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../Utilities/AgxDictionary.h" line="199"/>
-        <source>Foot Unlock Blend Scalar</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../Utilities/AgxDictionary.h" line="200"/>
-        <source>Forward Tag Name</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../Utilities/AgxDictionary.h" line="201"/>
-        <source>Forward</source>
+        <location filename="../Utilities/AgxDictionary.h" line="109"/>
+        <source>Binding Value</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../Utilities/AgxDictionary.h" line="203"/>
-        <source>Graphs</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../Utilities/AgxDictionary.h" line="204"/>
-        <source>Graph Ref</source>
+        <source>End Position</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../Utilities/AgxDictionary.h" line="205"/>
-        <source>Graph Name</source>
+        <source>Final Bone Axis Index</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../Utilities/AgxDictionary.h" line="206"/>
-        <source>Get Up Event</source>
+        <source>Foot Unlock Blend Scalar</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../Utilities/AgxDictionary.h" line="207"/>
-        <source>Get Up Start Event</source>
+        <source>Forward Tag Name</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../Utilities/AgxDictionary.h" line="208"/>
-        <source>Go Dynamic On Contact</source>
+        <source>Forward</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../Utilities/AgxDictionary.h" line="210"/>
-        <source>Head Bone Name</source>
+        <source>Graphs</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../Utilities/AgxDictionary.h" line="211"/>
-        <source>Heading Delta Variable</source>
+        <source>Graph Ref</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../Utilities/AgxDictionary.h" line="212"/>
-        <source>Heading Offset Output</source>
+        <source>Graph Name</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../Utilities/AgxDictionary.h" line="213"/>
-        <source>Heading Lag Degrees</source>
+        <source>Get Up Event</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../Utilities/AgxDictionary.h" line="214"/>
-        <source>Head Location Bone</source>
+        <source>Get Up Start Event</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../Utilities/AgxDictionary.h" line="215"/>
-        <source>Head Lag Degrees</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../Utilities/AgxDictionary.h" line="216"/>
-        <source>Head Blend Rate</source>
+        <source>Go Dynamic On Contact</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../Utilities/AgxDictionary.h" line="217"/>
-        <source>Has Looping Segment</source>
+        <source>Head Bone Name</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../Utilities/AgxDictionary.h" line="218"/>
-        <source>Hip L Bone Name</source>
+        <source>Heading Delta Variable</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../Utilities/AgxDictionary.h" line="219"/>
-        <source>Hip R Bone Name</source>
+        <source>Heading Offset Output</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../Utilities/AgxDictionary.h" line="220"/>
-        <source>Hips Blend Amount</source>
+        <source>Heading Lag Degrees</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../Utilities/AgxDictionary.h" line="221"/>
-        <source>Hip Name</source>
+        <source>Head Location Bone</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../Utilities/AgxDictionary.h" line="222"/>
-        <source>Hip</source>
+        <source>Head Lag Degrees</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../Utilities/AgxDictionary.h" line="223"/>
-        <source>Headings</source>
+        <source>Head Blend Rate</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../Utilities/AgxDictionary.h" line="224"/>
+        <source>Has Looping Segment</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../Utilities/AgxDictionary.h" line="225"/>
-        <source>Is Active Bool</source>
+        <source>Hip L Bone Name</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../Utilities/AgxDictionary.h" line="226"/>
-        <source>Impact Var</source>
+        <source>Hip R Bone Name</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../Utilities/AgxDictionary.h" line="227"/>
-        <source>Inertia Spring</source>
+        <source>Hips Blend Amount</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../Utilities/AgxDictionary.h" line="228"/>
-        <source>Ignore Contact Bones</source>
+        <source>Hip Name</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../Utilities/AgxDictionary.h" line="229"/>
-        <source>iState Variable</source>
+        <source>Hip</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../Utilities/AgxDictionary.h" line="230"/>
-        <source>Input Lock Time</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../Utilities/AgxDictionary.h" line="231"/>
-        <source>Is Active Var</source>
+        <source>Headings</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../Utilities/AgxDictionary.h" line="232"/>
-        <source>Is Head Tracking Active Variable</source>
+        <source>Is Active Bool</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../Utilities/AgxDictionary.h" line="233"/>
-        <source>Is Aim Active Variable</source>
+        <source>Impact Var</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../Utilities/AgxDictionary.h" line="234"/>
-        <source>Is Action Animation</source>
+        <source>Inertia Spring</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../Utilities/AgxDictionary.h" line="235"/>
-        <source>Initialize Sequence On Load</source>
+        <source>Ignore Contact Bones</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../Utilities/AgxDictionary.h" line="236"/>
-        <source>Inactive Blend Rate</source>
+        <source>iState Variable</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../Utilities/AgxDictionary.h" line="237"/>
-        <source>Is Using Code Driven Rotation</source>
+        <source>Input Lock Time</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../Utilities/AgxDictionary.h" line="238"/>
-        <source>Immunity Threshold</source>
+        <source>Is Active Var</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../Utilities/AgxDictionary.h" line="239"/>
-        <source>Immunity Delay Before Decay</source>
+        <source>Is Head Tracking Active Variable</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../Utilities/AgxDictionary.h" line="240"/>
-        <source>Immunity Decay Rate</source>
+        <source>Is Aim Active Variable</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../Utilities/AgxDictionary.h" line="241"/>
-        <source>Immunity Consume Rate</source>
+        <source>Is Action Animation</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../Utilities/AgxDictionary.h" line="242"/>
-        <source>Impact</source>
+        <source>Initialize Sequence On Load</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../Utilities/AgxDictionary.h" line="243"/>
-        <source>iState Name</source>
+        <source>Inactive Blend Rate</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../Utilities/AgxDictionary.h" line="244"/>
-        <source>iState Value</source>
+        <source>Is Using Code Driven Rotation</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../Utilities/AgxDictionary.h" line="245"/>
-        <source>iState Assignments</source>
+        <source>Immunity Threshold</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../Utilities/AgxDictionary.h" line="246"/>
-        <source>Increment</source>
+        <source>Immunity Delay Before Decay</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../Utilities/AgxDictionary.h" line="247"/>
+        <source>Immunity Decay Rate</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../Utilities/AgxDictionary.h" line="248"/>
-        <source>Jog</source>
+        <source>Immunity Consume Rate</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../Utilities/AgxDictionary.h" line="249"/>
+        <source>Impact</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../Utilities/AgxDictionary.h" line="250"/>
-        <source>Knee L Bone Name</source>
+        <source>iState Name</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../Utilities/AgxDictionary.h" line="251"/>
-        <source>Knee R Bone Name</source>
+        <source>iState Value</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../Utilities/AgxDictionary.h" line="252"/>
-        <source>Knee Name</source>
+        <source>iState Assignments</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../Utilities/AgxDictionary.h" line="253"/>
-        <source>Knee</source>
+        <source>Increment</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../Utilities/AgxDictionary.h" line="255"/>
-        <source>Limit To Subgraph</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../Utilities/AgxDictionary.h" line="256"/>
-        <source>Lag Degrees</source>
+        <source>Jog</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../Utilities/AgxDictionary.h" line="257"/>
-        <source>Lead Suffix</source>
+        <source>Knee L Bone Name</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../Utilities/AgxDictionary.h" line="258"/>
-        <source>Look Vector Variable</source>
+        <source>Knee R Bone Name</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../Utilities/AgxDictionary.h" line="259"/>
-        <source>Logic Variable</source>
+        <source>Knee Name</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../Utilities/AgxDictionary.h" line="260"/>
-        <source>Listen Event</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../Utilities/AgxDictionary.h" line="261"/>
-        <source>Left Foot Lock Override</source>
+        <source>Knee</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../Utilities/AgxDictionary.h" line="262"/>
-        <source>Left Foot Unlock Override</source>
+        <source>Limit To Subgraph</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../Utilities/AgxDictionary.h" line="263"/>
-        <source>Right Foot Lock Override</source>
+        <source>Lag Degrees</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../Utilities/AgxDictionary.h" line="264"/>
-        <source>Right Foot Unlock Override</source>
+        <source>Lead Suffix</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../Utilities/AgxDictionary.h" line="265"/>
-        <source>Left Hand Bone Name</source>
+        <source>Look Vector Variable</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../Utilities/AgxDictionary.h" line="266"/>
-        <source>Left Leg Bone Name</source>
+        <source>Logic Variable</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../Utilities/AgxDictionary.h" line="267"/>
-        <source>Left Tag Name</source>
+        <source>Listen Event</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../Utilities/AgxDictionary.h" line="268"/>
-        <source>LegsA Extra</source>
+        <source>Left Foot Lock Override</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../Utilities/AgxDictionary.h" line="269"/>
-        <source>LegsB Extra</source>
+        <source>Left Foot Unlock Override</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../Utilities/AgxDictionary.h" line="270"/>
-        <source>LegsC Extra</source>
+        <source>Right Foot Lock Override</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../Utilities/AgxDictionary.h" line="271"/>
-        <source>LegsD Extra</source>
+        <source>Right Foot Unlock Override</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../Utilities/AgxDictionary.h" line="272"/>
-        <source>LegsE Extra</source>
+        <source>Left Hand Bone Name</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../Utilities/AgxDictionary.h" line="273"/>
-        <source>LegsF Extra</source>
+        <source>Left Leg Bone Name</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../Utilities/AgxDictionary.h" line="274"/>
-        <source>Left</source>
+        <source>Left Tag Name</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../Utilities/AgxDictionary.h" line="275"/>
-        <source>Linear</source>
+        <source>LegsA Extra</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../Utilities/AgxDictionary.h" line="276"/>
-        <source>Layer</source>
+        <source>LegsB Extra</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../Utilities/AgxDictionary.h" line="277"/>
-        <source>Large</source>
+        <source>LegsC Extra</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../Utilities/AgxDictionary.h" line="278"/>
-        <source>Looping Left</source>
+        <source>LegsD Extra</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../Utilities/AgxDictionary.h" line="279"/>
-        <source>Looping Right</source>
+        <source>LegsE Extra</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../Utilities/AgxDictionary.h" line="280"/>
-        <source>Longest Direction</source>
+        <source>LegsF Extra</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../Utilities/AgxDictionary.h" line="281"/>
+        <source>Left</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../Utilities/AgxDictionary.h" line="282"/>
-        <source>Max</source>
+        <source>Linear</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../Utilities/AgxDictionary.h" line="283"/>
-        <source>Medium</source>
+        <source>Layer</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../Utilities/AgxDictionary.h" line="284"/>
-        <source>Move To Stop</source>
+        <source>Large</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../Utilities/AgxDictionary.h" line="285"/>
+        <source>Looping Left</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../Utilities/AgxDictionary.h" line="286"/>
-        <source>Min Scale</source>
+        <source>Looping Right</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../Utilities/AgxDictionary.h" line="287"/>
-        <source>Max Scale</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../Utilities/AgxDictionary.h" line="288"/>
-        <source>Max Corrected Vel</source>
+        <source>Longest Direction</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../Utilities/AgxDictionary.h" line="289"/>
-        <source>Max Post Correction Vel</source>
+        <source>Max</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../Utilities/AgxDictionary.h" line="290"/>
-        <source>Max Correction Speed</source>
+        <source>Medium</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../Utilities/AgxDictionary.h" line="291"/>
-        <source>Mass</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../Utilities/AgxDictionary.h" line="292"/>
-        <source>Mass Override</source>
+        <source>Move To Stop</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../Utilities/AgxDictionary.h" line="293"/>
-        <source>Min Times</source>
+        <source>Min Scale</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../Utilities/AgxDictionary.h" line="294"/>
-        <source>Min time</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../Utilities/AgxDictionary.h" line="295"/>
-        <source>Max time</source>
+        <source>Max Scale</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../Utilities/AgxDictionary.h" line="296"/>
-        <source>Max Times</source>
+        <source>Max Post Correction Vel</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../Utilities/AgxDictionary.h" line="297"/>
-        <source>Max Blend Time</source>
+        <source>Max Correction Speed</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../Utilities/AgxDictionary.h" line="298"/>
-        <source>Max Cumulative Animation</source>
+        <source>Mass</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../Utilities/AgxDictionary.h" line="299"/>
-        <source>Min Bend Angle</source>
+        <source>Mass Override</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../Utilities/AgxDictionary.h" line="300"/>
-        <source>Max Bend Angle</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../Utilities/AgxDictionary.h" line="301"/>
-        <source>Max IK Up</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../Utilities/AgxDictionary.h" line="302"/>
-        <source>Max IK Up Variable</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../Utilities/AgxDictionary.h" line="303"/>
-        <source>Max Stride Length</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../Utilities/AgxDictionary.h" line="304"/>
-        <source>Max Post Correction Speed</source>
+        <source>Min Times</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../Utilities/AgxDictionary.h" line="305"/>
-        <source>Max Controller Seperation</source>
+        <source>Max Times</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../Utilities/AgxDictionary.h" line="306"/>
-        <source>Minimum Active Time</source>
+        <source>Max Blend Time</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../Utilities/AgxDictionary.h" line="307"/>
-        <source>Move Start Correction Time</source>
+        <source>Max Cumulative Animation</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../Utilities/AgxDictionary.h" line="308"/>
-        <source>Min X</source>
+        <source>Min Bend Angle</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../Utilities/AgxDictionary.h" line="309"/>
-        <source>Max X</source>
+        <source>Max Bend Angle</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../Utilities/AgxDictionary.h" line="310"/>
-        <source>Min Y</source>
+        <source>Max IK Up</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../Utilities/AgxDictionary.h" line="311"/>
-        <source>Max Y</source>
+        <source>Max IK Up Variable</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../Utilities/AgxDictionary.h" line="312"/>
-        <source>Min Z</source>
+        <source>Max Stride Length</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../Utilities/AgxDictionary.h" line="313"/>
-        <source>Max Z</source>
+        <source>Max Post Correction Speed</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../Utilities/AgxDictionary.h" line="314"/>
-        <source>Max Speed Mult</source>
+        <source>Max Controller Seperation</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../Utilities/AgxDictionary.h" line="315"/>
-        <source>Maintain Sync Selection Variable When Exiting</source>
+        <source>Minimum Active Time</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../Utilities/AgxDictionary.h" line="316"/>
+        <source>Move Start Correction Time</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../Utilities/AgxDictionary.h" line="317"/>
-        <source>Name</source>
+        <source>Min X</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../Utilities/AgxDictionary.h" line="318"/>
-        <source>None</source>
+        <source>Max X</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../Utilities/AgxDictionary.h" line="319"/>
-        <source>Node ID</source>
+        <source>Min Y</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../Utilities/AgxDictionary.h" line="320"/>
+        <source>Max Y</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../Utilities/AgxDictionary.h" line="321"/>
-        <source>Normalize Length</source>
+        <source>Min Z</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../Utilities/AgxDictionary.h" line="322"/>
-        <source>Normalize Weights</source>
+        <source>Max Z</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../Utilities/AgxDictionary.h" line="323"/>
-        <source>No Head Track Variable</source>
+        <source>Max Speed Mult</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../Utilities/AgxDictionary.h" line="324"/>
-        <source>No Aim Variable</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../Utilities/AgxDictionary.h" line="325"/>
-        <source>Negate Variable</source>
+        <source>Maintain Sync Selection Variable When Exiting</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../Utilities/AgxDictionary.h" line="326"/>
-        <source>NPC Heading Offset Var</source>
+        <source>Name</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../Utilities/AgxDictionary.h" line="327"/>
+        <source>None</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../Utilities/AgxDictionary.h" line="328"/>
-        <source>Only Assign Once</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../Utilities/AgxDictionary.h" line="329"/>
-        <source>Only Highest Weight Active</source>
+        <source>Node ID</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../Utilities/AgxDictionary.h" line="330"/>
-        <source>Operation</source>
+        <source>Normalize Length</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../Utilities/AgxDictionary.h" line="331"/>
-        <source>Orient Var</source>
+        <source>Normalize Weights</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../Utilities/AgxDictionary.h" line="332"/>
-        <source>Output Variable</source>
+        <source>No Head Track Variable</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../Utilities/AgxDictionary.h" line="333"/>
-        <source>Override Anim Direction</source>
+        <source>No Aim Variable</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../Utilities/AgxDictionary.h" line="334"/>
-        <source>Oriented Offset</source>
+        <source>Negate Variable</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../Utilities/AgxDictionary.h" line="335"/>
-        <source>Output</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../Utilities/AgxDictionary.h" line="336"/>
-        <source>Orientation</source>
+        <source>NPC Heading Offset Var</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../Utilities/AgxDictionary.h" line="337"/>
-        <source>One Minus Weight</source>
+        <source>Only Assign Once</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../Utilities/AgxDictionary.h" line="338"/>
+        <source>Only Highest Weight Active</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../Utilities/AgxDictionary.h" line="339"/>
+        <source>Operation</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../Utilities/AgxDictionary.h" line="340"/>
-        <source>Pitch Offset Output</source>
+        <source>Orient Var</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../Utilities/AgxDictionary.h" line="341"/>
+        <source>Output Variable</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../Utilities/AgxDictionary.h" line="342"/>
+        <source>Override Anim Direction</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <location filename="../Utilities/AgxDictionary.h" line="343"/>
-        <source>Position Change Event</source>
+        <source>Oriented Offset</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../Utilities/AgxDictionary.h" line="344"/>
-        <source>Playback Speed</source>
+        <source>Output</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../Utilities/AgxDictionary.h" line="345"/>
-        <source>Position Var</source>
+        <source>Orientation</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../Utilities/AgxDictionary.h" line="346"/>
-        <source>Parent Bone Name</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../Utilities/AgxDictionary.h" line="347"/>
-        <source>Priority</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../Utilities/AgxDictionary.h" line="348"/>
-        <source>Payload</source>
+        <source>One Minus Weight</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../Utilities/AgxDictionary.h" line="349"/>
-        <source>Prefix</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../Utilities/AgxDictionary.h" line="350"/>
-        <source>Param</source>
+        <source>Pitch Offset Output</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../Utilities/AgxDictionary.h" line="351"/>
-        <source>Parametric</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <location filename="../Utilities/AgxDictionary.h" line="352"/>
-        <source>Pick Weight</source>
+        <source>Position Change Event</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../Utilities/AgxDictionary.h" line="353"/>
-        <source>Pick Weights</source>
+        <source>Playback Speed</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../Utilities/AgxDictionary.h" line="354"/>
-        <source>Propagate Tag Upstream</source>
+        <source>Position Var</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../Utilities/AgxDictionary.h" line="355"/>
+        <source>Parent Bone Name</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../Utilities/AgxDictionary.h" line="356"/>
+        <source>Priority</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../Utilities/AgxDictionary.h" line="357"/>
-        <source>Range Min</source>
+        <source>Payload</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../Utilities/AgxDictionary.h" line="358"/>
-        <source>Range Max</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../Utilities/AgxDictionary.h" line="359"/>
-        <source>Resume Event</source>
+        <source>Prefix</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../Utilities/AgxDictionary.h" line="360"/>
-        <source>Reset After Max Iterations</source>
+        <source>Parametric</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../Utilities/AgxDictionary.h" line="361"/>
-        <source>Rotate Head Before Chest</source>
+        <source>Pick Weight</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../Utilities/AgxDictionary.h" line="362"/>
-        <source>Release Event</source>
+        <source>Pick Weights</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../Utilities/AgxDictionary.h" line="363"/>
-        <source>Root Feedback Weight</source>
+        <source>Propagate Tag Upstream</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../Utilities/AgxDictionary.h" line="364"/>
-        <source>Root Twist Blend Rate</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../Utilities/AgxDictionary.h" line="365"/>
-        <source>Range Min Multiplier</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../Utilities/AgxDictionary.h" line="366"/>
-        <source>Range Max Multiplier</source>
+        <source>Paired Anim Name Root</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../Utilities/AgxDictionary.h" line="367"/>
-        <source>Ramp In Time</source>
+        <source>Range Min</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../Utilities/AgxDictionary.h" line="368"/>
-        <source>Run Normalized</source>
+        <source>Range Max</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../Utilities/AgxDictionary.h" line="369"/>
-        <source>Right Hand Bone Name</source>
+        <source>Resume Event</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../Utilities/AgxDictionary.h" line="370"/>
-        <source>Right Leg Bone Name</source>
+        <source>Reset After Max Iterations</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../Utilities/AgxDictionary.h" line="371"/>
-        <source>Repick At End</source>
+        <source>Rotate Head Before Chest</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../Utilities/AgxDictionary.h" line="372"/>
-        <source>Root Blend Amount</source>
+        <source>Release Event</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../Utilities/AgxDictionary.h" line="373"/>
-        <source>Rotation Type</source>
+        <source>Root Feedback Weight</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../Utilities/AgxDictionary.h" line="374"/>
-        <source>Randomize If Invalid</source>
+        <source>Root Twist Blend Rate</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../Utilities/AgxDictionary.h" line="375"/>
-        <source>Reset Event Name</source>
+        <source>Range Min Multiplier</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../Utilities/AgxDictionary.h" line="376"/>
-        <source>Right Tag Name</source>
+        <source>Range Max Multiplier</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../Utilities/AgxDictionary.h" line="377"/>
-        <source>Rig Path</source>
+        <source>Ramp In Time</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../Utilities/AgxDictionary.h" line="378"/>
-        <source>Right</source>
+        <source>Run Normalized</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../Utilities/AgxDictionary.h" line="379"/>
-        <source>Run</source>
+        <source>Right Hand Bone Name</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../Utilities/AgxDictionary.h" line="380"/>
-        <source>Receive Tag from Downstream</source>
+        <source>Right Leg Bone Name</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../Utilities/AgxDictionary.h" line="381"/>
+        <source>Repick At End</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../Utilities/AgxDictionary.h" line="382"/>
-        <source>Stagger Force Variable</source>
+        <source>Root Blend Amount</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../Utilities/AgxDictionary.h" line="383"/>
-        <source>Stagger Cooldown</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../Utilities/AgxDictionary.h" line="392"/>
-        <source>Sync Variable</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../Utilities/AgxDictionary.h" line="393"/>
-        <source>Source Location Bone</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../Utilities/AgxDictionary.h" line="394"/>
-        <source>Source Bone</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../Utilities/AgxDictionary.h" line="395"/>
-        <source>Swap Graph Event</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../Utilities/AgxDictionary.h" line="396"/>
-        <source>Starting Graph</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../Utilities/AgxDictionary.h" line="397"/>
-        <source>Sequence Name</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../Utilities/AgxDictionary.h" line="398"/>
-        <source>Sequence Current Frame Index</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../Utilities/AgxDictionary.h" line="399"/>
-        <source>State Machine Name</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../Utilities/AgxDictionary.h" line="400"/>
-        <source>State Machine</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../Utilities/AgxDictionary.h" line="401"/>
-        <source>Send Event On Catch</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../Utilities/AgxDictionary.h" line="402"/>
-        <source>Send Event</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../Utilities/AgxDictionary.h" line="403"/>
-        <source>Speed</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../Utilities/AgxDictionary.h" line="404"/>
-        <source>Spring Coefficient Override</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../Utilities/AgxDictionary.h" line="405"/>
-        <source>Speed Parameter</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../Utilities/AgxDictionary.h" line="406"/>
-        <source>Spring Coefficient</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../Utilities/AgxDictionary.h" line="407"/>
-        <source>Scale Set Variable</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../Utilities/AgxDictionary.h" line="408"/>
-        <source>Speed Var</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../Utilities/AgxDictionary.h" line="409"/>
-        <source>Start Value</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../Utilities/AgxDictionary.h" line="410"/>
-        <source>Source Bone Name</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../Utilities/AgxDictionary.h" line="411"/>
-        <source>Story Manager Event</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../Utilities/AgxDictionary.h" line="412"/>
-        <source>Set</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../Utilities/AgxDictionary.h" line="413"/>
-        <source>State Name</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../Utilities/AgxDictionary.h" line="414"/>
-        <source>Speed Classification</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../Utilities/AgxDictionary.h" line="415"/>
-        <source>Start Selection Method</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../Utilities/AgxDictionary.h" line="416"/>
-        <source>Start Selection Variable</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../Utilities/AgxDictionary.h" line="417"/>
-        <source>Swap Graph Events</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../Utilities/AgxDictionary.h" line="418"/>
-        <source>States</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../Utilities/AgxDictionary.h" line="419"/>
-        <source>Stand To Move</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../Utilities/AgxDictionary.h" line="420"/>
-        <source>Standard</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../Utilities/AgxDictionary.h" line="421"/>
-        <source>Small</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../Utilities/AgxDictionary.h" line="422"/>
-        <source>Sync</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../Utilities/AgxDictionary.h" line="423"/>
-        <source>Suffix</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../Utilities/AgxDictionary.h" line="424"/>
-        <source>Smooth</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../Utilities/AgxDictionary.h" line="425"/>
-        <source>Shortest Direction</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../Utilities/AgxDictionary.h" line="426"/>
-        <source>Start Orient</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../Utilities/AgxDictionary.h" line="427"/>
-        <source>Start Position</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../Utilities/AgxDictionary.h" line="429"/>
-        <source>Tag</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../Utilities/AgxDictionary.h" line="430"/>
-        <source>Tag Name</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../Utilities/AgxDictionary.h" line="446"/>
-        <source>Transition Type</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../Utilities/AgxDictionary.h" line="447"/>
-        <source>Tags</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../Utilities/AgxDictionary.h" line="448"/>
-        <source>Threshold</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../Utilities/AgxDictionary.h" line="449"/>
-        <source>Turn Animation</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../Utilities/AgxDictionary.h" line="450"/>
-        <source>Turn Animation Modify Translation</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../Utilities/AgxDictionary.h" line="454"/>
-        <source>Update While Inactive</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../Utilities/AgxDictionary.h" line="455"/>
-        <source>Unknown 1</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../Utilities/AgxDictionary.h" line="456"/>
-        <source>Unknown 2</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../Utilities/AgxDictionary.h" line="457"/>
-        <source>Unknown 3</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../Utilities/AgxDictionary.h" line="460"/>
-        <source>Variable Name</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../Utilities/AgxDictionary.h" line="461"/>
-        <source>Variable Type</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../Utilities/AgxDictionary.h" line="462"/>
-        <source>Variable</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../Utilities/AgxDictionary.h" line="463"/>
-        <source>Victim Suffix</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../Utilities/AgxDictionary.h" line="464"/>
-        <source>Value</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../Utilities/AgxDictionary.h" line="465"/>
-        <source>Variable 1</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../Utilities/AgxDictionary.h" line="466"/>
-        <source>Variable 2</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../Utilities/AgxDictionary.h" line="467"/>
-        <source>Variable 3</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../Utilities/AgxDictionary.h" line="468"/>
-        <source>Variable Out</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../Utilities/AgxDictionary.h" line="470"/>
-        <source>Wrap To Range</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../Utilities/AgxDictionary.h" line="471"/>
-        <source>Weight</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../Utilities/AgxDictionary.h" line="472"/>
-        <source>Wrapped Graph</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../Utilities/AgxDictionary.h" line="473"/>
-        <source>Weight or Variable</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../Utilities/AgxDictionary.h" line="474"/>
-        <source>Walk Run Speed</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../Utilities/AgxDictionary.h" line="475"/>
-        <source>Walk Normalized</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../Utilities/AgxDictionary.h" line="476"/>
-        <source>While Moving</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../Utilities/AgxDictionary.h" line="477"/>
-        <source>Walk</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../Utilities/AgxDictionary.h" line="479"/>
-        <source>X, Y, Trans Lock Tolerance</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../Utilities/AgxDictionary.h" line="480"/>
-        <source>X</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../Utilities/AgxDictionary.h" line="482"/>
-        <source>Y</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../Utilities/AgxDictionary.h" line="484"/>
-        <source>Z</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../Utilities/AgxDictionary.h" line="485"/>
-        <source>Zero to One</source>
+        <source>Rotation Type</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../Utilities/AgxDictionary.h" line="384"/>
+        <source>Randomize If Invalid</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../Utilities/AgxDictionary.h" line="385"/>
+        <source>Reset Event Name</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../Utilities/AgxDictionary.h" line="386"/>
+        <source>Right Tag Name</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../Utilities/AgxDictionary.h" line="387"/>
+        <source>Rig Path</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../Utilities/AgxDictionary.h" line="388"/>
+        <source>Rig Name</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../Utilities/AgxDictionary.h" line="389"/>
+        <source>Right</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../Utilities/AgxDictionary.h" line="390"/>
+        <source>Run</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../Utilities/AgxDictionary.h" line="391"/>
+        <source>Receive Tag from Downstream</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../Utilities/AgxDictionary.h" line="393"/>
+        <source>Stagger Force Variable</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../Utilities/AgxDictionary.h" line="394"/>
+        <source>Stagger Cooldown</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../Utilities/AgxDictionary.h" line="403"/>
+        <source>Sync Variable</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../Utilities/AgxDictionary.h" line="404"/>
+        <source>Source Location Bone</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../Utilities/AgxDictionary.h" line="405"/>
+        <source>Source Bone</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../Utilities/AgxDictionary.h" line="406"/>
+        <source>Swap Graph Event</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../Utilities/AgxDictionary.h" line="407"/>
+        <source>Starting Graph</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../Utilities/AgxDictionary.h" line="408"/>
+        <source>Sequence Name</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../Utilities/AgxDictionary.h" line="409"/>
+        <source>Sequence Current Frame Index</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../Utilities/AgxDictionary.h" line="410"/>
+        <source>State Machine Name</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../Utilities/AgxDictionary.h" line="411"/>
+        <source>State Machine</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../Utilities/AgxDictionary.h" line="412"/>
+        <source>Send Event On Catch</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../Utilities/AgxDictionary.h" line="413"/>
+        <source>Send Event</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../Utilities/AgxDictionary.h" line="414"/>
+        <source>Speed</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../Utilities/AgxDictionary.h" line="415"/>
+        <source>Spring Coefficient Override</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../Utilities/AgxDictionary.h" line="416"/>
+        <source>Speed Parameter</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../Utilities/AgxDictionary.h" line="417"/>
+        <source>Spring Coefficient</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../Utilities/AgxDictionary.h" line="418"/>
+        <source>Scale Set Variable</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../Utilities/AgxDictionary.h" line="419"/>
+        <source>Speed Var</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../Utilities/AgxDictionary.h" line="420"/>
+        <source>Start Value</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../Utilities/AgxDictionary.h" line="421"/>
+        <source>Source Bone Name</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../Utilities/AgxDictionary.h" line="422"/>
+        <source>Story Manager Event</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../Utilities/AgxDictionary.h" line="423"/>
+        <source>Set</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../Utilities/AgxDictionary.h" line="424"/>
+        <source>State Name</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../Utilities/AgxDictionary.h" line="425"/>
+        <source>Speed Classification</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../Utilities/AgxDictionary.h" line="426"/>
+        <source>Start Selection Method</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../Utilities/AgxDictionary.h" line="427"/>
+        <source>Start Selection Variable</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../Utilities/AgxDictionary.h" line="428"/>
+        <source>Swap Graph Events</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../Utilities/AgxDictionary.h" line="429"/>
+        <source>States</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../Utilities/AgxDictionary.h" line="430"/>
+        <source>Stand To Move</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../Utilities/AgxDictionary.h" line="431"/>
+        <source>Standard</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../Utilities/AgxDictionary.h" line="432"/>
+        <source>Small</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../Utilities/AgxDictionary.h" line="433"/>
+        <source>Sync</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../Utilities/AgxDictionary.h" line="434"/>
+        <source>Suffix</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../Utilities/AgxDictionary.h" line="435"/>
+        <source>Smooth</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../Utilities/AgxDictionary.h" line="436"/>
+        <source>Shortest Direction</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../Utilities/AgxDictionary.h" line="437"/>
+        <source>Start Orient</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../Utilities/AgxDictionary.h" line="438"/>
+        <source>Start Position</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../Utilities/AgxDictionary.h" line="50"/>
+        <location filename="../Utilities/AgxDictionary.h" line="51"/>
+        <location filename="../Utilities/AgxDictionary.h" line="52"/>
+        <location filename="../Utilities/AgxDictionary.h" line="440"/>
+        <source>Tag</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../Utilities/AgxDictionary.h" line="295"/>
+        <source>Max Correction Vel</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../Utilities/AgxDictionary.h" line="301"/>
+        <location filename="../Utilities/AgxDictionary.h" line="302"/>
+        <source>Min Time</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../Utilities/AgxDictionary.h" line="303"/>
+        <location filename="../Utilities/AgxDictionary.h" line="304"/>
+        <source>Max Time</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../Utilities/AgxDictionary.h" line="359"/>
+        <source>Parameter</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../Utilities/AgxDictionary.h" line="441"/>
+        <location filename="../Utilities/AgxDictionary.h" line="442"/>
+        <source>Tag Name</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../Utilities/AgxDictionary.h" line="458"/>
+        <source>Transition Type</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../Utilities/AgxDictionary.h" line="459"/>
+        <source>Tags</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../Utilities/AgxDictionary.h" line="460"/>
+        <source>Threshold</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../Utilities/AgxDictionary.h" line="461"/>
+        <source>Turn Animation</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../Utilities/AgxDictionary.h" line="462"/>
+        <source>Turn Animation Modify Translation</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../Utilities/AgxDictionary.h" line="466"/>
+        <source>Update While Inactive</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../Utilities/AgxDictionary.h" line="467"/>
+        <source>Unknown 1</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../Utilities/AgxDictionary.h" line="468"/>
+        <source>Unknown 2</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../Utilities/AgxDictionary.h" line="469"/>
+        <source>Unknown 3</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../Utilities/AgxDictionary.h" line="472"/>
+        <source>Variable Name</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../Utilities/AgxDictionary.h" line="473"/>
+        <source>Variable Type</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../Utilities/AgxDictionary.h" line="474"/>
+        <source>Variable</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../Utilities/AgxDictionary.h" line="475"/>
+        <source>Victim Suffix</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../Utilities/AgxDictionary.h" line="476"/>
+        <source>Value</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../Utilities/AgxDictionary.h" line="477"/>
+        <source>Variable 1</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../Utilities/AgxDictionary.h" line="478"/>
+        <source>Variable 2</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../Utilities/AgxDictionary.h" line="479"/>
+        <source>Variable 3</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../Utilities/AgxDictionary.h" line="480"/>
+        <source>Variable Out</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../Utilities/AgxDictionary.h" line="482"/>
+        <source>Wrap To Range</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../Utilities/AgxDictionary.h" line="483"/>
+        <source>Weight</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../Utilities/AgxDictionary.h" line="484"/>
+        <source>Wrapped Graph</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../Utilities/AgxDictionary.h" line="485"/>
+        <source>Weight or Variable</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../Utilities/AgxDictionary.h" line="486"/>
+        <source>Walk Run Speed</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../Utilities/AgxDictionary.h" line="487"/>
+        <source>Walk Normalized</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../Utilities/AgxDictionary.h" line="488"/>
+        <source>While Moving</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../Utilities/AgxDictionary.h" line="489"/>
+        <source>Walk</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../Utilities/AgxDictionary.h" line="491"/>
+        <source>X, Y, Trans Lock Tolerance</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../Utilities/AgxDictionary.h" line="492"/>
+        <source>X</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../Utilities/AgxDictionary.h" line="494"/>
+        <source>Y</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../Utilities/AgxDictionary.h" line="496"/>
+        <source>Z</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../Utilities/AgxDictionary.h" line="497"/>
+        <source>Zero to One</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../Utilities/AgxDictionary.h" line="395"/>
         <source>Sync System</source>
         <translation type="unfinished"></translation>
     </message>
@@ -2467,287 +2509,287 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../Utilities/AgxDictionary.h" line="385"/>
+        <location filename="../Utilities/AgxDictionary.h" line="396"/>
         <source>Sync Slave</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../Utilities/AgxDictionary.h" line="386"/>
+        <location filename="../Utilities/AgxDictionary.h" line="397"/>
         <source>Send Event On End</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../Utilities/AgxDictionary.h" line="387"/>
+        <location filename="../Utilities/AgxDictionary.h" line="398"/>
         <source>State Variable</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../Utilities/AgxDictionary.h" line="388"/>
+        <location filename="../Utilities/AgxDictionary.h" line="399"/>
         <source>State Variable Ref Count</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../Utilities/AgxDictionary.h" line="431"/>
+        <location filename="../Utilities/AgxDictionary.h" line="443"/>
         <source>Tag Alteration</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../Utilities/AgxDictionary.h" line="432"/>
+        <location filename="../Utilities/AgxDictionary.h" line="444"/>
         <source>Tag Sync System</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../Utilities/AgxDictionary.h" line="433"/>
+        <location filename="../Utilities/AgxDictionary.h" line="445"/>
         <source>Type of Propagation</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../Utilities/AgxDictionary.h" line="434"/>
+        <location filename="../Utilities/AgxDictionary.h" line="446"/>
         <source>Type</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../Utilities/AgxDictionary.h" line="435"/>
+        <location filename="../Utilities/AgxDictionary.h" line="447"/>
         <source>Time</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../Utilities/AgxDictionary.h" line="436"/>
+        <location filename="../Utilities/AgxDictionary.h" line="448"/>
         <source>Turn Anim Camera Var</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../Utilities/AgxDictionary.h" line="437"/>
+        <location filename="../Utilities/AgxDictionary.h" line="449"/>
         <source>Target Bone</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../Utilities/AgxDictionary.h" line="438"/>
+        <location filename="../Utilities/AgxDictionary.h" line="450"/>
         <source>Time Percent</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../Utilities/AgxDictionary.h" line="439"/>
+        <location filename="../Utilities/AgxDictionary.h" line="451"/>
         <source>Time Percent Min</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../Utilities/AgxDictionary.h" line="440"/>
+        <location filename="../Utilities/AgxDictionary.h" line="452"/>
         <source>Time Percent Max</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../Utilities/AgxDictionary.h" line="441"/>
+        <location filename="../Utilities/AgxDictionary.h" line="453"/>
         <source>Toe L Bone Name</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../Utilities/AgxDictionary.h" line="442"/>
+        <location filename="../Utilities/AgxDictionary.h" line="454"/>
         <source>Toe R Bone Name</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../Utilities/AgxDictionary.h" line="443"/>
+        <location filename="../Utilities/AgxDictionary.h" line="455"/>
         <source>Target Blend Time</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../Utilities/AgxDictionary.h" line="444"/>
+        <location filename="../Utilities/AgxDictionary.h" line="456"/>
         <source>Thighs Blend Amount</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../Utilities/AgxDictionary.h" line="445"/>
+        <location filename="../Utilities/AgxDictionary.h" line="457"/>
         <source>Target Bone Name</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../Utilities/AgxDictionary.h" line="452"/>
+        <location filename="../Utilities/AgxDictionary.h" line="464"/>
         <source>Update Ref Count When Inactive</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../Utilities/AgxDictionary.h" line="389"/>
+        <location filename="../Utilities/AgxDictionary.h" line="400"/>
         <source>Speed Multiplier</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../Utilities/AgxDictionary.h" line="390"/>
+        <location filename="../Utilities/AgxDictionary.h" line="401"/>
         <source>Speed Multiplier Is Duration</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../Utilities/AgxDictionary.h" line="117"/>
+        <location filename="../Utilities/AgxDictionary.h" line="126"/>
         <source>Crop Start Frames</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../Utilities/AgxDictionary.h" line="118"/>
+        <location filename="../Utilities/AgxDictionary.h" line="127"/>
         <source>Crop End Frames</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../Utilities/AgxDictionary.h" line="356"/>
+        <location filename="../Utilities/AgxDictionary.h" line="366"/>
         <source>Randomize Start Point</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../Utilities/AgxDictionary.h" line="285"/>
+        <location filename="../Utilities/AgxDictionary.h" line="292"/>
         <source>Mirror</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../Utilities/AgxDictionary.h" line="339"/>
+        <location filename="../Utilities/AgxDictionary.h" line="348"/>
         <source>Process Inactive Events</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../Utilities/AgxDictionary.h" line="453"/>
+        <location filename="../Utilities/AgxDictionary.h" line="465"/>
         <source>Use Radians</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../Utilities/AgxDictionary.h" line="459"/>
+        <location filename="../Utilities/AgxDictionary.h" line="471"/>
         <source>Variable Control</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../Utilities/AgxDictionary.h" line="391"/>
+        <location filename="../Utilities/AgxDictionary.h" line="402"/>
         <source>Sync Only Transition Out</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../Utilities/AgxDictionary.h" line="82"/>
+        <location filename="../Utilities/AgxDictionary.h" line="91"/>
         <source>Body Part Var</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../AgxNodes/SFBGS/AgxNtAnimationImpactSelector.h" line="32"/>
+        <location filename="../AgxNodes/SFBGS/AgxNtAnimationImpactSelector.h" line="34"/>
         <source>Torso</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../AgxNodes/SFBGS/AgxNtAnimationImpactSelector.h" line="33"/>
+        <location filename="../AgxNodes/SFBGS/AgxNtAnimationImpactSelector.h" line="35"/>
         <source>Head 1</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../AgxNodes/SFBGS/AgxNtAnimationImpactSelector.h" line="34"/>
+        <location filename="../AgxNodes/SFBGS/AgxNtAnimationImpactSelector.h" line="36"/>
         <source>Eye 1</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../AgxNodes/SFBGS/AgxNtAnimationImpactSelector.h" line="35"/>
+        <location filename="../AgxNodes/SFBGS/AgxNtAnimationImpactSelector.h" line="37"/>
         <source>LookAt 1</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../AgxNodes/SFBGS/AgxNtAnimationImpactSelector.h" line="36"/>
+        <location filename="../AgxNodes/SFBGS/AgxNtAnimationImpactSelector.h" line="38"/>
         <source>Fly Grab</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../AgxNodes/SFBGS/AgxNtAnimationImpactSelector.h" line="37"/>
+        <location filename="../AgxNodes/SFBGS/AgxNtAnimationImpactSelector.h" line="39"/>
         <source>Head 2</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../AgxNodes/SFBGS/AgxNtAnimationImpactSelector.h" line="38"/>
+        <location filename="../AgxNodes/SFBGS/AgxNtAnimationImpactSelector.h" line="40"/>
         <source>Left Arm 1</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../AgxNodes/SFBGS/AgxNtAnimationImpactSelector.h" line="39"/>
+        <location filename="../AgxNodes/SFBGS/AgxNtAnimationImpactSelector.h" line="41"/>
         <source>Left Arm 2</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../AgxNodes/SFBGS/AgxNtAnimationImpactSelector.h" line="40"/>
+        <location filename="../AgxNodes/SFBGS/AgxNtAnimationImpactSelector.h" line="42"/>
         <source>Right Arm 1</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../AgxNodes/SFBGS/AgxNtAnimationImpactSelector.h" line="41"/>
+        <location filename="../AgxNodes/SFBGS/AgxNtAnimationImpactSelector.h" line="43"/>
         <source>Right Arm 2</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../AgxNodes/SFBGS/AgxNtAnimationImpactSelector.h" line="42"/>
+        <location filename="../AgxNodes/SFBGS/AgxNtAnimationImpactSelector.h" line="44"/>
         <source>Left Leg 1</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../AgxNodes/SFBGS/AgxNtAnimationImpactSelector.h" line="43"/>
+        <location filename="../AgxNodes/SFBGS/AgxNtAnimationImpactSelector.h" line="45"/>
         <source>Left Leg 2</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../AgxNodes/SFBGS/AgxNtAnimationImpactSelector.h" line="44"/>
+        <location filename="../AgxNodes/SFBGS/AgxNtAnimationImpactSelector.h" line="46"/>
         <source>Left Leg 3</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../AgxNodes/SFBGS/AgxNtAnimationImpactSelector.h" line="45"/>
+        <location filename="../AgxNodes/SFBGS/AgxNtAnimationImpactSelector.h" line="47"/>
         <source>Right Leg 1</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../AgxNodes/SFBGS/AgxNtAnimationImpactSelector.h" line="46"/>
+        <location filename="../AgxNodes/SFBGS/AgxNtAnimationImpactSelector.h" line="48"/>
         <source>Right Leg 2</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../AgxNodes/SFBGS/AgxNtAnimationImpactSelector.h" line="47"/>
+        <location filename="../AgxNodes/SFBGS/AgxNtAnimationImpactSelector.h" line="49"/>
         <source>Right Leg 3</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../AgxNodes/SFBGS/AgxNtAnimationImpactSelector.h" line="48"/>
+        <location filename="../AgxNodes/SFBGS/AgxNtAnimationImpactSelector.h" line="50"/>
         <source>Brain</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../AgxNodes/SFBGS/AgxNtAnimationImpactSelector.h" line="49"/>
+        <location filename="../AgxNodes/SFBGS/AgxNtAnimationImpactSelector.h" line="51"/>
         <source>Weapon</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../AgxNodes/SFBGS/AgxNtAnimationImpactSelector.h" line="50"/>
+        <location filename="../AgxNodes/SFBGS/AgxNtAnimationImpactSelector.h" line="52"/>
         <source>Root</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../AgxNodes/SFBGS/AgxNtAnimationImpactSelector.h" line="51"/>
+        <location filename="../AgxNodes/SFBGS/AgxNtAnimationImpactSelector.h" line="53"/>
         <source>Center Of Mass</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../AgxNodes/SFBGS/AgxNtAnimationImpactSelector.h" line="52"/>
+        <location filename="../AgxNodes/SFBGS/AgxNtAnimationImpactSelector.h" line="54"/>
         <source>Pelvis</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../AgxNodes/SFBGS/AgxNtAnimationImpactSelector.h" line="53"/>
+        <location filename="../AgxNodes/SFBGS/AgxNtAnimationImpactSelector.h" line="55"/>
         <source>Camera</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../AgxNodes/SFBGS/AgxNtAnimationImpactSelector.h" line="54"/>
+        <location filename="../AgxNodes/SFBGS/AgxNtAnimationImpactSelector.h" line="56"/>
         <source>Offset Root</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../AgxNodes/SFBGS/AgxNtAnimationImpactSelector.h" line="55"/>
+        <location filename="../AgxNodes/SFBGS/AgxNtAnimationImpactSelector.h" line="57"/>
         <source>Left Foot</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../AgxNodes/SFBGS/AgxNtAnimationImpactSelector.h" line="56"/>
+        <location filename="../AgxNodes/SFBGS/AgxNtAnimationImpactSelector.h" line="58"/>
         <source>Right Foot</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../AgxNodes/SFBGS/AgxNtAnimationImpactSelector.h" line="57"/>
+        <location filename="../AgxNodes/SFBGS/AgxNtAnimationImpactSelector.h" line="59"/>
         <source>Face Target Source</source>
         <translation type="unfinished"></translation>
     </message>
@@ -2883,12 +2925,12 @@
 <context>
     <name>SFBGS::AgxNtEmbeddedGraph</name>
     <message>
-        <location filename="../AgxNodes/SFBGS/AgxNtEmbeddedGraph.cpp" line="57"/>
+        <location filename="../AgxNodes/SFBGS/AgxNtEmbeddedGraph.cpp" line="70"/>
         <source>State Machine Embedded</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../AgxNodes/SFBGS/AgxNtEmbeddedGraph.cpp" line="59"/>
+        <location filename="../AgxNodes/SFBGS/AgxNtEmbeddedGraph.cpp" line="72"/>
         <source>Blend Tree Embedded</source>
         <translation type="unfinished"></translation>
     </message>
@@ -3016,7 +3058,7 @@
 <context>
     <name>SFBGS::AgxNtPairedAnimation</name>
     <message>
-        <location filename="../AgxNodes/SFBGS/AgxNtPairedAnimation.cpp" line="24"/>
+        <location filename="../AgxNodes/SFBGS/AgxNtPairedAnimation.cpp" line="31"/>
         <source>Paired Animation</source>
         <translation type="unfinished"></translation>
     </message>
@@ -3200,17 +3242,17 @@
 <context>
     <name>SFBGSNode</name>
     <message>
-        <location filename="../AgxNodes/AgxNode.cpp" line="808"/>
+        <location filename="../AgxNodes/AgxNode.cpp" line="906"/>
         <source>User Id Not Found!</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../AgxNodes/AgxNode.cpp" line="1203"/>
+        <location filename="../AgxNodes/AgxNode.cpp" line="1301"/>
         <source>SFBGS Flags</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../AgxNodes/AgxNode.cpp" line="1227"/>
+        <location filename="../AgxNodes/AgxNode.cpp" line="1329"/>
         <source>Missing Block In Block Order For %1 On Node %2, Please Copy This Message And Make A Bug Report.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -3218,12 +3260,12 @@
 <context>
     <name>SFBGS_GraphPropertiesDialogWidget</name>
     <message>
-        <location filename="../Widgets/SFBGS/SFBGS_GraphPropertiesDialogWidget.cpp" line="69"/>
+        <location filename="../Widgets/SFBGS/SFBGS_GraphPropertiesDialogWidget.cpp" line="76"/>
         <source>Graph Types</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../Widgets/SFBGS/SFBGS_GraphPropertiesDialogWidget.cpp" line="69"/>
+        <location filename="../Widgets/SFBGS/SFBGS_GraphPropertiesDialogWidget.cpp" line="76"/>
         <source>Select New Graph Type</source>
         <translation type="unfinished"></translation>
     </message>

@@ -1,5 +1,6 @@
 #pragma once
 
+#include <qcoreevent.h>
 #include <QApplication>
 #include "Widgets/Logger/AgxLogger.h"
 #include <QMutex>

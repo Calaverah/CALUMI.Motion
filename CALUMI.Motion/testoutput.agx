@@ -1,0 +1,66 @@
+<node>
+	<node_type>NT_PARTICLE_SEQUENCE</node_type>
+	<noninstanced>False</noninstanced>
+	<name>Particle Sequence</name>
+	<pos_x>x</pos_x>
+	<pos_y>y</pos_y>
+	<expanded_pos_x>ex</expanded_pos_x>
+	<expanded_pos_y>ey</expanded_pos_y>
+	<use_color_2>False</use_color_2>
+	<user_id>0</user_id>
+	<collapsed>False</collapsed>
+	<guid>ad85fed1-067f-422f-aee4-a3eccc0b02cb</guid>
+	<output> <name>Out</name> <id>0</id> <idx>0</idx>
+ </output>
+	<property_sheet>
+		<num_columns>2</num_columns>
+		<column> <header>Property</header> <types>5</types> </column>
+		<column> <header>Value</header> <types>5</types> </column>
+		<row>
+			<prop> <type>2</type> <value>Name</value> </prop>
+			<prop> <type>2</type> <value>Particle Sequence</value> </prop>
+		</row>
+		<row>
+			<prop> <type>2</type> <value>Sequence Name</value> </prop>
+			<prop> <type>2</type> <value></value> </prop>
+		</row>
+		<row>
+			<prop> <type>2</type> <value>Playback Speed</value> </prop>
+			<prop> <type>0</type> <value>1</value> </prop>
+		</row>
+		<row>
+			<prop> <type>2</type> <value>Blend Out Time</value> </prop>
+			<prop> <type>1</type> <value>0.3</value> </prop>
+		</row>
+		<row>
+			<prop> <type>2</type> <value>Sync Only Transition Out</value> </prop>
+			<prop> <type>3</type> <value>False</value> </prop>
+		</row>
+	</property_sheet>
+	<property_sheet>
+		<num_columns>4</num_columns>
+		<column> <header></header> <types>2</types> </column>
+		<column> <header>Binding Type</header> <types>2</types> </column>
+		<column> <header>Binding Name</header> <types>2</types> </column>
+		<column> <header>Binding Variable</header> <types>2</types> </column>
+	</property_sheet>
+	<property_sheet>
+		<num_columns>3</num_columns>
+		<column> <header></header> <types>2</types> </column>
+		<column> <header>Binding Name</header> <types>2</types> </column>
+		<column> <header>Variable Name</header> <types>1</types> </column>
+	</property_sheet>
+	<property_sheet>
+		<num_columns>4</num_columns>
+		<column> <header></header> <types>2</types> </column>
+		<column> <header>Non Instanced</header> <types>3</types> </column>
+		<column> <header>Event</header> <types>2</types> </column>
+		<column> <header>Payload</header> <types>2</types> </column>
+	</property_sheet>
+	<property_sheet>
+		<num_columns>4</num_columns>
+		<column> <header></header> <types>2</types> </column>
+		<column> <header>Non Instanced</header> <types>3</types> </column>
+		<column> <header>Event</header> <types>2</types> </column>
+		<column> <header>Payload</header> <types>2</types> </column>
+	</property_sheet></node>

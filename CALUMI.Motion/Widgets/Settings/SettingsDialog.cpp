@@ -4,10 +4,14 @@
 
 SettingsDialog::SettingsDialog(QWidget *parent)
 	: QDialog(parent)
+	//,_symbolColorBox(new AgxColorBox())
 {
 	ui.setupUi(this);
 
 	ui.languageComboBox->insertItems(0, LanguageStrings);
+
+	ui.themeLineEdit->setValidator(new QRegularExpressionValidator(QRegularExpression("[^\\\\/:*?\"<>|]+$"),this));
+
 	RefreshUiValues();
 }
 
@@ -53,6 +57,10 @@ void SettingsDialog::RefreshUiValues() const
 
 	//Language
 	ui.languageComboBox->setCurrentText(LanguageCodeToString(ref.GetLanguage()));
+
+	//Visuals
+	ui.equationSymbolColorWidget->setColor(ref.GetInstance().GetSymbolColor());
+	ui.themeLineEdit->setText(ref.GetThemeFileName());
 }
 
 void SettingsDialog::ApplySettings()
@@ -72,6 +80,10 @@ void SettingsDialog::ApplySettings()
 
 	//Langauge
 	ref.SetLanguage(LanguageCodeFromString(ui.languageComboBox->currentText()));
+
+	//Visuals
+	ref.SetSymbolColor(ui.equationSymbolColorWidget->getColor());
+	ref.SetThemeFileName(ui.themeLineEdit->text());
 
 	//Finalize
 	ref.SyncSettings();

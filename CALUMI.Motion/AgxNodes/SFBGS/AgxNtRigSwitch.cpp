@@ -13,7 +13,7 @@ namespace SFBGS {
         _PropertyEntries.push_back(AgxPropertyEntryDefinition(&AgxDictionary::Name, "Rig Switch", AgxColumnTypes::BasicString));
 
         AgxPropertyBlockData entryBlock({
-            AgxPropertyEntryDefinition(&AgxDictionary::RigPath,"",AgxColumnTypes::BasicString)
+            AgxPropertyEntryDefinition(&AgxDictionary::RigName,"",AgxColumnTypes::BasicString)
                                           }, nullptr);
 
         _PropertyBlocks.insert(&AgxDictionary::Entries, entryBlock);

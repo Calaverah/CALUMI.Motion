@@ -24,15 +24,19 @@ public:
 	virtual void InsertData(const QJsonObject& data) {}
 	virtual QJsonObject Save() const { return QJsonObject(); }
 	virtual inline bool HasCaption() const { return false; }
-	virtual inline QString Caption() const { return "Debug"; }
+	virtual inline QString Caption(bool formatted = true) const { return "Debug"; }
 	virtual inline QWidget* GetEmbeddedWidget() { return nullptr; };
 	virtual inline bool HasPropertySheet() { return false; }
 	virtual inline void SetId(unsigned int id) { _portId = id; }
 	virtual inline unsigned int GetId() const { return _portId; }
 
 	virtual inline void setConnectionState(bool state) {}
+	virtual inline bool isConnected() const { return false; }
 
 	virtual inline void externalCommand(const QString& commandTag, const QString& payload) {}
+
+	virtual inline const QVector<AgxPropertyEntryDefinition>& PropertyEntries() { return {}; }
+	virtual inline void SavePropertySheet(pugi::xml_node& parent) {}
 
 Q_SIGNALS:
 	void PropertySheetUpdated();
@@ -61,7 +65,7 @@ public:
 	QJsonObject Save() const override;
 
 	inline bool HasCaption() const override { return _portId != InvalidAgxPortId; }
-	QString Caption() const override;
+	QString Caption(bool formatted = true) const override;
 
 	void SetPropertySheetEnabled(bool state);
 
@@ -74,6 +78,7 @@ public:
 	void AddBlendInput();
 
 	inline void setConnectionState(bool state) override { _IsConnected = state; Q_EMIT PropertySheetUpdated(); }
+	inline bool isConnected() const override { return _IsConnected; }
 
 	inline bool HasPropertySheet() override { return _PropertyEntries.count() != 0; }
 	inline void AddStandardPropertySheet() {
@@ -89,6 +94,9 @@ public:
 	}
 
 	void externalCommand(const QString& commandTag, const QString& payload) override;
+
+	inline const QVector<AgxPropertyEntryDefinition>& PropertyEntries() override { return _PropertyEntries; }
+	void SavePropertySheet(pugi::xml_node& parent) override;
 
 protected:
 	//AgxPortId sfbgs_id = InvalidAgxPortId;

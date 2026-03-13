@@ -9,6 +9,12 @@ SFBGS_GraphPropertiesDialogWidget::SFBGS_GraphPropertiesDialogWidget(AgxGraphics
 	_mainLayout = new QGridLayout();
 	_mainLayout->setContentsMargins(0, 0, 10, 0);
 
+	QHBoxLayout* titleLayout = new QHBoxLayout();
+	QLabel* titleLabel = new QLabel("Title: ");
+	QLabel* graphTitleLabel = new QLabel(scene.agxGraphModel().GetGraphTitle());
+	titleLayout->addWidget(titleLabel, 1, Qt::AlignLeft | Qt::AlignBottom);
+	titleLayout->addWidget(graphTitleLabel, 0, Qt::AlignLeft | Qt::AlignBottom);
+
 	QHBoxLayout* graphCategoryLayout = new QHBoxLayout();
 	QLabel* graphCategoryLabel = new QLabel("Category: ");
 	QComboBox* graphCategoryCombo = new QComboBox();
@@ -45,6 +51,7 @@ SFBGS_GraphPropertiesDialogWidget::SFBGS_GraphPropertiesDialogWidget(AgxGraphics
 	
 	auto aFont = graphTypeLabel->font();
 	aFont.setBold(true);
+	titleLabel->setFont(aFont);
 	graphTypeLabel->setFont(aFont);
 	graphCategoryLabel->setFont(aFont);
 
@@ -80,17 +87,25 @@ SFBGS_GraphPropertiesDialogWidget::SFBGS_GraphPropertiesDialogWidget(AgxGraphics
 			});
 
 
-	AgxGraphModel* modelRef = &scene.agxGraphModel();
-	if(modelRef)
-		connect(modelRef, &AgxGraphModel::PropertySheetUpdated, graphCategoryCombo, [this, modelRef, graphCategoryCombo]() {
-										QString text = modelRef->getGraphCategory();
-										if (text == "NONE")
-											text = "<none>";
-										graphCategoryCombo->blockSignals(true);
-										graphCategoryCombo->setCurrentText(text);
-										graphCategoryCombo->blockSignals(false);
-																															});
+	//AgxGraphModel* modelRef = &scene.agxGraphModel();
+	const AgxGraphModel* rootModelRef = scene.agxGraphModel().rootGraphReference();
+	if (rootModelRef)
+	{
+		connect(rootModelRef, &AgxGraphModel::PropertySheetUpdated, graphCategoryCombo, [this, rootModelRef, graphCategoryCombo]() {
+			QString text = rootModelRef->getGraphCategory();
+			if (text == "NONE")
+				text = "<none>";
+			graphCategoryCombo->blockSignals(true);
+			graphCategoryCombo->setCurrentText(text);
+			graphCategoryCombo->blockSignals(false);
+				});
 
+		connect(rootModelRef, &AgxGraphModel::PropertySheetUpdated, graphTitleLabel, [this, rootModelRef, graphTitleLabel]() {
+			graphTitleLabel->blockSignals(true);
+			graphTitleLabel->setText(rootModelRef->GetGraphTitle());
+			graphTitleLabel->blockSignals(false);
+				});
+	}
 	connect(graphCategoryCombo, &QComboBox::currentTextChanged, this, [this, &scene, graphCategoryCombo](const QString& text) {
 										QString output = text;
 
@@ -101,9 +116,10 @@ SFBGS_GraphPropertiesDialogWidget::SFBGS_GraphPropertiesDialogWidget(AgxGraphics
 
 										scene.undoStack().push(new AgxSetGraphCategory(&scene.agxGraphModel(), output));
 																																});
-
-	_mainLayout->addLayout(graphCategoryLayout,0,0);
-	_mainLayout->addLayout(graphTypeLayout,1,0);
+	
+	_mainLayout->addLayout(titleLayout,0,0);
+	_mainLayout->addLayout(graphCategoryLayout,1,0);
+	_mainLayout->addLayout(graphTypeLayout,2,0);
 
 	_propertyWidgets = new AgxNodePropertiesWidget();
 	connect(_propertyWidgets, &AgxNodePropertiesWidget::BroadcastWidth, this, &SFBGS_GraphPropertiesDialogWidget::SetWidth);
@@ -117,7 +133,7 @@ SFBGS_GraphPropertiesDialogWidget::SFBGS_GraphPropertiesDialogWidget(AgxGraphics
 	_scrollArea->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Expanding);
 	_propertyWidgets->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::MinimumExpanding);
 
-	_mainLayout->addWidget(_scrollArea, 2, 0);
+	_mainLayout->addWidget(_scrollArea, 3, 0);
 
 	_buttons = new QDialogButtonBox(QDialogButtonBox::Close);
 	_buttons->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::Fixed);
@@ -131,8 +147,8 @@ SFBGS_GraphPropertiesDialogWidget::SFBGS_GraphPropertiesDialogWidget(AgxGraphics
 	_propertyWidgets->CreatePropertyEntries(scene.agxGraphModel().GetPropertyEntries(), &scene.agxGraphModel(), false);
 	
 	auto blocks = scene.agxGraphModel().GetPropertyBlocks();
-	auto keys = blocks->keys();
-	for (unsigned int i = 0; i < blocks->count(); i++)
+	auto& keys = scene.agxGraphModel()._BlockOrder;
+	for (unsigned int i = 0; i < blocks->count() && i < keys.count(); i++)
 	{
 		auto key = keys.at(i);
 		_propertyWidgets->CreatePropetryBlock(key,*scene.agxGraphModel().getPropertyBlock(key));
@@ -142,12 +158,15 @@ SFBGS_GraphPropertiesDialogWidget::SFBGS_GraphPropertiesDialogWidget(AgxGraphics
 	{
 		graphCategoryCombo->setDisabled(true);
 		graphCategoryLabel->setDisabled(true);
+		titleLabel->setDisabled(true);
+		graphTitleLabel->setDisabled(true);
 	}
 }
 
 void SFBGS_GraphPropertiesDialogWidget::SetWidth(int width)
 {
-	_scrollArea->setFixedWidth(width);
+	//_scrollArea->setFixedWidth(width);
+	_scrollArea->setFixedWidth(800);
 }
 
 QDialogButtonBox* SFBGS_GraphPropertiesDialogWidget::GetButtonBox() const

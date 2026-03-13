@@ -31,7 +31,7 @@ class AgxGraphicsScene : public QGraphicsScene
 {
     Q_OBJECT
 public:
-    AgxGraphicsScene(AgxGraphModel& graphModel, const QString& graphTitle = QString(), QObject* parent = nullptr);
+    AgxGraphicsScene(AgxGraphModel& graphModel, QObject* parent = nullptr);
     AgxGraphicsScene() = delete;
 
     ~AgxGraphicsScene() = default;
@@ -152,8 +152,6 @@ private:
     bool _nodeDrag;
     QUndoStack* _undoStack;
     Qt::Orientation _orientation;
-
-    QString _agxGraphTitle = "untitled";
     
 public:
     bool _groupHovered = false;

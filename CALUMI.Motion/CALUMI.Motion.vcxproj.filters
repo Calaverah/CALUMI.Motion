@@ -382,6 +382,12 @@
     <ClCompile Include="Widgets\Dialog\AgxSimpleDialog.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Utilities\AgxFormat.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Widgets\ColorBox\AgxColorBox.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="3rdPartyDirect\pugiXML\LICENSE.md" />
@@ -390,6 +396,7 @@
     <None Include="Localization\motion_fr.qm" />
     <None Include="Localization\motion_ru.qm" />
     <None Include="Localization\motion_uk.qm" />
+    <None Include="Resources\changelog.json" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="3rdPartyDirect\pugiXML\pugiconfig.hpp">
@@ -486,6 +493,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Utilities\Hash\QUuidStdHash.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Utilities\AgxFormat.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
@@ -756,6 +766,9 @@
       <Filter>Header Files</Filter>
     </QtMoc>
     <QtMoc Include="Widgets\Dialog\AgxSimpleDialog.h">
+      <Filter>Header Files</Filter>
+    </QtMoc>
+    <QtMoc Include="Widgets\ColorBox\AgxColorBox.h">
       <Filter>Header Files</Filter>
     </QtMoc>
   </ItemGroup>

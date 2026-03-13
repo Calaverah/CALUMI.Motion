@@ -194,13 +194,15 @@ QJsonObject AgxPort_SFBGS::Save() const {
 	return output; 
 }
 
-QString AgxPort_SFBGS::Caption() const { 
+QString AgxPort_SFBGS::Caption(bool formatted) const {
+
+	if (!formatted) return name;
 
 	if(!name.isEmpty())
-		return std::format("{} (Id: {})", name.toStdString(), _portId).c_str();
+		return QString("%1 (Id: %2)").arg(name).arg(_portId);
 		//return std::format("Id: {}", _portId).c_str();
 
-	return std::format("Id: {}", _portId).c_str();
+	return QString("Id: %1").arg(_portId);
 }
 
 void AgxPort_SFBGS::SetPropertySheetEnabled(bool state)
@@ -230,9 +232,10 @@ QWidget* AgxPort_SFBGS::GetEmbeddedWidget()
 		
 		AgxNodePropertiesWidget* inputName = new AgxNodePropertiesWidget();
 		auto nameLine = inputName->CreateSimpleLineEdit(&name, this, nullptr, false, { "in-ports" , std::to_string(_portId).c_str(), "name"});
+		nameLine->setCheckbox(false);
 		QCheckBox tempBox;
 		inputName->setContentsMargins(0, 0, tempBox.sizeHint().width() + 11, 0);
-		nameLine->setPlaceholderText("Name");
+		nameLine->setContentPlaceholderText("Name");
 		_ContentWidget->InsertAdditionalWidget(inputName, 1, Qt::AlignRight);
 
 		auto propSheet = _ContentWidget->SetupPropertySheet();
@@ -283,6 +286,13 @@ void AgxPort_SFBGS::externalCommand(const QString& commandTag, const QString& pa
 		if (!ok) row = _BlendInput->getDataRowCount();
 		_BlendInput->removeDataRow(row);
 	}
+}
+
+void AgxPort_SFBGS::SavePropertySheet(pugi::xml_node& parent)
+{
+	if (!_PropertyEntriesEnabled) return;
+
+	FormatBasicPropertySheet(parent, _PropertyEntries);
 }
 
 AgxPortIndex AgxPort::GetPortIndex() { if (_parentNode) return _parentNode->GetPortIndex(this); return InvalidPortIndex; }

@@ -9,6 +9,7 @@
 
 
 class AgxLineEdit;
+class AgxLineEditContainer;
 class AgxPropertyBlockData;
 
 
@@ -43,6 +44,7 @@ public Q_SLOTS:
 
 signals:
 	void LanguageChanged();
+	void RowsChanged();
 
 protected:
 	void ShowContextMenu(const QPoint& pos);
@@ -53,7 +55,7 @@ private:
 
 	void ForceRefresh();
 
-	void SetUpCustomDropDown(AgxLineEdit* line, const QList<TermRef>& list, const QStringList& keyPath);
+	void SetUpCustomDropDown(AgxLineEditContainer* line, const QList<TermRef>& list, const QStringList& keyPath);
 
 protected:
 	void showEvent(QShowEvent* event) override;

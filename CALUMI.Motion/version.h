@@ -7,7 +7,7 @@
 
 #define PATCHVAL 0
 
-#define REVISIONVAL 0
+#define REVISIONVAL 1
 
 #define STR(x) #x
 // Main macro to combine arguments into a string

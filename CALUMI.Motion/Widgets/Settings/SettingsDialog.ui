@@ -138,11 +138,6 @@
                 <height>16777215</height>
                </size>
               </property>
-              <property name="font">
-               <font>
-                <pointsize>12</pointsize>
-               </font>
-              </property>
               <property name="text">
                <string>Show Properties Sidebar</string>
               </property>
@@ -172,11 +167,6 @@
             </item>
             <item row="1" column="0">
              <widget class="QLabel" name="convertFunctionsLabel">
-              <property name="font">
-               <font>
-                <pointsize>12</pointsize>
-               </font>
-              </property>
               <property name="text">
                <string>Convert Functions</string>
               </property>
@@ -227,11 +217,6 @@
               <width>100</width>
               <height>16777215</height>
              </size>
-            </property>
-            <property name="font">
-             <font>
-              <pointsize>12</pointsize>
-             </font>
             </property>
             <property name="text">
              <string>Language</string>
@@ -296,11 +281,6 @@
               <height>0</height>
              </size>
             </property>
-            <property name="font">
-             <font>
-              <pointsize>12</pointsize>
-             </font>
-            </property>
             <property name="text">
              <string>Show Console Log</string>
             </property>
@@ -311,11 +291,6 @@
           </item>
           <item row="1" column="0">
            <widget class="QLabel" name="saveConsoleGeometryLabel_3">
-            <property name="font">
-             <font>
-              <pointsize>12</pointsize>
-             </font>
-            </property>
             <property name="text">
              <string>Save Console Geometry</string>
             </property>
@@ -381,11 +356,6 @@
               <height>0</height>
              </size>
             </property>
-            <property name="font">
-             <font>
-              <pointsize>12</pointsize>
-             </font>
-            </property>
             <property name="text">
              <string>Graph Data Path</string>
             </property>
@@ -406,11 +376,78 @@
        </item>
       </layout>
      </widget>
+     <widget class="QWidget" name="VisualsTab">
+      <attribute name="title">
+       <string>Visual</string>
+      </attribute>
+      <layout class="QGridLayout" name="gridLayout_5">
+       <item row="0" column="1">
+        <widget class="QGroupBox" name="visual_sfbgsGroupBox">
+         <property name="title">
+          <string>Starfield</string>
+         </property>
+         <layout class="QFormLayout" name="formLayout_5">
+          <item row="0" column="0">
+           <widget class="QLabel" name="equationSymbolColorLabel">
+            <property name="text">
+             <string>Equation Symbol Color</string>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="1">
+           <widget class="AgxColorBox" name="equationSymbolColorWidget" native="true"/>
+          </item>
+          <item row="1" column="0">
+           <widget class="QLabel" name="themeLabel">
+            <property name="text">
+             <string>Theme</string>
+            </property>
+           </widget>
+          </item>
+          <item row="1" column="1">
+           <widget class="QLineEdit" name="themeLineEdit">
+            <property name="alignment">
+             <set>Qt::AlignmentFlag::AlignRight|Qt::AlignmentFlag::AlignTrailing|Qt::AlignmentFlag::AlignVCenter</set>
+            </property>
+            <property name="placeholderText">
+             <string>DefaultStyle.json</string>
+            </property>
+            <property name="clearButtonEnabled">
+             <bool>true</bool>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </widget>
+       </item>
+       <item row="0" column="2">
+        <spacer name="horizontalSpacer_2">
+         <property name="orientation">
+          <enum>Qt::Orientation::Horizontal</enum>
+         </property>
+         <property name="sizeHint" stdset="0">
+          <size>
+           <width>40</width>
+           <height>20</height>
+          </size>
+         </property>
+        </spacer>
+       </item>
+      </layout>
+     </widget>
     </widget>
    </item>
   </layout>
  </widget>
  <layoutdefault spacing="6" margin="11"/>
+ <customwidgets>
+  <customwidget>
+   <class>AgxColorBox</class>
+   <extends>QWidget</extends>
+   <header>Widgets/ColorBox/AgxColorBox.h</header>
+   <container>1</container>
+  </customwidget>
+ </customwidgets>
  <resources/>
  <connections>
   <connection>
