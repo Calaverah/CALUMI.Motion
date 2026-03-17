@@ -102,6 +102,8 @@ void CALUMIMotion::changeEvent(QEvent* event)
     if (event->type() == QEvent::LanguageChange) {
         ui.retranslateUi(this);
         setWindowTitle(windowTitle() + " [" + QCoreApplication::applicationVersion() + "]");
+
+        Q_EMIT LanguageChanged();
     }
     QMainWindow::changeEvent(event);
 }
@@ -970,6 +972,8 @@ void CALUMIMotion::Create_SFBGSTab(std::shared_ptr<AgxGraphicsScene> scene, std:
         if(model->rootGraphReference() != model.get())
         {
             QLabel* embLabel = new QLabel(tr("EMBEDDED GRAPH"));
+            connect(this, &CALUMIMotion::LanguageChanged, embLabel, [this, embLabel]() { embLabel->setText(tr("EMBEDDED GRAPH")); });
+
             embLabel->setFixedHeight(48);
             auto font = embLabel->font();
             font.setPointSize(32);

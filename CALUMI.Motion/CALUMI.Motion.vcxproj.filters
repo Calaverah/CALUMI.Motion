@@ -391,11 +391,6 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="3rdPartyDirect\pugiXML\LICENSE.md" />
-    <None Include="Localization\motion_de.qm" />
-    <None Include="Localization\motion_es.qm" />
-    <None Include="Localization\motion_fr.qm" />
-    <None Include="Localization\motion_ru.qm" />
-    <None Include="Localization\motion_uk.qm" />
     <None Include="Resources\changelog.json" />
   </ItemGroup>
   <ItemGroup>
@@ -793,12 +788,6 @@
     </QtUic>
   </ItemGroup>
   <ItemGroup>
-    <Image Include="Resources\BasicIcon.ico">
-      <Filter>Resource Files</Filter>
-    </Image>
-    <Image Include="Resources\BasicIcon50Purple.ico">
-      <Filter>Resource Files</Filter>
-    </Image>
     <Image Include="Resources\NASA_ISS_LongExposure.png">
       <Filter>Resource Files</Filter>
     </Image>

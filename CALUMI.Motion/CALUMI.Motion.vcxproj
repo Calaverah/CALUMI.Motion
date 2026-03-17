@@ -96,7 +96,8 @@
       </Translate>
     </QtUic>
     <QtTranslation>
-      <QmOutputDir>$(ProjectDir)Localization</QmOutputDir>
+      <QmOutputDir>$(OutputPath)</QmOutputDir>
+      <BuildAction>lrelease</BuildAction>
     </QtTranslation>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -124,8 +125,8 @@
       </Translate>
     </QtUic>
     <QtTranslation>
-      <QmOutputDir>$(ProjectDir)Localization</QmOutputDir>
-      <BuildAction>false</BuildAction>
+      <QmOutputDir>$(OutputPath)</QmOutputDir>
+      <BuildAction>lrelease</BuildAction>
     </QtTranslation>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x64'" Label="Configuration">
@@ -280,11 +281,6 @@
     <ClCompile Include="Widgets\SFBGS\SFBGS_SidebarContent.cpp" />
     <ClCompile Include="Widgets\StringEntryPopup.cpp" />
     <ClCompile Include="Widgets\TextEditDialog.cpp" />
-    <None Include="Localization\motion_de.qm" />
-    <None Include="Localization\motion_es.qm" />
-    <None Include="Localization\motion_fr.qm" />
-    <None Include="Localization\motion_ru.qm" />
-    <None Include="Localization\motion_uk.qm" />
     <None Include="Resources\changelog.json" />
     <QtMoc Include="Widgets\Settings\SettingsDialog.h" />
     <QtMoc Include="Widgets\Logger\AgxLogger.h" />
@@ -443,8 +439,6 @@
     <Text Include="AgxNodes\AgxNodes" />
   </ItemGroup>
   <ItemGroup>
-    <Image Include="Resources\BasicIcon.ico" />
-    <Image Include="Resources\BasicIcon50Purple.ico" />
     <Image Include="Resources\NASA_ISS_LongExposure.png" />
     <Image Include="Resources\PatchRender.ico" />
   </ItemGroup>

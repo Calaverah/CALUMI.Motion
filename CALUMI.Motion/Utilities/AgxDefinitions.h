@@ -2,7 +2,7 @@
 
 #pragma warning(push,0)
 
-#include "3rdPartyDirect/pugiXML/pugixml.hpp"
+#include "3rdPartyDirect\pugiXML\pugixml.hpp"
 #include "AgxDictionary.h"
 #include <qobject.h>
 #include <qmap.h>

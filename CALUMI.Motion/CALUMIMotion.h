@@ -37,6 +37,9 @@ public:
 public:
     void UpdateTabTitles();
 
+signals:
+    void LanguageChanged();
+
 private slots:
     //void NewTab_SFBGS();
     void CloseTab(int i);

@@ -261,7 +261,7 @@ void SettingsRegistry::SetLanguage(LanguageCode code)
 {
 	if (code == _language) return;
 
-	QString prefixPath = ":/CALUMIMotion/Localization/";
+	QString prefixPath = QApplication::applicationDirPath() +"/";
 	QString file;
 
 
@@ -433,31 +433,3 @@ LanguageCode LanguageCodeFromString(const QString& code)
 
 	return static_cast<LanguageCode>(index);
 }
-
-//QString StartupVisibilityToString(StartupVisibiltyPreference pref)
-//{
-//	if (StartupVisibilityStrings.size() <= static_cast<unsigned int>(pref)) return "Remember";
-//
-//	return StartupVisibilityStrings.at(static_cast<unsigned int>(pref));
-//}
-//
-//StartupVisibiltyPreference StartupVisibilityFromString(const QString& pref)
-//{
-//	auto index = LanguageStrings.indexOf(pref, 0i64, Qt::CaseInsensitive);
-//
-//	//if we don't find the string in the language string list we compare to some backups
-//	if (index < 0) {
-//
-//		if (pref.compare("Always", Qt::CaseInsensitive) == 0)
-//			return StartupVisibiltyPreference::Always;
-//		if (pref.compare("Never", Qt::CaseInsensitive) == 0)
-//			return StartupVisibiltyPreference::Never;
-//
-//		return StartupVisibiltyPreference::Remember;
-//
-//	} else if (static_cast<unsigned int>(LanguageCode::Max) < index) {
-//		return StartupVisibiltyPreference::Remember;
-//	}
-//
-//	return static_cast<StartupVisibiltyPreference>(index);
-//}
