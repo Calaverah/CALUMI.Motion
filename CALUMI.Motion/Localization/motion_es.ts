@@ -19,138 +19,138 @@
     <message>
         <location filename="../CALUMIMotion.cpp" line="265"/>
         <source>About</source>
-        <translation type="unfinished"></translation>
+        <translation>Información</translation>
     </message>
     <message>
         <location filename="../CALUMIMotion.cpp" line="266"/>
         <source>&lt;b&gt;%1&lt;/b&gt;&lt;br/&gt;Version %2&lt;br/&gt;Copyright &amp;copy; 2026 %3&lt;br/&gt;All rights reserved</source>
-        <translation type="unfinished"></translation>
+        <translation>&lt;b&gt;%1&lt;/b&gt;&lt;br/&gt;Versión %2&lt;br/&gt;Copyright &amp;copy; 2026 %3&lt;br/&gt;Reservados todos los derechos</translation>
     </message>
     <message>
         <location filename="../CALUMIMotion.cpp" line="292"/>
         <source>Hide Property Sidebar </source>
-        <translation type="unfinished">Ocultar Vista De Propiedad </translation>
+        <translation>Ocultar Vista De Propiedad </translation>
     </message>
     <message>
         <location filename="../CALUMIMotion.cpp" line="294"/>
         <source>Show Property Sidebar </source>
-        <translation type="unfinished"></translation>
+        <translation>Mostrar Vista De Propiedad </translation>
     </message>
     <message>
         <location filename="../CALUMIMotion.cpp" line="306"/>
         <location filename="../CALUMIMotion.cpp" line="329"/>
         <source>Undo</source>
-        <translation type="unfinished">Deshacer</translation>
+        <translation>Deshacer</translation>
     </message>
     <message>
         <location filename="../CALUMIMotion.cpp" line="310"/>
         <location filename="../CALUMIMotion.cpp" line="330"/>
         <source>Redo</source>
-        <translation type="unfinished">Rehacer</translation>
+        <translation>Rehacer</translation>
     </message>
     <message>
         <location filename="../CALUMIMotion.cpp" line="314"/>
         <source>Undo History</source>
-        <translation type="unfinished"></translation>
+        <translation>Historial De Deshacer</translation>
     </message>
     <message>
         <location filename="../CALUMIMotion.cpp" line="316"/>
         <source>Redo History</source>
-        <translation type="unfinished"></translation>
+        <translation>Historial De Rehacer</translation>
     </message>
     <message>
         <location filename="../CALUMIMotion.cpp" line="338"/>
         <source>Undo Stack</source>
-        <translation type="unfinished"></translation>
+        <translation>Deshacer Pila</translation>
     </message>
     <message>
         <location filename="../CALUMIMotion.cpp" line="340"/>
         <source>Redo Stack</source>
-        <translation type="unfinished"></translation>
+        <translation>Rehacer Pila</translation>
     </message>
     <message>
         <location filename="../CALUMIMotion.cpp" line="374"/>
         <location filename="../CALUMIMotion.cpp" line="406"/>
         <source>Cut</source>
-        <translation type="unfinished"></translation>
+        <translation>Cortar</translation>
     </message>
     <message>
         <location filename="../CALUMIMotion.cpp" line="377"/>
         <location filename="../CALUMIMotion.cpp" line="409"/>
         <source>Copy</source>
-        <translation type="unfinished"></translation>
+        <translation>Copiar</translation>
     </message>
     <message>
         <location filename="../CALUMIMotion.cpp" line="380"/>
         <source>Paste</source>
-        <translation type="unfinished"></translation>
+        <translation>Pegar</translation>
     </message>
     <message>
         <location filename="../CALUMIMotion.cpp" line="383"/>
         <location filename="../CALUMIMotion.cpp" line="426"/>
         <source>Duplicate</source>
-        <translation type="unfinished"></translation>
+        <translation>Duplicado</translation>
     </message>
     <message>
         <location filename="../CALUMIMotion.cpp" line="386"/>
         <location filename="../CALUMIMotion.cpp" line="429"/>
         <source>Delete</source>
-        <translation type="unfinished"></translation>
+        <translation>Borrar</translation>
     </message>
     <message>
         <location filename="../CALUMIMotion.cpp" line="442"/>
         <source>Center View</source>
-        <translation type="unfinished"></translation>
+        <translation>Centrar la Vista</translation>
     </message>
     <message>
         <location filename="../CALUMIMotion.cpp" line="459"/>
         <source>Settings</source>
-        <translation type="unfinished"></translation>
+        <translation>Configuración</translation>
     </message>
     <message>
         <location filename="../CALUMIMotion.cpp" line="473"/>
         <source>Edit Graph Title</source>
-        <translation type="unfinished"></translation>
+        <translation>Editar Título del Gráfico</translation>
     </message>
     <message>
         <location filename="../CALUMIMotion.cpp" line="477"/>
         <source>Input New Graph Title</source>
-        <translation type="unfinished"></translation>
+        <translation>Ingrese el Título del Nuevo Gráfico</translation>
     </message>
     <message>
         <location filename="../CALUMIMotion.cpp" line="478"/>
         <source>Graph Title:</source>
-        <translation type="unfinished"></translation>
+        <translation>Título del Gráfico:</translation>
     </message>
     <message>
         <location filename="../CALUMIMotion.cpp" line="497"/>
         <source>Select All</source>
-        <translation type="unfinished"></translation>
+        <translation>Seleccionar Todo</translation>
     </message>
     <message>
         <location filename="../CALUMIMotion.cpp" line="501"/>
         <source>Select All Nodes</source>
-        <translation type="unfinished"></translation>
+        <translation>Seleccionar Todos los Nodos</translation>
     </message>
     <message>
         <location filename="../CALUMIMotion.cpp" line="505"/>
         <source>Select All Connections</source>
-        <translation type="unfinished"></translation>
+        <translation>Seleccionar Todas las Conexiones</translation>
     </message>
     <message>
         <location filename="../CALUMIMotion.cpp" line="509"/>
         <source>Selection Filter</source>
-        <translation type="unfinished"></translation>
+        <translation>Filtro de Selección</translation>
     </message>
     <message>
         <location filename="../CALUMIMotion.cpp" line="553"/>
         <source>Saved .jagx File: </source>
-        <translation type="unfinished"></translation>
+        <translation>Archivo .jagx Guardado: </translation>
     </message>
     <message>
         <location filename="../CALUMIMotion.cpp" line="578"/>
         <source>Save Graph As</source>
-        <translation type="unfinished"></translation>
+        <translation>Guardar Gráfico Como</translation>
     </message>
     <message>
         <location filename="../CALUMIMotion.cpp" line="581"/>
@@ -159,18 +159,18 @@
         <location filename="../CALUMIMotion.cpp" line="631"/>
         <location filename="../CALUMIMotion.cpp" line="797"/>
         <source>Error</source>
-        <translation type="unfinished"></translation>
+        <translation>Error</translation>
     </message>
     <message>
         <location filename="../CALUMIMotion.cpp" line="581"/>
         <location filename="../CALUMIMotion.cpp" line="797"/>
         <source>Could not save to file</source>
-        <translation type="unfinished"></translation>
+        <translation>No Se Pudo Guardar el Archivo</translation>
     </message>
     <message>
         <location filename="../CALUMIMotion.cpp" line="586"/>
         <source>Saved .jagx File As: </source>
-        <translation type="unfinished"></translation>
+        <translation>Archivo .jagx Guardado Como: </translation>
     </message>
     <message>
         <location filename="../CALUMIMotion.cpp" line="597"/>
@@ -185,17 +185,17 @@
     <message>
         <location filename="../CALUMIMotion.cpp" line="603"/>
         <source>Could not open file: </source>
-        <translation type="unfinished"></translation>
+        <translation>No se pudo abrir el archivo: </translation>
     </message>
     <message>
         <location filename="../CALUMIMotion.cpp" line="614"/>
         <source>Json Parsing Failed: </source>
-        <translation type="unfinished"></translation>
+        <translation>Error al analizar Json: </translation>
     </message>
     <message>
         <location filename="../CALUMIMotion.cpp" line="631"/>
         <source>Unable To Open File Type: </source>
-        <translation type="unfinished"></translation>
+        <translation>No se puede abrir el tipo de archivo: </translation>
     </message>
     <message>
         <location filename="../CALUMIMotion.cpp" line="650"/>
@@ -211,56 +211,56 @@
     <message>
         <location filename="../CALUMIMotion.cpp" line="662"/>
         <source>File Content Warning</source>
-        <translation type="unfinished"></translation>
+        <translation>Advertencia de Contenido del Archivo</translation>
     </message>
     <message>
         <location filename="../CALUMIMotion.cpp" line="662"/>
         <source>File is missing root and may not import properly...</source>
-        <translation type="unfinished"></translation>
+        <translation>El archivo no tiene la raíz y es posible que no se importe correctamente...</translation>
     </message>
     <message>
         <location filename="../CALUMIMotion.cpp" line="672"/>
         <source>Loading Agx File...</source>
-        <translation type="unfinished"></translation>
+        <translation>Cargando Archivo Agx...</translation>
     </message>
     <message>
         <location filename="../CALUMIMotion.cpp" line="691"/>
         <location filename="../CALUMIMotion.cpp" line="860"/>
         <source>Processing Scene</source>
-        <translation type="unfinished"></translation>
+        <translation>Escena de Procesamiento</translation>
     </message>
     <message>
         <location filename="../CALUMIMotion.cpp" line="701"/>
         <location filename="../CALUMIMotion.cpp" line="870"/>
         <source>Loading View</source>
-        <translation type="unfinished"></translation>
+        <translation>Cargando Vista</translation>
     </message>
     <message>
         <location filename="../CALUMIMotion.cpp" line="734"/>
         <location filename="../CALUMIMotion.cpp" line="899"/>
         <source>Finalizing View</source>
-        <translation type="unfinished"></translation>
+        <translation>Vista Final</translation>
     </message>
     <message>
         <location filename="../CALUMIMotion.cpp" line="761"/>
         <location filename="../CALUMIMotion.cpp" line="926"/>
         <source>Finished!</source>
-        <translation type="unfinished"></translation>
+        <translation>¡Finalizado!</translation>
     </message>
     <message>
         <location filename="../CALUMIMotion.cpp" line="794"/>
         <source>Export As Animation Behavior Graph</source>
-        <translation type="unfinished"></translation>
+        <translation>Exportar Como Gráfico de Comportamiento de Animación</translation>
     </message>
     <message>
         <location filename="../CALUMIMotion.cpp" line="841"/>
         <source>Loading jagx Behavior File...</source>
-        <translation type="unfinished"></translation>
+        <translation>Cargando Archivo de Comportamiento de jagx...</translation>
     </message>
     <message>
         <location filename="../CALUMIMotion.cpp" line="972"/>
         <source>EMBEDDED GRAPH</source>
-        <translation type="unfinished"></translation>
+        <translation>GRÁFICO INCORPORADO</translation>
     </message>
 </context>
 <context>
@@ -303,7 +303,7 @@
     <message>
         <location filename="../CALUMIMotion.ui" line="111"/>
         <source>Help</source>
-        <translation type="unfinished"></translation>
+        <translation>Ayuda</translation>
     </message>
     <message>
         <location filename="../CALUMIMotion.ui" line="124"/>
@@ -421,7 +421,7 @@
     <message>
         <location filename="../CALUMIMotion.ui" line="213"/>
         <source>About</source>
-        <translation type="unfinished"></translation>
+        <translation>Información</translation>
     </message>
 </context>
 <context>
@@ -429,7 +429,7 @@
     <message>
         <location filename="../Widgets/FilteredDropDownDialog.ui" line="20"/>
         <source>FilteredDropDownDialog</source>
-        <translation type="unfinished"></translation>
+        <translation>Cuadro de diálogo desplegable filtrado</translation>
     </message>
 </context>
 <context>
@@ -437,27 +437,27 @@
     <message>
         <location filename="../Widgets/MultiVariableDialog.ui" line="14"/>
         <source>MultiVariableDialog</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <location filename="../Widgets/MultiVariableDialog.ui" line="59"/>
         <source>---</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <location filename="../Widgets/MultiVariableDialog.ui" line="149"/>
         <source>X</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <location filename="../Widgets/MultiVariableDialog.ui" line="177"/>
         <source>Y</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <location filename="../Widgets/MultiVariableDialog.ui" line="205"/>
         <source>Z</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
 </context>
 <context>
@@ -466,32 +466,32 @@
         <location filename="../Widgets/NodeGroupMenuPopup.cpp" line="14"/>
         <location filename="../Widgets/NodeGroupMenuPopup.cpp" line="64"/>
         <source>NONE</source>
-        <translation type="unfinished"></translation>
+        <translation>NADA</translation>
     </message>
     <message>
         <location filename="../Widgets/NodeGroupMenuPopup.cpp" line="84"/>
         <source>Select Color</source>
-        <translation type="unfinished"></translation>
+        <translation>Elige Color</translation>
     </message>
     <message>
         <location filename="../Widgets/NodeGroupMenuPopup.cpp" line="95"/>
         <source>Add Group</source>
-        <translation type="unfinished"></translation>
+        <translation>Agregar Grupo</translation>
     </message>
     <message>
         <location filename="../Widgets/NodeGroupMenuPopup.cpp" line="114"/>
         <source>Remove Group</source>
-        <translation type="unfinished"></translation>
+        <translation>Quitar Grupo</translation>
     </message>
     <message>
         <location filename="../Widgets/NodeGroupMenuPopup.cpp" line="123"/>
         <source>Select Group</source>
-        <translation type="unfinished"></translation>
+        <translation>Seleccionar Grupo</translation>
     </message>
     <message>
         <location filename="../Widgets/NodeGroupMenuPopup.cpp" line="131"/>
         <source>Change Color</source>
-        <translation type="unfinished"></translation>
+        <translation>Cambiar el Color</translation>
     </message>
 </context>
 <context>
@@ -500,17 +500,17 @@
         <location filename="../Widgets/NodeGroupMenuPopup.ui" line="26"/>
         <location filename="../Widgets/NodeGroupMenuPopup.ui" line="145"/>
         <source>Node Groups</source>
-        <translation type="unfinished">Grupos De Nodos</translation>
+        <translation>Grupos De Nodos</translation>
     </message>
     <message>
         <location filename="../Widgets/NodeGroupMenuPopup.ui" line="85"/>
         <source>Nodes</source>
-        <translation type="unfinished"></translation>
+        <translation>Nodos</translation>
     </message>
     <message>
         <location filename="../Widgets/NodeGroupMenuPopup.ui" line="90"/>
         <source>Name</source>
-        <translation type="unfinished"></translation>
+        <translation>Nombre</translation>
     </message>
 </context>
 <context>
@@ -2819,7 +2819,7 @@
     <message>
         <location filename="../AgxNodes/SFBGS/AgxNtAnimationImpactSelector.cpp" line="60"/>
         <source>Animation Impact Selector</source>
-        <translation type="unfinished"></translation>
+        <translation>Selector de Impacto de Animación</translation>
     </message>
 </context>
 <context>

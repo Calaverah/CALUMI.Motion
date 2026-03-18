@@ -11,7 +11,7 @@
     "GradientColor1": [70, 70, 70],
     "GradientColor2": [70, 70, 70],
     "GradientColor3": [ 70, 70, 70 ],
-    "AlternateStateColor" : "orange",
+    "AlternateStateColor": [70, 120, 120],
     "FontColor" : "white",
     "FontColorFaded" : "gray",
     "ConnectionPointColor": [169, 169, 169],

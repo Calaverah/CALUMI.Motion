@@ -20,7 +20,7 @@ LANGUAGE 0x09, 0x01
 
 // Icon with lowest ID value placed first to ensure application icon
 // remains consistent on all systems.
-IDI_ICON1               ICON                    "Resources/PatchRender.ico"
+IDI_ICON1               ICON                    "Resources/PatchRenderSimple.ico"
 
 //IDI_ICON1               ICON                    "Resources/PatchRender.ico"
 

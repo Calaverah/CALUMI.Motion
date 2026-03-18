@@ -441,6 +441,7 @@
   <ItemGroup>
     <Image Include="Resources\NASA_ISS_LongExposure.png" />
     <Image Include="Resources\PatchRender.ico" />
+    <Image Include="Resources\PatchRenderSimple.ico" />
   </ItemGroup>
   <ItemGroup>
     <QtTranslation Include="Localization\motion_de.ts" />

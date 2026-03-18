@@ -794,6 +794,9 @@
     <Image Include="Resources\PatchRender.ico">
       <Filter>Resource Files</Filter>
     </Image>
+    <Image Include="Resources\PatchRenderSimple.ico">
+      <Filter>Resource Files</Filter>
+    </Image>
   </ItemGroup>
   <ItemGroup>
     <QtTranslation Include="Localization\motion_es.ts">

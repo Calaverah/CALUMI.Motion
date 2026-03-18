@@ -5,6 +5,7 @@
     </qresource>
     <qresource prefix="/icons">
         <file>Resources/PatchRender.ico</file>
+        <file>Resources/PatchRenderSimple.ico</file>
     </qresource>
     <qresource prefix="/Images">
         <file>Resources/NASA_ISS_LongExposure.png</file>

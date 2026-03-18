@@ -129,7 +129,7 @@ void AgxNodePainter::drawNodeRect(QPainter* painter, AgxNodeGraphicsObject& ngo)
         gradient.setColorAt(0.10, Qt::darkCyan);
         gradient.setColorAt(0.90, Qt::darkCyan);
         gradient.setColorAt(1.0, Qt::darkCyan);*/
-        painter->setBrush(Qt::darkCyan);
+        painter->setBrush(_nodeStyle.AlternateStateColor);
     } else {
         /*gradient.setColorAt(0.0, _nodeStyle.GradientColor0);
         gradient.setColorAt(0.10, _nodeStyle.GradientColor1);
