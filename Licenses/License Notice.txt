@@ -1,0 +1,8 @@
+Notice March 17th, 2026
+
+The works within this repository fall under the GNU LGPL-v3.0 license
+
+The required GPL and LGPL licenses are included as per GNU's documentation.
+
+Thank you,
+Calaverah
