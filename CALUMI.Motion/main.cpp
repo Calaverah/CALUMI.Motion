@@ -71,7 +71,6 @@ int main(int argc, char* argv[])
 #ifdef RELEASEBUILD
                 //what's new popup?
 #endif // RELEASEBUILD
-                qDebug() << "Version Mismatch!";
             }
         }
     }
@@ -80,14 +79,6 @@ int main(int argc, char* argv[])
     window.show();
 
     splash.finish(&window);
-
-#ifdef RELEASEBUILD
-    QMessageBox::information(nullptr, "Welcome!", "If you are seeing this, it is because you received this **UNFINISHED** "
-                             "build from Calaverah (or someone else, shame on them for sending unfinished stuff to you...)\n"
-                             "This is a prototype build of CALUMI Motion and as such you should expect bugs and broken features.\n"
-                             "Please look around and try things out, but do not distribute this tool.\nIt will be released when it is ready!",
-                             QMessageBox::Ok);
-#endif
 
     return app.exec();
 }

@@ -11,10 +11,15 @@ The application is currently in a functional MVP state, and will see improvement
 
 ## Features
 
-- Import/Export .agx files
-- Custom save format with additional features such as group colors
- 
+- Import/Export .agx files!
+- Custom save format with additional features such as group colors!
+- View detailed information in a more user friendly, property sheet style, format!
 
+## Screenshots
+
+![App Screenshot](https://github.com/Calaverah/CALUMI.Motion/blob/main/Screenshots/Screenshot0102a.png)
+![App Screenshot](https://github.com/Calaverah/CALUMI.Motion/blob/main/Screenshots/Screenshot0102b.png)
+![App Screenshot](https://github.com/Calaverah/CALUMI.Motion/blob/main/Screenshots/Screenshot0102c.png)
 
 ## Roadmap
 
