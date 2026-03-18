@@ -6,7 +6,7 @@
 
 CALUMI Motion provides a user interface to view and edit Starfield Animation Behavior Graphs (.agx)
 
-The application is currently in a functional MVP state, and will see improvements and changes overtime.
+The application is currently in a functional MVP state, and will see improvements and changes overtime. It is heavily advised to review and validate your agx output!
 
 
 ## Features
