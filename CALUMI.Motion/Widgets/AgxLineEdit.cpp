@@ -57,8 +57,22 @@ void AgxLineEdit::RefreshText()
 	setPlainText(text());
 }
 
+void AgxLineEdit::setupButtonStyle()
+{
+	viewport()->setCursor(Qt::PointingHandCursor);
+	setReadOnly(true);
+
+	auto pal = palette();
+	pal.setColor(QPalette::Base, palette().color(QPalette::Button));
+	pal.setColor(QPalette::ButtonText, palette().color(QPalette::ButtonText));
+	setPalette(pal);
+
+	setFocusPolicy(Qt::FocusPolicy::NoFocus);
+}
+
 void AgxLineEdit::SetUpDoubleClickEdit()
 {
+	setupButtonStyle();
 	_placeHolderText = "Double Click To Edit";
 	setPlaceholderText(_placeHolderText);
 	connect(this, &AgxLineEdit::DoubleClicked, this, [this]() { /*deselect();*/ });
@@ -66,6 +80,7 @@ void AgxLineEdit::SetUpDoubleClickEdit()
 
 void AgxLineEdit::SetUpSingleClickEdit()
 {
+	setupButtonStyle();
 	_placeHolderText = "Click To Edit";
 	setPlaceholderText(_placeHolderText);
 	connect(this, &AgxLineEdit::Clicked, this, [this]() { /*deselect();*/ });
@@ -191,8 +206,6 @@ qreal AgxLineEdit::getLineHeight()
 	return QFontMetricsF(font()).height();
 }
 
-
-
 AgxHighlighter::AgxHighlighter(QTextDocument* parent) : QSyntaxHighlighter(parent)
 {
 }
@@ -263,16 +276,10 @@ void AgxLineEditContainer::setContentState(bool enable)
 
 void AgxLineEditContainer::setAsButton(bool singleClick)
 {
-	_lineEdit->viewport()->setCursor(Qt::PointingHandCursor);
-
 	if (singleClick)
 		_lineEdit->SetUpSingleClickEdit();
 	else
-		_lineEdit->SetUpDoubleClickEdit();
-
-	_lineEdit->setReadOnly(true);
-	_lineEdit->setFocusPolicy(Qt::FocusPolicy::NoFocus);
-	
+		_lineEdit->SetUpDoubleClickEdit();	
 }
 
 void AgxLineEditContainer::setValidator(QValidator* validator)
@@ -338,8 +345,7 @@ void AgxLineEditContainer::RefreshContentTooltip(const QString& str)
 
 void AgxLineEditContainer::SetContentAlignment(Qt::Alignment alignment)
 {
-	//_lineEdit->setAlignment(alignment);
-	
+	//Will have to revisit
 	adjustSize();
 }
 

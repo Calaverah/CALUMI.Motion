@@ -6,7 +6,9 @@
 
 #pragma warning(push,0)
 #include <QPlainTextEdit>
+#include <qvalidator.h>
 #include <QSyntaxHighlighter>
+#include <QPainter>
 #pragma warning(pop)
 
 class AgxHighlighter : public QSyntaxHighlighter
@@ -53,10 +55,11 @@ protected:
 	void mouseDoubleClickEvent(QMouseEvent* event) override;
 	void focusOutEvent(QFocusEvent* event) override;
 	void keyPressEvent(QKeyEvent* event) override;
-	void showEvent(QShowEvent*) override;
+	void showEvent(QShowEvent* event) override;
 	
 protected:
 	qreal getLineHeight();
+	void setupButtonStyle();
 
 protected:
 	QString _placeHolderText;
