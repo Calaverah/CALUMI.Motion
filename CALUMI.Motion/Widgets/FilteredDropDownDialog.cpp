@@ -32,9 +32,27 @@ QComboBox* FilteredDropDownDialog::GetFilterBox() const
 
 QString FilteredDropDownDialog::GetText() const
 {
-	if (ui.MainComboBox->currentText() == _noneString) return "";
+	//Since some entries might not yet have translation, like Events, we include both versions of the custom and none checks for now
+	if (ui.MainComboBox->currentText() == _noneString || ui.MainComboBox->currentText() == "<none>") 
+		return "";
+		
+
+	if (ui.MainComboBox->currentText() == _customString || ui.MainComboBox->currentText() == "<custom>")
+	{
+		bool ok = false;
+		QString output = QInputDialog::getText(nullptr, "Custom Value", "Entry", QLineEdit::Normal, _customHolder, &ok);
+
+		if (!ok)
+			output = _customHolder;
+
+		return output;
+	}
 
 	return ui.MainComboBox->currentText();
+}
+void FilteredDropDownDialog::SetCustomHolder(const QString& str)
+{
+	_customHolder = str;
 }
 void FilteredDropDownDialog::changeEvent(QEvent* event)
 {

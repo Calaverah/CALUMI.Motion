@@ -25,6 +25,7 @@ public:
 	QComboBox* GetMainComboBox() const;
 	QComboBox* GetFilterBox() const;
 	QString GetText() const;
+	void SetCustomHolder(const QString& str = "");
 
 
 public slots:
@@ -39,6 +40,8 @@ protected:
 private:
 	Ui::FilteredDropDownDialogClass ui;
 
+	QString _customHolder;
 	QString _noneString = QObject::tr("<none>");
+	QString _customString = QObject::tr("<custom>");
 };
 

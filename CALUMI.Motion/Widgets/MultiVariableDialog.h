@@ -23,6 +23,7 @@ public:
 	void SetCustomInteger(bool allowCustom = true, bool allowBlank = true, bool negativeAllowed = true);
 	void SetCustomBoolean(bool allowCustom = true, bool allowBlank = true);
 	void SetCustomVector(bool allowCustom = true, bool allowBlank = true, bool negativeAllowed = true);
+	void SetCustomString(bool allowCustom = true, bool allowBlank = true);
 
 	void DisableComboBox();
 
@@ -33,7 +34,7 @@ public:
 	bool SetInitialBoolen(const QString& boolean);
 	bool SetInitialInteger(const QString& integer);
 	bool SetInitialFloat(const QString& floatpt);
-
+	bool SetInitialString(const QString& string);
 
 public Q_SLOTS:
 	void ToggleBoolean();

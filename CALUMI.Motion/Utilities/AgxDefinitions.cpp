@@ -985,6 +985,7 @@ const QStringList AgxStateVars = {
 
 const QHash<QString, AgxEventInfo>* AgxEventVars = new QHash<QString, AgxEventInfo>({
 	{"<none>",{AgxEventType::UNDEFINED, AgxTrueFalse::UNDEFINED}},
+	{"<custom>",{AgxEventType::UNDEFINED, AgxTrueFalse::UNDEFINED}},
 	{"ActionEnd",	{AgxEventType::Both,	AgxTrueFalse::BLANK}},
 	{"ActionInterrupt",	{AgxEventType::Both,	AgxTrueFalse::TRUE}},
 	{"Activate",	{AgxEventType::Graph_Event,	AgxTrueFalse::BLANK}},

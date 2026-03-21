@@ -28,7 +28,8 @@ void MultiVariableDialog::SetCustomFloat(bool allowCustom, bool allowBlank, bool
 	ui.customEntry->setEnabled(false);
 	ui.customEntry->setVisible(allowCustom);
 
-	if (allowBlank) ui.MainComboBox->addItem(_noneString);
+	if (allowBlank) 
+		ui.MainComboBox->addItem(_noneString);
 
 	if (allowCustom)
 	{
@@ -153,7 +154,8 @@ void MultiVariableDialog::SetCustomVector(bool allowCustom, bool allowBlank, boo
 	ui.vectorEntryBox->setEnabled(false);
 	ui.vectorEntryBox->setVisible(allowCustom);
 
-	if (allowBlank) ui.MainComboBox->addItem(_noneString);
+	if (allowBlank) 
+		ui.MainComboBox->addItem(_noneString);
 
 	if (allowCustom) 
 	{
@@ -189,6 +191,33 @@ void MultiVariableDialog::SetCustomVector(bool allowCustom, bool allowBlank, boo
 		ui.xVal->setValidator(validator);
 		ui.yVal->setValidator(validator);
 		ui.zVal->setValidator(validator);
+	}
+}
+
+void MultiVariableDialog::SetCustomString(bool allowCustom, bool allowBlank)
+{
+	_varType = AgxVarType::String;
+	ui.customEntry->setEnabled(false);
+	ui.customEntry->setVisible(allowCustom);
+
+	if (allowBlank)
+		ui.MainComboBox->addItem(_noneString);
+
+	if (allowCustom)
+	{
+		ui.MainComboBox->addItem(_customVarString);
+		connect(ui.MainComboBox, &QComboBox::currentTextChanged, this, [this]() {
+			if (this->ui.MainComboBox->currentText() == _customVarString)
+			{
+				ui.customEntry->setText("");
+				ui.customEntry->setEnabled(true);
+			}
+			else
+			{
+				ui.customEntry->setEnabled(false);
+				ui.customEntry->setText("");
+			}
+			});
 	}
 }
 
@@ -376,8 +405,8 @@ bool MultiVariableDialog::SetInitialInteger(const QString& integer)
 		int value = entry.toInt(&ok);
 		if (ok)
 		{
-			ui.customEntry->setText(QString::number(value));
 			ui.MainComboBox->setCurrentText(_staticVarString);
+			ui.customEntry->setText(QString::number(value));
 			return true;
 		}
 	}
@@ -419,9 +448,9 @@ bool MultiVariableDialog::SetInitialFloat(const QString& floatpt)
 	
 	if (ok)
 	{
+		ui.MainComboBox->setCurrentText(_staticVarString);
 		QString buffer = QString::number(value, 'f', 5);
 		ui.customEntry->setText(CleanUpDecimals(buffer, 5));
-		ui.MainComboBox->setCurrentText(_staticVarString);
 		
 		return true;
 	}
@@ -432,6 +461,36 @@ bool MultiVariableDialog::SetInitialFloat(const QString& floatpt)
 		ui.customEntry->setText(floatpt);
 		ui.MainComboBox->setCurrentIndex(idxCustom);
 
+		return true;
+	}
+
+	ui.MainComboBox->setCurrentIndex(0);
+	return false;
+}
+
+bool MultiVariableDialog::SetInitialString(const QString& string)
+{
+	ui.customEntry->setText("");
+
+	if (string.isEmpty())
+	{
+		ui.MainComboBox->setCurrentIndex(0);
+		return false;
+	}
+
+	auto idxCustom = ui.MainComboBox->findText(_customVarString);
+	auto idxDrop = ui.MainComboBox->findText(string);
+
+	if (idxDrop >= 0)
+	{
+		ui.MainComboBox->setCurrentIndex(idxDrop);
+		return true;
+	}
+
+	if (idxCustom >= 0)
+	{
+		ui.MainComboBox->setCurrentIndex(idxCustom);
+		ui.customEntry->setText(string);
 		return true;
 	}
 

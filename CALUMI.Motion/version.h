@@ -9,9 +9,9 @@
 
 #define MINORVAL 1
 
-#define PATCHVAL 0
+#define PATCHVAL 1
 
-#define REVISIONVAL 4
+#define REVISIONVAL 0
 
 #define STR(x) #x
 // Main macro to combine arguments into a string

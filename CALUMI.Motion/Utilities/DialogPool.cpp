@@ -57,6 +57,18 @@ bool AgxEventFilterProxyModel::lessThan(const QModelIndex& left, const QModelInd
 	QVariant rightData = sourceModel()->data(right, sortRole());
 
 	if (leftData.userType() == QMetaType::QString && rightData.userType() == QMetaType::QString) {
+
+		if (leftData.toString() == "<none>" || leftData.toString() == tr("<none>"))
+			return true;
+
+		if (leftData.toString() == "<custom>" || leftData.toString() == tr("<custom>"))
+		{
+			if (rightData.toString() == "<none>" || rightData.toString() == tr("<none>"))
+				return false;
+
+			return true;
+		}
+
 		return leftData.toString().compare(rightData.toString(), Qt::CaseInsensitive) < 0;
 	}
 
@@ -130,32 +142,32 @@ DialogPool_SFBGS::DialogPool_SFBGS()
 	{
 		_PrefixDialog = new MultiVariableDialog();
 		_PrefixDialog->setWindowTitle("Select Prefix");
-		_PrefixDialog->GetComboBox()->addItem("<none>");
+		_PrefixDialog->SetCustomString();
 		_PrefixDialog->GetComboBox()->addItems(AgxAnimPrefixes);
 	}
 
 	{
 		_SuffixDialog = new MultiVariableDialog();
 		_SuffixDialog->setWindowTitle("Select Suffix");
-		_SuffixDialog->GetComboBox()->addItem("<none>");
+		_SuffixDialog->SetCustomString();
 		_SuffixDialog->GetComboBox()->addItems(AgxAnimSuffixes);
 	}
 	{
 		_ActionVarDialog = new MultiVariableDialog();
 		_ActionVarDialog->setWindowTitle("Select Action");
-		_ActionVarDialog->GetComboBox()->addItem("<none>");
+		_ActionVarDialog->SetCustomString();
 		_ActionVarDialog->GetComboBox()->addItems(AgxActionVars);
 	}
 	{
 		_StateVarDialog = new MultiVariableDialog();
 		_StateVarDialog->setWindowTitle("Select State");
-		_StateVarDialog->GetComboBox()->addItem("<none>");
+		_StateVarDialog->SetCustomString();
 		_StateVarDialog->GetComboBox()->addItems(AgxStateVars);
 	}
 	{
 		_SyncDialog = new MultiVariableDialog();
 		_SyncDialog->setWindowTitle("Select Sync System");
-		_SyncDialog->GetComboBox()->addItem("<none>");
+		_SyncDialog->SetCustomString();
 		_SyncDialog->GetComboBox()->addItems(AgxSyncs);
 	}
 
@@ -255,11 +267,29 @@ FilteredDropDownDialog* DialogPool_SFBGS::GetEventEntryDialog(QString str, AgxEv
 	int idx = static_cast<int>(iType);
 
 	_EventEntryDialog->GetFilterBox()->setCurrentIndex(idx);
+	_EventEntryDialog->SetCustomHolder(str);
 
-	if (str.isEmpty())
-		_EventEntryDialog->GetMainComboBox()->setCurrentIndex(0);
-	else
-		_EventEntryDialog->GetMainComboBox()->setCurrentText(str);
+	auto idxDrop = _EventEntryDialog->GetMainComboBox()->findText(str);
+	auto idxCustom = _EventEntryDialog->GetMainComboBox()->findText("<custom>");
+
+	//until we work out the translations during runtimes for events, this will have to be done to prevent any awkward bugs
+	if (idxCustom < 0)
+		idxCustom = _EventEntryDialog->GetMainComboBox()->findText(QObject::tr("<custom>"));
+
+	_EventEntryDialog->GetMainComboBox()->setCurrentIndex(0);
+	
+	if (!str.isEmpty())
+	{
+		if (idxDrop >= 0)
+		{
+			_EventEntryDialog->GetMainComboBox()->setCurrentIndex(idxDrop);
+		}
+		else if (idxCustom >= 0)
+		{
+			_EventEntryDialog->GetMainComboBox()->setCurrentIndex(idxCustom);
+			//_EventEntryDialog->SetCustomHolder(str);
+		} 
+	}
 
 	return _EventEntryDialog;
 }
@@ -294,50 +324,35 @@ MultiVariableDialog* DialogPool_SFBGS::GetVectorVariableEntryDialog(QString str)
 
 MultiVariableDialog* DialogPool_SFBGS::GetPrefixDialog(QString str)
 {
-	if (str.isEmpty())
-		_PrefixDialog->GetComboBox()->setCurrentIndex(0);
-	else
-		_PrefixDialog->GetComboBox()->setCurrentText(str);
+	_PrefixDialog->SetInitialString(str);
 
 	return _PrefixDialog;
 }
 
 MultiVariableDialog* DialogPool_SFBGS::GetSuffixDialog(QString str)
 {
-	if (str.isEmpty())
-		_SuffixDialog->GetComboBox()->setCurrentIndex(0);
-	else
-		_SuffixDialog->GetComboBox()->setCurrentText(str);
+	_SuffixDialog->SetInitialString(str);
 
 	return _SuffixDialog;
 }
 
 MultiVariableDialog* DialogPool_SFBGS::GetActionVariableDialog(QString str)
 {
-	if (str.isEmpty())
-		_ActionVarDialog->GetComboBox()->setCurrentIndex(0);
-	else
-		_ActionVarDialog->GetComboBox()->setCurrentText(str);
+	_ActionVarDialog->SetInitialString(str);
 
 	return _ActionVarDialog;
 }
 
 MultiVariableDialog* DialogPool_SFBGS::GetStateVariableDialog(QString str)
 {
-	if (str.isEmpty())
-		_StateVarDialog->GetComboBox()->setCurrentIndex(0);
-	else
-		_StateVarDialog->GetComboBox()->setCurrentText(str);
+	_StateVarDialog->SetInitialString(str);
 
 	return _StateVarDialog;
 }
 
 MultiVariableDialog* DialogPool_SFBGS::GetSyncVariableDialog(QString str)
 {
-	if (str.isEmpty())
-		_SyncDialog->GetComboBox()->setCurrentIndex(0);
-	else
-		_SyncDialog->GetComboBox()->setCurrentText(str);
+	_SyncDialog->SetInitialString(str);
 
 	return _SyncDialog;
 }
