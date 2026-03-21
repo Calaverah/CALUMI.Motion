@@ -266,17 +266,6 @@ FilteredDropDownDialog* DialogPool_SFBGS::GetEventEntryDialog(QString str, AgxEv
 
 MultiVariableDialog* DialogPool_SFBGS::GetFloatVariableEntryDialog(QString str)
 {
-	//if (str.isEmpty())
-	//{
-	//	_FloatEntryDialog->SetInitialFloat("");
-	//	_FloatEntryDialog->GetComboBox()->setCurrentIndex(0);
-	//}
-	//else if (_FloatEntryDialog->SetInitialFloat(str))
-	//{
-	//	_FloatEntryDialog->GetComboBox()->setCurrentIndex(1);
-	//}
-	//else
-	//	_FloatEntryDialog->GetComboBox()->setCurrentText(str);
 	_FloatEntryDialog->SetInitialFloat(str);
 
 	return _FloatEntryDialog;
@@ -284,51 +273,21 @@ MultiVariableDialog* DialogPool_SFBGS::GetFloatVariableEntryDialog(QString str)
 
 MultiVariableDialog* DialogPool_SFBGS::GetIntegerVariableEntryDialog(QString str)
 {
-	if (str.isEmpty())
-	{
-		_IntegerEntryDialog->SetInitialInteger("");
-		_IntegerEntryDialog->GetComboBox()->setCurrentIndex(0);
-	}
-	else if (_IntegerEntryDialog->SetInitialInteger(str))
-	{
-		_IntegerEntryDialog->GetComboBox()->setCurrentIndex(1);
-	}
-	else
-		_IntegerEntryDialog->GetComboBox()->setCurrentText(str);
+	_IntegerEntryDialog->SetInitialInteger(str);
 
 	return _IntegerEntryDialog;
 }
 
 MultiVariableDialog* DialogPool_SFBGS::GetBooleanVariableEntryDialog(QString str)
 {
-	if (str.isEmpty())
-	{
-		_BooleanEntryDialog->SetInitialBoolen("");
-		_BooleanEntryDialog->GetComboBox()->setCurrentIndex(0);
-	}
-	else if(_BooleanEntryDialog->SetInitialBoolen(str))
-	{
-		_BooleanEntryDialog->GetComboBox()->setCurrentIndex(1);
-	}
-	else
-		_BooleanEntryDialog->GetComboBox()->setCurrentText(str);
+	_BooleanEntryDialog->SetInitialBoolen(str);
 
 	return _BooleanEntryDialog;
 }
 
 MultiVariableDialog* DialogPool_SFBGS::GetVectorVariableEntryDialog(QString str)
 {
-	if (str.isEmpty())
-	{
-		_VectorEntryDialog->SetInitialVector("");
-		_VectorEntryDialog->GetComboBox()->setCurrentIndex(0);
-	}
-	else if(_VectorEntryDialog->SetInitialVector(str))
-	{ 
-		_VectorEntryDialog->GetComboBox()->setCurrentIndex(1);
-	}
-	else
-		_VectorEntryDialog->GetComboBox()->setCurrentText(str);
+	_VectorEntryDialog->SetInitialVector(str);
 
 	return _VectorEntryDialog;
 }

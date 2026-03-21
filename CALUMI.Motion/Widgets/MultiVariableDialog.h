@@ -41,6 +41,11 @@ public Q_SLOTS:
 protected:
 	void changeEvent(QEvent* event) override;
 
+	void SetBoolState(bool state);
+	void SetStaticVectorVisibile(bool state);
+	void SetStaticVectorEnabled(bool state);
+	void SetStaticVector(QString x, QString y, QString z);
+
 private:
 	QString _trueString = QObject::tr("True");
 	QString _falseString = QObject::tr("False");

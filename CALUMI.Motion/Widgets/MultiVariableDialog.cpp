@@ -75,18 +75,31 @@ void MultiVariableDialog::SetCustomInteger(bool allowCustom, bool allowBlank, bo
 
 	if (allowCustom)
 	{
-		if (allowCustom) ui.MainComboBox->addItem(_staticVarString);
-		connect(ui.MainComboBox, &QComboBox::currentTextChanged, this, [this]() {
+		ui.MainComboBox->addItem(_customVarString);
+		ui.MainComboBox->addItem(_staticVarString);
+
+		auto validator = new QIntValidator(this);
+
+		if(!negativeAllowed)
+			validator->setBottom(0);
+		
+		connect(ui.MainComboBox, &QComboBox::currentTextChanged, this, [this, validator]() {
 			if (this->ui.MainComboBox->currentText() == _staticVarString)
+			{
+				ui.customEntry->setValidator(validator);
+				ui.customEntry->setText("");
 				this->ui.customEntry->setEnabled(true);
+			}
+			else if(this->ui.MainComboBox->currentText() == _customVarString)
+			{
+				ui.customEntry->setValidator(nullptr);
+				ui.customEntry->setText("");
+				this->ui.customEntry->setEnabled(true);
+			}
 			else
 				this->ui.customEntry->setEnabled(false);
 
-			});
-
-		auto validator = new QIntValidator(this);
-		if(!negativeAllowed)validator->setBottom(0);
-		ui.customEntry->setValidator(validator);
+				});
 	}
 }
 
@@ -96,13 +109,16 @@ void MultiVariableDialog::SetCustomBoolean(bool allowCustom, bool allowBlank)
 	ui.customBoolean->setEnabled(false);
 	ui.customBoolean->setVisible(allowCustom);
 
-	if (allowBlank) ui.MainComboBox->addItem(_noneString);
+	if (allowBlank) 
+		ui.MainComboBox->addItem(_noneString);
 
 	connect(ui.customBoolean, &QPushButton::pressed, this, &MultiVariableDialog::ToggleBoolean);
 
 	if (allowCustom)
 	{
-		if (allowCustom) ui.MainComboBox->addItem(_staticVarString);
+		ui.MainComboBox->addItem(_customVarString);
+		ui.MainComboBox->addItem(_staticVarString);
+
 		connect(ui.MainComboBox, &QComboBox::currentTextChanged, this, [this]() {
 			if (this->ui.MainComboBox->currentText() == _staticVarString)
 			{
@@ -114,6 +130,17 @@ void MultiVariableDialog::SetCustomBoolean(bool allowCustom, bool allowBlank)
 			{
 				this->ui.customBoolean->setEnabled(false);
 				this->ui.customBoolean->setText("---");
+			}
+
+			if (this->ui.MainComboBox->currentText() == _customVarString)
+			{
+				this->ui.customEntry->setVisible(true);
+				this->ui.customBoolean->setVisible(false);
+			}
+			else
+			{
+				this->ui.customEntry->setVisible(false);
+				this->ui.customBoolean->setVisible(true);
 			}
 
 			});
@@ -130,6 +157,7 @@ void MultiVariableDialog::SetCustomVector(bool allowCustom, bool allowBlank, boo
 
 	if (allowCustom) 
 	{
+		ui.MainComboBox->addItem(_customVarString);
 		ui.MainComboBox->addItem(_staticVarString);
 		
 		connect(ui.MainComboBox, &QComboBox::currentTextChanged, this, [this]() {
@@ -138,17 +166,26 @@ void MultiVariableDialog::SetCustomVector(bool allowCustom, bool allowBlank, boo
 			else
 				this->ui.vectorEntryBox->setEnabled(false);
 
-			});
+			if (this->ui.MainComboBox->currentText() == _customVarString)
+			{
+				SetStaticVectorVisibile(false);
+				this->ui.customEntry->setVisible(true);
+			}
+			else
+			{
+				SetStaticVectorVisibile(true);
+				this->ui.customEntry->setVisible(false);
+			}
 
-		connect(ui.buttonBox, &QDialogButtonBox::accepted, this, [this]() {
-			if (ui.xVal->text().isEmpty()) ui.xVal->setText("0");
-			if (ui.yVal->text().isEmpty()) ui.yVal->setText("0");
-			if (ui.zVal->text().isEmpty()) ui.zVal->setText("0");
 			});
 
 		auto validator = new QDoubleValidator(this);
+		
 		validator->setDecimals(5);
-		if (!negativeAllowed) validator->setBottom(0);
+		
+		if (!negativeAllowed) 
+			validator->setBottom(0);
+		
 		ui.xVal->setValidator(validator);
 		ui.yVal->setValidator(validator);
 		ui.zVal->setValidator(validator);
@@ -181,11 +218,10 @@ QString MultiVariableDialog::GetValue() const
 			QString entry = ui.customEntry->text();
 			bool ok;
 			int value = entry.toInt(&ok);
-			if (ok)
-			{
-				return(std::to_string(value).c_str());
-			}
-			return ui.customEntry->text();
+			if (!ok)
+				value = 0;
+
+			return QString::number(value);
 		}
 		case AgxVarType::Float:
 		{
@@ -206,7 +242,8 @@ QString MultiVariableDialog::GetValue() const
 		}
 		break;
 		case AgxVarType::Vector:
-			return ui.xVal->text() + ";" + ui.yVal->text() + ";" + ui.zVal->text();
+			return FormatVector(ui.xVal->text(), ui.yVal->text(), ui.zVal->text());
+		
 		default:
 			return "ERROR";
 		}
@@ -220,62 +257,118 @@ QString MultiVariableDialog::GetValue() const
 
 bool MultiVariableDialog::SetInitialVector(const QString& vector)
 {
-	QStringList nums = vector.split(';');
-	nums.removeAll("");
-	QVector<float> floats;
-	for (auto& entry : nums)
+
+	ui.customEntry->setText("");
+	SetStaticVector("", "", "");
+
+	if (vector.isEmpty())
 	{
-		bool ok;
-		float value = entry.trimmed().toFloat(&ok);
-		if (ok)
-		{
-			floats.append(value);
-		}
+		ui.MainComboBox->setCurrentIndex(0);
+		return false;
 	}
 
-	if (floats.size() == 3)
-	{
-		char bufferx[256];
-		sprintf_s(bufferx, "%.5g", floats.at(0));
-		char buffery[256];
-		sprintf_s(buffery, "%.5g", floats.at(1));
-		char bufferz[256];
-		sprintf_s(bufferz, "%.5g", floats.at(2));
+	auto idxCustom = ui.MainComboBox->findText(_customVarString);
+	auto idxDrop = ui.MainComboBox->findText(vector);
 
-		ui.xVal->setText(bufferx);
-		ui.yVal->setText(buffery);
-		ui.zVal->setText(bufferz);
+	if (idxDrop >= 0)
+	{
+		ui.MainComboBox->setCurrentIndex(idxDrop);
 		return true;
 	}
 
-	ui.xVal->setText("0");
-	ui.yVal->setText("0");
-	ui.zVal->setText("0");
+	QStringList nums = vector.split(';');
+	nums.removeAll("");
+	
+
+	if (nums.size() >= 3)
+	{
+		ui.MainComboBox->setCurrentText(_staticVarString);
+		SetStaticVector(nums.at(0), nums.at(1), nums.at(2));
+		return true;
+	}
+	
+	if (idxCustom >= 0)
+	{
+		ui.MainComboBox->setCurrentIndex(idxCustom);
+		ui.customEntry->setText(vector);
+		return true;
+	}
+
+	ui.MainComboBox->setCurrentIndex(0);
 	return false;
 }
 
 bool MultiVariableDialog::SetInitialBoolen(const QString& boolean)
 {
+	ui.customEntry->setText("");
+	ui.customEntry->setVisible(false);
+	ui.customBoolean->setVisible(true);
+
+	if (boolean.isEmpty())
+	{
+		_boolState = false;
+		ui.customBoolean->setText("---");
+		ui.customBoolean->setEnabled(false);
+		ui.MainComboBox->setCurrentIndex(0);
+		return false;
+	}
+
+	auto idxCustom = ui.MainComboBox->findText(_customVarString);
+	auto idxDrop = ui.MainComboBox->findText(boolean);
+
+	if (idxDrop >= 0)
+	{
+		ui.MainComboBox->setCurrentIndex(idxDrop);
+		return true;
+	}
+
 	if (boolean.compare("True", Qt::CaseInsensitive) == 0)
 	{
-		ui.customBoolean->setText(_trueString);
-		_boolState = true;
+		ui.MainComboBox->setCurrentText(_staticVarString);
+		SetBoolState(true);
 		return true;
 	}
 
 	if (boolean.compare("False", Qt::CaseInsensitive) == 0)
 	{
-		ui.customBoolean->setText(_falseString);
-		_boolState = false;
+		ui.MainComboBox->setCurrentText(_staticVarString);
+		SetBoolState(false);
 		return true;
 	}
-	_boolState = false;
+
+	if (idxCustom >= 0)
+	{
+		ui.customEntry->setText(boolean);
+		ui.customEntry->setVisible(true);
+		ui.customBoolean->setVisible(false);
+		ui.MainComboBox->setCurrentIndex(idxCustom);
+		return true;
+	}
+
+	SetBoolState(false);
 	return false;
 }
 
 bool MultiVariableDialog::SetInitialInteger(const QString& integer)
 {
+	ui.customEntry->setText("");
+
+	if (integer.isEmpty())
+	{
+		ui.MainComboBox->setCurrentIndex(0);
+		return false;
+	}
+	
 	QStringList strList = integer.split('.');
+
+	int idxCustom = ui.MainComboBox->findText(_customVarString);
+	int idxDrop = ui.MainComboBox->findText(integer);
+
+	if (idxDrop >= 0)
+	{
+		ui.MainComboBox->setCurrentIndex(idxDrop);
+		return true;
+	}
 
 	for (auto& entry : strList)
 	{
@@ -283,19 +376,30 @@ bool MultiVariableDialog::SetInitialInteger(const QString& integer)
 		int value = entry.toInt(&ok);
 		if (ok)
 		{
-			ui.customEntry->setText(std::to_string(value).c_str());
+			ui.customEntry->setText(QString::number(value));
+			ui.MainComboBox->setCurrentText(_staticVarString);
 			return true;
 		}
 	}
-	ui.customEntry->setText("");
+
+	if (idxCustom >= 0)
+	{
+		ui.customEntry->setValidator(nullptr);
+		ui.customEntry->setText(integer);
+		ui.MainComboBox->setCurrentIndex(idxCustom);
+		return true;
+	}
+
+	ui.MainComboBox->setCurrentIndex(0);
 	return false;
 }
 
 bool MultiVariableDialog::SetInitialFloat(const QString& floatpt)
 {
+	ui.customEntry->setText("");
+
 	if (floatpt.isEmpty())
 	{
-		ui.customEntry->setText("");
 		ui.MainComboBox->setCurrentIndex(0);
 		return false;
 	}
@@ -306,7 +410,6 @@ bool MultiVariableDialog::SetInitialFloat(const QString& floatpt)
 	if (idxDrop >= 0)
 	{
 		ui.MainComboBox->setCurrentIndex(idxDrop);
-		ui.customEntry->setText("");
 		return true;
 	}
 	
@@ -332,7 +435,6 @@ bool MultiVariableDialog::SetInitialFloat(const QString& floatpt)
 		return true;
 	}
 
-	ui.customEntry->setText("");
 	ui.MainComboBox->setCurrentIndex(0);
 	return false;
 }
@@ -343,6 +445,72 @@ void MultiVariableDialog::changeEvent(QEvent* event)
 		ui.retranslateUi(this);
 	}
 	QWidget::changeEvent(event);
+}
+
+void MultiVariableDialog::SetBoolState(bool state)
+{
+	//translated text
+	if (state)
+		ui.customBoolean->setText(_trueString);
+	else
+		ui.customBoolean->setText(_falseString);
+
+	_boolState = state;
+}
+
+void MultiVariableDialog::SetStaticVectorVisibile(bool state)
+{
+	ui.vectorEntryBox->setVisible(state);
+}
+
+void MultiVariableDialog::SetStaticVectorEnabled(bool state)
+{
+	ui.vectorEntryBox->setEnabled(state);
+}
+
+void MultiVariableDialog::SetStaticVector(QString x, QString y, QString z)
+{
+	if (x.isEmpty())
+	{
+		ui.xVal->setText("");
+	} 
+	else
+	{
+		bool ok = false;
+		double val = x.toDouble(&ok);
+		if (!ok)
+			val = 0;
+
+		ui.xVal->setText(CleanUpDecimals(QString::number(val, 'f', 5)));
+	}
+
+	if (y.isEmpty())
+	{
+		ui.yVal->setText("");
+	} 
+	else
+	{
+		bool ok = false;
+		double val = y.toDouble(&ok);
+		if (!ok)
+			val = 0;
+
+		ui.yVal->setText(CleanUpDecimals(QString::number(val, 'f', 5)));
+	}
+
+	if (z.isEmpty())
+	{
+		ui.zVal->setText("");
+	} 
+	else
+	{
+		bool ok = false;
+		double val = z.toDouble(&ok);
+		if (!ok)
+			val = 0;
+
+		ui.zVal->setText(CleanUpDecimals(QString::number(val, 'f', 5)));
+	}
 }
 
 void MultiVariableDialog::ToggleBoolean()

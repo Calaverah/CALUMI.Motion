@@ -61,6 +61,7 @@ void AgxLineEdit::setupButtonStyle()
 {
 	viewport()->setCursor(Qt::PointingHandCursor);
 	setReadOnly(true);
+	setTextInteractionFlags(Qt::TextInteractionFlag::NoTextInteraction);
 
 	auto pal = palette();
 	pal.setColor(QPalette::Base, palette().color(QPalette::Button));

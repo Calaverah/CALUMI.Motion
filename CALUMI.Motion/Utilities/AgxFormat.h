@@ -93,6 +93,40 @@ inline QString CleanUpDecimals(const QString& number, int maxTrailing = -1)
     return output;
 }
 
+inline QString FormatVector(QString x, QString y, QString z)
+{
+    QString output;
+    QStringList vals = { "0","0","0" };
+    if (!x.isEmpty())
+    {
+        bool ok = false;
+        double val = x.toDouble(&ok);
+        if (!ok)
+            val = 0;
+
+        vals[0] = CleanUpDecimals(QString::number(val, 'f', 5));
+    }
+    if (!y.isEmpty())
+    {
+        bool ok = false;
+        double val = y.toDouble(&ok);
+        if (!ok)
+            val = 0;
+
+        vals[1] = CleanUpDecimals(QString::number(val, 'f', 5));
+    }
+    if (!z.isEmpty())
+    {
+        bool ok = false;
+        double val = z.toDouble(&ok);
+        if (!ok)
+            val = 0;
+
+        vals[2] = CleanUpDecimals(QString::number(val, 'f', 5));
+    }
+    return vals.at(0) + ";" + vals.at(1) + ";" + vals.at(2);
+}
+
 inline size_t GetParentCount(pugi::xml_node& node) 
 {
     size_t count = 0;
