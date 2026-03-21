@@ -59,14 +59,36 @@ enum class AgxFormat {
 
 using AgxFormatSet = QFlags<AgxFormat>;
 
-inline QString CleanUpDecimals(const QString& number)
+inline QString CleanUpDecimals(const QString& number, int maxTrailing = -1)
 {
-    QString output = number.isEmpty() ? "0" : number;
+    QString output;
+
+    if (maxTrailing >= 0)
+    {
+        int dIdx = number.indexOf('.');
+        if (dIdx >= 0)
+            dIdx += maxTrailing;
+        else
+            dIdx = number.length() - 1;
+
+        output = number.mid(0, dIdx + 1);
+    } 
+    else
+        output = number;
+
+    output.remove(QRegularExpression("^0+"));
+    
+    output = number.isEmpty() ? "0" : output;
 
     if (!output.contains(".")) return output;
 
+    if (output.at(0) == '.')
+        output = "0" + output;
+
     output.remove(QRegularExpression("0+$"));
     output.remove(QRegularExpression("\\.$"));
+
+    output = number.isEmpty() ? "0" : output;
 
     return output;
 }

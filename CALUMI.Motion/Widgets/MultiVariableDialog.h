@@ -44,7 +44,8 @@ protected:
 private:
 	QString _trueString = QObject::tr("True");
 	QString _falseString = QObject::tr("False");
-	QString _customString = QObject::tr("<custom>");
+	QString _staticVarString = QObject::tr("<static>");
+	QString _customVarString = QObject::tr("<custom>");
 	QString _noneString = QObject::tr("<none>");
 
 	Ui::MultiVariableDialogClass ui;

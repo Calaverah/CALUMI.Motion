@@ -266,17 +266,18 @@ FilteredDropDownDialog* DialogPool_SFBGS::GetEventEntryDialog(QString str, AgxEv
 
 MultiVariableDialog* DialogPool_SFBGS::GetFloatVariableEntryDialog(QString str)
 {
-	if (str.isEmpty())
-	{
-		_FloatEntryDialog->SetInitialFloat("");
-		_FloatEntryDialog->GetComboBox()->setCurrentIndex(0);
-	}
-	else if (_FloatEntryDialog->SetInitialFloat(str))
-	{
-		_FloatEntryDialog->GetComboBox()->setCurrentIndex(1);
-	}
-	else
-		_FloatEntryDialog->GetComboBox()->setCurrentText(str);
+	//if (str.isEmpty())
+	//{
+	//	_FloatEntryDialog->SetInitialFloat("");
+	//	_FloatEntryDialog->GetComboBox()->setCurrentIndex(0);
+	//}
+	//else if (_FloatEntryDialog->SetInitialFloat(str))
+	//{
+	//	_FloatEntryDialog->GetComboBox()->setCurrentIndex(1);
+	//}
+	//else
+	//	_FloatEntryDialog->GetComboBox()->setCurrentText(str);
+	_FloatEntryDialog->SetInitialFloat(str);
 
 	return _FloatEntryDialog;
 }
