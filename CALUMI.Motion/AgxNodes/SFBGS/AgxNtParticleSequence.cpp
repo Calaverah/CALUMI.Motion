@@ -11,7 +11,7 @@ namespace SFBGS {
         _nameProperty = QStringLiteral("Particle Sequence");
 
         _PropertyEntries.push_back(AgxPropertyEntryDefinition(&AgxDictionary::Name, "Particle Sequence", AgxColumnTypes::BasicString));
-        _PropertyEntries.push_back(AgxPropertyEntryDefinition(&AgxDictionary::SequenceName, "", AgxColumnTypes::Event));
+        _PropertyEntries.push_back(AgxPropertyEntryDefinition(&AgxDictionary::SequenceName, "", AgxColumnTypes::BasicString));
         _PropertyEntries.push_back(AgxPropertyEntryDefinition(&AgxDictionary::PlaybackSpeed, "1", AgxColumnTypes::BasicInteger));
         _PropertyEntries.push_back(AgxPropertyEntryDefinition(&AgxDictionary::BlendOutTime, "0.3", AgxColumnTypes::BasicFloat));
         _PropertyEntries.push_back(AgxPropertyEntryDefinition(&AgxDictionary::SyncOnlyTransitionOut, "False", AgxColumnTypes::BasicBool));

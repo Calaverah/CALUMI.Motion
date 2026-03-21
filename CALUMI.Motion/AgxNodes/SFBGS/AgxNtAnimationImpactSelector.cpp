@@ -13,7 +13,7 @@ namespace SFBGS {
         _PropertyEntries.push_back(AgxPropertyEntryDefinition(&AgxDictionary::Name, "Impact Selector", AgxColumnTypes::BasicString));
         _PropertyEntries.push_back(AgxPropertyEntryDefinition(&AgxDictionary::BodyPartVar, "cHitReactionBodyPart", AgxColumnTypes::CustomInteger));
         _PropertyEntries.push_back(AgxPropertyEntryDefinition(&AgxDictionary::DirectionVar, "cHitReactionDir", AgxColumnTypes::CustomInteger));
-        _PropertyEntries.push_back(AgxPropertyEntryDefinition(&AgxDictionary::ImpactVar, "StaggerMagnitude", AgxColumnTypes::BasicInteger));
+        _PropertyEntries.push_back(AgxPropertyEntryDefinition(&AgxDictionary::ImpactVar, "StaggerMagnitude", AgxColumnTypes::CustomInteger));
         _PropertyEntries.push_back(AgxPropertyEntryDefinition(&AgxDictionary::SyncOnlyTransitionOut, "False", AgxColumnTypes::BasicBool));
 
         AgxPropertyBlockData fwdBlockData({
