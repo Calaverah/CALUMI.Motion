@@ -50,6 +50,7 @@ public:
 	inline static AgxTerm noninstanced() { return { "noninstanced", QObject::tr("Non Instanced") }; }
 	inline static AgxTerm DefaultState() { return { "default_state", QObject::tr("Default State") }; }
 
+	inline static AgxTerm Flags() { return { "Flags", QObject::tr("Flags") }; }
 
 	inline static AgxTerm x_StandtoMoveTags_x() { return {"Stand to Move Tags", QObject::tr("Tag")}; }
 	inline static AgxTerm x_MovetoStopTags_x() { return {"Move to Stop Tags", QObject::tr("Tag")}; }

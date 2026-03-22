@@ -11,15 +11,21 @@
 
 CALUMITabModule::CALUMITabModule(QWidget* content, QFutureWatcher<void>* watcher, int current, int progressShare, QWidget* parent) : QWidget(parent), _mainWidget(content)
 {
-	if (watcher) {
-		auto connection = connect(this, &CALUMITabModule::statusUpdate, watcher, [this, progressShare, current, watcher](float loadPercentage, const QString& message) {
+	if (watcher)
+	{
+		auto connection = connect(this, &CALUMITabModule::statusUpdate, watcher, [this, progressShare, current, watcher](float loadPercentage, const QString& message)
+		{
 			auto maxValue = watcher->progressMaximum();
+			
 			Q_EMIT watcher->progressValueChanged(current + static_cast<int>(loadPercentage * progressShare));
-			if (!message.isEmpty()) Q_EMIT watcher->progressTextChanged(message);
-								  });
+			
+			if (!message.isEmpty()) 
+				Q_EMIT watcher->progressTextChanged(message);
+		
+		});
+
 		CALUMITabModuleConstructorHelper(content, parent);
 		disconnect(connection);
-
 	} 
 	else 
 	{
@@ -47,12 +53,10 @@ void CALUMITabModule::CALUMITabModuleConstructorHelper(QWidget* content, QWidget
 	_rightScrollArea->setWidgetResizable(true);
 
 	Q_EMIT statusUpdate(0.05f, "Building Property Sidebar");
-	//QApplication::processEvents();
 
 	ResetSideBar_Right();
 
 	Q_EMIT statusUpdate(0.15f, "Creating Tab Widgets");
-	//QApplication::processEvents();
 
 	_centralLayout->addWidget(_leftAreaParent);
 	_centralLayout->addWidget(_mainWidget);
@@ -62,17 +66,12 @@ void CALUMITabModule::CALUMITabModuleConstructorHelper(QWidget* content, QWidget
 	_centralLayout->setStretchFactor(1, 2);
 	_centralLayout->setStretchFactor(2, 0);
 	
-	//auto size = _centralLayout->width();
-	//auto centerSize = size - 271;
-	//_centralLayout->setSizes({0,1000,271});
 	_centralLayout->setSizes({0,1000,0});
 	
 	Q_EMIT statusUpdate(0.25, "Reparenting Sidebar Items");
-	//QApplication::processEvents();
 
 	_leftAreaParent->setVisible(false);
 
-	//_topLayout->addWidget(_toolBar);
 	_topLayout->addWidget(_centralLayout);
 	setLayout(_topLayout);
 
@@ -84,17 +83,22 @@ void CALUMITabModule::CALUMITabModuleConstructorHelper(QWidget* content, QWidget
 		size_t contentCount = nodeIds.size();
 		size_t progress = 0;
 
-		for (auto existingNodeId : nodeIds) {
+		for (auto existingNodeId : nodeIds) 
+		{
 			auto sidebar = agxView->pagxNodeScene()->agxGraphModel().GetNodeSidebarContent(existingNodeId);
-			if (auto iagx = dynamic_cast<AgxSidebarContent*>(sidebar)) {
+			
+			if (auto iagx = dynamic_cast<AgxSidebarContent*>(sidebar)) 
+			{
 				iagx->SetRefData(existingNodeId, agxView->pagxNodeScene());
 			}
-			if(sidebar){
-			sidebar->setVisible(false);
-			AddSideBarItem_Right(sidebar);
+			
+			if(sidebar)
+			{
+				sidebar->setVisible(false);
+				AddSideBarItem_Right(sidebar);
 			}
+
 			Q_EMIT statusUpdate(0.25 + (0.75 * progress) / contentCount);
-			//QApplication::processEvents();
 			progress++;
 		}
 	}
@@ -118,12 +122,12 @@ void CALUMITabModule::AddSideBarItem_Right(QWidget* item)
 		if (auto sfbgsItem = dynamic_cast<AgxSidebarContent*>(item))
 		{
 			connect(sfbgsItem, &AgxSidebarContent::StateChanged, this, &CALUMITabModule::AdjustSize_Right);
-
 		}
 
-		connect(item, &QWidget::destroyed, this, [this](){
+		connect(item, &QWidget::destroyed, this, [this]()
+		{
 			QTimer::singleShot(1, this, &CALUMITabModule::AdjustSize_Right);
-				});
+		});
 	}		
 }
 
@@ -131,7 +135,10 @@ void CALUMITabModule::AdjustSize_Right()
 {
 	_rightScrollLayout->update();
 	_rightWidget->adjustSize();
-	auto widthHint = _rightWidget->sizeHint().width() > 25 ? _rightWidget->sizeHint().width() + 10 : 0;
+
+	//10 for spacing
+	//20 for giving scrollbar some space as adding it without will force sizing to need hz scroll
+	auto widthHint = _rightWidget->sizeHint().width() > 25 ? _rightWidget->sizeHint().width() + 10 + 20 : 0;
 	_rightScrollArea->setFixedWidth(widthHint);
 
 	auto s = _centralLayout->sizes();
@@ -154,7 +161,8 @@ void CALUMITabModule::SetSideBarItem_Left(QWidget* item, bool show)
 	s[0] = _leftAreaParent->sizeHint().width();
 	_centralLayout->setSizes(s);
 
-	if(auto bWidget = dynamic_cast<IButtonBox*>(item)) {
+	if(auto bWidget = dynamic_cast<IButtonBox*>(item))
+	{
 		auto button = bWidget->GetButtonBox()->button(QDialogButtonBox::Close);
 		connect(button, &QPushButton::pressed, this, &CALUMITabModule::CloseSideBarItem_Left);
 	}

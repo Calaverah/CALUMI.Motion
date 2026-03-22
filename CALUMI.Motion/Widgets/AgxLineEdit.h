@@ -82,6 +82,7 @@ public:
 	void setValidator(QValidator* validator = nullptr);
 	void setContentFixedWidth(int width);
 	void setContentMinWidth(int width);
+	int getContentMinWidth() const;
 	void setContentMaxWidth(int width);
 	void setCheckbox(bool enabled);
 	void setContentPlaceholderText(const QString& text);

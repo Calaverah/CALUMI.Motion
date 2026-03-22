@@ -225,9 +225,6 @@ void AgxNode::InitializeWidget()
     if (!_NodePropertiesWidget)
     {
         _NodePropertiesWidget = new AgxNodePropertiesWidget(nullptr, true);
-        connect(this, &AgxNode::PropertySheetUpdated, _NodePropertiesWidget, [this]() {
-            _NodePropertiesWidget->SetHiddenEntries(hiddenState);
-                });
         //enter standard node widgets here
     }
 }
@@ -1302,16 +1299,15 @@ void SFBGSNode::InitializeWidget(bool split)
 {
     AgxNode::InitializeWidget();
 
-    _NodePropertiesWidget->CreateFlagEntry(tr("SFBGS Flags"), this, &_flags);
+    _NodePropertiesWidget->CreateFlagEntry(AgxDictionary::Flags, this, &_flags);
 
-    _NodePropertiesWidget->CreateHiddenEntries(&_SFBGS_Hidden, this, true, _HiddenOrder);
+    _NodePropertiesWidget->CreateReadOnlyEntries(&_SFBGS_Hidden, this, true, _HiddenOrder);
     auto sfbgsPropList = _NodePropertiesWidget->CreatePropertyEntries(&_SFBGS_Properties, this, split);
     for (auto sfbgsProp : sfbgsPropList)
     {
         sfbgsProp->setCheckbox(false);
     }
     _NodePropertiesWidget->CreatePropertyEntries(&_PropertyEntries, this, split);
-    _NodePropertiesWidget->SetHiddenEntries(hiddenState);
     _NodePropertiesWidget->CreateGuidLabel(getGuidRef(), this, split);
 }
 

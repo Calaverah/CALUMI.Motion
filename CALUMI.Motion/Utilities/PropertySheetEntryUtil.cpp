@@ -136,7 +136,7 @@ AgxLineEditContainer* AgxWidgetUtil::CreateBasicStringEntry(const QStringList& k
 
 			});
 
-	lineEdit->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Preferred);
+	//lineEdit->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Preferred);
 
 	return lineEdit;
 }
@@ -161,7 +161,7 @@ AgxLineEditContainer* AgxWidgetUtil::CreateEventEntry(const QStringList& keyPath
 		}
 			});
 
-	lineEdit->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Preferred);
+	//lineEdit->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Preferred);
 
 	return lineEdit;
 }
@@ -185,7 +185,7 @@ AgxLineEditContainer* AgxWidgetUtil::CreateFloatVarEntry(const QStringList& keyP
 		}
 			});
 
-	lineEdit->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Preferred);
+	//lineEdit->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Preferred);
 
 	return lineEdit;
 }
@@ -210,7 +210,7 @@ AgxLineEditContainer* AgxWidgetUtil::CreateIntegerVarEntry(const QStringList& ke
 		}
 			});
 
-	lineEdit->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Preferred);
+	//lineEdit->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Preferred);
 
 	return lineEdit;
 }
@@ -235,7 +235,7 @@ AgxLineEditContainer* AgxWidgetUtil::CreateBooleanVarEntry(const QStringList& ke
 		}
 			});
 
-	lineEdit->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Preferred);
+	//lineEdit->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Preferred);
 
 	return lineEdit;
 }
@@ -260,7 +260,7 @@ AgxLineEditContainer* AgxWidgetUtil::CreateVectorVarEntry(const QStringList& key
 		}
 			});
 
-	lineEdit->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Preferred);
+	//lineEdit->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Preferred);
 
 	return lineEdit;
 }
@@ -285,7 +285,7 @@ AgxLineEditContainer* AgxWidgetUtil::CreatePrefixEntry(const QStringList& keyPat
 		}
 			});
 
-	lineEdit->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Preferred);
+	//lineEdit->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Preferred);
 
 	return lineEdit;
 }
@@ -310,7 +310,7 @@ AgxLineEditContainer* AgxWidgetUtil::CreateSuffixEntry(const QStringList& keyPat
 		}
 						});
 
-	lineEdit->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Preferred);
+	//lineEdit->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Preferred);
 
 	return lineEdit;
 }
@@ -335,7 +335,7 @@ AgxLineEditContainer* AgxWidgetUtil::CreateSyncEntry(const QStringList& keyPath,
 		}
 						});
 
-	lineEdit->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Preferred);
+	//lineEdit->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Preferred);
 
 	return lineEdit;
 }
@@ -360,7 +360,7 @@ AgxLineEditContainer* AgxWidgetUtil::CreateStateEntry(const QStringList& keyPath
 		}
 						});
 
-	lineEdit->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Preferred);
+	//lineEdit->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Preferred);
 
 	return lineEdit;
 }
@@ -385,7 +385,7 @@ AgxLineEditContainer* AgxWidgetUtil::CreateActionEntry(const QStringList& keyPat
 		}
 						});
 
-	lineEdit->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Preferred);
+	//lineEdit->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Preferred);
 
 	return lineEdit;
 }
@@ -495,7 +495,7 @@ AgxLineEditContainer* AgxWidgetUtil::CreateBasicMuliVarEntry(const QStringList& 
 		}
 						});
 
-	lineEdit->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Preferred);
+	//lineEdit->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Preferred);
 
 	return lineEdit;
 }
@@ -582,7 +582,7 @@ AgxLineEditContainer* AgxWidgetUtil::CreateCustomMuliVarEntry(const QStringList&
 		}
 						});
 
-	lineEdit->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Preferred);
+	//lineEdit->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Preferred);
 
 	return lineEdit;
 }

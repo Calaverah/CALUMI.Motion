@@ -45,16 +45,6 @@ static int GetColumnWidth(const AgxColumnTypes& type) {
 	}
 }
 
-//static void filter_1(QString& text) {
-//	QRegularExpression regex("\\_.*\\_");
-//	text.replace(regex, "");
-//}
-//
-//static void filter_2(QString& text) {
-//	QRegularExpression regex("\\~.*\\~");
-//	text.replace(regex, "");
-//}
-
 AgxPropertyBlockWidget::AgxPropertyBlockWidget(TermRef ref, AgxPropertyBlockData& dataRef, QWidget* parent) : QWidget(parent), _grid(new QGridLayout()), _label(new QLabel(ref().translation)), _dataRef(&dataRef)
 {
 	setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::Fixed);
@@ -260,7 +250,11 @@ void AgxPropertyBlockWidget::OnRowAdded(int index)
 		ConstructRow(i);
 	}
 
-	Q_EMIT RowsChanged();
+	QTimer::singleShot(1, this, [this]() 
+	{
+		adjustSize();
+		Q_EMIT RowsChanged();
+	});
 }
 
 void AgxPropertyBlockWidget::OnRowRemoved(int index)
@@ -272,7 +266,11 @@ void AgxPropertyBlockWidget::OnRowRemoved(int index)
 		ConstructRow(i);
 	}
 
-	Q_EMIT RowsChanged();
+	QTimer::singleShot(1, this, [this]()
+	{
+	   adjustSize();
+	   Q_EMIT RowsChanged();
+	});
 }
 
 void AgxPropertyBlockWidget::ShowContextMenu(const QPoint& pos)

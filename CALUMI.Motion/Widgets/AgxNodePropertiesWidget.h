@@ -36,10 +36,10 @@ public:
 	QList<AgxLineEditContainer*> CreatePropertyEntries(QVector<AgxPropertyEntryDefinition>* dataRef, AgxNode* signalSender, bool split = true);
 	QList<AgxLineEditContainer*> CreatePropertyEntries(QVector<AgxPropertyEntryDefinition>* dataRef, AgxGraphModel* signalSender, bool split = true);
 	QList<AgxLineEditContainer*> CreatePropertyEntries(QVector<AgxPropertyEntryDefinition>* dataRef, AgxPort* signalSender, bool split = true, QStringList path = {});
-	QList<QLabel*> CreateHiddenEntries(QMap<TermRef, QPair<AgxColumnTypes, QString>>* dataRef, AgxNode* signalSender, bool split = true, const QList<TermRef>& priorityOrder = {});
-	QList<QLabel*> CreateHiddenEntries(QMap<TermRef, QPair<AgxColumnTypes, QString>>* dataRef, AgxGraphModel* signalSender, bool split = true, const QList<TermRef>& priorityOrder = {});
+	QList<QLabel*> CreateReadOnlyEntries(QMap<TermRef, QPair<AgxColumnTypes, QString>>* dataRef, AgxNode* signalSender, bool split = true, const QList<TermRef>& priorityOrder = {});
+	QList<QLabel*> CreateReadOnlyEntries(QMap<TermRef, QPair<AgxColumnTypes, QString>>* dataRef, AgxGraphModel* signalSender, bool split = true, const QList<TermRef>& priorityOrder = {});
 	QLabel* CreateGuidLabel(const QUuid* value, AgxNode* signalSender, bool split = true);
-	ModifiedPushButton* CreateFlagEntry(const QString& title, AgxNode* signalSender, AgxFlagField* dataRef);
+	ModifiedPushButton* CreateFlagEntry(TermRef title, AgxNode* signalSender, AgxFlagField* dataRef);
 	AgxLineEditContainer* CreateSimpleLineEdit(QString* defaultText, AgxPort* signalSender, TermRef label = nullptr, bool split = true, QStringList path = {});
 
 	AgxPropertyBlockWidget* CreatePropetryBlock(TermRef blockName, AgxPropertyBlockData& dataRef);
@@ -60,19 +60,15 @@ signals:
 	void LanguageChanged();
 	void BroadcastWidth(int width);
 
-public slots:
-	void SetHiddenEntries(bool hidden);
-
 private slots:
 	void SendWidthAdjustment();
 
 private:
 	QVBoxLayout* _MainVBoxLayout = nullptr;
-	QFormLayout* _LeftFormLayout = nullptr;
-	QFormLayout* _hiddenLeftFormLayout = nullptr;
-	QFormLayout* _RightFormLayout = nullptr;
-	QFormLayout* _hiddenRightFormLayout = nullptr;
-	QHBoxLayout* _hiddenLayout = nullptr;
+	QGridLayout* _mainFormLayout = nullptr;
+	QFormLayout* _readonlyLeftLayout = nullptr;
+	QFormLayout* _readonlyRightLayout = nullptr;
+	QHBoxLayout* _readonlyParentLayout = nullptr;
 
 	QHash<TermRef, AgxPropertyBlockWidget*> _PropertyBlocks;
 

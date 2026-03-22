@@ -17,7 +17,7 @@ AgxLineEdit::AgxLineEdit(QWidget* parent) : QPlainTextEdit(parent), _validator(n
 	setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
 	setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
 
-	setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Preferred);
+	setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::Preferred);
 
 	setLineWrapMode(QPlainTextEdit::WidgetWidth);
 	setWordWrapMode(QTextOption::WrapAtWordBoundaryOrAnywhere);
@@ -249,8 +249,8 @@ AgxLineEditContainer::AgxLineEditContainer(QWidget* parent, bool allowDisable, Q
 	setCheckbox(allowDisable);
 
 	hBox->setAlignment(Qt::AlignLeft | Qt::AlignTop);
-	setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
-	_lineContainer->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
+	setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::Fixed);
+	_lineContainer->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::Fixed);
 
 	setContentsMargins(0, 0, 0, 0);
 
@@ -298,6 +298,11 @@ void AgxLineEditContainer::setContentMinWidth(int width)
 {
 	_lineEdit->setMinimumWidth(width);
 	adjustSize();
+}
+
+int AgxLineEditContainer::getContentMinWidth() const
+{
+	return _lineEdit->minimumWidth();
 }
 
 void AgxLineEditContainer::setContentMaxWidth(int width)
