@@ -873,6 +873,12 @@ void AgxGraphModel::SetGroupColor(const QString& groupName, const QColor& color)
 std::unordered_map<QString, QVector<AgxNodeId>> AgxGraphModel::GetNodeGroupAssignmentList() const
 {
     std::unordered_map<QString, QVector<AgxNodeId>> output;
+
+    for (auto& group : _nodeGroups)
+    {
+        output[group.first] = {};
+    }
+
     for (auto& entry : _models)
     {
         auto node = entry.second.get();
