@@ -10,119 +10,100 @@
 #include "Widgets/IAgxEmbedSceneData.h"
 #include "Utilities/AgxDefinitions.h"
 #include "Dialog/AgxSimpleDialog.h"
+#include "AgxWrappedRowEntry/AgxWrappedRowEntry.h"
 
-static int GetColumnWidth(const AgxColumnTypes& type) {
-	
-	switch (type)
-	{
-		case AgxColumnTypes::BasicString:
-			return 150;
-		case AgxColumnTypes::BasicInteger: 
-		case AgxColumnTypes::BasicFloat: 
-			return 50;
-		case AgxColumnTypes::BasicVector: 
-		case AgxColumnTypes::BasicBool: 
-			return 80;
-		case AgxColumnTypes::BasicMultiVar:
-		case AgxColumnTypes::CustomDropDown: 
-			return 50;
-		case AgxColumnTypes::CustomInteger: 
-		case AgxColumnTypes::CustomFloat: 
-		case AgxColumnTypes::CustomVector: 
-		case AgxColumnTypes::CustomBool: 
-		case AgxColumnTypes::CustomMultiVar: 
-		case AgxColumnTypes::Event: 
-			return 150;
-		case AgxColumnTypes::Prefix:
-		case AgxColumnTypes::Suffix:
-			return 100;
-		case AgxColumnTypes::State: 
-		case AgxColumnTypes::Action: 
-		case AgxColumnTypes::SyncSystem: 
-			return 150;
-		default: 
-			return 100;
-	}
-}
-
-AgxPropertyBlockWidget::AgxPropertyBlockWidget(TermRef ref, AgxPropertyBlockData& dataRef, QWidget* parent) : QWidget(parent), _grid(new QGridLayout()), _label(new QLabel(ref().translation)), _dataRef(&dataRef)
+AgxPropertyBlockWidget::AgxPropertyBlockWidget(TermRef ref, AgxPropertyBlockData& dataRef, uint8_t wrappedRowItemCount, QWidget* parent) : QWidget(parent), _vLayout(new QVBoxLayout()), _dataRef(&dataRef), _labelRef(ref), _wrappedRowItemCount(wrappedRowItemCount)
 {
 	setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::Fixed);
 
 	QVBoxLayout* mainLayout = new QVBoxLayout();
 
-	mainLayout->addWidget(_label,1, Qt::AlignCenter);
-	mainLayout->addLayout(_grid);
+	QLabel* blockLabel = new QLabel(_labelRef().translation);
+	QFont boldFont = blockLabel->font();
+	boldFont.setBold(true);
+	blockLabel->setFont(boldFont);
+
+	QFrame* hLine = new QFrame();
+	hLine->setFrameShape(QFrame::HLine);
+	hLine->setFrameShadow(QFrame::Sunken);
+	hLine->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
+
+	mainLayout->addWidget(blockLabel,1, Qt::AlignCenter);
+	mainLayout->addWidget(hLine, 1, Qt::AlignCenter);
+
+	mainLayout->addLayout(_vLayout);
 	mainLayout->setAlignment(Qt::AlignCenter);
 	mainLayout->setVerticalSizeConstraint(QLayout::SetFixedSize);
 	mainLayout->setHorizontalSizeConstraint(QLayout::SetMinimumSize);
-	_grid->setVerticalSizeConstraint(QLayout::SetFixedSize);
 	
 	QHBoxLayout* buttonLayout = new QHBoxLayout();
 	buttonLayout->setVerticalSizeConstraint(QLayout::SetFixedSize);
 
-	ModifiedPushButton* addButton = new ModifiedPushButton("Add Entry");
+	ModifiedPushButton* addButton = new ModifiedPushButton(tr("Add Entry"));
 
 	addButton->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Fixed);
-	
-	QSpacerItem* bSpacer = new QSpacerItem(10, 0, QSizePolicy::Fixed, QSizePolicy::Fixed);
 
-	buttonLayout->addItem(bSpacer);
 	buttonLayout->addWidget(addButton);
 
 	mainLayout->addLayout(buttonLayout);
-	//QSpacerItem* vSpacer = new QSpacerItem(0, 5, QSizePolicy::Fixed, QSizePolicy::Fixed);
-	//mainLayout->addItem(vSpacer);
 
 	connect(_dataRef, &AgxPropertyBlockData::RowAdded, this, &AgxPropertyBlockWidget::OnRowAdded);
 	connect(_dataRef, &AgxPropertyBlockData::RowRemoved, this, &AgxPropertyBlockWidget::OnRowRemoved);
 
-	connect(addButton, &ModifiedPushButton::CustomPressSignal, _dataRef, [this, ref]() {
-		//
+	connect(addButton, &ModifiedPushButton::CustomPressSignal, _dataRef, [this, ref]() 
+	{
 		if (auto iagx = dynamic_cast<IAgxEmbedSceneData*>(this->parent()))
 		{
 			iagx->SendAddRowToPropertyBlockDataCommand(ref().tag, _dataRef->GetRowCount());
-				}
-			});
+		}
+	});
 
-	connect(this, &AgxPropertyBlockWidget::LanguageChanged, _label, [this, ref]() { _label->setText(ref().translation); });
+	connect(this, &AgxPropertyBlockWidget::LanguageChanged, blockLabel, [this, ref, blockLabel, addButton]()
+	{ 
+		blockLabel->setText(ref().translation); 
+		addButton->setText(tr("Add Entry"));
+	});
 
 	setLayout(mainLayout);
 
-	//int width = _dataRef->GetColumnCount() > 3 ? 100 : 200;
+	QList<QWidget*> labels = {};
 	for (unsigned int i = 0; i < _dataRef->GetColumnCount(); i++)
 	{
 		QString labelStr = i >= dataRef.GetColumnCount() ? "-" : dataRef.GetColumnDefinition(i).Label();
 		
-		int width = GetColumnWidth(dataRef.GetColumnDefinition(i).columnType);
-
 		agxStringFilter_1(labelStr);
-
-		bool empty = labelStr.isEmpty();
-
 		agxStringFilter_2(labelStr);
 
 		QLabel* label = new QLabel(labelStr);
 
-		connect(this, &AgxPropertyBlockWidget::LanguageChanged, label, [dataRef, i, label]() {
-			label->setText(dataRef.GetColumnDefinition(i).Label());
-				});
-
-		if (labelStr.isEmpty())
+		connect(this, &AgxPropertyBlockWidget::LanguageChanged, label, [dataRef, i, label]()
 		{
-			label->setMinimumWidth(50);
-			label->setFixedWidth(50);
-		}
-		else
-			label->setMinimumWidth(width);
-		
-		//label->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::Fixed);
-		QSpacerItem* hSpacer = new QSpacerItem(10, 0, QSizePolicy::Fixed, QSizePolicy::Fixed);
-		
-		_grid->addItem(hSpacer, 0, i * 2);
-		_grid->addWidget(label, 0, i * 2 + 1, 1, 1, Qt::AlignLeft);
+			label->setText(dataRef.GetColumnDefinition(i).Label());
+		});
+
+		label->setFixedWidth(200);
+
+		QGraphicsOpacityEffect* effect = new QGraphicsOpacityEffect(label);
+		effect->setOpacity(1.0);
+		label->setGraphicsEffect(effect);
+
+		QPropertyAnimation* animation = new QPropertyAnimation(effect, "opacity");
+		animation->setDuration(1500);
+		animation->setStartValue(1.0);
+		animation->setEasingCurve(QEasingCurve::InOutCubic);
+		animation->setKeyValueAt(0.5, 0.0);
+		animation->setEndValue(1.0);
+		animation->setLoopCount(-1);
+
 		label->setAlignment(Qt::AlignLeft);
+
+		labels.append(label);
+		_columnHeaders.append(label);
+		_columnAnimation.append(animation);
 	}
+
+	AgxWrappedRowEntry* labelRow = new AgxWrappedRowEntry(labels,this, _wrappedRowItemCount);
+	_vLayout->addWidget(labelRow, Qt::AlignLeft);
 
 	for (unsigned int i = 0; i < _dataRef->GetRowCount(); i++)
 	{
@@ -145,7 +126,8 @@ void AgxPropertyBlockWidget::ForceRefresh()
 
 void AgxPropertyBlockWidget::SetUpCustomDropDown(AgxLineEditContainer* line, const QList<TermRef>& list, const QStringList& keyPath)
 {
-	connect(line, &AgxLineEditContainer::ContentDoubleClicked, line, [this, line, list, keyPath]() {
+	connect(line, &AgxLineEditContainer::ContentDoubleClicked, line, [this, line, list, keyPath]() 
+	{
 
 		QStringList stringList;
 		int current = 0;
@@ -155,7 +137,7 @@ void AgxPropertyBlockWidget::SetUpCustomDropDown(AgxLineEditContainer* line, con
 				current = list.indexOf(term);
 		}
 
-		if (auto result = AgxSimpleDialog::GetDropDown(this, "Select Entry", "", list, current, false)) {
+		if (auto result = AgxSimpleDialog::GetDropDown(this, tr("Select Entry"), "", list, current, false)) {
 			if (auto iagx = dynamic_cast<IAgxEmbedSceneData*>(this->parent()))
 			{
 				QJsonObject input;
@@ -164,21 +146,21 @@ void AgxPropertyBlockWidget::SetUpCustomDropDown(AgxLineEditContainer* line, con
 			}
 		}
 
-			});
+	});
 }
 
 void AgxPropertyBlockWidget::ConstructRow(int index)
 {
 	auto rowRef = _dataRef->GetRow(index);
-	//int width = _dataRef->GetColumnCount() > 3 ? 100 : 200;
+	
+	QList<QWidget*> rowEntry = {};
+
 	for (unsigned int j = 0; j < _dataRef->GetColumnCount(); j++)
 	{
-		QStringList keyPath = { "property-blocks",_label->text(),std::to_string(index).c_str(),std::to_string(j).c_str() };
+		QStringList keyPath = { "property-blocks",_labelRef().tag,std::to_string(index).c_str(),std::to_string(j).c_str() };
 
 		auto line = AgxWidgetUtil::CreateEntry(_dataRef->GetColumnType(j), keyPath, parent());
 		line->setCheckbox(false);
-
-		int width = GetColumnWidth(_dataRef->GetColumnDefinition(j).columnType);
 
 		line->setContentText(rowRef->at(j).Value);
 		line->RefreshContentTooltip("[" + GetSFBGSVarTypeFromColumnType(rowRef->at(j).Type).first + "]");
@@ -188,47 +170,58 @@ void AgxPropertyBlockWidget::ConstructRow(int index)
 			SetUpCustomDropDown(line, _dataRef->GetColumnDefinition(j).CustomDropDownList(), keyPath);
 		}
 
-
 		line->SetContentAlignment(Qt::AlignLeft);
+
+		rowEntry.append(line);
 		
-		QString labelStr = j >= _dataRef->GetColumnCount() ? "-" : _dataRef->GetColumnDefinition(j).Tag();
-
-		QRegularExpression regex("\\_.*\\_");
-		labelStr.replace(regex, "");
-
-		if (labelStr.isEmpty())
+		connect(_dataRef, &AgxPropertyBlockData::DataUpdated, line, [this, line, index, j]()
 		{
-			line->setContentMinWidth(50);
-			line->setContentFixedWidth(50);
-		}
-		else
-			line->setContentMinWidth(width);
-
-		//line->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::Fixed);
-		_grid->addWidget(line, index + 1, j * 2 + 1, Qt::AlignLeft);
-		connect(_dataRef, &AgxPropertyBlockData::DataUpdated, line, [this, line, index, j]() {
-
 			line->setContentText(_dataRef->GetRow(index)->at(j).Value);
 			line->RefreshContentTooltip("[" + GetSFBGSVarTypeFromColumnType(_dataRef->GetRow(index)->at(j).Type).first + "]");
+		});
+		
+		
+		if (auto colLabel = _columnHeaders.at(j))
+		{
+			if (auto animation = _columnAnimation.at(j))
+			{
+				connect(line, &AgxLineEditContainer::hovered, colLabel, [this, colLabel, animation]()
+				{
+					colLabel->graphicsEffect()->setEnabled(true);
+					animation->start();
+				});
+
+				connect(line, &AgxLineEditContainer::unhovered, colLabel, [this, colLabel, animation]()
+				{
+					animation->stop();
+					colLabel->graphicsEffect()->setEnabled(false);
 
 				});
+			}
+		}
+
+	}
+
+	if (!rowEntry.isEmpty())
+	{
+		bool toSep = rowEntry.count() > _wrappedRowItemCount;
+		AgxWrappedRowEntry* wrappedRow = new AgxWrappedRowEntry(rowEntry, this, _wrappedRowItemCount, toSep);
+		_vLayout->addWidget(wrappedRow, Qt::AlignLeft);
 	}
 }
 
 void AgxPropertyBlockWidget::ClearRows(int index)
 {
 	index++;
-	for (int i = index; i < _grid->rowCount(); i++)
+
+	for (int i = _vLayout->count() - 1; i >= index; i--)
 	{
-		for (int j = 0; j < _grid->columnCount(); j++)
+		if (auto item = _vLayout->itemAt(i))
 		{
-			if (auto item = _grid->itemAtPosition(i, j))
+			if (auto widget = item->widget())
 			{
-				if (auto widget = item->widget())
-				{
-					_grid->removeWidget(widget);
-					widget->deleteLater();
-				}
+				_vLayout->removeWidget(widget);
+				widget->deleteLater();
 			}
 		}
 	}
@@ -237,8 +230,6 @@ void AgxPropertyBlockWidget::ClearRows(int index)
 void AgxPropertyBlockWidget::showEvent(QShowEvent* event)
 {
 	QWidget::showEvent(event);
-
-	//QTimer::singleShot(0, this, &AgxPropertyBlockWidget::ForceRefresh);
 }
 
 void AgxPropertyBlockWidget::OnRowAdded(int index)
@@ -277,35 +268,31 @@ void AgxPropertyBlockWidget::ShowContextMenu(const QPoint& pos)
 {
 	int index = -1;
 	QPoint nPos = pos;
-	for (int y = 1; y < _grid->rowCount(); y++)
+	for (int y = 1; y < _vLayout->count(); y++)
 	{
-		auto rect = _grid->cellRect(y, 1);
-		nPos.setX(rect.x());
-		if (rect.contains(nPos))
+		if (_vLayout->itemAt(y) && _vLayout->itemAt(y)->geometry().contains(nPos))
 		{
 			index = y - 1;
 		}
 	}
 	if(index >= 0){
 		QMenu* cMenu = new QMenu();
-		QAction* removeAction = new QAction("Remove Entry");
+		QAction* removeAction = new QAction(tr("Remove Entry"));
 		cMenu->addAction(removeAction);
 		
-		QString title = _label->text();
-		connect(removeAction, &QAction::triggered, this, [this, title, index]() {
+		connect(removeAction, &QAction::triggered, this, [this, index]() 
+		{
 			if (auto iagx = dynamic_cast<IAgxEmbedSceneData*>(this->parent()))
 			{
-				iagx->SendRemoveRowFromPropertyBlockDataCommand(title, index);
+				iagx->SendRemoveRowFromPropertyBlockDataCommand(_labelRef().tag, index);
 			}
-				});
+		});
+
 		if (auto iagx = dynamic_cast<IAgxEmbedSceneData*>(this->parent()))
 		{
 			QPoint scaledPos = iagx->mapToAgxView(mapToParent(pos));
 
-			//if (scaledPos == mapToParent(pos)) 
-			{
-				scaledPos = mapToGlobal(pos);
-			}
+			scaledPos = mapToGlobal(pos);
 
 			cMenu->exec(scaledPos);
 		}
@@ -324,9 +311,8 @@ void ModifiedPushButton::mousePressEvent(QMouseEvent* event)
 	
 	if (!block)
 	{
-		//QPushButton::mousePressEvent(event);
 		QTimer::singleShot(0, this, &ModifiedPushButton::animateClick);
-		//animateClick();
+
 		Q_EMIT CustomPressSignal();
 		block = true;
 		QTimer::singleShot(500, this, &ModifiedPushButton::ResetBlock);

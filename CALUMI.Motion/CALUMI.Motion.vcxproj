@@ -229,6 +229,7 @@
     <ClCompile Include="Utilities\AgxFormat.cpp" />
     <ClCompile Include="Utilities\AgxNodeDelegateModelRegistry.cpp" />
     <ClCompile Include="Utilities\SettingsRegistry.cpp" />
+    <ClCompile Include="Widgets\AgxWrappedRowEntry\AgxWrappedRowEntry.cpp" />
     <ClCompile Include="Widgets\Blend\AgxBlendInputView.cpp" />
     <ClCompile Include="Widgets\ColorBox\AgxColorBox.cpp" />
     <ClCompile Include="Widgets\Dialog\AgxProgressDialog.cpp" />
@@ -373,6 +374,7 @@
     <ClInclude Include="version.h" />
     <QtMoc Include="Widgets\Dialog\AgxSimpleDialog.h" />
     <QtMoc Include="Widgets\ColorBox\AgxColorBox.h" />
+    <QtMoc Include="Widgets\AgxWrappedRowEntry\AgxWrappedRowEntry.h" />
     <ClInclude Include="Widgets\IAgxEmbedSceneData.h" />
     <QtMoc Include="Widgets\MultiVariableDialog.h" />
     <QtMoc Include="Widgets\FilteredDropDownDialog.h" />

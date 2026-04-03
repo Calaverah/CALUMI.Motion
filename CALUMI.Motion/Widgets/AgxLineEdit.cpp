@@ -365,3 +365,17 @@ void AgxLineEditContainer::SetEqDecoder(bool state)
 {
 	_eqDecoder = state;
 }
+
+void AgxLineEditContainer::enterEvent(QEnterEvent* event)
+{
+	QWidget::enterEvent(event);
+
+	Q_EMIT hovered();
+}
+
+void AgxLineEditContainer::leaveEvent(QEvent* event)
+{
+	QWidget::leaveEvent(event);
+
+	Q_EMIT unhovered();
+}

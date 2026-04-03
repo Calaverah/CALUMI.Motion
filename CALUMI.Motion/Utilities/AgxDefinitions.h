@@ -241,7 +241,7 @@ class AgxPropertyEntryDefinition  : public QObject
 public:
     QString value;
     AgxColumnTypes columnType = AgxColumnTypes::BasicString;
-
+    
     bool propertyEnabled = true;
     bool isPresent = true;
 

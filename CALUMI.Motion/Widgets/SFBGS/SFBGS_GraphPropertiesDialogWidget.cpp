@@ -165,8 +165,7 @@ SFBGS_GraphPropertiesDialogWidget::SFBGS_GraphPropertiesDialogWidget(AgxGraphics
 
 void SFBGS_GraphPropertiesDialogWidget::SetWidth(int width)
 {
-	//_scrollArea->setFixedWidth(width);
-	_scrollArea->setFixedWidth(800);
+	_scrollArea->setFixedWidth(width);
 }
 
 QDialogButtonBox* SFBGS_GraphPropertiesDialogWidget::GetButtonBox() const

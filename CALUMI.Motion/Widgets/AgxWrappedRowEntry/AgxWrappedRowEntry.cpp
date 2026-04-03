@@ -1,10 +1,19 @@
 #include "stdafx.h"
 #include "AgxWrappedRowEntry.h"
 
-AgxWrappedRowEntry::AgxWrappedRowEntry(QList<QWidget*> itemsToAdd, QWidget* parent, uint8_t indentSize, uint8_t maxItemPerRow, int maxWidthForWrapping) : QWidget(parent), _maxWidthForWrapping(maxWidthForWrapping), _vLayout(new QVBoxLayout())
+AgxWrappedRowEntry::AgxWrappedRowEntry(QList<QWidget*> itemsToAdd, QWidget* parent, uint8_t maxItemPerRow, bool addSeparator,int maxWidthForWrapping) : QWidget(parent), _maxWidthForWrapping(maxWidthForWrapping), _vLayout(new QVBoxLayout())
 {
 	setContentsMargins(0, 0, 0, 0);
 	_vLayout->setContentsMargins(0, 0, 0, 0);
+
+	if(addSeparator)
+	{
+		QFrame* hLine = new QFrame();
+		hLine->setFrameStyle(QFrame::HLine);
+		hLine->setLineWidth(1);
+		hLine->setDisabled(true);
+		_vLayout->addWidget(hLine);
+	}
 
 	_maxItemPerRow = qMax(uint8_t(1), maxItemPerRow);
 
@@ -16,8 +25,9 @@ AgxWrappedRowEntry::AgxWrappedRowEntry(QList<QWidget*> itemsToAdd, QWidget* pare
 		if (item)
 			_items.append(item);
 	}
-
+	
 	setLayout(_vLayout);
+	
 
 	QList<QWidget*> rowList = {};
 	int rowWidth = 0;
@@ -52,19 +62,13 @@ QWidget* AgxWrappedRowEntry::getItem(int column) const
 void AgxWrappedRowEntry::createRow(QList<QWidget*> rowItems)
 {
 	QHBoxLayout* hBox = new QHBoxLayout();
-
-	if (_wRows.count() != 0)
-	{
-		QSpacerItem* ind = new QSpacerItem(10, 0, QSizePolicy::Fixed, QSizePolicy::Fixed);
-		hBox->addSpacerItem(ind);
-		_indentations.append(ind);
-	}
-
+		
 	for (auto item : rowItems)
 	{
 		hBox->addWidget(item);
 	}
 
+	hBox->addSpacerItem(new QSpacerItem(0, 0, QSizePolicy::Expanding, QSizePolicy::Fixed));
 	_vLayout->addLayout(hBox);
 }
 

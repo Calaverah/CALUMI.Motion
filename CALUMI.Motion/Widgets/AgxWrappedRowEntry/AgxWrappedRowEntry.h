@@ -7,7 +7,7 @@ class AgxWrappedRowEntry  : public QWidget
 	Q_OBJECT
 
 public:
-	AgxWrappedRowEntry(QList<QWidget*> itemsToAdd, QWidget *parent = nullptr, uint8_t indentSize = 10, uint8_t maxItemPerRow = 8, int maxWidthForWrapping = -1);
+	AgxWrappedRowEntry(QList<QWidget*> itemsToAdd, QWidget *parent = nullptr, uint8_t maxItemPerRow = 8, bool addSeparator = false, int maxWidthForWrapping = -1);
 	~AgxWrappedRowEntry();
 
 public:
@@ -22,7 +22,6 @@ private:
 private:
 	int _maxWidthForWrapping = -1;
 	uint8_t _maxItemPerRow = 8;
-	uint8_t _indentSize = 10;
 
 	QVBoxLayout* _vLayout = nullptr;
 	QList<QPointer<QHBoxLayout>> _wRows = {};

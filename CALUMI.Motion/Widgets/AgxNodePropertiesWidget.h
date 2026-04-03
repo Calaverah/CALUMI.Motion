@@ -42,7 +42,7 @@ public:
 	ModifiedPushButton* CreateFlagEntry(TermRef title, AgxNode* signalSender, AgxFlagField* dataRef);
 	AgxLineEditContainer* CreateSimpleLineEdit(QString* defaultText, AgxPort* signalSender, TermRef label = nullptr, bool split = true, QStringList path = {});
 
-	AgxPropertyBlockWidget* CreatePropetryBlock(TermRef blockName, AgxPropertyBlockData& dataRef);
+	AgxPropertyBlockWidget* CreatePropetryBlock(TermRef blockName, AgxPropertyBlockData& dataRef, uint8_t wrappedRowItemCount = 3);
 
 	void CreateEmbeddedNodeGraphButton(std::shared_ptr<AgxGraphicsScene> scene, std::shared_ptr<AgxGraphModel> model);
 

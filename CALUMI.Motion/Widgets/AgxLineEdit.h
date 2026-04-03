@@ -101,8 +101,16 @@ signals:
 	void ContentEditingFinished(const QString& str);
 	void ContentValidatorUpdated();
 
+signals:
+	void hovered();
+	void unhovered();
+
 public:
 	void SetEqDecoder(bool state = true);
+
+protected:
+	void enterEvent(QEnterEvent* event) override;
+	void leaveEvent(QEvent* event) override;
 
 private:
 	AgxLineEdit* _lineEdit;

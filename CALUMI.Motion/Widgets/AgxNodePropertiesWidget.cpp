@@ -23,8 +23,12 @@ AgxNodePropertiesWidget::AgxNodePropertiesWidget(QWidget* parent, bool bblockSig
 	blockSignals(bblockSignals);
 
 	_MainVBoxLayout = new QVBoxLayout();
+	_MainVBoxLayout->setVerticalSizeConstraint(QLayout::SetFixedSize);
+	_MainVBoxLayout->setHorizontalSizeConstraint(QLayout::SetMinimumSize);
+	
 	_mainFormLayout = new QGridLayout();
 	_mainFormLayout->setColumnStretch(0, 1);
+
 	_readonlyLeftLayout = new QFormLayout();
 	_readonlyRightLayout = new QFormLayout();
 	_readonlyParentLayout = new QHBoxLayout();
@@ -91,6 +95,8 @@ QList<AgxLineEditContainer*> AgxNodePropertiesWidget::CreatePropertyEntries(QVec
 
 		QLabel* entryLabel = new QLabel(dataRefItem.Label());
 		entryLabel->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Preferred);
+		entryLabel->setWordWrap(true);
+		entryLabel->setFixedWidth(400);
 
 		auto output = AgxWidgetUtil::CreateEntry(dataRefItem.columnType, {key}, this);
 
@@ -106,12 +112,14 @@ QList<AgxLineEditContainer*> AgxNodePropertiesWidget::CreatePropertyEntries(QVec
 		_mainFormLayout->addWidget(entryLabel, row, 0);
 		_mainFormLayout->addWidget(output, row, 1);
 
+		output->setVisible(dataRefItem.propertyEnabled);
+		entryLabel->setVisible(dataRefItem.propertyEnabled);
+
 		connect(&dataRefItem, &AgxPropertyEntryDefinition::StateUpdated, output, [this, output, entryLabel](bool enabled)
 		{
 			output->setVisible(enabled);
 			entryLabel->setVisible(enabled);
-		});
-		
+		});		
 		
 		entryLabel->setEnabled(dataRefItem.isPresent);
 		output->setContentState(dataRefItem.isPresent);
@@ -171,10 +179,15 @@ QList<AgxLineEditContainer*> AgxNodePropertiesWidget::CreatePropertyEntries(QVec
 
 		QLabel* entryLabel = new QLabel(dataRefItem.Label());
 		entryLabel->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Preferred);
+		entryLabel->setWordWrap(true);
+		entryLabel->setFixedWidth(400);
 
 		auto row = _mainFormLayout->rowCount();
 		_mainFormLayout->addWidget(entryLabel, row, 0);
 		_mainFormLayout->addWidget(output, row, 1);
+
+		output->setVisible(dataRefItem.propertyEnabled);
+		entryLabel->setVisible(dataRefItem.propertyEnabled);
 
 		connect(&dataRefItem, &AgxPropertyEntryDefinition::StateUpdated, output, [this, output, entryLabel](bool enabled) 
 		{
@@ -212,10 +225,6 @@ QList<AgxLineEditContainer*> AgxNodePropertiesWidget::CreatePropertyEntries(QVec
 			output->setContentText(dataRef->at(i).value);
 			output->RefreshContentTooltip(dataRef->at(i).value);
 		});
-		
-		output->setContentMaxWidth(0xFFFF);
-		output->setContentMinWidth(450);
-		output->setSizePolicy(QSizePolicy::MinimumExpanding, output->sizePolicy().verticalPolicy());
 
 		outputList.append(output);
 	}
@@ -237,6 +246,8 @@ QList<AgxLineEditContainer*> AgxNodePropertiesWidget::CreatePropertyEntries(QVec
 		QString key = dataRefItem.Tag();
 		QLabel* entryLabel = new QLabel(dataRefItem.Label());
 		entryLabel->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Preferred);
+		entryLabel->setWordWrap(true);
+		entryLabel->setFixedWidth(400);
 		
 		path.back() = key;
 
@@ -252,6 +263,9 @@ QList<AgxLineEditContainer*> AgxNodePropertiesWidget::CreatePropertyEntries(QVec
 		auto row = _mainFormLayout->rowCount();
 		_mainFormLayout->addWidget(entryLabel, row, 0);
 		_mainFormLayout->addWidget(output, row, 1);
+
+		output->setVisible(dataRefItem.propertyEnabled);
+		entryLabel->setVisible(dataRefItem.propertyEnabled);
 
 		connect(&dataRefItem, &AgxPropertyEntryDefinition::StateUpdated, output, [this, output, entryLabel](bool enabled) 
 		{
@@ -551,9 +565,9 @@ AgxLineEditContainer* AgxNodePropertiesWidget::CreateSimpleLineEdit(QString* sou
 	return output;
 }
 
-AgxPropertyBlockWidget* AgxNodePropertiesWidget::CreatePropetryBlock(TermRef blockTitleRef, AgxPropertyBlockData& dataRef)
+AgxPropertyBlockWidget* AgxNodePropertiesWidget::CreatePropetryBlock(TermRef blockTitleRef, AgxPropertyBlockData& dataRef, uint8_t wrappedRowItemCount)
 {
-	AgxPropertyBlockWidget* block = new AgxPropertyBlockWidget(blockTitleRef, dataRef, this);
+	AgxPropertyBlockWidget* block = new AgxPropertyBlockWidget(blockTitleRef, dataRef, wrappedRowItemCount, this);
 	_MainVBoxLayout->addWidget(block,1, Qt::AlignHCenter);
 	_PropertyBlocks.insert(blockTitleRef, block);
 	_MainVBoxLayout->addStretch(1);

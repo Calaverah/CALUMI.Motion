@@ -43,15 +43,23 @@ void SFBGS_SidebarContent::AddMainItem(QWidget* item, unsigned int idx, int stre
 	{
 		Q_EMIT sfbgsWidget->SetRefData(*this);
 
-		connect(this, &SFBGS_SidebarContent::ReferenceInitialized, sfbgsWidget, [this, sfbgsWidget](const IAgxEmbedSceneData& source) { sfbgsWidget->SetRefData(source); });
+		connect(this, &SFBGS_SidebarContent::ReferenceInitialized, sfbgsWidget, [this, sfbgsWidget](const IAgxEmbedSceneData& source)
+		{ 
+			sfbgsWidget->SetRefData(source); 
+		});
 
-		connect(sfbgsWidget, &AgxNodePropertiesWidget::BroadcastWidth, this, [this]() {
+		connect(sfbgsWidget, &AgxNodePropertiesWidget::BroadcastWidth, this, [this]()
+		{
 			adjustSize();
 			Q_EMIT StateChanged();
-				});
+		});
 
 		adjustSize();
-		QTimer::singleShot(1, this, [this]() {Q_EMIT StateChanged(); });
+
+		QTimer::singleShot(1, this, [this]() 
+		{
+			Q_EMIT StateChanged(); 
+		});
 	}
 }
 
@@ -101,11 +109,11 @@ SFBGS_SidebarContentItem::SFBGS_SidebarContentItem(QWidget* parent) : QWidget(pa
 	titleLayout->addWidget(_titleBar,1,Qt::AlignLeft);
 
 	_togglePropertySheet = new QPushButton("Toggle Property Sheet");
-	_togglePropertySheet->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
+	_togglePropertySheet->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::MinimumExpanding);
 	titleLayout->addWidget(_togglePropertySheet, Qt::AlignRight);
 	//_togglePropertySheet->setVisible(_optionalPropertySheet);
 
-	setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::Fixed);
+	setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::MinimumExpanding);
 
 	_optionalPropertySheet = false;
 	_togglePropertySheet->setVisible(false);
@@ -130,12 +138,12 @@ void SFBGS_SidebarContentItem::SetupOptionalPropertySheet(bool setting, const bo
 	{
 		SetOptionalPropertySheetState(*source);
 
-		connect(_togglePropertySheet, &QPushButton::pressed, this, [this, list, source]() {
+		connect(_togglePropertySheet, &QPushButton::pressed, this, [this, list, source]() 
+		{
 			if (!_propertySheet) return;
 			QString ssetting = source && *source ? "False" : "True";
-			_propertySheet->SendInsertPropertySheetDataCommand(QStringListToQJsonObject(list,ssetting));
-			
-				});
+			_propertySheet->SendInsertPropertySheetDataCommand(QStringListToQJsonObject(list,ssetting));	
+		});
 	}
 }
 
@@ -156,9 +164,10 @@ AgxNodePropertiesWidget* SFBGS_SidebarContentItem::SetupPropertySheet()
 
 	if (auto iagx = dynamic_cast<IAgxEmbedSceneData*>(_propertySheet))
 	{
-		connect(this, &SFBGS_SidebarContentItem::SetUpChildDataRefs, _propertySheet, [this, iagx](const IAgxEmbedSceneData& source) {
+		connect(this, &SFBGS_SidebarContentItem::SetUpChildDataRefs, _propertySheet, [this, iagx](const IAgxEmbedSceneData& source)
+		{
 			iagx->SetRefData(source);
-				});
+		});
 	}
 
 	_propertySheet->FinalizeWidget();
@@ -171,8 +180,9 @@ void SFBGS_SidebarContentItem::InsertAdditionalWidget(QWidget* widget, int stret
 
 	if (auto iagx = dynamic_cast<IAgxEmbedSceneData*>(widget))
 	{
-		connect(this, &SFBGS_SidebarContentItem::SetUpChildDataRefs, widget, [this, iagx](const IAgxEmbedSceneData& source) {
+		connect(this, &SFBGS_SidebarContentItem::SetUpChildDataRefs, widget, [this, iagx](const IAgxEmbedSceneData& source) 
+		{
 					iagx->SetRefData(source);
-				});
+		});
 	}
 }

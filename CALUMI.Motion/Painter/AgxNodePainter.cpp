@@ -19,10 +19,6 @@
 
 void AgxNodePainter::paint(QPainter* painter, AgxNodeGraphicsObject& ngo)
 {
-    // TODO?
-    //AbstractNodeGeometry & geometry = ngo.nodeScene()->nodeGeometry();
-    //geometry.recomputeSizeIfFontChanged(painter->font());
-
     _nodeId = ngo.nodeId();
 
     if(!_model)

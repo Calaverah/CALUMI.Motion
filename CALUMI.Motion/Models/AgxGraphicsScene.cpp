@@ -187,7 +187,6 @@ void AgxGraphicsScene::onConnectionDeleted(AgxConnectionId const connectionId)
         _agxConnectionGraphicsObjects.erase(it);
     }
 
-    // TODO: do we need it?
     if (_agxDraftConnection && _agxDraftConnection->connectionId() == connectionId) {
         _agxDraftConnection.reset();
     }

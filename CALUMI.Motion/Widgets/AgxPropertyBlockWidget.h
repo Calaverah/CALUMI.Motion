@@ -3,6 +3,8 @@
 //Contact: Calaverahmedia@gmail.com
 
 #pragma once
+#include <qgridlayout.h>
+#include <qlabel.h>
 
 #pragma warning(push,0)
 #include <QWidget>
@@ -40,7 +42,7 @@ class AgxPropertyBlockWidget : public QWidget
 {
 	Q_OBJECT
 public:
-	AgxPropertyBlockWidget(TermRef ref, AgxPropertyBlockData& dataRef, QWidget* parent = nullptr);
+	AgxPropertyBlockWidget(TermRef ref, AgxPropertyBlockData& dataRef, uint8_t wrappedRowItemCount = 3, QWidget* parent = nullptr);
 
 public Q_SLOTS:
 	void OnRowAdded(int index);
@@ -67,9 +69,12 @@ protected:
 private:
 	AgxPropertyBlockData* _dataRef;
 
-	QGridLayout* _grid;
-	QLabel* _label;
+	QVBoxLayout* _vLayout;
+	TermRef _labelRef;
 
 	QAction _addRowAction;
+	QList<QLabel*> _columnHeaders = {};
+	QList<QPropertyAnimation*> _columnAnimation = {};
+	uint8_t _wrappedRowItemCount = 3;
 };
 
