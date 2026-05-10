@@ -1,0 +1,21 @@
+target_sources(${PROJECT_NAME}
+  PRIVATE
+  AgxNodeConnectionInteraction.h
+  AgxNodeGraphicsObject.cpp
+  AgxNodeGraphicsObject.h
+  AgxNodeState.cpp
+  AgxNodeState.h
+  AgxPort.cpp
+  AgxPort.h
+  AgxConnectionGraphicsObject.cpp
+  AgxConnectionGraphicsObject.h
+  AgxConnectionState.cpp
+  AgxConnectionState.h
+  AgxGraphicsScene.cpp
+  AgxGraphicsScene.h
+  AgxGraphModel.cpp
+  AgxGraphModel.h
+  AgxNodeConnectionInteraction.cpp
+  Blend/AgxBlendInputModel.cpp
+  Blend/AgxBlendInputModel.h
+)

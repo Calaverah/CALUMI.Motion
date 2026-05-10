@@ -1,0 +1,31 @@
+target_sources(${PROJECT_NAME}
+  PRIVATE
+  AgxGraphRegistry.h
+  AgxJsonHelper.cpp
+  AgxJsonHelper.h
+  AgxNodeDelegateModelRegistry.cpp
+  AgxNodeDelegateModelRegistry.h
+  AgxNodeRegistry.cpp
+  AgxNodeRegistry.h
+  DialogPool.cpp
+  DialogPool.h
+  guidUtil.cpp
+  guidUtil.h
+  locateNode.cpp
+  locateNode.h
+  PropertySheetEntryUtil.cpp
+  PropertySheetEntryUtil.h
+  SettingsRegistry.cpp
+  SettingsRegistry.h
+  UndoRedoCommands.cpp
+  UndoRedoCommands.h
+  AgxConnectionIdUtils.h
+  AgxDefinitions.cpp
+  AgxDefinitions.h
+  AgxDictionary.h
+  AgxFormat.cpp
+  AgxFormat.h
+  AgxGraphRegistry.cpp
+  Hash/AgxConnectionIdHash.h
+  Hash/QUuidStdHash.h
+)
