@@ -5,7 +5,7 @@
 #pragma once
 
 #include <QWidget>
-#include <QPLainTextEdit>
+#include <QPlainTextEdit>
 
 class AgxLogger  : public QWidget
 {

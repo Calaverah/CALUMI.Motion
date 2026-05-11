@@ -4,7 +4,7 @@
 #include "Widgets/AgxNodePropertiesWidget.h"
 #include "Models/AgxGraphicsScene.h"
 #include "Widgets/IAgxEmbedSceneData.h"
-#include <QScrollarea>
+#include <QScrollArea>
 #pragma warning(pop)
 #include "Interfaces/IButtonBox.h"
 

@@ -226,3 +226,5 @@ ipch/
 *.ini
 *.blend*
 .vs/
+editor.xml
+QtSettings.xml
