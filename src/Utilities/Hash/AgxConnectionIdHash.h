@@ -2,7 +2,7 @@
 
 #include <functional>
 
-#include "..\AgxDefinitions.h"
+#include "../AgxDefinitions.h"
 
 inline void hash_combine(size_t& seed)
 {

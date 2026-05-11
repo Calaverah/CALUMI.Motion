@@ -4,7 +4,6 @@
 
 #include "stdafx.h"
 #include "StringEntryPopup.h"
-#include <windows.h>
 
 StringEntryPopup::StringEntryPopup(QWidget *parent)
 	: QDialog(parent), validator(QRegularExpression("[A-Za-z0-9_]{5,64}"))

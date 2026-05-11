@@ -6,7 +6,7 @@
 #pragma warning(push,0)
 #include <QObject>
 #pragma warning(pop)
-#include "..\AgxNode.h"
+#include "../AgxNode.h"
 
 namespace SFBGS {
 	class AgxNtDynamicGraphReference : public SFBGSNode

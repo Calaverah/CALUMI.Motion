@@ -1,13 +1,10 @@
 #include "stdafx.h"
 #include "DialogPool.h"
-#include <QApplication>
 #include <memory>
 #include <QObject>
 #include "Utilities/AgxDefinitions.h"
 #include "Widgets/FilteredDropDownDialog.h"
 #include <QMap>
-#include <windows.h>
-
 
 AgxEventFilterProxyModel::AgxEventFilterProxyModel(QObject* parent) : QSortFilterProxyModel(parent)
 {
@@ -182,83 +179,83 @@ DialogPool_SFBGS::~DialogPool_SFBGS()
 {
 	//deletion will be handled for us either by QT or windows releasing memory
 
-	OutputDebugStringA("SFBGS Dialog Pool Destroyed\n");
+	qDebug() << "SFBGS Dialog Pool Destroyed\n";
 	if (_EventEntryDialog)
 	{
-		OutputDebugStringA("_EventEntryDialog Attempt\n");
+		qDebug() << "_EventEntryDialog Attempt\n";
 		//delete _EventEntryDialog;
 		_EventEntryDialog = nullptr;
-		OutputDebugStringA("_EventEntryDialog Destroyed\n");
+		qDebug() << "_EventEntryDialog Destroyed\n";
 	}
 	if (_FloatEntryDialog)
 	{
-		OutputDebugStringA("_FloatEntryDialog Attempt\n");
+		qDebug() << "_FloatEntryDialog Attempt\n";
 		//delete _FloatEntryDialog;
 		_FloatEntryDialog = nullptr;
-		OutputDebugStringA("_FloatEntryDialog Destroyed\n");
+		qDebug() << "_FloatEntryDialog Destroyed\n";
 	}
 	if (_IntegerEntryDialog)
 	{
-		OutputDebugStringA("_IntegerEntryDialog Attempt\n");
+		qDebug() << "_IntegerEntryDialog Attempt\n";
 		//delete _IntegerEntryDialog;
 		_IntegerEntryDialog = nullptr;
-		OutputDebugStringA("_IntegerEntryDialog Destroyed\n");
+		qDebug() << "_IntegerEntryDialog Destroyed\n";
 	}
 	if (_BooleanEntryDialog)
 	{
-		OutputDebugStringA("_BooleanEntryDialog Attempt\n");
+		qDebug() << "_BooleanEntryDialog Attempt\n";
 		//delete _BooleanEntryDialog;
 		_BooleanEntryDialog = nullptr;
-		OutputDebugStringA("_BooleanEntryDialog Destroyed\n");
+		qDebug() << "_BooleanEntryDialog Destroyed\n";
 	}
 	if (_VectorEntryDialog)
 	{
-		OutputDebugStringA("_VectorEntryDialog Attempt\n");
+		qDebug() << "_VectorEntryDialog Attempt\n";
 		//delete _VectorEntryDialog;
 		_VectorEntryDialog = nullptr;
-		OutputDebugStringA("_VectorEntryDialog Destroyed\n");
+		qDebug() << "_VectorEntryDialog Destroyed\n";
 	}
 	if (_PrefixDialog)
 	{
-		OutputDebugStringA("_PrefixDialog Attempt\n");
+		qDebug() << "_PrefixDialog Attempt\n";
 		//delete _PrefixDialog;
 		_PrefixDialog = nullptr;
-		OutputDebugStringA("_PrefixDialog Destroyed\n");
+		qDebug() << "_PrefixDialog Destroyed\n";
 	}
 	if (_SuffixDialog)
 	{
-		OutputDebugStringA("_SuffixDialog Attempt\n");
+		qDebug() << "_SuffixDialog Attempt\n";
 		//delete _SuffixDialog;
 		_SuffixDialog = nullptr;
-		OutputDebugStringA("_SuffixDialog Destroyed\n");
+		qDebug() << "_SuffixDialog Destroyed\n";
 	}
 	if (_ActionVarDialog)
 	{
-		OutputDebugStringA("_ActionVarDialog Attempt\n");
+		qDebug() << "_ActionVarDialog Attempt\n";
 		//delete _ActionVarDialog;
 		_ActionVarDialog = nullptr;
-		OutputDebugStringA("_ActionVarDialog Destroyed\n");
+		qDebug() << "_ActionVarDialog Destroyed\n";
 	}
 	if (_StateVarDialog)
 	{
-		OutputDebugStringA("_StateVarDialog Attempt\n");
+		qDebug() << "_StateVarDialog Attempt\n";
 		//delete _StateVarDialog;
 		_StateVarDialog = nullptr;
-		OutputDebugStringA("_StateVarDialog Destroyed\n");
+		qDebug() << "_StateVarDialog Destroyed\n";
 	}
 	if (_SyncDialog)
 	{
-		OutputDebugStringA("_SyncDialog Attempt\n");
+		qDebug() << "_SyncDialog Attempt\n";
 		//delete _SyncDialog;
 		_SyncDialog = nullptr;
-		OutputDebugStringA("_SyncDialog Destroyed\n");
+		qDebug() << "_SyncDialog Destroyed\n";
 	}
 	if (_AnimationFlagsDialog)
 	{
-		OutputDebugStringA("_AnimationFlagsDialog Attempt\n");
+		qDebug() << "_AnimationFlagsDialog Attempt\n";
 		//delete _AnimationFlagsDialog;
 		_AnimationFlagsDialog = nullptr;
-		OutputDebugStringA("_AnimationFlagsDialog Destroyed\n");
+		qDebug() << "_AnimationFlagsDialog Destroyed\n";
 	}
 }
 

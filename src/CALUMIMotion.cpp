@@ -4,10 +4,8 @@
 
 #include "stdafx.h"
 #include "CALUMIMotion.h"
-#include <windows.h>
 #include "Widgets/AgxGraphicsView.h"
 #include "Widgets/NodeGroupMenuPopup.h"
-#include <format>
 #include <string>
 #include <Utilities/AgxDefinitions.h>
 #include "Utilities/DialogPool.h"

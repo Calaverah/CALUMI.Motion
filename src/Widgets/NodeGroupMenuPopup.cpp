@@ -6,7 +6,6 @@
 #include "NodeGroupMenuPopup.h"
 #include "StringEntryPopup.h"
 #include "Utilities/UndoRedoCommands.h"
-#include <windows.h>
 
 void NodeGroupMenuPopup::BuildTreeView()
 {

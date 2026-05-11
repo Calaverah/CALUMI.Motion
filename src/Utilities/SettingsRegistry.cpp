@@ -156,7 +156,7 @@ QString SettingsRegistry::GetSavedVersion()
 	if (_dataStorage->contains("LastVersion"))
 		return _dataStorage->value("LastVersion").toString();
 
-	return QString();
+	return {};
 }
 
 QString SettingsRegistry::IniPath() const
@@ -223,6 +223,8 @@ void SettingsRegistry::SetLastDirectory(const QString& dir, AgxGameType type)
 		case AgxGameType::SFBGS:
 			_sfbgsDirectory = path;
 			break;
+		default:
+			break;
 	}
 
 	_lastDirectory = path;
@@ -237,6 +239,8 @@ QString SettingsRegistry::GetRelativeDataPath(AgxGameType type)
 	{
 		case AgxGameType::SFBGS: {	
 			path = _settings->contains("SFBGS/GraphRelativePath") ? _settings->value("SFBGS/GraphRelativePath").toString() : _defaultRelDataPath_SFBGS;
+			break;
+		default:
 			break;
 		}
 	}
@@ -253,6 +257,8 @@ void SettingsRegistry::SaveRelativeDataPath(AgxGameType type, const QString& pat
 		case AgxGameType::SFBGS:
 			if(pathToSave.compare(R"(Data\Meshes\AnimTextData\Tables\Graphs\)") != 0)
 				_settings->setValue("SFBGS/GraphRelativePath", pathToSave);
+			break;
+		default:
 			break;
 	}
 }
@@ -311,6 +317,8 @@ QSet<QString> SettingsRegistry::GetCustomCategories(AgxGameType game, bool withD
 	{
 		case AgxGameType::SFBGS:
 			customList.unite(_categories_SFBGS);
+			break;
+		default:
 			break;
 	}
 
@@ -409,7 +417,7 @@ QString LanguageCodeToString(LanguageCode code)
 
 LanguageCode LanguageCodeFromString(const QString& code)
 {
-	auto index = LanguageStrings.indexOf(code, 0i64, Qt::CaseInsensitive);
+	auto index = LanguageStrings.indexOf(code, 0LL, Qt::CaseInsensitive);
 
 	//if we don't find the string in the language string list we compare to some backups
 	if (index < 0) {
@@ -420,7 +428,7 @@ LanguageCode LanguageCodeFromString(const QString& code)
 			return LanguageCode::French;
 		if (code.compare("German", Qt::CaseInsensitive) == 0 || code.compare("DE", Qt::CaseInsensitive) == 0 || code.compare("GER", Qt::CaseInsensitive) == 0 || code.compare("DEU", Qt::CaseInsensitive) == 0)
 			return LanguageCode::German;
-		if (code.compare("Ukranian", Qt::CaseInsensitive) == 0 || code.compare("UK", Qt::CaseInsensitive) == 0 || code.compare("UKR", Qt::CaseInsensitive) == 0)
+		if (code.compare("Ukrainian", Qt::CaseInsensitive) == 0 || code.compare("UK", Qt::CaseInsensitive) == 0 || code.compare("UKR", Qt::CaseInsensitive) == 0)
 			return LanguageCode::Ukranian;
 		if (code.compare("Russian", Qt::CaseInsensitive) == 0 || code.compare("RU", Qt::CaseInsensitive) == 0 || code.compare("RUS", Qt::CaseInsensitive) == 0)
 			return LanguageCode::Russian;
