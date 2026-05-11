@@ -8,16 +8,16 @@
 namespace SFBGS {
     AgxNtRotationVariable::AgxNtRotationVariable(AgxGraphModel* rootGraphRef) :SFBGSNode(rootGraphRef)
     {
-        _nameProperty = QStringLiteral("Rotation Variable");
+        m_nameProperty = QStringLiteral("Rotation Variable");
 
-        _PropertyEntries.push_back(AgxPropertyEntryDefinition(&AgxDictionary::Name, "Rotation Variable", AgxColumnTypes::BasicString));
-        _PropertyEntries.push_back(AgxPropertyEntryDefinition(&AgxDictionary::ControlVariable, "", AgxColumnTypes::CustomFloat));
-        _PropertyEntries.push_back(AgxPropertyEntryDefinition(&AgxDictionary::DesiredValue, "", AgxColumnTypes::CustomFloat));
-        _PropertyEntries.push_back(AgxPropertyEntryDefinition(&AgxDictionary::Speed, "CurrentSpeed", AgxColumnTypes::CustomFloat));
-        _PropertyEntries.push_back(AgxPropertyEntryDefinition(&AgxDictionary::RotationType, _RotationList.at(0)().tag, AgxColumnTypes::CustomDropDown, _RotationList));
-        _PropertyEntries.push_back(AgxPropertyEntryDefinition(&AgxDictionary::UseRadians, "False", AgxColumnTypes::BasicBool));
+        m_propertyEntries.push_back(AgxPropertyEntryDefinition(&AgxDictionary::Name, "Rotation Variable", AgxColumnTypes::BasicString));
+        m_propertyEntries.push_back(AgxPropertyEntryDefinition(&AgxDictionary::ControlVariable, "", AgxColumnTypes::CustomFloat));
+        m_propertyEntries.push_back(AgxPropertyEntryDefinition(&AgxDictionary::DesiredValue, "", AgxColumnTypes::CustomFloat));
+        m_propertyEntries.push_back(AgxPropertyEntryDefinition(&AgxDictionary::Speed, "CurrentSpeed", AgxColumnTypes::CustomFloat));
+        m_propertyEntries.push_back(AgxPropertyEntryDefinition(&AgxDictionary::RotationType, _RotationList.at(0)().tag, AgxColumnTypes::CustomDropDown, _RotationList));
+        m_propertyEntries.push_back(AgxPropertyEntryDefinition(&AgxDictionary::UseRadians, "False", AgxColumnTypes::BasicBool));
 
-        _BlockOrder = { &AgxDictionary::EnterEvents, &AgxDictionary::ExitEvents };
+        m_blockOrder = { &AgxDictionary::EnterEvents, &AgxDictionary::ExitEvents };
     }
 
     QString AgxNtRotationVariable::name() const
@@ -49,7 +49,7 @@ namespace SFBGS {
         if (auto sfbgsPort = dynamic_cast<AgxPort_SFBGS*>(port.get()))
         {
             if (portType == AgxPortType::In) {
-                sfbgsPort->SetName(std::format("input{}",_In_Ports.size()).c_str());
+                sfbgsPort->setName(std::format("input{}",m_inPorts.size()).c_str());
             }
         }
 

@@ -8,11 +8,11 @@
 namespace SFBGS {
     AgxNtPostBoneModifierControl::AgxNtPostBoneModifierControl(AgxGraphModel* rootGraphRef) :SFBGSNode(rootGraphRef)
     {
-        _nameProperty = QStringLiteral("Post Bone Modifier Control");
+        m_nameProperty = QStringLiteral("Post Bone Modifier Control");
 
-        _PropertyEntries.push_back(AgxPropertyEntryDefinition(&AgxDictionary::Name, "Bone Modifier Control", AgxColumnTypes::BasicString));
+        m_propertyEntries.push_back(AgxPropertyEntryDefinition(&AgxDictionary::Name, "Bone Modifier Control", AgxColumnTypes::BasicString));
 
-        _BlockOrder = { &AgxDictionary::EnterEvents, &AgxDictionary::ExitEvents };
+        m_blockOrder = { &AgxDictionary::EnterEvents, &AgxDictionary::ExitEvents };
     }
 
     QString AgxNtPostBoneModifierControl::name() const
@@ -44,10 +44,10 @@ namespace SFBGS {
         if (auto sfbgsPort = dynamic_cast<AgxPort_SFBGS*>(port.get()))
         {
             if (portType == AgxPortType::In) {
-                if(_In_Ports.size() == 1)
-                    sfbgsPort->SetName("Pose Input");
-                if(_In_Ports.size() == 2)
-                    sfbgsPort->SetName("Pose Output");
+                if(m_inPorts.size() == 1)
+                    sfbgsPort->setName("Pose Input");
+                if(m_inPorts.size() == 2)
+                    sfbgsPort->setName("Pose Output");
             }
         }
 

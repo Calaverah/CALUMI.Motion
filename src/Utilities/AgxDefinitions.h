@@ -198,8 +198,7 @@ public:
     void ToXML(pugi::xml_node& parent) override;
     void FromXML(pugi::xml_node& node) override;
 
-public:
-    inline bool IsEnabledState() const override { return _propertyEnabled; }
+inline bool IsEnabledState() const override { return _propertyEnabled; }
     inline void SetEnabledState(bool state) override {
         _propertyEnabled = state;
         Q_EMIT StateUpdated(_propertyEnabled);

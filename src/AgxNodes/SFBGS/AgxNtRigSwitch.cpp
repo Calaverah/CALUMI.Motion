@@ -12,17 +12,17 @@
 namespace SFBGS {
     AgxNtRigSwitch::AgxNtRigSwitch(AgxGraphModel* rootGraphRef) :SFBGSNode(rootGraphRef)
     {
-        _nameProperty = QStringLiteral("Rig Switch");
+        m_nameProperty = QStringLiteral("Rig Switch");
 
-        _PropertyEntries.push_back(AgxPropertyEntryDefinition(&AgxDictionary::Name, "Rig Switch", AgxColumnTypes::BasicString));
+        m_propertyEntries.push_back(AgxPropertyEntryDefinition(&AgxDictionary::Name, "Rig Switch", AgxColumnTypes::BasicString));
 
         AgxPropertyBlockData entryBlock({
             AgxPropertyEntryDefinition(&AgxDictionary::RigName,"",AgxColumnTypes::BasicString)
                                           }, nullptr);
 
-        _PropertyBlocks.insert(&AgxDictionary::Entries, entryBlock);
+        m_PropertyBlocks.insert(&AgxDictionary::Entries, entryBlock);
 
-        _BlockOrder = { &AgxDictionary::Entries, &AgxDictionary::EnterEvents, &AgxDictionary::ExitEvents};
+        m_blockOrder = { &AgxDictionary::Entries, &AgxDictionary::EnterEvents, &AgxDictionary::ExitEvents};
     }
 
     std::shared_ptr<AgxPort> AgxNtRigSwitch::_AddPort(AgxPortType portType, AgxPortIndex index, QJsonObject data)
@@ -34,10 +34,10 @@ namespace SFBGS {
             switch (portType)
             {
                 case AgxPortType::In:
-                    sfbgsPort->SetName("");
+                    sfbgsPort->setName("");
                     break;
             }
-            Q_EMIT sfbgsPort->PropertySheetUpdated();
+            Q_EMIT sfbgsPort->propertySheetUpdated();
         }
 
         return port;

@@ -11,13 +11,13 @@
 #include <string>
 #include <Utilities/AgxDefinitions.h>
 #include "Utilities/DialogPool.h"
-#include "Widgets/MultiVariableDialog.h"
 #include "Widgets/CALUMITabModule.h"
 #include "Widgets/SFBGS/SFBGS_GraphPropertiesDialogWidget.h"
 
 #include <Widgets/Dialog/AgxProgressDialog.h>
 #include <Utilities/SettingsRegistry.h>
 #include "Application/CALUMIMotionApplication.h"
+#include "Utilities/AgxFormat.h"
 #include "Widgets/Settings/SettingsDialog.h"
 #include "Utilities/UndoRedoCommands.h"
 
@@ -90,7 +90,7 @@ void CALUMIMotion::closeEvent(QCloseEvent* event)
 
         auto& settingIns = SettingsRegistry::GetInstance();
         
-        settingIns.SaveLastState("Log/State", calumiApp->LoggerVisibile());
+        settingIns.SaveLastState("Log/State", calumiApp->LoggerVisible());
 
         if(topLevelCount <= 1)
         {

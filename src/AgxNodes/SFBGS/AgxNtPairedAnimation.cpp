@@ -8,21 +8,21 @@
 namespace SFBGS {
     AgxNtPairedAnimation::AgxNtPairedAnimation(AgxGraphModel* rootGraphRef) :SFBGSNode(rootGraphRef)
     {
-        _nameProperty = QStringLiteral("Paired Animation");
+        m_nameProperty = QStringLiteral("Paired Animation");
 
-        _PropertyEntries.push_back(AgxPropertyEntryDefinition(&AgxDictionary::Name, "Paired Animation", AgxColumnTypes::BasicString));
-        _PropertyEntries.push_back(AgxPropertyEntryDefinition(&AgxDictionary::LeadSuffix, "Killer", AgxColumnTypes::BasicString));
-        _PropertyEntries.push_back(AgxPropertyEntryDefinition(&AgxDictionary::VictimSuffix, "Victim", AgxColumnTypes::BasicString));
-        _PropertyEntries.push_back(AgxPropertyEntryDefinition(&AgxDictionary::SyncOnlyTransitionOut, "False", AgxColumnTypes::BasicBool));
+        m_propertyEntries.push_back(AgxPropertyEntryDefinition(&AgxDictionary::Name, "Paired Animation", AgxColumnTypes::BasicString));
+        m_propertyEntries.push_back(AgxPropertyEntryDefinition(&AgxDictionary::LeadSuffix, "Killer", AgxColumnTypes::BasicString));
+        m_propertyEntries.push_back(AgxPropertyEntryDefinition(&AgxDictionary::VictimSuffix, "Victim", AgxColumnTypes::BasicString));
+        m_propertyEntries.push_back(AgxPropertyEntryDefinition(&AgxDictionary::SyncOnlyTransitionOut, "False", AgxColumnTypes::BasicBool));
 
         AgxPropertyBlockData entryBlock({
             AgxPropertyEntryDefinition(&AgxDictionary::BlankEntry,"",AgxColumnTypes::BasicString),
             AgxPropertyEntryDefinition(&AgxDictionary::PairedAnimNameRoot,"",AgxColumnTypes::BasicString)
                                         }, nullptr);
 
-        _PropertyBlocks.insert(&AgxDictionary::Entries, entryBlock);
+        m_PropertyBlocks.insert(&AgxDictionary::Entries, entryBlock);
 
-        _BlockOrder = { &AgxDictionary::Entries, &AgxDictionary::EnterEvents, &AgxDictionary::ExitEvents };
+        m_blockOrder = { &AgxDictionary::Entries, &AgxDictionary::EnterEvents, &AgxDictionary::ExitEvents };
     }
 
     QString AgxNtPairedAnimation::name() const
@@ -52,8 +52,8 @@ namespace SFBGS {
         if (auto sfbgsPort = dynamic_cast<AgxPort_SFBGS*>(port.get()))
         {
             if (portType == AgxPortType::In) {
-                sfbgsPort->SetPropertySheetOptional(true);
-                sfbgsPort->SetName("");
+                sfbgsPort->setPropertySheetOptional(true);
+                sfbgsPort->setName("");
             }
         }
 

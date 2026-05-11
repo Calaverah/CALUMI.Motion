@@ -8,12 +8,12 @@
 namespace SFBGS {
     AgxNtTagPropagation::AgxNtTagPropagation(AgxGraphModel* rootGraphRef) :SFBGSNode(rootGraphRef)
     {
-        _nameProperty = QStringLiteral("Tag Propagation Node");
-        _PropertyEntries.push_back(AgxPropertyEntryDefinition(&AgxDictionary::Name, "Tag Propagation", AgxColumnTypes::BasicString));
-        _PropertyEntries.push_back(AgxPropertyEntryDefinition(&AgxDictionary::TagSyncSystem, "", AgxColumnTypes::BasicString));
-        _PropertyEntries.push_back(AgxPropertyEntryDefinition(&AgxDictionary::TypeofPropagation, _PropList.at(1)().tag, AgxColumnTypes::CustomDropDown, _PropList));
+        m_nameProperty = QStringLiteral("Tag Propagation Node");
+        m_propertyEntries.push_back(AgxPropertyEntryDefinition(&AgxDictionary::Name, "Tag Propagation", AgxColumnTypes::BasicString));
+        m_propertyEntries.push_back(AgxPropertyEntryDefinition(&AgxDictionary::TagSyncSystem, "", AgxColumnTypes::BasicString));
+        m_propertyEntries.push_back(AgxPropertyEntryDefinition(&AgxDictionary::TypeofPropagation, _PropList.at(1)().tag, AgxColumnTypes::CustomDropDown, _PropList));
 
-        _BlockOrder = { &AgxDictionary::EnterEvents, &AgxDictionary::ExitEvents };
+        m_blockOrder = { &AgxDictionary::EnterEvents, &AgxDictionary::ExitEvents };
     }
 
     QString AgxNtTagPropagation::name() const
@@ -43,7 +43,7 @@ namespace SFBGS {
         if (auto sfbgsPort = dynamic_cast<AgxPort_SFBGS*>(port.get()))
         {
             if (portType == AgxPortType::In) {
-                sfbgsPort->SetName("Passthrough");
+                sfbgsPort->setName("Passthrough");
             }
         }
 

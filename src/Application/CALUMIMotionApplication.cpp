@@ -4,7 +4,6 @@
 
 #include "stdafx.h"
 #include "CALUMIMotionApplication.h"
-#include <Utilities/SettingsRegistry.h>
 #include "version.h"
 #include <CALUMIMotion.h>
 
@@ -17,18 +16,18 @@ CALUMIMotionApplication::CALUMIMotionApplication(int& argc, char** argv) : QAppl
 	if (!g_log)
 		g_log = new AgxLogger();
 
-	ogHandler = qInstallMessageHandler(customMessageHandler);
+	g_ogHandler = qInstallMessageHandler(customMessageHandler);
 
 	qInfo() << "Application: " << organizationName().toStdString().c_str() << applicationName().toStdString().c_str();
 	qInfo() << "Application Version: " << applicationVersion().toStdString().c_str();
 
-#ifdef DEBUGBUILD
+#ifdef DEBUG_BUILD
 	qDebug() << "Debug message";
 	qInfo() << "Info message";
 	qWarning() << "Warning message";
 	qCritical() << "Critical message";
 	//qFatal() << "Fatal message";
-#endif // DEBUGBUILD
+#endif // DEBUG_BUILD
 
 }
 
@@ -49,7 +48,7 @@ void CALUMIMotionApplication::ShowLogger()
 	g_log->setVisible(true);
 }
 
-bool CALUMIMotionApplication::LoggerVisibile() const
+bool CALUMIMotionApplication::LoggerVisible()
 {
 	if (g_log)
 		return g_log->isVisible();
@@ -59,9 +58,9 @@ bool CALUMIMotionApplication::LoggerVisibile() const
 
 void CALUMIMotionApplication::UpdateApplicationTabWidgets()
 {
-	for (auto window : topLevelWidgets())
+	for (const auto window : topLevelWidgets())
 	{
-		if (auto cWidget = dynamic_cast<CALUMIMotion*>(window))
+		if (const auto cWidget = dynamic_cast<CALUMIMotion*>(window))
 		{
 			cWidget->UpdateTabTitles();
 		}

@@ -7,7 +7,6 @@
 
 class guidUtil
 {
-private: 
 	guidUtil()
 	{
 

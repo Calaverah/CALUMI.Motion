@@ -16,7 +16,6 @@ using TermRef = AgxTerm(*)();
 
 class AgxDictionary
 {
-private:
 	AgxDictionary() = default;
 
 	~AgxDictionary() = default;
@@ -32,8 +31,6 @@ public:
 		static AgxDictionary instance;
 		return instance;
 	}
-
-public:
 
 	inline static AgxTerm ErrorTerm() { return { "Error", QObject::tr("Error") }; }
 	inline static AgxTerm BlankEntry() { return { "_entry_", QObject::tr("_entry_") }; }

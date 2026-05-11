@@ -8,20 +8,20 @@
 namespace SFBGS {
     AgxNtDynamicGraphReference::AgxNtDynamicGraphReference(AgxGraphModel* rootGraphRef) :SFBGSNode(rootGraphRef)
     {
-        _nameProperty = QStringLiteral("Dynamic Graph Reference");
-        _PropertyEntries.push_back(AgxPropertyEntryDefinition(&AgxDictionary::Name, "Dynamic Graph Reference", AgxColumnTypes::BasicString));
-        _PropertyEntries.push_back(AgxPropertyEntryDefinition(&AgxDictionary::SwapGraphEvent, "", AgxColumnTypes::Event));
-        _PropertyEntries.push_back(AgxPropertyEntryDefinition(&AgxDictionary::StartingGraph, "", AgxColumnTypes::BasicString));
-        _PropertyEntries.push_back(AgxPropertyEntryDefinition(&AgxDictionary::BlendTime, "0.3", AgxColumnTypes::BasicFloat));
-        _PropertyEntries.push_back(AgxPropertyEntryDefinition(&AgxDictionary::SyncOnlyTransitionOut, "False", AgxColumnTypes::BasicBool));
+        m_nameProperty = QStringLiteral("Dynamic Graph Reference");
+        m_propertyEntries.push_back(AgxPropertyEntryDefinition(&AgxDictionary::Name, "Dynamic Graph Reference", AgxColumnTypes::BasicString));
+        m_propertyEntries.push_back(AgxPropertyEntryDefinition(&AgxDictionary::SwapGraphEvent, "", AgxColumnTypes::Event));
+        m_propertyEntries.push_back(AgxPropertyEntryDefinition(&AgxDictionary::StartingGraph, "", AgxColumnTypes::BasicString));
+        m_propertyEntries.push_back(AgxPropertyEntryDefinition(&AgxDictionary::BlendTime, "0.3", AgxColumnTypes::BasicFloat));
+        m_propertyEntries.push_back(AgxPropertyEntryDefinition(&AgxDictionary::SyncOnlyTransitionOut, "False", AgxColumnTypes::BasicBool));
 
         AgxPropertyBlockData graphBlock({
                 AgxPropertyEntryDefinition(&AgxDictionary::BlankEntry, "", AgxColumnTypes::BasicString),
                 AgxPropertyEntryDefinition(&AgxDictionary::GraphName,"graph_name.agx",AgxColumnTypes::BasicString) }, nullptr);
 
-        _PropertyBlocks.insert(&AgxDictionary::Graphs, graphBlock);
+        m_PropertyBlocks.insert(&AgxDictionary::Graphs, graphBlock);
 
-        _BlockOrder = { &AgxDictionary::Graphs, &AgxDictionary::EnterEvents, &AgxDictionary::ExitEvents };
+        m_blockOrder = { &AgxDictionary::Graphs, &AgxDictionary::EnterEvents, &AgxDictionary::ExitEvents };
 
     }
 
@@ -58,8 +58,8 @@ namespace SFBGS {
         if (auto sfbgsPort = dynamic_cast<AgxPort_SFBGS*>(port.get()))
         {
             if (portType == AgxPortType::In) {
-                sfbgsPort->SetPropertySheetOptional(true);
-                sfbgsPort->SetName("");
+                sfbgsPort->setPropertySheetOptional(true);
+                sfbgsPort->setName("");
             }
         }
 

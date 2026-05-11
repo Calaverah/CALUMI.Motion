@@ -28,23 +28,21 @@ public:
 	QJsonObject save() const override;
 	void load(QJsonObject const&) override;
 
-	AgxCommentNode(AgxGraphModel* rootGraphRef); //auto nodeStyle = AgxNode::nodeStyle(); nodeStyle.FontColor = QColor(0, 255, 0); this->setNodeStyle(nodeStyle);} //
-	~AgxCommentNode() {}
+	explicit AgxCommentNode(AgxGraphModel* rootGraphRef); //auto nodeStyle = AgxNode::nodeStyle(); nodeStyle.FontColor = QColor(0, 255, 0); this->setNodeStyle(nodeStyle);} //
+	~AgxCommentNode() override = default;
 
 	inline bool CanSetNameProperty() const override { return false; }
 	void ToggleCollapse() override;
 	inline AgxPortType CanModifyPorts() const override { return AgxPortType::None; }
 
-public:
-	void insertPropertySheetData(const QJsonObject& data) override;
+void insertPropertySheetData(const QJsonObject& data) override;
 	QJsonObject getPropertySheetData(bool cleared = false) const override;
 
 private:
 	AgxCommentWidget* _emb;
 	QWidget* _dummyWidget = nullptr;
 
-private:
-	QFont _font;
+QFont _font;
 	QString _text;
 
 	QPointF _target;

@@ -8,24 +8,24 @@
 namespace SFBGS {
     AgxNtSetOrient::AgxNtSetOrient(AgxGraphModel* rootGraphRef) : SFBGSNode(rootGraphRef)
     {
-        _nameProperty = QStringLiteral("Set Orient");
+        m_nameProperty = QStringLiteral("Set Orient");
 
 
 
-        _PropertyEntries.push_back(AgxPropertyEntryDefinition(&AgxDictionary::Name, "Set Orient", AgxColumnTypes::BasicString));
-        _PropertyEntries.push_back(AgxPropertyEntryDefinition(&AgxDictionary::Type, _TypeList.at(0)().tag, AgxColumnTypes::CustomDropDown, _TypeList));
-        _PropertyEntries.push_back(AgxPropertyEntryDefinition(&AgxDictionary::OrientVar, "", AgxColumnTypes::CustomFloat));
-        _PropertyEntries.push_back(AgxPropertyEntryDefinition(&AgxDictionary::TurnAnimCameraVar, "", AgxColumnTypes::CustomFloat));
-        _PropertyEntries.push_back(AgxPropertyEntryDefinition(&AgxDictionary::IsUsingCodeDrivenRotation, "", AgxColumnTypes::CustomBool));
-        _PropertyEntries.push_back(AgxPropertyEntryDefinition(&AgxDictionary::MaxCorrectionSpeed, "1", AgxColumnTypes::BasicFloat));
-        _PropertyEntries.push_back(AgxPropertyEntryDefinition(&AgxDictionary::MaxPostCorrectionSpeed, "0.5", AgxColumnTypes::BasicFloat));
-        _PropertyEntries.push_back(AgxPropertyEntryDefinition(&AgxDictionary::ClampedBlendTime, "0.1", AgxColumnTypes::BasicFloat));
-        _PropertyEntries.push_back(AgxPropertyEntryDefinition(&AgxDictionary::IsActiveBool, "1", AgxColumnTypes::CustomInteger));
-        _PropertyEntries.push_back(AgxPropertyEntryDefinition(&AgxDictionary::Time, "-1", AgxColumnTypes::BasicFloat));
-        _PropertyEntries.push_back(AgxPropertyEntryDefinition(&AgxDictionary::DisableWhenInactive, "False", AgxColumnTypes::BasicBool));
-        _PropertyEntries.push_back(AgxPropertyEntryDefinition(&AgxDictionary::EnforceDirectAtLimits, "", AgxColumnTypes::CustomBool));
+        m_propertyEntries.push_back(AgxPropertyEntryDefinition(&AgxDictionary::Name, "Set Orient", AgxColumnTypes::BasicString));
+        m_propertyEntries.push_back(AgxPropertyEntryDefinition(&AgxDictionary::Type, _TypeList.at(0)().tag, AgxColumnTypes::CustomDropDown, _TypeList));
+        m_propertyEntries.push_back(AgxPropertyEntryDefinition(&AgxDictionary::OrientVar, "", AgxColumnTypes::CustomFloat));
+        m_propertyEntries.push_back(AgxPropertyEntryDefinition(&AgxDictionary::TurnAnimCameraVar, "", AgxColumnTypes::CustomFloat));
+        m_propertyEntries.push_back(AgxPropertyEntryDefinition(&AgxDictionary::IsUsingCodeDrivenRotation, "", AgxColumnTypes::CustomBool));
+        m_propertyEntries.push_back(AgxPropertyEntryDefinition(&AgxDictionary::MaxCorrectionSpeed, "1", AgxColumnTypes::BasicFloat));
+        m_propertyEntries.push_back(AgxPropertyEntryDefinition(&AgxDictionary::MaxPostCorrectionSpeed, "0.5", AgxColumnTypes::BasicFloat));
+        m_propertyEntries.push_back(AgxPropertyEntryDefinition(&AgxDictionary::ClampedBlendTime, "0.1", AgxColumnTypes::BasicFloat));
+        m_propertyEntries.push_back(AgxPropertyEntryDefinition(&AgxDictionary::IsActiveBool, "1", AgxColumnTypes::CustomInteger));
+        m_propertyEntries.push_back(AgxPropertyEntryDefinition(&AgxDictionary::Time, "-1", AgxColumnTypes::BasicFloat));
+        m_propertyEntries.push_back(AgxPropertyEntryDefinition(&AgxDictionary::DisableWhenInactive, "False", AgxColumnTypes::BasicBool));
+        m_propertyEntries.push_back(AgxPropertyEntryDefinition(&AgxDictionary::EnforceDirectAtLimits, "", AgxColumnTypes::CustomBool));
 
-        _BlockOrder = { &AgxDictionary::EnterEvents, &AgxDictionary::ExitEvents };
+        m_blockOrder = { &AgxDictionary::EnterEvents, &AgxDictionary::ExitEvents };
     }
 
     QString AgxNtSetOrient::name() const

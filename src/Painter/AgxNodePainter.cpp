@@ -35,8 +35,8 @@ void AgxNodePainter::paint(QPainter* painter, AgxNodeGraphicsObject& ngo)
     if (var.canConvert<AgxNodeValidationState>()) {
         _vState = var.value<AgxNodeValidationState>();
     } else { 
-        _vState._stateMessage = "AGX NODE PAINT ERROR PASSING VALIDATION STATE";
-        _vState._state = AgxNodeValidationState::State::Error;
+        _vState.m_stateMessage = "AGX NODE PAINT ERROR PASSING VALIDATION STATE";
+        _vState.m_state = AgxNodeValidationState::State::Error;
     }
 
     _collapsed = _model->nodeData(_nodeId, AgxNodeRole::CollapseState).toBool();
@@ -89,7 +89,7 @@ void AgxNodePainter::drawNodeRect(QPainter* painter, AgxNodeGraphicsObject& ngo)
         //model.SetNodeSidebarVisibility(nodeId, ngo.isSelected());
         bool dashed = false;
 
-        switch (_vState._state) {
+        switch (_vState.m_state) {
             case AgxNodeValidationState::State::Error:
                 color = _nodeStyle.ErrorColor;
                 dashed = true;
@@ -112,8 +112,8 @@ void AgxNodePainter::drawNodeRect(QPainter* painter, AgxNodeGraphicsObject& ngo)
         }
 
 
-        if (_vState._state != AgxNodeValidationState::State::Valid) {
-            float factor = (_vState._state == AgxNodeValidationState::State::Error) ? 3.0f : 2.0f;
+        if (_vState.m_state != AgxNodeValidationState::State::Valid) {
+            float factor = (_vState.m_state == AgxNodeValidationState::State::Error) ? 3.0f : 2.0f;
             penWidth *= factor;
         }
         auto pstyle = dashed ? Qt::PenStyle::DotLine : Qt::PenStyle::SolidLine;
@@ -324,7 +324,7 @@ void AgxNodePainter::drawResizeRect(QPainter* painter, AgxNodeGraphicsObject& ng
 
 void AgxNodePainter::drawValidationIcon(QPainter* painter, AgxNodeGraphicsObject& ngo) const
 {
-    if (_vState._state == AgxNodeValidationState::State::Valid)
+    if (_vState.m_state == AgxNodeValidationState::State::Valid)
         return;
 
     QSize size = _geometry->size(_nodeId);
@@ -333,7 +333,7 @@ void AgxNodePainter::drawValidationIcon(QPainter* painter, AgxNodeGraphicsObject
     QSize iconSize(8, 8);
     QPixmap pixmap = icon.pixmap(iconSize);
 
-    QColor color = (_vState._state == AgxNodeValidationState::State::Error) ? _nodeStyle.ErrorColor
+    QColor color = (_vState.m_state == AgxNodeValidationState::State::Error) ? _nodeStyle.ErrorColor
         : _nodeStyle.WarningColor;
 
     QPointF center(size.width(), 0.0);

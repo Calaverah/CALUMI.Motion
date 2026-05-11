@@ -14,7 +14,6 @@
 #include "Models/AgxPort.h"
 #include "Utilities/AgxDictionary.h"
 #include "Painter/AgxStyleCollection.h"
-#include "Utilities/AgxFormat.h"
 
 struct AgxNodeDataType
 {
@@ -29,7 +28,7 @@ public:
 
 	virtual bool sameType(AgxNodeData const& nodeData) const
 	{
-		return (this->type().id == nodeData.type().id);
+		return this->type().id == nodeData.type().id;
 	}
 
 	/// Type for inner use
@@ -124,12 +123,12 @@ struct AgxNodeValidationState
 		Warning = 1,    ///< Some inputs are missing or questionable, processing may be unreliable.
 		Error = 2,      ///< Inputs or settings are invalid, preventing successful computation.
 	};
-	bool isValid() { return _state == State::Valid; };
-	QString const message() { return _stateMessage; }
-	State state() { return _state; }
+	bool isValid() const { return m_state == State::Valid; }
+	const QString& message() { return m_stateMessage; }
+	const State& state() const { return m_state; }
 
-	State _state{ State::Valid };
-	QString _stateMessage{ "" };
+	State m_state{ State::Valid };
+	QString m_stateMessage{ "" };
 };
 
 class AgxStyleCollection;
@@ -139,33 +138,33 @@ class AgxNode  : public QObject
 	Q_OBJECT
 
 public:
-	AgxNode(AgxGraphModel* rootGraphRef);
-	virtual ~AgxNode();
+	explicit AgxNode(AgxGraphModel* rootGraphRef);
+	~AgxNode() override;
 
 	virtual AgxNodeType GetNodeType() const = 0;
 	virtual QString name() const = 0;
-	virtual inline QString typeName() const { return name(); }
-	virtual inline QString nameProperty() const { return _nameProperty; }
+	virtual QString typeName() const { return name(); }
+	virtual QString nameProperty() const { return m_nameProperty; }
 
 	virtual QString caption() const = 0;
 	virtual bool captionVisible() const { return true; }
-	virtual inline QString SubCaption() const { return QString(); }
+	virtual QString SubCaption() const { return QString(); }
 
-	virtual inline bool AltState() { return false; }
-	virtual inline void SetAltState(bool enabled = false) {}
+	virtual bool AltState() { return false; }
+	virtual void SetAltState(bool enabled = false) {}
 
-	virtual inline void SetUpNode(const AgxGameType& type) { _gameType = type; }
-	virtual inline bool resizable() const { return false; }
+	virtual void SetUpNode(const AgxGameType& type) { m_gameType = type; }
+	virtual bool resizable() const { return false; }
 
-	virtual void SetNameProperty(QString newName);
-	virtual inline bool CanSetNameProperty() const { return false; }
+	virtual void SetNameProperty(const QString& newName);
+	virtual bool CanSetNameProperty() const { return false; }
 
-	virtual inline AgxPortType CanModifyPorts() const { return AgxPortType::Both; }
+	virtual AgxPortType CanModifyPorts() const { return AgxPortType::Both; }
 
-	virtual inline const QString& getGroupId() const { return _groupName; }
-	virtual inline void setGroupId(const QString& groupId) { _groupName = groupId; }
+	virtual const QString& getGroupId() const { return m_groupName; }
+	virtual void setGroupId(const QString& groupId) { m_groupName = groupId; }
 	
-	virtual inline void save(pugi::xml_node& parent, QVector<AgxConnectionId> connections, QVector<AgxNodeId> sortedIds, QPointF pos) {}
+	virtual void save(pugi::xml_node& parent, QVector<AgxConnectionId> connections, QVector<AgxNodeId> sortedIds, QPointF pos) {}
 	virtual QJsonObject save() const;
 	virtual void load(const QJsonObject& data);
 
@@ -177,14 +176,14 @@ public:
 	virtual const AgxNodeStyle& nodeStyle() const;
 	virtual void setNodeStyle(const AgxNodeStyle& style);
 
-	virtual void AmmendValidationState(const QString& messageToAdd, const AgxNodeValidationState::State& minState);
-	virtual void setValidatonState(const AgxNodeValidationState& validationState);
-	virtual AgxNodeValidationState validationState() const { return _nodeValidationState; }
+	virtual void AmendValidationState(const QString& messageToAdd, const AgxNodeValidationState::State& minState);
+	virtual void setValidationState(const AgxNodeValidationState& validationState);
+	virtual AgxNodeValidationState validationState() const { return m_nodeValidationState; }
 
 	virtual unsigned int nPorts(AgxPortType portType) const = 0;
 
 	virtual void ToggleCollapse();
-	virtual inline bool isCollapsed() const { return collapsed; }
+	virtual bool isCollapsed() const { return m_collapsed; }
 
 	virtual void insertPropertySheetData(const QJsonObject& data);
 	//Setting Cleared will request data serialization as reset values, however this will not change any data in the node itself
@@ -197,7 +196,7 @@ public:
 	virtual AgxPropertyBlockData* getPropertyBlock(const QString& block);
 	virtual AgxPropertyBlockData* getPropertyBlock(TermRef ref);
 
-	virtual inline std::shared_ptr<AgxGraphicsScene> GetEmbeddedNodeGraph() { return _EmbeddedGraphScene; }
+	virtual std::shared_ptr<AgxGraphicsScene> GetEmbeddedNodeGraph() { return m_embeddedGraphScene; }
 	virtual void SetUpEmbeddedNodeGraph();
 	virtual void CloseEmbeddedView();
 
@@ -223,21 +222,19 @@ Q_SIGNALS:
 	void PropertySheetUpdated();
 	void ParentGraphTypeUpdated(const AgxGraphType& type);
 	void embeddedWidgetSizeUpdated();
-	void dataUpdated(const AgxPortIndex index);
-	void dataInvalidated(const AgxPortIndex index);
+	void dataUpdated(const AgxPortIndex& index);
+	void dataInvalidated(const AgxPortIndex& index);
 	void computingStarted();
 	void computingFinished();
-	void portsAboutToBeDeleted(AgxPortType const portType, AgxPortIndex const first, AgxPortIndex const last);
+	void portsAboutToBeDeleted(const AgxPortType& portType, const AgxPortIndex& first, const AgxPortIndex& last);
 	void portsDeleted();
-	void portsAboutToBeInserted(AgxPortType const portType, AgxPortIndex const first, AgxPortIndex const last);
+	void portsAboutToBeInserted(const AgxPortType& portType, const AgxPortIndex& first, const AgxPortIndex& last);
 	void portsInserted();
 
 
 public:
-	virtual inline void SetNodeIdRef(AgxNodeId nodeId) {	_nodeIdRef = nodeId; 
-														Q_EMIT PropertySheetUpdated();}
+	virtual void SetNodeIdRef(const AgxNodeId& nodeId);
 
-public:
 	virtual std::shared_ptr<AgxPort> _AddPort(AgxPortType portType, AgxPortIndex index = 0xFFFFFFFF, QJsonObject data = QJsonObject());
 	virtual void _RemovePort(AgxPortType portType, AgxPortIndex index = 0xFFFFFFFF, bool preserve = false);
 	virtual QJsonObject PortData(AgxPortType portType, AgxPortIndex index);
@@ -253,46 +250,43 @@ public:
 
 	virtual void ResetPorts();
 
-	virtual inline QWidget* embeddedWidget() { return nullptr; }
+	virtual QWidget* embeddedWidget() { return nullptr; }
 
 protected:
-	AgxGameType _gameType = AgxGameType::None;
+	AgxGameType m_gameType = AgxGameType::None;
 
-	QVector<std::shared_ptr<AgxPort>> _In_Ports;
-	QVector<std::shared_ptr<AgxPort>> _Out_Ports;
-	AgxPortId _nextPortId;
-	virtual inline AgxPortId NewPortId() { return _nextPortId++; }
+	QVector<std::shared_ptr<AgxPort>> m_inPorts;
+	QVector<std::shared_ptr<AgxPort>> m_outPorts;
+	AgxPortId m_nextPortId;
+	virtual AgxPortId NewPortId() { return m_nextPortId++; }
 
-protected:
-	bool collapsed : 1 = false;
-	bool hiddenState : 1 = true;
+	bool m_collapsed : 1 = false;
+	bool m_hiddenState : 1 = true;
 
-	QString _nameProperty;
-	QString _groupName;
+	QString m_nameProperty;
+	QString m_groupName;
 
-	QPointer<AgxNodePropertiesWidget> _NodePropertiesWidget;
-	QPointer<QWidget> _sidebarContent;
-protected:
+	QPointer<AgxNodePropertiesWidget> m_nodePropertiesWidget;
+	QPointer<QWidget> m_sidebarContent;
 	virtual void InitializeWidget();
 
-	QMap<TermRef, AgxPropertyBlockData> _PropertyBlocks;
-	QList<TermRef> _BlockOrder;
+	QMap<TermRef, AgxPropertyBlockData> m_PropertyBlocks;
+	QList<TermRef> m_blockOrder;
 
-	QVector<AgxPropertyEntryDefinition> _PropertyEntries;
-	QMap<QString, QPair<AgxColumnTypes, QString>> _HiddenEntries;
+	QVector<AgxPropertyEntryDefinition> m_propertyEntries;
+	QMap<QString, QPair<AgxColumnTypes, QString>> m_hiddenEntries;
 
-	std::shared_ptr<AgxGraphicsScene> _EmbeddedGraphScene;
-	std::shared_ptr<AgxGraphModel> _EmbeddedGraphModel;
-	AgxGraphModel* _RootGraphReference;
+	std::shared_ptr<AgxGraphicsScene> m_embeddedGraphScene;
+	std::shared_ptr<AgxGraphModel> m_embeddedGraphModel;
+	AgxGraphModel* m_rootGraphReference;
 
-	QString _ExcessData;
+	QString m_excessData;
 
-protected:
-	AgxNodeId _nodeIdRef = InvalidNodeId;
+	AgxNodeId m_nodeIdRef = InvalidNodeId;
 
 private:
-	AgxNodeStyle _nodeStyle;
-	AgxNodeValidationState _nodeValidationState;
+	AgxNodeStyle m_nodeStyle;
+	AgxNodeValidationState m_nodeValidationState;
 };
 
 
@@ -304,11 +298,11 @@ private:
 class SFBGSNode : public AgxNode, public guidObject
 {
 public:
-	SFBGSNode(AgxGraphModel* rootGraphRef);
-	virtual ~SFBGSNode() = default;
+	explicit SFBGSNode(AgxGraphModel* rootGraphRef);
+	~SFBGSNode() override = default;
 	
 protected:
-	QMap<TermRef, QPair<AgxColumnTypes, QString >> _SFBGS_Hidden = {{&AgxDictionary::noninstanced,{AgxColumnTypes::BasicBool,"-"}},
+	QMap<TermRef, QPair<AgxColumnTypes, QString >> m_sfbgsHidden = {{&AgxDictionary::noninstanced,{AgxColumnTypes::BasicBool,"-"}},
 																	{&AgxDictionary::UseColor,{AgxColumnTypes::BasicBool,"-"}},
 																	{&AgxDictionary::DefaultState,{AgxColumnTypes::BasicBool,"-"}},
 																	{&AgxDictionary::PosX,{AgxColumnTypes::BasicFloat,"-"}},
@@ -317,14 +311,14 @@ protected:
 																	{&AgxDictionary::ExpPosY,{AgxColumnTypes::BasicFloat,"-"}},
 																	{&AgxDictionary::NodeType,{AgxColumnTypes::BasicString,"-"}}
 	};
-	QList<TermRef> _HiddenOrder = { AgxDictionary::noninstanced,
+	QList<TermRef> m_hiddenOrder = { AgxDictionary::noninstanced,
 								 AgxDictionary::NodeType,
 								 AgxDictionary::ExpPosX, 
 								 AgxDictionary::PosX, 
 								 AgxDictionary::ExpPosY, 
 								 AgxDictionary::PosY};
 
-	QVector<AgxPropertyEntryDefinition> _SFBGS_Properties = {
+	QVector<AgxPropertyEntryDefinition> m_sfbgsProperties = {
 		AgxPropertyEntryDefinition(&AgxDictionary::UserId,"0",AgxColumnTypes::BasicInteger)
 	};
 
@@ -341,18 +335,16 @@ public:
 	bool AltState() override;
 	void SetAltState(bool enabled) override;
 
-public:
-	std::shared_ptr<AgxPort> _AddPort(AgxPortType portType, AgxPortIndex index, QJsonObject data = QJsonObject()) override;
+std::shared_ptr<AgxPort> _AddPort(AgxPortType portType, AgxPortIndex index, QJsonObject data = QJsonObject()) override;
 	void _RemovePort(AgxPortType portType, AgxPortIndex index = 0xFFFFFFFF, bool preserve = false) override;
 	void SetPortData(AgxPortType portType, AgxPortIndex index, const QJsonObject& dataSet) override;
 
 	void InitializeWidget(bool split = true);
 	QWidget* GetNodePropertyWidget() override;
 
-public:
-	QWidget* GetSideBarContent() override;
+QWidget* GetSideBarContent() override;
 
 protected:
-	int _Divisions = 0;
-	AgxAnimationFlags _flags;
+	int m_divisions = 0;
+	AgxAnimationFlags m_flags;
 };

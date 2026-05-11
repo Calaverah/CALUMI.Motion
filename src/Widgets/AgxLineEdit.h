@@ -56,13 +56,11 @@ protected:
 	void focusOutEvent(QFocusEvent* event) override;
 	void keyPressEvent(QKeyEvent* event) override;
 	void showEvent(QShowEvent* event) override;
-	
-protected:
-	qreal getLineHeight();
+
+qreal getLineHeight();
 	void setupButtonStyle();
 
-protected:
-	QString _placeHolderText;
+QString _placeHolderText;
 	AgxHighlighter* _highlighter;
 	QValidator* _validator;
 	bool _enabledState = true;

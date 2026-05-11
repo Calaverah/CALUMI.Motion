@@ -12,7 +12,7 @@
 namespace SFBGS {
     SFBGS::AgxNtDebugNode::AgxNtDebugNode(AgxGraphModel* rootGraphRef) : SFBGSNode(rootGraphRef)
     {
-        _nameProperty = "Debug Node";
+        m_nameProperty = "Debug Node";
 
         //_PropertyEntries.push_back(AgxPropertyEntryDefinition("Basic Int", "0", AgxColumnTypes::BasicInteger));
         //_PropertyEntries.push_back(AgxPropertyEntryDefinition("Basic Float", "0", AgxColumnTypes::BasicFloat));
@@ -77,12 +77,12 @@ namespace SFBGS {
             switch (portType)
             {
                 case AgxPortType::In:
-                    sfbgsPort->SetPropertySheetEnabled(true);
+                    sfbgsPort->setPropertySheetEnabled(true);
                     break;
                 case AgxPortType::Out:
                     break;
             }
-            Q_EMIT sfbgsPort->PropertySheetUpdated();
+            Q_EMIT sfbgsPort->propertySheetUpdated();
         }
 
         return port;
@@ -95,7 +95,7 @@ namespace SFBGS {
 
     QString AgxNtDebugNode::caption() const
     {
-        return _nameProperty;
+        return m_nameProperty;
     }
 
     unsigned int AgxNtDebugNode::nPorts(AgxPortType portType) const

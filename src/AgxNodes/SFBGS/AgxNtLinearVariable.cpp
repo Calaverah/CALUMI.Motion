@@ -8,15 +8,15 @@
 namespace SFBGS {
     AgxNtLinearVariable::AgxNtLinearVariable(AgxGraphModel* rootGraphRef) : SFBGSNode(rootGraphRef)
     {
-        _nameProperty = QStringLiteral("Linear Variable");
+        m_nameProperty = QStringLiteral("Linear Variable");
 
-        _PropertyEntries.push_back(AgxPropertyEntryDefinition(&AgxDictionary::Name, "Linear Variable", AgxColumnTypes::BasicString));
-        _PropertyEntries.push_back(AgxPropertyEntryDefinition(&AgxDictionary::ControlVariable, "", AgxColumnTypes::CustomFloat));
-        _PropertyEntries.push_back(AgxPropertyEntryDefinition(&AgxDictionary::DesiredValue, "", AgxColumnTypes::CustomFloat));
-        _PropertyEntries.push_back(AgxPropertyEntryDefinition(&AgxDictionary::Speed, "", AgxColumnTypes::CustomFloat));
-        _PropertyEntries.push_back(AgxPropertyEntryDefinition(&AgxDictionary::SyncOnlyTransitionOut, "False", AgxColumnTypes::BasicBool));
+        m_propertyEntries.push_back(AgxPropertyEntryDefinition(&AgxDictionary::Name, "Linear Variable", AgxColumnTypes::BasicString));
+        m_propertyEntries.push_back(AgxPropertyEntryDefinition(&AgxDictionary::ControlVariable, "", AgxColumnTypes::CustomFloat));
+        m_propertyEntries.push_back(AgxPropertyEntryDefinition(&AgxDictionary::DesiredValue, "", AgxColumnTypes::CustomFloat));
+        m_propertyEntries.push_back(AgxPropertyEntryDefinition(&AgxDictionary::Speed, "", AgxColumnTypes::CustomFloat));
+        m_propertyEntries.push_back(AgxPropertyEntryDefinition(&AgxDictionary::SyncOnlyTransitionOut, "False", AgxColumnTypes::BasicBool));
 
-        _BlockOrder = { &AgxDictionary::EnterEvents, &AgxDictionary::ExitEvents };
+        m_blockOrder = { &AgxDictionary::EnterEvents, &AgxDictionary::ExitEvents };
 
     }
 
@@ -49,10 +49,10 @@ namespace SFBGS {
             switch (portType)
             {
                 case AgxPortType::In:
-                    sfbgsPort->SetPropertySheetEnabled(true);
+                    sfbgsPort->setPropertySheetEnabled(true);
                     break;
             }
-            Q_EMIT sfbgsPort->PropertySheetUpdated();
+            Q_EMIT sfbgsPort->propertySheetUpdated();
         }
 
         return port;

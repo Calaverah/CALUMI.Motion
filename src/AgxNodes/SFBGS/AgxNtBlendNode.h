@@ -21,7 +21,6 @@ namespace SFBGS {
 		AgxNtBlendNode(AgxGraphModel* rootGraphRef);
 		~AgxNtBlendNode() = default;
 
-	public:
 		// Inherited via AgxNode
 		QString name() const override;
 		QString caption() const override;

@@ -21,7 +21,6 @@ namespace SFBGS {
 		AgxNtDebugNode(AgxGraphModel* rootGraphRef);
 		~AgxNtDebugNode() = default;
 
-	public:
 		// Inherited via AgxNode
 		QString name() const override;
 		QString caption() const override;

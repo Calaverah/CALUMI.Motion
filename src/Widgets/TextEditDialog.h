@@ -17,8 +17,7 @@ public:
 	TextEditDialog(QWidget* parent, const QString& iniText, int iniFontSize);
 	~TextEditDialog();
 
-public:
-	QString GetText() const;
+QString GetText() const;
 	int GetFontSize() const;
 	QFont GetFont() const;
 

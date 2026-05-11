@@ -8,10 +8,10 @@
 namespace SFBGS {
     AgxNtMergeNode::AgxNtMergeNode(AgxGraphModel* rootGraphRef) :SFBGSNode(rootGraphRef)
     {
-        _nameProperty = QStringLiteral("Merge");
-        _PropertyEntries.push_back(AgxPropertyEntryDefinition(&AgxDictionary::Name, "Merge Node", AgxColumnTypes::BasicString));
+        m_nameProperty = QStringLiteral("Merge");
+        m_propertyEntries.push_back(AgxPropertyEntryDefinition(&AgxDictionary::Name, "Merge Node", AgxColumnTypes::BasicString));
         
-        _BlockOrder = { &AgxDictionary::EnterEvents, &AgxDictionary::ExitEvents };
+        m_blockOrder = { &AgxDictionary::EnterEvents, &AgxDictionary::ExitEvents };
     }
 
     QString AgxNtMergeNode::name() const
@@ -47,8 +47,8 @@ namespace SFBGS {
         if (auto sfbgsPort = dynamic_cast<AgxPort_SFBGS*>(port.get()))
         {
             if (portType == AgxPortType::In) {
-                sfbgsPort->SetName(std::format("Input{}", _In_Ports.size()).c_str());
-                Q_EMIT sfbgsPort->PropertySheetUpdated();
+                sfbgsPort->setName(std::format("Input{}", m_inPorts.size()).c_str());
+                Q_EMIT sfbgsPort->propertySheetUpdated();
             }
         }
 

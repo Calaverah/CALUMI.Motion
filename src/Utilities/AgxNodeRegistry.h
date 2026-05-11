@@ -9,7 +9,6 @@
 
 class AgxNodeRegistry
 {
-private:
 	AgxNodeRegistry();
 
 	~AgxNodeRegistry() = default;

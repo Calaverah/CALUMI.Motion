@@ -25,8 +25,7 @@ public:
         QPointF pos;
     };
 
-public:
-    AgxGraphModel(AgxGameType type, AgxGraphModel* rootGraph = nullptr);
+AgxGraphModel(AgxGameType type, AgxGraphModel* rootGraph = nullptr);
 
     inline std::shared_ptr<AgxNodeDelegateModelRegistry> dataModelRegistry() { return _registry; }
 
@@ -81,8 +80,8 @@ public:
     void addPropertyBlockEntry(QString block, int index, const QList<AgxPropertyBlockData::Entry>& data = {});
     QList<AgxPropertyBlockData::Entry> removePropertyBlockEntry(AgxNodeId nodeId, QString block, int index);
     QList<AgxPropertyBlockData::Entry> removePropertyBlockEntry(QString block, int index);
-    inline QVector<AgxPropertyEntryDefinition>* GetPropertyEntries() { return &_PropertyEntries; }
-    inline QMap<TermRef, AgxPropertyBlockData>* GetPropertyBlocks() { return &_PropertyBlocks; }
+    inline QVector<AgxPropertyEntryDefinition>* GetPropertyEntries() { return &m_propertyEntries; }
+    inline QMap<TermRef, AgxPropertyBlockData>* GetPropertyBlocks() { return &m_propertyBlocks; }
     QJsonObject SetNewGraphProperties(const AgxGraphType& graphType);
     inline AgxGraphType getGraphType() const { return _graphType; }
 
@@ -285,8 +284,7 @@ public:
     /// <param name="file">Full File Path</param>
     void SetModelFilePath(const QString& file);
 
-public:
-    /// <summary>
+/// <summary>
     /// Used for tab titling only
     /// </summary>
     /// <param name="title">Tab Title String</param>
@@ -327,13 +325,12 @@ private:
 
     std::unordered_map<QString, QColor> _nodeGroups;
 
-    QMap<TermRef, AgxPropertyBlockData> _PropertyBlocks;
-    QList<TermRef> _BlockOrder;
+    QMap<TermRef, AgxPropertyBlockData> m_propertyBlocks;
+    QList<TermRef> m_blockOrder;
 
-    QVector<AgxPropertyEntryDefinition> _PropertyEntries;
+    QVector<AgxPropertyEntryDefinition> m_propertyEntries;
 
-private:
-    QVector<AgxConnectionId> _shiftedByDynamicPortsConnections;
+QVector<AgxConnectionId> _shiftedByDynamicPortsConnections;
 
     friend class SFBGS_GraphPropertiesDialogWidget;
 };

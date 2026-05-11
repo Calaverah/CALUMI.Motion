@@ -8,13 +8,13 @@
 namespace SFBGS {
     AgxNtVariableCombiner::AgxNtVariableCombiner(AgxGraphModel* rootGraphRef) : SFBGSNode(rootGraphRef)
     {
-        _nameProperty = QStringLiteral("Variable Combiner");
+        m_nameProperty = QStringLiteral("Variable Combiner");
 
-        _PropertyEntries.push_back(AgxPropertyEntryDefinition(&AgxDictionary::Name, "Variable Combiner", AgxColumnTypes::BasicString));
-        _PropertyEntries.push_back(AgxPropertyEntryDefinition(&AgxDictionary::Variable1, "", AgxColumnTypes::CustomInteger));
-        _PropertyEntries.push_back(AgxPropertyEntryDefinition(&AgxDictionary::Variable2, "", AgxColumnTypes::CustomInteger));
-        _PropertyEntries.push_back(AgxPropertyEntryDefinition(&AgxDictionary::Variable3, "", AgxColumnTypes::CustomInteger));
-        _PropertyEntries.push_back(AgxPropertyEntryDefinition(&AgxDictionary::OutputVariable, "", AgxColumnTypes::CustomInteger));
+        m_propertyEntries.push_back(AgxPropertyEntryDefinition(&AgxDictionary::Name, "Variable Combiner", AgxColumnTypes::BasicString));
+        m_propertyEntries.push_back(AgxPropertyEntryDefinition(&AgxDictionary::Variable1, "", AgxColumnTypes::CustomInteger));
+        m_propertyEntries.push_back(AgxPropertyEntryDefinition(&AgxDictionary::Variable2, "", AgxColumnTypes::CustomInteger));
+        m_propertyEntries.push_back(AgxPropertyEntryDefinition(&AgxDictionary::Variable3, "", AgxColumnTypes::CustomInteger));
+        m_propertyEntries.push_back(AgxPropertyEntryDefinition(&AgxDictionary::OutputVariable, "", AgxColumnTypes::CustomInteger));
 
         {
             AgxPropertyBlockData varBlock1({ 
@@ -45,11 +45,11 @@ namespace SFBGS {
                                            }, nullptr);
             
 
-            _PropertyBlocks.insert(&AgxDictionary::Variable1, varBlock1);
-            _PropertyBlocks.insert(&AgxDictionary::Variable2, varBlock2);
-            _PropertyBlocks.insert(&AgxDictionary::Variable3, varBlock3);
+            m_PropertyBlocks.insert(&AgxDictionary::Variable1, varBlock1);
+            m_PropertyBlocks.insert(&AgxDictionary::Variable2, varBlock2);
+            m_PropertyBlocks.insert(&AgxDictionary::Variable3, varBlock3);
         }
-        _BlockOrder = { &AgxDictionary::Variable1,&AgxDictionary::Variable2,&AgxDictionary::Variable3, &AgxDictionary::EnterEvents, &AgxDictionary::ExitEvents};
+        m_blockOrder = { &AgxDictionary::Variable1,&AgxDictionary::Variable2,&AgxDictionary::Variable3, &AgxDictionary::EnterEvents, &AgxDictionary::ExitEvents};
     }
 
     QString AgxNtVariableCombiner::name() const

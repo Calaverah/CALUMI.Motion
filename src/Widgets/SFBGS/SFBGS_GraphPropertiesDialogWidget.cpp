@@ -147,7 +147,7 @@ SFBGS_GraphPropertiesDialogWidget::SFBGS_GraphPropertiesDialogWidget(AgxGraphics
 	_propertyWidgets->CreatePropertyEntries(scene.agxGraphModel().GetPropertyEntries(), &scene.agxGraphModel(), false);
 	
 	auto blocks = scene.agxGraphModel().GetPropertyBlocks();
-	auto& keys = scene.agxGraphModel()._BlockOrder;
+	auto& keys = scene.agxGraphModel().m_blockOrder;
 	for (unsigned int i = 0; i < blocks->count() && i < keys.count(); i++)
 	{
 		auto key = keys.at(i);

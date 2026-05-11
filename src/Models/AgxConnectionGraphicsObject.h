@@ -27,12 +27,10 @@ public:
     enum { Type = UserType + 2 };
 
     int type() const override { return Type; }
-public:
 	AgxConnectionGraphicsObject(AgxGraphicsScene& scene, AgxConnectionId const connectionId);
 	~AgxConnectionGraphicsObject() = default;
 
-public:
-    AgxGraphModel& graphModel() const;
+AgxGraphModel& graphModel() const;
 
     AgxGraphicsScene* agxNodeScene() const;
 
@@ -98,8 +96,7 @@ private:
     /// <returns></returns>
     QPointF GetInPosition() const;
 
-private:
-    AgxConnectionId _connectionId;
+AgxConnectionId _connectionId;
 
     AgxGraphModel& _graphModel;
 

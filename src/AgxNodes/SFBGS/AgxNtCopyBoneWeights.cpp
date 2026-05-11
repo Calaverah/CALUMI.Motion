@@ -8,13 +8,13 @@
 namespace SFBGS {
     AgxNtCopyBoneWeights::AgxNtCopyBoneWeights(AgxGraphModel* rootGraphRef) :SFBGSNode(rootGraphRef)
     {
-        _nameProperty = QStringLiteral("Copy Bone Weights");
-        _PropertyEntries.push_back(AgxPropertyEntryDefinition(&AgxDictionary::Name, "Copy Bone Weights", AgxColumnTypes::BasicString));
-        _PropertyEntries.push_back(AgxPropertyEntryDefinition(&AgxDictionary::ControlVariable, "", AgxColumnTypes::CustomInteger));
-        _PropertyEntries.push_back(AgxPropertyEntryDefinition(&AgxDictionary::BlendRate, "0.5", AgxColumnTypes::BasicFloat));
-        _PropertyEntries.push_back(AgxPropertyEntryDefinition(&AgxDictionary::ActivateBaseEventList, "", AgxColumnTypes::BasicString));
+        m_nameProperty = QStringLiteral("Copy Bone Weights");
+        m_propertyEntries.push_back(AgxPropertyEntryDefinition(&AgxDictionary::Name, "Copy Bone Weights", AgxColumnTypes::BasicString));
+        m_propertyEntries.push_back(AgxPropertyEntryDefinition(&AgxDictionary::ControlVariable, "", AgxColumnTypes::CustomInteger));
+        m_propertyEntries.push_back(AgxPropertyEntryDefinition(&AgxDictionary::BlendRate, "0.5", AgxColumnTypes::BasicFloat));
+        m_propertyEntries.push_back(AgxPropertyEntryDefinition(&AgxDictionary::ActivateBaseEventList, "", AgxColumnTypes::BasicString));
 
-        _BlockOrder = { &AgxDictionary::EnterEvents, &AgxDictionary::ExitEvents };
+        m_blockOrder = { &AgxDictionary::EnterEvents, &AgxDictionary::ExitEvents };
     }
 
     QString AgxNtCopyBoneWeights::name() const
@@ -50,11 +50,11 @@ namespace SFBGS {
         if (auto sfbgsPort = dynamic_cast<AgxPort_SFBGS*>(port.get()))
         {
             if (portType == AgxPortType::In) {
-                if (_In_Ports.size() == 1)
-                    sfbgsPort->SetName("base animations");
+                if (m_inPorts.size() == 1)
+                    sfbgsPort->setName("base animations");
                 else
-                    sfbgsPort->SetName(std::format("input{}", _In_Ports.size() - 1).c_str());
-                Q_EMIT sfbgsPort->PropertySheetUpdated();
+                    sfbgsPort->setName(std::format("input{}", m_inPorts.size() - 1).c_str());
+                Q_EMIT sfbgsPort->propertySheetUpdated();
             }
         }
 

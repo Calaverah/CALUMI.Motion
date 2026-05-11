@@ -21,7 +21,6 @@ namespace SFBGS {
 		AgxNtEvaluateConditionVariable(AgxGraphModel* rootGraphRef);
 		~AgxNtEvaluateConditionVariable() = default;
 
-	public:
 		// Inherited via AgxNode
 		QString name() const override;
 		QString caption() const override;

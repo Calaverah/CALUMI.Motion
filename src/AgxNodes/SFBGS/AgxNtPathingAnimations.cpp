@@ -8,18 +8,18 @@
 namespace SFBGS {
     AgxNtPathingAnimations::AgxNtPathingAnimations(AgxGraphModel* rootGraphRef) :SFBGSNode(rootGraphRef)
     {
-        _nameProperty = QStringLiteral("Pathing Animations");
-        _PropertyEntries.push_back(AgxPropertyEntryDefinition(&AgxDictionary::Name, "Pathing Animations", AgxColumnTypes::BasicString));
-        _PropertyEntries.push_back(AgxPropertyEntryDefinition(&AgxDictionary::SpeedVar, "Speed", AgxColumnTypes::CustomFloat));
-        _PropertyEntries.push_back(AgxPropertyEntryDefinition(&AgxDictionary::NPCHeadingOffset_Var, "NPCHeadingOffset", AgxColumnTypes::CustomFloat));
-        _PropertyEntries.push_back(AgxPropertyEntryDefinition(&AgxDictionary::DirectionVar, "Direction", AgxColumnTypes::CustomFloat));
-        _PropertyEntries.push_back(AgxPropertyEntryDefinition(&AgxDictionary::RangeMinMultiplier, "0.75", AgxColumnTypes::BasicFloat));
-        _PropertyEntries.push_back(AgxPropertyEntryDefinition(&AgxDictionary::RangeMaxMultiplier, "1.15", AgxColumnTypes::BasicFloat));
-        _PropertyEntries.push_back(AgxPropertyEntryDefinition(&AgxDictionary::MoveStartCorrectionTime, "1.5", AgxColumnTypes::BasicFloat));
-        _PropertyEntries.push_back(AgxPropertyEntryDefinition(&AgxDictionary::RampInTime, "0.2", AgxColumnTypes::BasicFloat));
-        _PropertyEntries.push_back(AgxPropertyEntryDefinition(&AgxDictionary::WalkNormalized, "1.25", AgxColumnTypes::BasicFloat));
-        _PropertyEntries.push_back(AgxPropertyEntryDefinition(&AgxDictionary::RunNormalized, "1.25", AgxColumnTypes::BasicFloat));
-        _PropertyEntries.push_back(AgxPropertyEntryDefinition(&AgxDictionary::SyncSystem, "SyncFootsteps", AgxColumnTypes::SyncSystem));
+        m_nameProperty = QStringLiteral("Pathing Animations");
+        m_propertyEntries.push_back(AgxPropertyEntryDefinition(&AgxDictionary::Name, "Pathing Animations", AgxColumnTypes::BasicString));
+        m_propertyEntries.push_back(AgxPropertyEntryDefinition(&AgxDictionary::SpeedVar, "Speed", AgxColumnTypes::CustomFloat));
+        m_propertyEntries.push_back(AgxPropertyEntryDefinition(&AgxDictionary::NPCHeadingOffset_Var, "NPCHeadingOffset", AgxColumnTypes::CustomFloat));
+        m_propertyEntries.push_back(AgxPropertyEntryDefinition(&AgxDictionary::DirectionVar, "Direction", AgxColumnTypes::CustomFloat));
+        m_propertyEntries.push_back(AgxPropertyEntryDefinition(&AgxDictionary::RangeMinMultiplier, "0.75", AgxColumnTypes::BasicFloat));
+        m_propertyEntries.push_back(AgxPropertyEntryDefinition(&AgxDictionary::RangeMaxMultiplier, "1.15", AgxColumnTypes::BasicFloat));
+        m_propertyEntries.push_back(AgxPropertyEntryDefinition(&AgxDictionary::MoveStartCorrectionTime, "1.5", AgxColumnTypes::BasicFloat));
+        m_propertyEntries.push_back(AgxPropertyEntryDefinition(&AgxDictionary::RampInTime, "0.2", AgxColumnTypes::BasicFloat));
+        m_propertyEntries.push_back(AgxPropertyEntryDefinition(&AgxDictionary::WalkNormalized, "1.25", AgxColumnTypes::BasicFloat));
+        m_propertyEntries.push_back(AgxPropertyEntryDefinition(&AgxDictionary::RunNormalized, "1.25", AgxColumnTypes::BasicFloat));
+        m_propertyEntries.push_back(AgxPropertyEntryDefinition(&AgxDictionary::SyncSystem, "SyncFootsteps", AgxColumnTypes::SyncSystem));
 
         {
             AgxPropertyBlockData standToMoveTags({
@@ -42,11 +42,11 @@ namespace SFBGS {
             
 
 
-            _PropertyBlocks.insert(&AgxDictionary::StandToMove, standToMoveTags);
-            _PropertyBlocks.insert(&AgxDictionary::MoveToStop, moveToStopTags);
-            _PropertyBlocks.insert(&AgxDictionary::WhileMoving, whileMovingTags);
+            m_PropertyBlocks.insert(&AgxDictionary::StandToMove, standToMoveTags);
+            m_PropertyBlocks.insert(&AgxDictionary::MoveToStop, moveToStopTags);
+            m_PropertyBlocks.insert(&AgxDictionary::WhileMoving, whileMovingTags);
 
-            _BlockOrder = { &AgxDictionary::StandToMove, &AgxDictionary::MoveToStop, &AgxDictionary::WhileMoving, &AgxDictionary::EnterEvents, &AgxDictionary::ExitEvents};
+            m_blockOrder = { &AgxDictionary::StandToMove, &AgxDictionary::MoveToStop, &AgxDictionary::WhileMoving, &AgxDictionary::EnterEvents, &AgxDictionary::ExitEvents};
         }
 
     }
@@ -78,8 +78,8 @@ namespace SFBGS {
         if (auto sfbgsPort = dynamic_cast<AgxPort_SFBGS*>(port.get()))
         {
             if (portType == AgxPortType::In) {
-                sfbgsPort->SetName("passthrough");
-                Q_EMIT sfbgsPort->PropertySheetUpdated();
+                sfbgsPort->setName("passthrough");
+                Q_EMIT sfbgsPort->propertySheetUpdated();
             }
         }
 

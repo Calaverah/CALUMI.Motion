@@ -21,7 +21,6 @@ namespace SFBGS {
 		AgxNtMomentumAnimation(AgxGraphModel* rootGraphRef);
 		~AgxNtMomentumAnimation() = default;
 
-	public:
 		// Inherited via AgxNode
 		QString name() const override;
 		QString caption() const override;

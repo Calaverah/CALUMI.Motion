@@ -21,7 +21,6 @@ namespace SFBGS {
 		AgxNtMultiFootIK(AgxGraphModel* rootGraphRef);
 		~AgxNtMultiFootIK() = default;
 
-	public:
 		// Inherited via AgxNode
 		QString name() const override;
 		QString caption() const override;

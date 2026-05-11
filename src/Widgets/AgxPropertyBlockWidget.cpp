@@ -11,6 +11,7 @@
 #include "Utilities/AgxDefinitions.h"
 #include "Dialog/AgxSimpleDialog.h"
 #include "AgxWrappedRowEntry/AgxWrappedRowEntry.h"
+#include "Utilities/AgxFormat.h"
 
 AgxPropertyBlockWidget::AgxPropertyBlockWidget(TermRef ref, AgxPropertyBlockData& dataRef, uint8_t wrappedRowItemCount, QWidget* parent) : QWidget(parent), _vLayout(new QVBoxLayout()), _dataRef(&dataRef), _labelRef(ref), _wrappedRowItemCount(wrappedRowItemCount)
 {
@@ -71,8 +72,8 @@ AgxPropertyBlockWidget::AgxPropertyBlockWidget(TermRef ref, AgxPropertyBlockData
 	{
 		QString labelStr = i >= dataRef.GetColumnCount() ? "-" : dataRef.GetColumnDefinition(i).Label();
 		
-		agxStringFilter_1(labelStr);
-		agxStringFilter_2(labelStr);
+		AgxStringFilter_1(labelStr);
+		AgxStringFilter_2(labelStr);
 
 		QLabel* label = new QLabel(labelStr);
 

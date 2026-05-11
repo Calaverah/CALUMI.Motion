@@ -21,7 +21,6 @@ namespace SFBGS {
 		AgxNtStateVariableControl(AgxGraphModel* rootGraphRef);
 		~AgxNtStateVariableControl() = default;
 
-	public:
 		// Inherited via AgxNode
 		QString name() const override;
 		QString caption() const override;

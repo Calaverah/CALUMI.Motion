@@ -37,8 +37,7 @@ private:
 class DialogPool_SFBGS
 {
 
-private:
-	DialogPool_SFBGS();
+DialogPool_SFBGS();
 
 	~DialogPool_SFBGS();
 

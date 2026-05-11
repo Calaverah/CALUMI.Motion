@@ -15,8 +15,7 @@ public:
 
     ~AgxGraphicsViewStyle() = default;
 
-public:
-    static void setStyle(QString jsonText);
+static void setStyle(QString jsonText);
 
 private:
     void loadJson(QJsonObject const& json) override;

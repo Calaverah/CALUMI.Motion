@@ -709,7 +709,7 @@ void AgxGraphicsView::wheelEvent(QWheelEvent* event)
 
 void AgxGraphicsView::keyPressEvent(QKeyEvent* event)
 {
-	if (event->key() == Qt::Key_Shift && agxNodeScene()->lastHoveredNode)
+	if (event->key() == Qt::Key_Shift && agxNodeScene()->m_lastHoveredNode)
 	{
 		agxNodeScene()->setGroupHoverState(true, agxNodeScene()->getLastHoveredGroup());
 	}
@@ -735,7 +735,7 @@ void AgxGraphicsView::keyPressEvent(QKeyEvent* event)
 void AgxGraphicsView::keyReleaseEvent(QKeyEvent* event)
 {
 	
-	if (event->key() == Qt::Key_Shift && agxNodeScene()->lastHoveredNode)
+	if (event->key() == Qt::Key_Shift && agxNodeScene()->m_lastHoveredNode)
 	{
 		agxNodeScene()->setGroupHoverState(false, "");
 	}

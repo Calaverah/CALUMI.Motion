@@ -11,6 +11,8 @@
 //#include "Widgets/AgxNodePropertiesWidget.h"
 #include "Widgets/SFBGS/SFBGS_SidebarContent.h"
 
+static const QVector<AgxPropertyEntryDefinition> g_dummyPropertyEntryVector = {};
+
 class AgxNode;
 class AgxBlendInputModel;
 
@@ -19,35 +21,35 @@ class AgxPort : public QObject
 {
 	Q_OBJECT
 public:
-	AgxPort(AgxNode* parent) : _parentNode(parent) {}
-	virtual ~AgxPort() = default;
+	explicit AgxPort(AgxNode* parent) : m_parentNode(parent) {}
+	~AgxPort() override = default;
 
-	virtual AgxPortIndex GetPortIndex();
-	virtual void Load(const QJsonObject& data) {}
-	virtual void Load(pugi::xml_node& portNode) {}
-	virtual void InsertData(const QJsonObject& data) {}
-	virtual QJsonObject Save() const { return QJsonObject(); }
-	virtual inline bool HasCaption() const { return false; }
-	virtual inline QString Caption(bool formatted = true) const { return "Debug"; }
-	virtual inline QWidget* GetEmbeddedWidget() { return nullptr; };
-	virtual inline bool HasPropertySheet() { return false; }
-	virtual inline void SetId(unsigned int id) { _portId = id; }
-	virtual inline unsigned int GetId() const { return _portId; }
+	virtual AgxPortIndex getPortIndex();
+	virtual void load(const QJsonObject& data) {}
+	virtual void load(pugi::xml_node& portNode) {}
+	virtual void insertData(const QJsonObject& data) {}
+	virtual QJsonObject save() const { return QJsonObject(); }
+	virtual bool hasCaption() const { return false; }
+	virtual QString caption(bool formatted = true) const { return "Debug"; }
+	virtual QWidget* getEmbeddedWidget() { return nullptr; }
+	virtual bool hasPropertySheet() { return false; }
+	virtual void setId(const unsigned int id) { m_portId = id; }
+	virtual unsigned int getId() const { return m_portId; }
 
-	virtual inline void setConnectionState(bool state) {}
-	virtual inline bool isConnected() const { return false; }
+	virtual void setConnectionState(bool state) {}
+	virtual bool isConnected() const { return false; }
 
-	virtual inline void externalCommand(const QString& commandTag, const QString& payload) {}
+	virtual void externalCommand(const QString& commandTag, const QString& payload) {}
 
-	virtual inline const QVector<AgxPropertyEntryDefinition>& PropertyEntries() { return {}; }
-	virtual inline void SavePropertySheet(pugi::xml_node& parent) {}
+	virtual const QVector<AgxPropertyEntryDefinition>& propertyEntries() { return g_dummyPropertyEntryVector; }
+	virtual void savePropertySheet(pugi::xml_node& parent) {}
 
 Q_SIGNALS:
-	void PropertySheetUpdated();
+	void propertySheetUpdated();
 
 protected:
-	AgxNode* _parentNode;
-	AgxPortId _portId = InvalidAgxPortId;
+	AgxNode* m_parentNode;
+	AgxPortId m_portId = InvalidAgxPortId;
 };
 
 
@@ -57,65 +59,64 @@ class AgxPort_SFBGS : public AgxPort
 {
 	Q_OBJECT
 public:
-	AgxPort_SFBGS(AgxNode* parent);
-	~AgxPort_SFBGS();
+	explicit AgxPort_SFBGS(AgxNode* parent);
+	~AgxPort_SFBGS() override;
 
-	void SetName(const QString& str);
-	inline QString GetName() const { return name; }
+	void setName(const QString& str);
+	QString getName() const { return m_name; }
 
-	void InsertData(const QJsonObject& data) override;
-	void Load(const QJsonObject& data) override;
-	void Load(pugi::xml_node& portNode) override;
-	QJsonObject Save() const override;
+	void insertData(const QJsonObject& data) override;
+	void load(const QJsonObject& data) override;
+	void load(pugi::xml_node& portNode) override;
+	QJsonObject save() const override;
 
-	inline bool HasCaption() const override { return _portId != InvalidAgxPortId; }
-	QString Caption(bool formatted = true) const override;
+	bool hasCaption() const override { return m_portId != InvalidAgxPortId; }
+	QString caption(bool formatted = true) const override;
 
-	void SetPropertySheetEnabled(bool state);
+	void setPropertySheetEnabled(bool state);
 
-	inline bool GetPropertySheetEnabled() const { return _PropertyEntriesEnabled; }
-	void SetPropertySheetOptional(bool initiallyEnabled = true);
+	bool getPropertySheetEnabled() const { return m_propertyEntriesEnabled; }
+	void setPropertySheetOptional(bool initiallyEnabled = true);
 
-	QWidget* GetEmbeddedWidget() override;
+	QWidget* getEmbeddedWidget() override;
 
-	AgxBlendInputModel* GetBlendInput() const;
-	void AddBlendInput();
+	AgxBlendInputModel* getBlendInput() const;
+	void addBlendInput();
 
-	inline void setConnectionState(bool state) override { _IsConnected = state; Q_EMIT PropertySheetUpdated(); }
-	inline bool isConnected() const override { return _IsConnected; }
+	void setConnectionState(const bool state) override { m_isConnected = state; Q_EMIT propertySheetUpdated(); }
+	bool isConnected() const override { return m_isConnected; }
 
-	inline bool HasPropertySheet() override { return _PropertyEntries.count() != 0; }
-	inline void AddStandardPropertySheet() {
-		_PropertyEntries.push_back(AgxPropertyEntryDefinition(&AgxDictionary::Event, "", AgxColumnTypes::Event));
-		_PropertyEntries.push_back(AgxPropertyEntryDefinition(&AgxDictionary::Comment, "", AgxColumnTypes::BasicString));
-		_PropertyEntries.push_back(AgxPropertyEntryDefinition(&AgxDictionary::Condition, "", AgxColumnTypes::BasicString));
-		_PropertyEntries.push_back(AgxPropertyEntryDefinition(&AgxDictionary::BlendTime, "0", AgxColumnTypes::BasicFloat));
-		_PropertyEntries.push_back(AgxPropertyEntryDefinition(&AgxDictionary::Priority, "0", AgxColumnTypes::BasicInteger));
-		_PropertyEntries.push_back(AgxPropertyEntryDefinition(&AgxDictionary::AllowSelfTransition, "False", AgxColumnTypes::BasicBool));
-		_PropertyEntries.push_back(AgxPropertyEntryDefinition(&AgxDictionary::DoNotFollowSyncGroup, "False", AgxColumnTypes::BasicBool));
-		_PropertyEntries.push_back(AgxPropertyEntryDefinition(&AgxDictionary::TransitionType, AgxDictionary::Smooth().tag, AgxColumnTypes::CustomDropDown, {&AgxDictionary::Smooth,&AgxDictionary::Linear}));
-		_PropertyEntriesEnabled = false;
+	bool hasPropertySheet() override { return m_propertyEntries.count() != 0; }
+	void addStandardPropertySheet() {
+		m_propertyEntries.push_back(AgxPropertyEntryDefinition(&AgxDictionary::Event, "", AgxColumnTypes::Event));
+		m_propertyEntries.push_back(AgxPropertyEntryDefinition(&AgxDictionary::Comment, "", AgxColumnTypes::BasicString));
+		m_propertyEntries.push_back(AgxPropertyEntryDefinition(&AgxDictionary::Condition, "", AgxColumnTypes::BasicString));
+		m_propertyEntries.push_back(AgxPropertyEntryDefinition(&AgxDictionary::BlendTime, "0", AgxColumnTypes::BasicFloat));
+		m_propertyEntries.push_back(AgxPropertyEntryDefinition(&AgxDictionary::Priority, "0", AgxColumnTypes::BasicInteger));
+		m_propertyEntries.push_back(AgxPropertyEntryDefinition(&AgxDictionary::AllowSelfTransition, "False", AgxColumnTypes::BasicBool));
+		m_propertyEntries.push_back(AgxPropertyEntryDefinition(&AgxDictionary::DoNotFollowSyncGroup, "False", AgxColumnTypes::BasicBool));
+		m_propertyEntries.push_back(AgxPropertyEntryDefinition(&AgxDictionary::TransitionType, AgxDictionary::Smooth().tag, AgxColumnTypes::CustomDropDown, {&AgxDictionary::Smooth,&AgxDictionary::Linear}));
+		m_propertyEntriesEnabled = false;
 	}
 
 	void externalCommand(const QString& commandTag, const QString& payload) override;
 
-	inline const QVector<AgxPropertyEntryDefinition>& PropertyEntries() override { return _PropertyEntries; }
-	void SavePropertySheet(pugi::xml_node& parent) override;
+	const QVector<AgxPropertyEntryDefinition>& propertyEntries() override { return m_propertyEntries; }
+	void savePropertySheet(pugi::xml_node& parent) override;
 
 protected:
 	//AgxPortId sfbgs_id = InvalidAgxPortId;
-	QString name;
+	QString m_name;
 
 	//Property Sheets? (2 columns only it seems)
-	QVector<AgxPropertyEntryDefinition> _PropertyEntries;
-	bool _PropertyEntriesEnabled = true;
-	bool _IsConnected = false;
+	QVector<AgxPropertyEntryDefinition> m_propertyEntries;
+	bool m_propertyEntriesEnabled = true;
+	bool m_isConnected = false;
 
-	AgxBlendInputModel* _BlendInput = nullptr;
+	AgxBlendInputModel* m_blendInput = nullptr;
 
 	//Property Sheet Widget
-	QPointer<SFBGS_SidebarContentItem> _ContentWidget;
-	//QPointer<QWidget> _EmbeddedWidget;
+	QPointer<SFBGS_SidebarContentItem> m_contentWidget;
 
 };
 

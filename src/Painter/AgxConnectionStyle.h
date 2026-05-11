@@ -19,16 +19,13 @@ public:
 
     ~AgxConnectionStyle() = default;
 
-public:
-    static void setConnectionStyle(QString jsonText);
+static void setConnectionStyle(QString jsonText);
 
-public:
-    void loadJson(QJsonObject const& json) override;
+void loadJson(QJsonObject const& json) override;
 
     QJsonObject toJson() const override;
 
-public:
-    QColor constructionColor() const;
+QColor constructionColor() const;
     QColor normalColor() const;
     QColor normalColor(QString typeId) const;
     QColor selectedColor() const;

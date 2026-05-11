@@ -21,7 +21,6 @@ namespace SFBGS {
 		AgxNtTranslationAdjustment(AgxGraphModel* rootGraphRef);
 		~AgxNtTranslationAdjustment() = default;
 
-	public:
 		// Inherited via AgxNode
 		QString name() const override;
 		QString caption() const override;

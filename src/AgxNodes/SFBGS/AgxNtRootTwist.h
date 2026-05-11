@@ -21,7 +21,6 @@ namespace SFBGS {
 		AgxNtRootTwist(AgxGraphModel* rootGraphRef);
 		~AgxNtRootTwist() = default;
 
-	public:
 		// Inherited via AgxNode
 		QString name() const override;
 		QString caption() const override;

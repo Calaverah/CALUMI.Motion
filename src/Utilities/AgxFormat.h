@@ -243,12 +243,12 @@ inline void FormatBasicPropertySheet(pugi::xml_node& parent, const QVector<AgxPr
     AgxCloseNode(propSheet, false, true);
 }
 
-static void agxStringFilter_1(QString& text) {
+static void AgxStringFilter_1(QString& text) {
     QRegularExpression regex("\\_.*\\_");
     text.replace(regex, "");
 }
 
-static void agxStringFilter_2(QString& text) {
+static void AgxStringFilter_2(QString& text) {
     QRegularExpression regex("\\~.*\\~");
     text.replace(regex, "");
 }
@@ -263,8 +263,8 @@ inline void FormatPropertyBlock(pugi::xml_node& parent, const AgxPropertyBlockDa
     {
         auto column = AgxAppend(propSheet, "column", { AgxFormat::NewLine, AgxFormat::Indent }, 2);
         QString tag = blockData.GetColumnDefinition(i).Tag();
-        agxStringFilter_1(tag);
-        agxStringFilter_2(tag);
+        AgxStringFilter_1(tag);
+        AgxStringFilter_2(tag);
         AgxAppendValue(column, "header", tag, AgxFormat::SpaceBefore);
         AgxAppendValue(column, "types", QString("%1").arg(static_cast<int>(GetSFBGSVarTypeFromColumnType(blockData.GetColumnType(i)).second)), { AgxFormat::SpaceBefore, AgxFormat::SpaceAfter });
     }

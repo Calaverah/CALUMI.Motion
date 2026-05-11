@@ -2586,9 +2586,10 @@ QString AgxGameTypeToString(const AgxGameType& type)
 
 AgxGameType AgxGameTypeFromString(const QString& string)
 {
-	if (	_stricmp(string.toStdString().c_str(), "STARFIELD"	) ==0 
-		||	_stricmp(string.toStdString().c_str(), "SFBGS"		) == 0 
-		||	_stricmp(string.toStdString().c_str(), "SF1"		) == 0) return AgxGameType::SFBGS;
+	if (	QString("STARFIELD").compare(string.toStdString().c_str(), 	Qt::CaseInsensitive) ==0
+		||	QString("SFBGS").compare(string.toStdString().c_str(), Qt::CaseInsensitive) == 0
+		||	QString("SF1").compare(string.toStdString().c_str(), Qt::CaseInsensitive) == 0)
+		return AgxGameType::SFBGS;
 
 	return AgxGameType::None;
 }

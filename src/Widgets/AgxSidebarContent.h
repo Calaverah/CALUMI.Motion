@@ -21,17 +21,17 @@ Q_SIGNALS:
 	void ReferenceInitialized(const IAgxEmbedSceneData& source);
 
 public:
-	inline void SetRefData(const IAgxEmbedSceneData& source) override {
+	void SetRefData(const IAgxEmbedSceneData& source) override {
 		IAgxEmbedSceneData::SetRefData(source);
 		Q_EMIT ReferenceInitialized(*this);
 	}
 
-	inline void SetRefData(AgxNodeId nodeId, AgxGraphicsScene* scene) override {
+	void SetRefData(const AgxNodeId& nodeId, AgxGraphicsScene* scene) override {
 		IAgxEmbedSceneData::SetRefData(nodeId, scene);
 		Q_EMIT ReferenceInitialized(*this);
 	}
 
-	inline void SetRefData(AgxGraphModel* model, AgxGraphicsScene* scene) override {
+	void SetRefData(AgxGraphModel* model, AgxGraphicsScene* scene) override {
 		IAgxEmbedSceneData::SetRefData(model, scene);
 		Q_EMIT ReferenceInitialized(*this);
 	}

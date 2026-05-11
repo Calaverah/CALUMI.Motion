@@ -8,16 +8,16 @@
 namespace SFBGS {
     AgxNtDynamicAnimation::AgxNtDynamicAnimation(AgxGraphModel* rootGraphRef) :SFBGSNode(rootGraphRef)
     {
-        _nameProperty = QStringLiteral("Dynamic Animation");
-        _PropertyEntries.push_back(AgxPropertyEntryDefinition(&AgxDictionary::Name, "Dynamic Animation", AgxColumnTypes::BasicString));
-        _PropertyEntries.push_back(AgxPropertyEntryDefinition(&AgxDictionary::SyncSystem, "", AgxColumnTypes::SyncSystem));
-        _PropertyEntries.push_back(AgxPropertyEntryDefinition(&AgxDictionary::SendEventOnEnd, "", AgxColumnTypes::Event));
-        _PropertyEntries.push_back(AgxPropertyEntryDefinition(&AgxDictionary::StateVariable, "", AgxColumnTypes::CustomInteger));
-        _PropertyEntries.push_back(AgxPropertyEntryDefinition(&AgxDictionary::Mirror, "False", AgxColumnTypes::BasicBool));
-        _PropertyEntries.push_back(AgxPropertyEntryDefinition(&AgxDictionary::IsActionAnimation, "True", AgxColumnTypes::BasicBool));
-        _PropertyEntries.push_back(AgxPropertyEntryDefinition(&AgxDictionary::SyncOnlyTransitionOut, "False", AgxColumnTypes::BasicBool));
+        m_nameProperty = QStringLiteral("Dynamic Animation");
+        m_propertyEntries.push_back(AgxPropertyEntryDefinition(&AgxDictionary::Name, "Dynamic Animation", AgxColumnTypes::BasicString));
+        m_propertyEntries.push_back(AgxPropertyEntryDefinition(&AgxDictionary::SyncSystem, "", AgxColumnTypes::SyncSystem));
+        m_propertyEntries.push_back(AgxPropertyEntryDefinition(&AgxDictionary::SendEventOnEnd, "", AgxColumnTypes::Event));
+        m_propertyEntries.push_back(AgxPropertyEntryDefinition(&AgxDictionary::StateVariable, "", AgxColumnTypes::CustomInteger));
+        m_propertyEntries.push_back(AgxPropertyEntryDefinition(&AgxDictionary::Mirror, "False", AgxColumnTypes::BasicBool));
+        m_propertyEntries.push_back(AgxPropertyEntryDefinition(&AgxDictionary::IsActionAnimation, "True", AgxColumnTypes::BasicBool));
+        m_propertyEntries.push_back(AgxPropertyEntryDefinition(&AgxDictionary::SyncOnlyTransitionOut, "False", AgxColumnTypes::BasicBool));
 
-        _BlockOrder = { &AgxDictionary::EnterEvents, &AgxDictionary::ExitEvents };
+        m_blockOrder = { &AgxDictionary::EnterEvents, &AgxDictionary::ExitEvents };
     }
 
     QString AgxNtDynamicAnimation::name() const
@@ -53,9 +53,9 @@ namespace SFBGS {
         if (auto sfbgsPort = dynamic_cast<AgxPort_SFBGS*>(port.get()))
         {
             if (portType == AgxPortType::In) {
-                sfbgsPort->SetPropertySheetOptional(true);
-                sfbgsPort->SetName("");
-                Q_EMIT sfbgsPort->PropertySheetUpdated();
+                sfbgsPort->setPropertySheetOptional(true);
+                sfbgsPort->setName("");
+                Q_EMIT sfbgsPort->propertySheetUpdated();
             }
         }
 

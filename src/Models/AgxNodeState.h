@@ -22,8 +22,7 @@ class AgxNodeState
 public:
     AgxNodeState(AgxNodeGraphicsObject& ngo);
 
-public:
-    bool hovered() const { return _hovered; }
+bool hovered() const { return _hovered; }
 
     void setHovered(bool hovered = true) { _hovered = hovered; }
 

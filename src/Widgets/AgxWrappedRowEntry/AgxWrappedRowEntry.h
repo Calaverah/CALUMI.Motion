@@ -10,8 +10,7 @@ public:
 	AgxWrappedRowEntry(QList<QWidget*> itemsToAdd, QWidget *parent = nullptr, uint8_t maxItemPerRow = 8, bool addSeparator = false, int maxWidthForWrapping = -1);
 	~AgxWrappedRowEntry();
 
-public:
-	QWidget* getItem(int column) const;
+QWidget* getItem(int column) const;
 
 public slots:
 	void setIndentSize(int size = 10);
@@ -19,8 +18,7 @@ public slots:
 private:
 	void createRow(QList<QWidget*> rowItems);
 
-private:
-	int _maxWidthForWrapping = -1;
+int _maxWidthForWrapping = -1;
 	uint8_t _maxItemPerRow = 8;
 
 	QVBoxLayout* _vLayout = nullptr;

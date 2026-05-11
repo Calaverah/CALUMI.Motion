@@ -8,15 +8,15 @@
 namespace SFBGS {
     AgxNtEveryNEventsModifier::AgxNtEveryNEventsModifier(AgxGraphModel* rootGraphRef) :SFBGSNode(rootGraphRef)
     {
-        _nameProperty = QStringLiteral("Every N Events");
+        m_nameProperty = QStringLiteral("Every N Events");
 
-        _PropertyEntries.push_back(AgxPropertyEntryDefinition(&AgxDictionary::Name, "Every N Events", AgxColumnTypes::BasicString));
-        _PropertyEntries.push_back(AgxPropertyEntryDefinition(&AgxDictionary::ListenEvent, "", AgxColumnTypes::Event));
-        _PropertyEntries.push_back(AgxPropertyEntryDefinition(&AgxDictionary::SendEvent, "", AgxColumnTypes::Event));
-        _PropertyEntries.push_back(AgxPropertyEntryDefinition(&AgxDictionary::MinTimes, "0", AgxColumnTypes::BasicInteger));
-        _PropertyEntries.push_back(AgxPropertyEntryDefinition(&AgxDictionary::MaxTimes, "1", AgxColumnTypes::BasicInteger));
+        m_propertyEntries.push_back(AgxPropertyEntryDefinition(&AgxDictionary::Name, "Every N Events", AgxColumnTypes::BasicString));
+        m_propertyEntries.push_back(AgxPropertyEntryDefinition(&AgxDictionary::ListenEvent, "", AgxColumnTypes::Event));
+        m_propertyEntries.push_back(AgxPropertyEntryDefinition(&AgxDictionary::SendEvent, "", AgxColumnTypes::Event));
+        m_propertyEntries.push_back(AgxPropertyEntryDefinition(&AgxDictionary::MinTimes, "0", AgxColumnTypes::BasicInteger));
+        m_propertyEntries.push_back(AgxPropertyEntryDefinition(&AgxDictionary::MaxTimes, "1", AgxColumnTypes::BasicInteger));
 
-        _BlockOrder = { &AgxDictionary::EnterEvents, &AgxDictionary::ExitEvents };
+        m_blockOrder = { &AgxDictionary::EnterEvents, &AgxDictionary::ExitEvents };
     }
 
     QString AgxNtEveryNEventsModifier::name() const

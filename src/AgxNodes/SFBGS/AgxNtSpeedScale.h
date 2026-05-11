@@ -21,7 +21,6 @@ namespace SFBGS {
 		AgxNtSpeedScale(AgxGraphModel* rootGraphRef);
 		~AgxNtSpeedScale() = default;
 
-	public:
 		// Inherited via AgxNode
 		QString name() const override;
 		QString caption() const override;

@@ -5,7 +5,7 @@
 #pragma once
 
 #pragma warning(push,0)
-#include <QTextEdit>
+#include <QWidget>
 #pragma warning(pop)
 #include "IAgxEmbedSceneData.h"
 
@@ -15,7 +15,6 @@ class SimpleScrollAreaEventFilter : public QObject
 public:
 	explicit SimpleScrollAreaEventFilter(QObject* parent = nullptr) : QObject(parent) {}
 
-protected:
 	bool eventFilter(QObject* object, QEvent* event) override;
 
 };
@@ -37,9 +36,9 @@ class AgxCommentWidget : public QScrollArea, public IAgxEmbedSceneData
 	Q_OBJECT
 
 public:
-	void setFont(const QFont& font);
-	void setText(const QString& text);
-	QString text() const;
+	void setCommentFont(const QFont& font) const;
+	void setCommentText(const QString& text) const;
+	[[nodiscard]] QString text() const;
 
 protected:
 	void mousePressEvent(QMouseEvent* event) override;
@@ -52,13 +51,13 @@ protected:
 
 
 public:
-	AgxCommentWidget(QWidget* parent = nullptr, QStringList keyPath = {""});
-	AgxCommentWidget(const QString& text, QWidget* parent = nullptr);
-	~AgxCommentWidget() = default;
+	explicit AgxCommentWidget(QWidget* parent = nullptr, QStringList  keyPath = {""});
+	explicit AgxCommentWidget(const QString& text, QWidget* parent = nullptr);
+	~AgxCommentWidget() override = default;
 
 private:
 	QStringList _keyPath;
 
-	ReadOnlyLabel* label;
+	ReadOnlyLabel* label = nullptr;
 };
 

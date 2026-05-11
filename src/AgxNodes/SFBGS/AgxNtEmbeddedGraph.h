@@ -23,7 +23,6 @@ namespace SFBGS {
 		AgxNtEmbeddedGraph(AgxGraphModel* rootGraphRef);
 		~AgxNtEmbeddedGraph() = default;
 
-	public:
 		// Inherited via AgxNode
 		QString name() const override;
 		QString typeName() const override;
@@ -42,7 +41,6 @@ namespace SFBGS {
 	private:
 		QString SubCaptionUnformatted() const;
 
-	private:
 		MiniGraphicsView* _embGraphWidget = nullptr;
 		QString _blendName = "Blend Tree Embedded";
 		QString _stateName = "State Machine Embedded";

@@ -10,23 +10,23 @@
 #include <QMutex>
 
 static AgxLogger* g_log = nullptr;
-static QMutex logMutex;
-static QtMessageHandler ogHandler = nullptr;
+static QMutex g_logMutex;
+static QtMessageHandler g_ogHandler = nullptr;
 
 class MouseEventFilter : public QObject
 {
     Q_OBJECT
-protected:
-    inline bool eventFilter(QObject* obj, QEvent* event) override
+public:
+    bool eventFilter(QObject* obj, QEvent* event) override
     {
         if (event->type() == QEvent::MouseButtonPress) {
-            QMouseEvent* mouseEvent = static_cast<QMouseEvent*>(event);
+            //auto mouseEvent = dynamic_cast<QMouseEvent*>(event);
             // Log the object name and class of the receiver
             qDebug() << "Mouse press event received by object:" << obj->objectName()
                 << " Class:" << obj->metaObject()->className();
 
             // You can also get the widget type if it's a QWidget
-            if (QWidget* widget = qobject_cast<QWidget*>(obj)) {
+            if (const auto widget = qobject_cast<QWidget*>(obj)) {
                 qDebug() << "Receiver is a QWidget. Its window title is:" << widget->windowTitle();
             }
         }
@@ -42,20 +42,21 @@ class CALUMIMotionApplication : public QApplication {
 public:
 	CALUMIMotionApplication(int& argc, char** argv);
 
-    bool ToggleLogger();
-    void HideLogger();
-    void ShowLogger();
-    bool LoggerVisibile() const;
+    static bool ToggleLogger();
+    static void HideLogger();
+    static void ShowLogger();
+    static bool LoggerVisible();
 
-    void UpdateApplicationTabWidgets();
+    static void UpdateApplicationTabWidgets();
 
 private:
-	QHash<QString, unsigned int> _list;
+	QHash<QString, unsigned int> m_list;
 };
 
+// ReSharper disable once CppParameterMayBeConst
 inline void customMessageHandler(QtMsgType type, const QMessageLogContext& context, const QString& msg)
 {
-    QMutexLocker locker(&logMutex); // Ensure thread safety
+    QMutexLocker locker(&g_logMutex); // Ensure thread safety
 
     //QString logMessage;
     //QTextStream stream(&logMessage);
@@ -74,6 +75,6 @@ inline void customMessageHandler(QtMsgType type, const QMessageLogContext& conte
                                   Q_ARG(QString, msg), Q_ARG(QtMsgType, type));
     }
 
-    if (ogHandler)
-        ogHandler(type, context, msg);
+    if (g_ogHandler)
+        g_ogHandler(type, context, msg);
 }

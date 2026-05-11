@@ -11,8 +11,6 @@
 #include "Models/AgxGraphModel.h"
 #include "Models/AgxGraphicsScene.h"
 #include "Widgets/AgxGraphicsView.h"
-#include "Widgets/FilteredDropDownDialog.h"
-#include "Widgets/MultiVariableDialog.h"
 
 struct TabDataPair
 {
@@ -27,8 +25,8 @@ class CALUMIMotion : public QMainWindow
     Q_OBJECT
 
 public:
-    CALUMIMotion(QWidget *parent = nullptr);
-    ~CALUMIMotion();
+    explicit CALUMIMotion(QWidget *parent = nullptr);
+    ~CALUMIMotion() override;
 
     friend TabDataPair;
     //std::shared_ptr<QtNodes::NodeDelegateModelRegistry> GetRegistry() const;
@@ -38,8 +36,7 @@ public:
     bool HasScene(AgxGraphicsScene* scene);
     AgxGraphicsView* GetAgxViewFromTab(int idx);
 
-public:
-    void UpdateTabTitles();
+void UpdateTabTitles();
 
 signals:
     void LanguageChanged();

@@ -58,7 +58,6 @@ protected:
 	mutable QFontMetrics _fontMetrics;
 	mutable QFontMetrics _boldFontMetrics;
 
-protected:
-	AgxGraphModel& _graphModel;
+AgxGraphModel& _graphModel;
 
 };

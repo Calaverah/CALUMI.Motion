@@ -8,17 +8,17 @@
 namespace SFBGS {
     AgxNtSpeedScale::AgxNtSpeedScale(AgxGraphModel* rootGraphRef) : SFBGSNode(rootGraphRef)
     {
-        _nameProperty = QStringLiteral("Speed Scale");
+        m_nameProperty = QStringLiteral("Speed Scale");
 
-        _PropertyEntries.push_back(AgxPropertyEntryDefinition(&AgxDictionary::DesiredSpeedVar, "Speed", AgxColumnTypes::CustomFloat));
-        _PropertyEntries.push_back(AgxPropertyEntryDefinition(&AgxDictionary::MinScale, "1.0", AgxColumnTypes::BasicFloat));
-        _PropertyEntries.push_back(AgxPropertyEntryDefinition(&AgxDictionary::MaxScale, "1.5", AgxColumnTypes::BasicFloat));
-        _PropertyEntries.push_back(AgxPropertyEntryDefinition(&AgxDictionary::Blendratewhenactive, "1.0", AgxColumnTypes::BasicFloat));
-        _PropertyEntries.push_back(AgxPropertyEntryDefinition(&AgxDictionary::Blendratewheninactive, "0", AgxColumnTypes::BasicFloat));
-        _PropertyEntries.push_back(AgxPropertyEntryDefinition(&AgxDictionary::DisableBefore, "-1", AgxColumnTypes::BasicFloat));
-        _PropertyEntries.push_back(AgxPropertyEntryDefinition(&AgxDictionary::DisableAfter, "-1", AgxColumnTypes::BasicFloat));
+        m_propertyEntries.push_back(AgxPropertyEntryDefinition(&AgxDictionary::DesiredSpeedVar, "Speed", AgxColumnTypes::CustomFloat));
+        m_propertyEntries.push_back(AgxPropertyEntryDefinition(&AgxDictionary::MinScale, "1.0", AgxColumnTypes::BasicFloat));
+        m_propertyEntries.push_back(AgxPropertyEntryDefinition(&AgxDictionary::MaxScale, "1.5", AgxColumnTypes::BasicFloat));
+        m_propertyEntries.push_back(AgxPropertyEntryDefinition(&AgxDictionary::Blendratewhenactive, "1.0", AgxColumnTypes::BasicFloat));
+        m_propertyEntries.push_back(AgxPropertyEntryDefinition(&AgxDictionary::Blendratewheninactive, "0", AgxColumnTypes::BasicFloat));
+        m_propertyEntries.push_back(AgxPropertyEntryDefinition(&AgxDictionary::DisableBefore, "-1", AgxColumnTypes::BasicFloat));
+        m_propertyEntries.push_back(AgxPropertyEntryDefinition(&AgxDictionary::DisableAfter, "-1", AgxColumnTypes::BasicFloat));
 
-        _BlockOrder = { &AgxDictionary::EnterEvents, &AgxDictionary::ExitEvents };
+        m_blockOrder = { &AgxDictionary::EnterEvents, &AgxDictionary::ExitEvents };
     }
 
     QString AgxNtSpeedScale::name() const
@@ -51,10 +51,10 @@ namespace SFBGS {
             switch (portType)
             {
                 case AgxPortType::In:
-                    sfbgsPort->SetName("passthrough");
+                    sfbgsPort->setName("passthrough");
                     break;
             }
-            Q_EMIT sfbgsPort->PropertySheetUpdated();
+            Q_EMIT sfbgsPort->propertySheetUpdated();
         }
 
         return port;

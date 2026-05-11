@@ -21,7 +21,6 @@ namespace SFBGS {
 		AgxNtGamebryoSequence(AgxGraphModel* rootGraphRef);
 		~AgxNtGamebryoSequence() = default;
 
-	public:
 		// Inherited via AgxNode
 		QString name() const override;
 		QString caption() const override;

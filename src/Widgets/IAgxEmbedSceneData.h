@@ -5,7 +5,6 @@
 #pragma once
 #pragma warning(push,0)
 #include "Utilities/AgxDefinitions.h"
-#include <QJsonObject>
 #pragma warning(pop)
 
 
@@ -15,35 +14,34 @@ class AgxGraphModel;
 class IAgxEmbedSceneData 
 {
 public:
-	IAgxEmbedSceneData() : _graph(nullptr), _scene(nullptr), _nodeId(InvalidNodeId) {}
+	IAgxEmbedSceneData() : m_nodeId(InvalidNodeId), m_scene(nullptr), m_graph(nullptr) {}
 	virtual ~IAgxEmbedSceneData() = default;
 
 
-public:
-	//For Node Properties
-	virtual inline void SetRefData(AgxNodeId nodeId, AgxGraphicsScene* scene) { 
-		_graph = nullptr;
-		_scene = scene; 
-		_nodeId = nodeId;
+//For Node Properties
+	virtual void SetRefData(const AgxNodeId& nodeId, AgxGraphicsScene* scene) {
+		m_graph = nullptr;
+		m_scene = scene;
+		m_nodeId = nodeId;
 		}
 
 	//For Extending To Child Objects
-	virtual inline void SetRefData(const IAgxEmbedSceneData& source) {
-		_graph = source._graph;
-		_scene = source._scene;
-		_nodeId = source._nodeId;
+	virtual void SetRefData(const IAgxEmbedSceneData& source) {
+		m_graph = source.m_graph;
+		m_scene = source.m_scene;
+		m_nodeId = source.m_nodeId;
 	}
 
 	//For Graph Properties
-	virtual inline void SetRefData(AgxGraphModel* model, AgxGraphicsScene* scene) {
-		_nodeId = InvalidNodeId;
-		_scene = scene;
-		_graph = model;
+	virtual void SetRefData(AgxGraphModel* model, AgxGraphicsScene* scene) {
+		m_nodeId = InvalidNodeId;
+		m_scene = scene;
+		m_graph = model;
 	}
 protected:
-	AgxNodeId _nodeId;
-	AgxGraphicsScene* _scene;
-	AgxGraphModel* _graph;
+	AgxNodeId m_nodeId;
+	AgxGraphicsScene* m_scene;
+	AgxGraphModel* m_graph;
 
 public:
 	virtual void SendInsertPropertySheetDataCommand(const QJsonObject& obj);
@@ -53,7 +51,4 @@ public:
 	virtual void RefreshNode() const;
 
 	virtual QPoint mapToAgxView(QPoint pos);
-
-
-
 };

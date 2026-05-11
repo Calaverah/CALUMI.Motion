@@ -28,8 +28,7 @@ protected:
 private:
 	void RefreshUiValues() const;
 
-private:
-	Ui::SettingsDialogClass ui;
+Ui::SettingsDialogClass ui;
 
 	QStringList _StartupVisibilityStrings = {
 		QObject::tr("Never"),

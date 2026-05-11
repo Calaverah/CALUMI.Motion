@@ -21,7 +21,6 @@ public:
 		double minimum = 0;
 		double maximum = 0;
 	};
-public:
 	AgxGraphicsView(QWidget* parent = Q_NULLPTR);
 	AgxGraphicsView(AgxGraphicsScene* scene, QWidget* parent = Q_NULLPTR);
 

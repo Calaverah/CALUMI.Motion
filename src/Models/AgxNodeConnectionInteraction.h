@@ -68,8 +68,7 @@ private:
 
     AgxPortIndex nodePortIndexUnderScenePoint(AgxPortType portType, QPointF const& p) const;
 
-private:
-    AgxNodeGraphicsObject& _ngo;
+AgxNodeGraphicsObject& _ngo;
 
     AgxConnectionGraphicsObject& _cgo;
 

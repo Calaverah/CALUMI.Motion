@@ -8,17 +8,17 @@
 namespace SFBGS {
     AgxNtGamebryoSequence::AgxNtGamebryoSequence(AgxGraphModel* rootGraphRef) : SFBGSNode(rootGraphRef)
     {
-        _nameProperty = QStringLiteral("Gamebryo Sequence");
+        m_nameProperty = QStringLiteral("Gamebryo Sequence");
 
-        _PropertyEntries.push_back(AgxPropertyEntryDefinition(&AgxDictionary::Name, "", AgxColumnTypes::BasicString));
-        _PropertyEntries.push_back(AgxPropertyEntryDefinition(&AgxDictionary::SequenceName, "", AgxColumnTypes::BasicString));
-        _PropertyEntries.push_back(AgxPropertyEntryDefinition(&AgxDictionary::WeightorVariable, "", AgxColumnTypes::CustomFloat));
-        _PropertyEntries.push_back(AgxPropertyEntryDefinition(&AgxDictionary::BlendModeFunction, _BlendList.at(0)().tag, AgxColumnTypes::CustomDropDown, _BlendList));
-        _PropertyEntries.push_back(AgxPropertyEntryDefinition(&AgxDictionary::TimePercent, "", AgxColumnTypes::CustomFloat));
-        _PropertyEntries.push_back(AgxPropertyEntryDefinition(&AgxDictionary::BlendOutFrames, "0", AgxColumnTypes::BasicInteger));
-        _PropertyEntries.push_back(AgxPropertyEntryDefinition(&AgxDictionary::SyncOnlyTransitionOut, "False", AgxColumnTypes::BasicBool));
+        m_propertyEntries.push_back(AgxPropertyEntryDefinition(&AgxDictionary::Name, "", AgxColumnTypes::BasicString));
+        m_propertyEntries.push_back(AgxPropertyEntryDefinition(&AgxDictionary::SequenceName, "", AgxColumnTypes::BasicString));
+        m_propertyEntries.push_back(AgxPropertyEntryDefinition(&AgxDictionary::WeightorVariable, "", AgxColumnTypes::CustomFloat));
+        m_propertyEntries.push_back(AgxPropertyEntryDefinition(&AgxDictionary::BlendModeFunction, _BlendList.at(0)().tag, AgxColumnTypes::CustomDropDown, _BlendList));
+        m_propertyEntries.push_back(AgxPropertyEntryDefinition(&AgxDictionary::TimePercent, "", AgxColumnTypes::CustomFloat));
+        m_propertyEntries.push_back(AgxPropertyEntryDefinition(&AgxDictionary::BlendOutFrames, "0", AgxColumnTypes::BasicInteger));
+        m_propertyEntries.push_back(AgxPropertyEntryDefinition(&AgxDictionary::SyncOnlyTransitionOut, "False", AgxColumnTypes::BasicBool));
 
-        _BlockOrder = { &AgxDictionary::EnterEvents, &AgxDictionary::ExitEvents };
+        m_blockOrder = { &AgxDictionary::EnterEvents, &AgxDictionary::ExitEvents };
     }
 
     QString AgxNtGamebryoSequence::name() const
@@ -45,9 +45,9 @@ namespace SFBGS {
 
     QString AgxNtGamebryoSequence::SubCaption() const
     {
-        QString name = _PropertyEntries.at(1).value.isEmpty() ? "-" : _PropertyEntries.at(1).value;
+        QString name = m_propertyEntries.at(1).value.isEmpty() ? "-" : m_propertyEntries.at(1).value;
 
-        return QString("%1 (%2)").arg(name).arg(GetPropertyValue(_SFBGS_Properties, AgxDictionary::UserId().tag, "?"));
+        return QString("%1 (%2)").arg(name).arg(GetPropertyValue(m_sfbgsProperties, AgxDictionary::UserId().tag, "?"));
     }
 
     AgxNodeType AgxNtGamebryoSequence::GetNodeType() const
@@ -64,10 +64,10 @@ namespace SFBGS {
             switch (portType)
             {
                 case AgxPortType::In:
-                    sfbgsPort->SetPropertySheetOptional(false);
+                    sfbgsPort->setPropertySheetOptional(false);
                     break;
             }
-            Q_EMIT sfbgsPort->PropertySheetUpdated();
+            Q_EMIT sfbgsPort->propertySheetUpdated();
         }
 
         return port;

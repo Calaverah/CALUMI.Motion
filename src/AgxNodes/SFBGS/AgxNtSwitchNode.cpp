@@ -8,14 +8,14 @@
 namespace SFBGS {
     AgxNtSwitchNode::AgxNtSwitchNode(AgxGraphModel* rootGraphRef) :SFBGSNode(rootGraphRef)
     {
-        _nameProperty = QStringLiteral("Switch");
+        m_nameProperty = QStringLiteral("Switch");
 
-        _PropertyEntries.push_back(AgxPropertyEntryDefinition(&AgxDictionary::Name, "", AgxColumnTypes::BasicString));
-        _PropertyEntries.push_back(AgxPropertyEntryDefinition(&AgxDictionary::VariableName, "", AgxColumnTypes::CustomInteger));
-        _PropertyEntries.push_back(AgxPropertyEntryDefinition(&AgxDictionary::VariableType, _eventList.at(0)().tag, AgxColumnTypes::CustomDropDown, _eventList));
-        _PropertyEntries.push_back(AgxPropertyEntryDefinition(&AgxDictionary::MaxBlendTime, "0.3", AgxColumnTypes::BasicFloat));
-        _PropertyEntries.push_back(AgxPropertyEntryDefinition(&AgxDictionary::RandomizeIfInvalid, "False", AgxColumnTypes::BasicBool));
-        _PropertyEntries.push_back(AgxPropertyEntryDefinition(&AgxDictionary::TagAlteration, _fixList.at(0)().tag, AgxColumnTypes::CustomDropDown, _fixList));
+        m_propertyEntries.push_back(AgxPropertyEntryDefinition(&AgxDictionary::Name, "", AgxColumnTypes::BasicString));
+        m_propertyEntries.push_back(AgxPropertyEntryDefinition(&AgxDictionary::VariableName, "", AgxColumnTypes::CustomInteger));
+        m_propertyEntries.push_back(AgxPropertyEntryDefinition(&AgxDictionary::VariableType, _eventList.at(0)().tag, AgxColumnTypes::CustomDropDown, _eventList));
+        m_propertyEntries.push_back(AgxPropertyEntryDefinition(&AgxDictionary::MaxBlendTime, "0.3", AgxColumnTypes::BasicFloat));
+        m_propertyEntries.push_back(AgxPropertyEntryDefinition(&AgxDictionary::RandomizeIfInvalid, "False", AgxColumnTypes::BasicBool));
+        m_propertyEntries.push_back(AgxPropertyEntryDefinition(&AgxDictionary::TagAlteration, _fixList.at(0)().tag, AgxColumnTypes::CustomDropDown, _fixList));
 
         {
             AgxPropertyBlockData entryBlockDef({
@@ -27,10 +27,10 @@ namespace SFBGS {
                 AgxPropertyEntryDefinition(&AgxDictionary::EventList,"",AgxColumnTypes::BasicString)
                                                }, nullptr);
 
-            _PropertyBlocks.insert(&AgxDictionary::Entries, entryBlockDef);
+            m_PropertyBlocks.insert(&AgxDictionary::Entries, entryBlockDef);
         }
 
-        _BlockOrder = { &AgxDictionary::Entries, &AgxDictionary::EnterEvents, &AgxDictionary::ExitEvents};
+        m_blockOrder = { &AgxDictionary::Entries, &AgxDictionary::EnterEvents, &AgxDictionary::ExitEvents};
     }
 
     QString AgxNtSwitchNode::name() const
@@ -60,8 +60,8 @@ namespace SFBGS {
         if (auto sfbgsPort = dynamic_cast<AgxPort_SFBGS*>(port.get()))
         {
             if (portType == AgxPortType::In) {
-                sfbgsPort->SetName("");
-                Q_EMIT sfbgsPort->PropertySheetUpdated();
+                sfbgsPort->setName("");
+                Q_EMIT sfbgsPort->propertySheetUpdated();
             }
         }
 

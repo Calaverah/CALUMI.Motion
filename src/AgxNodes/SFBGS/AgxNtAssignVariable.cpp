@@ -8,11 +8,11 @@
 namespace SFBGS {
     AgxNtAssignVariable::AgxNtAssignVariable(AgxGraphModel* rootGraphRef) :SFBGSNode(rootGraphRef)
     {
-        _nameProperty = QStringLiteral("Assign Variable");
-        _PropertyEntries.push_back(AgxPropertyEntryDefinition(&AgxDictionary::Name, "Assign Variable", AgxColumnTypes::BasicString));
-        _PropertyEntries.push_back(AgxPropertyEntryDefinition(&AgxDictionary::Operation, _dropDownList.at(0)().tag, AgxColumnTypes::CustomDropDown, _dropDownList));
-        _PropertyEntries.push_back(AgxPropertyEntryDefinition(&AgxDictionary::OnlyAssignOnce, "True", AgxColumnTypes::BasicBool));
-        _PropertyEntries.push_back(AgxPropertyEntryDefinition(&AgxDictionary::SyncOnlyTransitionOut, "False", AgxColumnTypes::BasicBool));
+        m_nameProperty = QStringLiteral("Assign Variable");
+        m_propertyEntries.push_back(AgxPropertyEntryDefinition(&AgxDictionary::Name, "Assign Variable", AgxColumnTypes::BasicString));
+        m_propertyEntries.push_back(AgxPropertyEntryDefinition(&AgxDictionary::Operation, _dropDownList.at(0)().tag, AgxColumnTypes::CustomDropDown, _dropDownList));
+        m_propertyEntries.push_back(AgxPropertyEntryDefinition(&AgxDictionary::OnlyAssignOnce, "True", AgxColumnTypes::BasicBool));
+        m_propertyEntries.push_back(AgxPropertyEntryDefinition(&AgxDictionary::SyncOnlyTransitionOut, "False", AgxColumnTypes::BasicBool));
 
         {
             AgxPropertyBlockData multiVarBlockDef({
@@ -21,10 +21,10 @@ namespace SFBGS {
                                                     AgxPropertyEntryDefinition(&AgxDictionary::AssignedValue,"0",AgxColumnTypes::BasicMultiVar)
                                                   },nullptr);
 
-            _PropertyBlocks.insert(&AgxDictionary::Entries, multiVarBlockDef);
+            m_PropertyBlocks.insert(&AgxDictionary::Entries, multiVarBlockDef);
         }
 
-        _BlockOrder = { &AgxDictionary::Entries, &AgxDictionary::EnterEvents, &AgxDictionary::ExitEvents};
+        m_blockOrder = { &AgxDictionary::Entries, &AgxDictionary::EnterEvents, &AgxDictionary::ExitEvents};
     }
 
     QString AgxNtAssignVariable::name() const
@@ -60,9 +60,9 @@ namespace SFBGS {
         if (auto sfbgsPort = dynamic_cast<AgxPort_SFBGS*>(port.get()))
         {
             if (portType == AgxPortType::In) {
-                sfbgsPort->SetPropertySheetOptional(false);
-                sfbgsPort->SetName("");
-                Q_EMIT sfbgsPort->PropertySheetUpdated();
+                sfbgsPort->setPropertySheetOptional(false);
+                sfbgsPort->setName("");
+                Q_EMIT sfbgsPort->propertySheetUpdated();
             }
         }
 

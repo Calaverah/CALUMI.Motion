@@ -17,8 +17,7 @@ class AgxStyle // : public QObject
 public:
     virtual ~AgxStyle() = default;
 
-public:
-    virtual void loadJson(const QJsonObject& json) = 0;
+virtual void loadJson(const QJsonObject& json) = 0;
 
     virtual QJsonObject toJson() const = 0;
 

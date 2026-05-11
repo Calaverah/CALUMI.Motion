@@ -9,38 +9,38 @@
 
 
 void IAgxEmbedSceneData::SendInsertPropertySheetDataCommand(const QJsonObject& obj) {
-	if(!_scene)
+	if(!m_scene)
 		return;
 
-	if(_nodeId != InvalidNodeId)
-		_scene->undoStack().push(new InsertPropertySheetDataCommand(_scene, _nodeId, obj));
+	if(m_nodeId != InvalidNodeId)
+		m_scene->undoStack().push(new InsertPropertySheetDataCommand(m_scene, m_nodeId, obj));
 
-	if(_graph)
-		_scene->undoStack().push(new InsertPropertySheetDataCommand(_scene, _graph, obj));
+	if(m_graph)
+		m_scene->undoStack().push(new InsertPropertySheetDataCommand(m_scene, m_graph, obj));
 }
 
 void IAgxEmbedSceneData::SendAddRowToPropertyBlockDataCommand(const QString& blockKey, int index)
 {
-	if (!_scene)
+	if (!m_scene)
 		return;
 
-	if (_nodeId != InvalidNodeId)
-		_scene->undoStack().push(new AddRowToPropertyBlockDataCommand(_scene, _nodeId, blockKey, index));
+	if (m_nodeId != InvalidNodeId)
+		m_scene->undoStack().push(new AddRowToPropertyBlockDataCommand(m_scene, m_nodeId, blockKey, index));
 
-	if(_graph)
-		_scene->undoStack().push(new AddRowToPropertyBlockDataCommand(_scene, _graph, blockKey, index));
+	if(m_graph)
+		m_scene->undoStack().push(new AddRowToPropertyBlockDataCommand(m_scene, m_graph, blockKey, index));
 }
 
 void IAgxEmbedSceneData::SendRemoveRowFromPropertyBlockDataCommand(const QString & blockKey, int index)
 {
-	if (!_scene)
+	if (!m_scene)
 		return;
 
-	if (_nodeId != InvalidNodeId)
-		_scene->undoStack().push(new RemoveRowFromPropertyBlockDataCommand(_scene, _nodeId, blockKey, index));
+	if (m_nodeId != InvalidNodeId)
+		m_scene->undoStack().push(new RemoveRowFromPropertyBlockDataCommand(m_scene, m_nodeId, blockKey, index));
 
-	if (_graph)
-		_scene->undoStack().push(new RemoveRowFromPropertyBlockDataCommand(_scene, _graph, blockKey, index));
+	if (m_graph)
+		m_scene->undoStack().push(new RemoveRowFromPropertyBlockDataCommand(m_scene, m_graph, blockKey, index));
 }
 
 void IAgxEmbedSceneData::RefreshNode() const
@@ -54,11 +54,11 @@ void IAgxEmbedSceneData::RefreshNode() const
 
 QPoint IAgxEmbedSceneData::mapToAgxView(QPoint pos)
 {
-	if (auto agxview = dynamic_cast<AgxGraphicsView*>(_scene->views().at(0))) 
+	if (auto agxview = dynamic_cast<AgxGraphicsView*>(m_scene->views().at(0))) 
 	{
-		if(_nodeId != InvalidNodeId)
+		if(m_nodeId != InvalidNodeId)
 		{
-			QPoint newPos = _scene->agxNodeGraphicsObject(_nodeId)->scenePos().toPoint() + _scene->agxNodeGeometry().widgetPosition(_nodeId).toPoint() + pos; //get the pos of the node, pos of the embedded widget, then the pos within the embedded widget given by the argument
+			QPoint newPos = m_scene->agxNodeGraphicsObject(m_nodeId)->scenePos().toPoint() + m_scene->agxNodeGeometry().widgetPosition(m_nodeId).toPoint() + pos; //get the pos of the node, pos of the embedded widget, then the pos within the embedded widget given by the argument
 
 			return agxview->mapToGlobal(agxview->mapFromScene(newPos));
 		}

@@ -8,14 +8,14 @@
 namespace SFBGS {
     AgxNtStateVariableControl::AgxNtStateVariableControl(AgxGraphModel* rootGraphRef) : SFBGSNode(rootGraphRef)
     {
-        _nameProperty = QStringLiteral("State Variable Control");
+        m_nameProperty = QStringLiteral("State Variable Control");
 
-        _PropertyEntries.push_back(AgxPropertyEntryDefinition(&AgxDictionary::Name, "Variable Control", AgxColumnTypes::BasicString));
-        _PropertyEntries.push_back(AgxPropertyEntryDefinition(&AgxDictionary::StateVariable, "", AgxColumnTypes::CustomInteger));
-        _PropertyEntries.push_back(AgxPropertyEntryDefinition(&AgxDictionary::StartValue, "1", AgxColumnTypes::BasicInteger));
-        _PropertyEntries.push_back(AgxPropertyEntryDefinition(&AgxDictionary::EndValue, "1", AgxColumnTypes::BasicInteger));
-        _PropertyEntries.push_back(AgxPropertyEntryDefinition(&AgxDictionary::StateVariableRefCount, "", AgxColumnTypes::CustomInteger));
-        _PropertyEntries.push_back(AgxPropertyEntryDefinition(&AgxDictionary::UpdateRefCountWhenInactive, "False", AgxColumnTypes::BasicBool));
+        m_propertyEntries.push_back(AgxPropertyEntryDefinition(&AgxDictionary::Name, "Variable Control", AgxColumnTypes::BasicString));
+        m_propertyEntries.push_back(AgxPropertyEntryDefinition(&AgxDictionary::StateVariable, "", AgxColumnTypes::CustomInteger));
+        m_propertyEntries.push_back(AgxPropertyEntryDefinition(&AgxDictionary::StartValue, "1", AgxColumnTypes::BasicInteger));
+        m_propertyEntries.push_back(AgxPropertyEntryDefinition(&AgxDictionary::EndValue, "1", AgxColumnTypes::BasicInteger));
+        m_propertyEntries.push_back(AgxPropertyEntryDefinition(&AgxDictionary::StateVariableRefCount, "", AgxColumnTypes::CustomInteger));
+        m_propertyEntries.push_back(AgxPropertyEntryDefinition(&AgxDictionary::UpdateRefCountWhenInactive, "False", AgxColumnTypes::BasicBool));
 
         AgxPropertyBlockData blockData({
                                         AgxPropertyEntryDefinition(&AgxDictionary::BlankEntry, "", AgxColumnTypes::BasicString),
@@ -23,9 +23,9 @@ namespace SFBGS {
                                         AgxPropertyEntryDefinition(&AgxDictionary::AssignValue, "0", AgxColumnTypes::BasicInteger)
                                        }, nullptr);
 
-        _PropertyBlocks.insert(&AgxDictionary::Entries, blockData);
+        m_PropertyBlocks.insert(&AgxDictionary::Entries, blockData);
 
-        _BlockOrder = { &AgxDictionary::Entries, &AgxDictionary::EnterEvents, &AgxDictionary::ExitEvents};
+        m_blockOrder = { &AgxDictionary::Entries, &AgxDictionary::EnterEvents, &AgxDictionary::ExitEvents};
     }
 
     QString AgxNtStateVariableControl::name() const
@@ -58,10 +58,10 @@ namespace SFBGS {
             switch (portType)
             {
                 case AgxPortType::In:
-                    sfbgsPort->SetName(std::format("input{}",_In_Ports.size()).c_str());
+                    sfbgsPort->setName(std::format("input{}",m_inPorts.size()).c_str());
                     break;
             }
-            Q_EMIT sfbgsPort->PropertySheetUpdated();
+            Q_EMIT sfbgsPort->propertySheetUpdated();
         }
 
         return port;

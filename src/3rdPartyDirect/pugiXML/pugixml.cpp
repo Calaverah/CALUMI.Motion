@@ -10059,7 +10059,6 @@ PUGI_IMPL_NS_BEGIN
 
 	class xpath_ast_node
 	{
-	private:
 		// node type
 		char _type;
 		char _rettype;

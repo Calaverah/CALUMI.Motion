@@ -8,9 +8,9 @@
 namespace SFBGS {
     AgxNtConvertBoneDataToVariables::AgxNtConvertBoneDataToVariables(AgxGraphModel* rootGraphRef) : SFBGSNode(rootGraphRef)
     {
-        _nameProperty = QStringLiteral("Copy Bone To Vars");
+        m_nameProperty = QStringLiteral("Copy Bone To Vars");
 
-        _PropertyEntries.push_back(AgxPropertyEntryDefinition(&AgxDictionary::Name, "Convert Bone to Var", AgxColumnTypes::BasicString));
+        m_propertyEntries.push_back(AgxPropertyEntryDefinition(&AgxDictionary::Name, "Convert Bone to Var", AgxColumnTypes::BasicString));
 
         {
             AgxPropertyBlockData blockDef({
@@ -20,10 +20,10 @@ namespace SFBGS {
                 AgxPropertyEntryDefinition(&AgxDictionary::VariableOut,"",AgxColumnTypes::CustomFloat)
                                           }, nullptr);
 
-            _PropertyBlocks.insert(&AgxDictionary::Entries, blockDef);
+            m_PropertyBlocks.insert(&AgxDictionary::Entries, blockDef);
         }
 
-        _BlockOrder = { &AgxDictionary::Entries, &AgxDictionary::EnterEvents, &AgxDictionary::ExitEvents};
+        m_blockOrder = { &AgxDictionary::Entries, &AgxDictionary::EnterEvents, &AgxDictionary::ExitEvents};
     }
 
     std::shared_ptr<AgxPort> AgxNtConvertBoneDataToVariables::_AddPort(AgxPortType portType, AgxPortIndex index, QJsonObject data)
@@ -35,9 +35,9 @@ namespace SFBGS {
             switch (portType)
             {
                 case AgxPortType::In:
-                        sfbgsPort->SetName("Passthrough");
+                        sfbgsPort->setName("Passthrough");
             }
-            Q_EMIT sfbgsPort->PropertySheetUpdated();
+            Q_EMIT sfbgsPort->propertySheetUpdated();
         }
 
         return port;

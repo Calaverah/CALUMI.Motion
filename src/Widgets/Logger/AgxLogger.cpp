@@ -6,23 +6,22 @@
 #include "AgxLogger.h"
 #include "Utilities/SettingsRegistry.h"
 
-AgxLogger::AgxLogger(QWidget* parent) : QWidget(parent), _logTE(new QPlainTextEdit(this))
+AgxLogger::AgxLogger(QWidget* parent) : QWidget(parent), m_logTE(new QPlainTextEdit(this))
 {
-	QVBoxLayout* layout = new QVBoxLayout(this);
-	layout->addWidget(_logTE);
+	const auto layout = new QVBoxLayout(this);
+	layout->addWidget(m_logTE);
 	setLayout(layout);
-	_logTE->setReadOnly(true);
+	m_logTE->setReadOnly(true);
 
-	auto& settingIns = SettingsRegistry::GetInstance();
-	auto bytes = settingIns.GetSavedWindowGeometry("Log/Geometry");
-	if (settingIns.UseSavedConsoledGeometry() && !bytes.isEmpty())
+	const auto& settingIns = SettingsRegistry::GetInstance();
+	if (const auto bytes = settingIns.GetSavedWindowGeometry("Log/Geometry"); settingIns.UseSavedConsoledGeometry() && !bytes.isEmpty())
 		restoreGeometry(bytes);
 	else
 		resize(600, 400);
 
 	setWindowTitle("CALUMI Motion Log");
 
-	auto pref = settingIns.GetConsoleVisibilityPreference();
+	const auto pref = settingIns.GetConsoleVisibilityPreference();
 
 	bool show = true;
 
@@ -42,10 +41,8 @@ AgxLogger::AgxLogger(QWidget* parent) : QWidget(parent), _logTE(new QPlainTextEd
 	}
 
 	if(show)
-		QTimer::singleShot(500, Qt::PreciseTimer, [this]() { this->show();});
+		QTimer::singleShot(500, Qt::PreciseTimer, [this] { this->show();});
 }
-
-AgxLogger::~AgxLogger() {}
 
 void AgxLogger::closeEvent(QCloseEvent * event)
 {	
@@ -62,10 +59,10 @@ void AgxLogger::hideEvent(QHideEvent* event)
 	settingIns.SaveWindowGeometry("Log/Geometry", saveGeometry());
 }
 
-void AgxLogger::writeFormatted(const QString& text, const QColor& color, bool bold)
+void AgxLogger::writeFormatted(const QString& text, const QColor& color, const bool bold) const
 {
-	auto cursorref = _logTE->textCursor();
-	cursorref.movePosition(QTextCursor::End);
+	auto cursorRef = m_logTE->textCursor();
+	cursorRef.movePosition(QTextCursor::End);
 
 	QTextCharFormat format;
 	format.setForeground(QBrush(color));
@@ -74,23 +71,23 @@ void AgxLogger::writeFormatted(const QString& text, const QColor& color, bool bo
 	else
 		format.setFontWeight(QFont::Normal);
 
-	cursorref.setCharFormat(format);
-	cursorref.insertText(text);
+	cursorRef.setCharFormat(format);
+	cursorRef.insertText(text);
 
-	cursorref.setCharFormat(QTextCharFormat());
+	cursorRef.setCharFormat(QTextCharFormat());
 }
 
-void AgxLogger::appendMessage(const QString& text, const QtMsgType& type)
+void AgxLogger::appendMessage(const QString& text, const QtMsgType& type) const
 {
-	QString time = "[" + QDateTime::currentDateTime().toString("yyyy-MM-dd hh:mm:ss.zzz") + "] ";
+	const QString time = "[" + QDateTime::currentDateTime().toString("yyyy-MM-dd hh:mm:ss.zzz") + "] ";
 	writeFormatted(time, Qt::gray, false);
 
 	switch (type) {
 		case QtDebugMsg:
 		{
-#ifdef RELEASEBUILD
+#ifdef RELEASE_BUILD
 			return;
-#endif // DEBUGBUILD
+#endif
 			
 			writeFormatted("DEBUG: ", QColor(180, 80, 255), true);
 			break;
@@ -104,7 +101,6 @@ void AgxLogger::appendMessage(const QString& text, const QtMsgType& type)
 
 	//_logTE->appendPlainText(logMessage);
 	writeFormatted(text + "\n", Qt::white, false);
-	QScrollBar* scroller = _logTE->verticalScrollBar();
-	if (scroller)
+	if (const auto scroller = m_logTE->verticalScrollBar())
 		scroller->setValue(scroller->maximum());
 }

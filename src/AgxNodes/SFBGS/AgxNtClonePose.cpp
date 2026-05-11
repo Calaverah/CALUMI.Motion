@@ -8,13 +8,13 @@
 namespace SFBGS {
     AgxNtClonePose::AgxNtClonePose(AgxGraphModel* rootGraphRef) : SFBGSNode(rootGraphRef)
     {
-        _nameProperty = QStringLiteral("Clone Pose");
+        m_nameProperty = QStringLiteral("Clone Pose");
 
-        _PropertyEntries.push_back(AgxPropertyEntryDefinition(&AgxDictionary::Name, "Clone Pose", AgxColumnTypes::BasicString));
-        _PropertyEntries.push_back(AgxPropertyEntryDefinition(&AgxDictionary::Event, "", AgxColumnTypes::Event));
-        _PropertyEntries.push_back(AgxPropertyEntryDefinition(&AgxDictionary::ResumeEvent, "", AgxColumnTypes::Event));
+        m_propertyEntries.push_back(AgxPropertyEntryDefinition(&AgxDictionary::Name, "Clone Pose", AgxColumnTypes::BasicString));
+        m_propertyEntries.push_back(AgxPropertyEntryDefinition(&AgxDictionary::Event, "", AgxColumnTypes::Event));
+        m_propertyEntries.push_back(AgxPropertyEntryDefinition(&AgxDictionary::ResumeEvent, "", AgxColumnTypes::Event));
 
-        _BlockOrder = { &AgxDictionary::EnterEvents, &AgxDictionary::ExitEvents };
+        m_blockOrder = { &AgxDictionary::EnterEvents, &AgxDictionary::ExitEvents };
     }
 
     std::shared_ptr<AgxPort> AgxNtClonePose::_AddPort(AgxPortType portType, AgxPortIndex index, QJsonObject data)
@@ -26,9 +26,9 @@ namespace SFBGS {
             switch (portType)
             {
                 case AgxPortType::In:
-                    sfbgsPort->SetName(std::format("Input{}",_In_Ports.size()).c_str());
+                    sfbgsPort->setName(std::format("Input{}",m_inPorts.size()).c_str());
             }
-            Q_EMIT sfbgsPort->PropertySheetUpdated();
+            Q_EMIT sfbgsPort->propertySheetUpdated();
         }
 
         return port;

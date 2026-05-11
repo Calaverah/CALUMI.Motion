@@ -8,27 +8,27 @@
 namespace SFBGS {
     AgxNtEffectSequence::AgxNtEffectSequence(AgxGraphModel* rootGraphRef) :SFBGSNode(rootGraphRef)
     {
-        _nameProperty = QStringLiteral("Effect Sequence");
+        m_nameProperty = QStringLiteral("Effect Sequence");
         
         
         
-        _PropertyEntries.push_back(AgxPropertyEntryDefinition(&AgxDictionary::Name, "Effect Sequence", AgxColumnTypes::BasicString));
-        _PropertyEntries.push_back(AgxPropertyEntryDefinition(&AgxDictionary::SequenceName, "", AgxColumnTypes::BasicString));
-        _PropertyEntries.push_back(AgxPropertyEntryDefinition(&AgxDictionary::SendEventOnEnd, "", AgxColumnTypes::Event));
-        _PropertyEntries.push_back(AgxPropertyEntryDefinition(&AgxDictionary::TimePercent, "", AgxColumnTypes::CustomFloat));
-        _PropertyEntries.push_back(AgxPropertyEntryDefinition(&AgxDictionary::TimePercentMin, "0", AgxColumnTypes::BasicFloat));
-        _PropertyEntries.push_back(AgxPropertyEntryDefinition(&AgxDictionary::TimePercentMax, "1", AgxColumnTypes::BasicFloat));
-        _PropertyEntries.push_back(AgxPropertyEntryDefinition(&AgxDictionary::SequenceCurrentFrameIndex, "", AgxColumnTypes::CustomInteger));
-        _PropertyEntries.push_back(AgxPropertyEntryDefinition(&AgxDictionary::SpeedMultiplier, "", AgxColumnTypes::CustomFloat));
-        _PropertyEntries.push_back(AgxPropertyEntryDefinition(&AgxDictionary::Weight, "", AgxColumnTypes::CustomFloat));
-        _PropertyEntries.push_back(AgxPropertyEntryDefinition(&AgxDictionary::BlendModeFunction, _ModeList.at(0)().tag, AgxColumnTypes::CustomDropDown, _ModeList));
-        _PropertyEntries.push_back(AgxPropertyEntryDefinition(&AgxDictionary::BlendOutFrames, "0", AgxColumnTypes::BasicInteger));
-        _PropertyEntries.push_back(AgxPropertyEntryDefinition(&AgxDictionary::HasLoopingSegment, "False", AgxColumnTypes::BasicBool));
-        _PropertyEntries.push_back(AgxPropertyEntryDefinition(&AgxDictionary::InitializeSequenceOnLoad, "False", AgxColumnTypes::BasicBool));
-        _PropertyEntries.push_back(AgxPropertyEntryDefinition(&AgxDictionary::AllowNoEffect, "False", AgxColumnTypes::BasicBool));
-        _PropertyEntries.push_back(AgxPropertyEntryDefinition(&AgxDictionary::SyncOnlyTransitionOut, "False", AgxColumnTypes::BasicBool));
+        m_propertyEntries.push_back(AgxPropertyEntryDefinition(&AgxDictionary::Name, "Effect Sequence", AgxColumnTypes::BasicString));
+        m_propertyEntries.push_back(AgxPropertyEntryDefinition(&AgxDictionary::SequenceName, "", AgxColumnTypes::BasicString));
+        m_propertyEntries.push_back(AgxPropertyEntryDefinition(&AgxDictionary::SendEventOnEnd, "", AgxColumnTypes::Event));
+        m_propertyEntries.push_back(AgxPropertyEntryDefinition(&AgxDictionary::TimePercent, "", AgxColumnTypes::CustomFloat));
+        m_propertyEntries.push_back(AgxPropertyEntryDefinition(&AgxDictionary::TimePercentMin, "0", AgxColumnTypes::BasicFloat));
+        m_propertyEntries.push_back(AgxPropertyEntryDefinition(&AgxDictionary::TimePercentMax, "1", AgxColumnTypes::BasicFloat));
+        m_propertyEntries.push_back(AgxPropertyEntryDefinition(&AgxDictionary::SequenceCurrentFrameIndex, "", AgxColumnTypes::CustomInteger));
+        m_propertyEntries.push_back(AgxPropertyEntryDefinition(&AgxDictionary::SpeedMultiplier, "", AgxColumnTypes::CustomFloat));
+        m_propertyEntries.push_back(AgxPropertyEntryDefinition(&AgxDictionary::Weight, "", AgxColumnTypes::CustomFloat));
+        m_propertyEntries.push_back(AgxPropertyEntryDefinition(&AgxDictionary::BlendModeFunction, _ModeList.at(0)().tag, AgxColumnTypes::CustomDropDown, _ModeList));
+        m_propertyEntries.push_back(AgxPropertyEntryDefinition(&AgxDictionary::BlendOutFrames, "0", AgxColumnTypes::BasicInteger));
+        m_propertyEntries.push_back(AgxPropertyEntryDefinition(&AgxDictionary::HasLoopingSegment, "False", AgxColumnTypes::BasicBool));
+        m_propertyEntries.push_back(AgxPropertyEntryDefinition(&AgxDictionary::InitializeSequenceOnLoad, "False", AgxColumnTypes::BasicBool));
+        m_propertyEntries.push_back(AgxPropertyEntryDefinition(&AgxDictionary::AllowNoEffect, "False", AgxColumnTypes::BasicBool));
+        m_propertyEntries.push_back(AgxPropertyEntryDefinition(&AgxDictionary::SyncOnlyTransitionOut, "False", AgxColumnTypes::BasicBool));
 
-        _BlockOrder = { &AgxDictionary::EnterEvents, &AgxDictionary::ExitEvents };
+        m_blockOrder = { &AgxDictionary::EnterEvents, &AgxDictionary::ExitEvents };
 
     }
 
@@ -55,9 +55,9 @@ namespace SFBGS {
 
     QString AgxNtEffectSequence::SubCaption() const
     {
-        QString name = _PropertyEntries.at(1).value.isEmpty() ? "-" : _PropertyEntries.at(1).value;
+        QString name = m_propertyEntries.at(1).value.isEmpty() ? "-" : m_propertyEntries.at(1).value;
 
-        return QString("%1 (%2)").arg(name).arg(GetPropertyValue(_SFBGS_Properties, AgxDictionary::UserId().tag, "?"));
+        return QString("%1 (%2)").arg(name).arg(GetPropertyValue(m_sfbgsProperties, AgxDictionary::UserId().tag, "?"));
     }
 
     AgxNodeType AgxNtEffectSequence::GetNodeType() const
@@ -69,15 +69,15 @@ namespace SFBGS {
     {
         auto validState = SFBGSNode::validationState();
 
-        for (auto& entry : _PropertyEntries)
+        for (auto& entry : m_propertyEntries)
         {
             if ((entry.Tag().compare("Blend Mode Function") == 0) && entry.value != _ModeList.at(0)().tag)
             {
-                if (validState.state() == AgxNodeValidationState::State::Valid) validState._state = AgxNodeValidationState::State::Warning;
+                if (validState.state() == AgxNodeValidationState::State::Valid) validState.m_state = AgxNodeValidationState::State::Warning;
 
-                QString message = validState._stateMessage.isEmpty() ? "" : "\n";
+                QString message = validState.m_stateMessage.isEmpty() ? "" : "\n";
                 message += "Blend Mode Function is untested. Use with caution!";
-                validState._stateMessage += message;
+                validState.m_stateMessage += message;
                 break;
             }
         }
@@ -92,8 +92,8 @@ namespace SFBGS {
         if (auto sfbgsPort = dynamic_cast<AgxPort_SFBGS*>(port.get()))
         {
             if (portType == AgxPortType::In) {
-                sfbgsPort->SetPropertySheetOptional(true);
-                sfbgsPort->SetName("");
+                sfbgsPort->setPropertySheetOptional(true);
+                sfbgsPort->setName("");
             }
         }
 

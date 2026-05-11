@@ -8,20 +8,20 @@
 namespace SFBGS {
     AgxNtTwoBoneIK::AgxNtTwoBoneIK(AgxGraphModel* rootGraphRef) : SFBGSNode(rootGraphRef)
     {
-        _nameProperty = QStringLiteral("Two Bone IK");
+        m_nameProperty = QStringLiteral("Two Bone IK");
 
-        _PropertyEntries.push_back(AgxPropertyEntryDefinition(&AgxDictionary::Name, "", AgxColumnTypes::BasicString));
-        _PropertyEntries.push_back(AgxPropertyEntryDefinition(&AgxDictionary::ParentBoneName, "", AgxColumnTypes::BasicString));
-        _PropertyEntries.push_back(AgxPropertyEntryDefinition(&AgxDictionary::BendBoneName, "", AgxColumnTypes::BasicString));
-        _PropertyEntries.push_back(AgxPropertyEntryDefinition(&AgxDictionary::SourceBoneName, "", AgxColumnTypes::BasicString));
-        _PropertyEntries.push_back(AgxPropertyEntryDefinition(&AgxDictionary::DisableVariable, "", AgxColumnTypes::CustomInteger));
-        _PropertyEntries.push_back(AgxPropertyEntryDefinition(&AgxDictionary::Axis, _AxisList.at(0)().tag, AgxColumnTypes::CustomDropDown, _AxisList));
-        _PropertyEntries.push_back(AgxPropertyEntryDefinition(&AgxDictionary::AngleMultiplier, "1", AgxColumnTypes::BasicInteger));
-        _PropertyEntries.push_back(AgxPropertyEntryDefinition(&AgxDictionary::TargetBoneName, "", AgxColumnTypes::BasicString));
-        _PropertyEntries.push_back(AgxPropertyEntryDefinition(&AgxDictionary::BlendOnOfftime, "0.1", AgxColumnTypes::BasicFloat));
-        _PropertyEntries.push_back(AgxPropertyEntryDefinition(&AgxDictionary::AlignOrient, "True", AgxColumnTypes::BasicBool));
+        m_propertyEntries.push_back(AgxPropertyEntryDefinition(&AgxDictionary::Name, "", AgxColumnTypes::BasicString));
+        m_propertyEntries.push_back(AgxPropertyEntryDefinition(&AgxDictionary::ParentBoneName, "", AgxColumnTypes::BasicString));
+        m_propertyEntries.push_back(AgxPropertyEntryDefinition(&AgxDictionary::BendBoneName, "", AgxColumnTypes::BasicString));
+        m_propertyEntries.push_back(AgxPropertyEntryDefinition(&AgxDictionary::SourceBoneName, "", AgxColumnTypes::BasicString));
+        m_propertyEntries.push_back(AgxPropertyEntryDefinition(&AgxDictionary::DisableVariable, "", AgxColumnTypes::CustomInteger));
+        m_propertyEntries.push_back(AgxPropertyEntryDefinition(&AgxDictionary::Axis, _AxisList.at(0)().tag, AgxColumnTypes::CustomDropDown, _AxisList));
+        m_propertyEntries.push_back(AgxPropertyEntryDefinition(&AgxDictionary::AngleMultiplier, "1", AgxColumnTypes::BasicInteger));
+        m_propertyEntries.push_back(AgxPropertyEntryDefinition(&AgxDictionary::TargetBoneName, "", AgxColumnTypes::BasicString));
+        m_propertyEntries.push_back(AgxPropertyEntryDefinition(&AgxDictionary::BlendOnOfftime, "0.1", AgxColumnTypes::BasicFloat));
+        m_propertyEntries.push_back(AgxPropertyEntryDefinition(&AgxDictionary::AlignOrient, "True", AgxColumnTypes::BasicBool));
 
-        _BlockOrder = { &AgxDictionary::EnterEvents, &AgxDictionary::ExitEvents };
+        m_blockOrder = { &AgxDictionary::EnterEvents, &AgxDictionary::ExitEvents };
     }
 
     QString AgxNtTwoBoneIK::name() const
@@ -60,13 +60,13 @@ namespace SFBGS {
             switch (portType)
             {
                 case AgxPortType::In:
-                    if(_In_Ports.size() == 1)
-                        sfbgsPort->SetName("passthrough");
-                    if(_In_Ports.size() == 2)
-                        sfbgsPort->SetName("merge");
+                    if(m_inPorts.size() == 1)
+                        sfbgsPort->setName("passthrough");
+                    if(m_inPorts.size() == 2)
+                        sfbgsPort->setName("merge");
                     break;
             }
-            Q_EMIT sfbgsPort->PropertySheetUpdated();
+            Q_EMIT sfbgsPort->propertySheetUpdated();
         }
 
         return port;

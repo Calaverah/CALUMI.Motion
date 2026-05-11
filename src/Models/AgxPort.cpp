@@ -9,45 +9,46 @@
 #include <Widgets/Blend/AgxBlendInputView.h>
 #include <Widgets/AgxLineEdit.h>
 
+#include "Utilities/AgxFormat.h"
+
 AgxPort_SFBGS::AgxPort_SFBGS(AgxNode* parent) : AgxPort(parent)
 {
 }
 
 AgxPort_SFBGS::~AgxPort_SFBGS()
 {
-	if (_ContentWidget) _ContentWidget->deleteLater();
+	if (m_contentWidget) m_contentWidget->deleteLater();
 }
 
-void AgxPort_SFBGS::SetName(const QString& str) { 
-	name = str;
-	if(_ContentWidget)
-		_ContentWidget->SetTitle(QString("[Port] %1").arg(Caption()));
+void AgxPort_SFBGS::setName(const QString& str) {
+	m_name = str;
+	if(m_contentWidget)
+		m_contentWidget->SetTitle(QString("[Port] %1").arg(caption()));
 }
 
-void AgxPort_SFBGS::InsertData(const QJsonObject& data)
+void AgxPort_SFBGS::insertData(const QJsonObject& data)
 {
-	AgxPort::InsertData(data);
+	AgxPort::insertData(data);
 
 	if (data.contains("name"))
 	{
-		name = data["name"].toObject()["value"].toString("");
+		m_name = data["name"].toObject()["value"].toString("");
 	}
 
-	for (int i = 0; i < _PropertyEntries.size(); i++)
+	for (int i = 0; i < m_propertyEntries.size(); i++)
 	{
-		QString key = _PropertyEntries.at(i).Tag();
-		if (data.contains(key))
+		if (QString key = m_propertyEntries.at(i).Tag(); data.contains(key))
 		{
 			if (data[key].toObject().contains("value"))
-				_PropertyEntries[i].value = data[key].toObject()["value"].toString();
+				m_propertyEntries[i].value = data[key].toObject()["value"].toString();
 			if (data[key].toObject().contains("isPresent"))
-				_PropertyEntries[i].SetIsPresent(data[key].toObject()["isPresent"].toBool());
+				m_propertyEntries[i].SetIsPresent(data[key].toObject()["isPresent"].toBool());
 		}
 	}
 
 	if (data.contains("property-entries-enabled"))
 	{
-		_PropertyEntriesEnabled = data["property-entries-enabled"].toString().compare("True") == 0 ? true : false;
+		m_propertyEntriesEnabled = data["property-entries-enabled"].toString().compare("True", Qt::CaseInsensitive) == 0;
 	}
 
 	if (data.contains("blend-input")) 
@@ -56,59 +57,56 @@ void AgxPort_SFBGS::InsertData(const QJsonObject& data)
 		for (qsizetype i = 0; i < blendInput.size(); i++)
 		{
 			bool ok = false;
-			int idx = blendInput.keys().at(i).toInt(&ok);
-			if (ok && idx >= 0) {
+			if (const int idx = blendInput.keys().at(i).toInt(&ok); ok && idx >= 0) {
 
 				QJsonObject point = blendInput[std::to_string(idx).c_str()].toObject();
-				if (point.contains("range")) _BlendInput->modifyRangeValue(idx, point["range"].toString());
+				if (point.contains("range")) m_blendInput->modifyRangeValue(idx, point["range"].toString());
 
-				if (point.contains("weight")) _BlendInput->modifyWeightValue(idx, point["weight"].toString());
+				if (point.contains("weight")) m_blendInput->modifyWeightValue(idx, point["weight"].toString());
 			}
 		}
 	}
 
-	Q_EMIT PropertySheetUpdated();
+	Q_EMIT propertySheetUpdated();
 }
 
-void AgxPort_SFBGS::Load(const QJsonObject& data) {
+void AgxPort_SFBGS::load(const QJsonObject& data) {
 	
-	AgxPort::Load(data);
+	AgxPort::load(data);
 
-	name = data["name"].toObject()["value"].toString(name);
+	m_name = data["name"].toObject()["value"].toString(m_name);
 
-	if (data.contains("agxPortId")) _portId = data["agxPortId"].toString().toUInt();
+	if (data.contains("agxPortId")) m_portId = data["agxPortId"].toString().toUInt();
 
-	for (int i = 0; i < _PropertyEntries.size(); i++)
+	for (int i = 0; i < m_propertyEntries.size(); i++)
 	{
-		QString key = _PropertyEntries.at(i).Tag();
-		if (data.contains(key))
+		if (QString key = m_propertyEntries.at(i).Tag(); data.contains(key))
 		{
 			if (data[key].toObject().contains("value"))
-				_PropertyEntries[i].value = data[key].toObject()["value"].toString();
+				m_propertyEntries[i].value = data[key].toObject()["value"].toString();
 			if (data[key].toObject().contains("isPresent"))
-				_PropertyEntries[i].SetIsPresent(data[key].toObject()["isPresent"].toBool());
+				m_propertyEntries[i].SetIsPresent(data[key].toObject()["isPresent"].toBool());
 		}
 	}
 
 	if (data.contains("property-entries-enabled"))
 	{
-		_PropertyEntriesEnabled = _stricmp("True", data["property-entries-enabled"].toString().toStdString().c_str()) == 0 ? true : false;
+		m_propertyEntriesEnabled = data["property-entries-enabled"].toString().compare("True", Qt::CaseInsensitive) == 0;
 	}
 
-	if (data.contains("blend-input") && _BlendInput)
+	if (data.contains("blend-input") && m_blendInput)
 	{
 		QJsonObject bInput = data["blend-input"].toObject();
 
 		int maxIdx = -1;
 		for (auto& point : bInput.keys()) {
-			int val = point.toInt();
-			if (val > maxIdx) maxIdx = val;
+			if (const int val = point.toInt(); val > maxIdx) maxIdx = val;
 		}
 
-		int count = _BlendInput->getDataRowCount();
+		int count = m_blendInput->getDataRowCount();
 		while (count < static_cast<size_t>(maxIdx) + 1) {
-			_BlendInput->addDataRow(count);
-			count = _BlendInput->getDataRowCount();
+			m_blendInput->addDataRow(count);
+			count = m_blendInput->getDataRowCount();
 		}
 
 		size_t idx = 0;
@@ -117,41 +115,49 @@ void AgxPort_SFBGS::Load(const QJsonObject& data) {
 			auto pointObj = point.toObject();
 			QString rowKey = bInput.keys().at(idx);
 
-			if (pointObj.contains("range")) _BlendInput->modifyRangeValue(rowKey.toInt(), pointObj["range"].toString());
+			if (pointObj.contains("range")) m_blendInput->modifyRangeValue(rowKey.toInt(), pointObj["range"].toString());
 			
-			if (pointObj.contains("weight")) _BlendInput->modifyWeightValue(rowKey.toInt(), pointObj["weight"].toString());
+			if (pointObj.contains("weight")) m_blendInput->modifyWeightValue(rowKey.toInt(), pointObj["weight"].toString());
 
 			idx++;
 		}
 
 	}
 
-	Q_EMIT PropertySheetUpdated();
+	Q_EMIT propertySheetUpdated();
 }
 
-void AgxPort_SFBGS::Load(pugi::xml_node& portNode)
+void AgxPort_SFBGS::load(pugi::xml_node& portNode)
 {
 	if (portNode.child("link").child("property_sheet")) {
-		if (_PropertyEntries.isEmpty()) {
-			QMessageBox warning(QMessageBox::Warning, "Warning", std::format("{} Has Property Sheet But Was Missing Sheet In Constructor", Caption().toStdString().c_str()).c_str(),QMessageBox::Ok);
-			warning.exec();
-			AddStandardPropertySheet();
-		}
-		_PropertyEntriesEnabled = true;
+		if (m_propertyEntries.isEmpty())
+		{
+			QMessageBox warning(
+				QMessageBox::Warning,
+				"Warning",
+				QString("%1 Has Property Sheet But Was Missing Sheet In Constructor").arg(caption()),
+				QMessageBox::Ok);
 
-		for (auto& pEntry : _PropertyEntries) {
+			warning.exec();
+			
+			addStandardPropertySheet();
+		}
+		m_propertyEntriesEnabled = true;
+
+		for (auto& pEntry : m_propertyEntries) {
 			pEntry.SetIsPresent(false);
 		}
 
-		auto propertySheetXml = portNode.child("link").child("property_sheet");
-
-		if (_stricmp(propertySheetXml.child("column").child_value("header"), "Property") == 0) {
-
-			for (auto& row : propertySheetXml.children("row")) {
+		if (const auto propertySheetXml = portNode.child("link").child("property_sheet"); QString("Property").compare(propertySheetXml.child("column").child_value("header"), Qt::CaseInsensitive) == 0)
+		{
+			for (auto& row : propertySheetXml.children("row"))
+			{
 				auto prop = row.first_child();
 				auto value = row.last_child();
-				for (auto& entry : _PropertyEntries) {
-					if (entry.Tag() == prop.child_value("value")) {
+				for (auto& entry : m_propertyEntries)
+				{
+					if (entry.Tag() == prop.child_value("value"))
+					{
 						entry.value = value.child_value("value");
 						entry.SetIsPresent(true);
 						//propertySheet.remove_child(row);
@@ -164,32 +170,32 @@ void AgxPort_SFBGS::Load(pugi::xml_node& portNode)
 	}
 }
 
-QJsonObject AgxPort_SFBGS::Save() const { 
-	QJsonObject output = AgxPort::Save(); 
+QJsonObject AgxPort_SFBGS::save() const {
+	QJsonObject output = AgxPort::save();
 
 	QJsonObject nObj;
-	nObj["value"] = name;
+	nObj["value"] = m_name;
 	output["name"] = nObj;
 
-	output["agxPortId"] = std::to_string(GetId()).c_str();
+	output["agxPortId"] = std::to_string(getId()).c_str();
 
-	for (int i = 0; i < _PropertyEntries.size(); i++)
+	for (int i = 0; i < m_propertyEntries.size(); i++)
 	{
-		QString key = _PropertyEntries.at(i).Tag();
-		QJsonObject valobj;
-		valobj["value"] = _PropertyEntries[i].value;
-		valobj["isPresent"] = _PropertyEntries[i].isPresent;
-		output[key] = valobj;
+		QString key = m_propertyEntries.at(i).Tag();
+		QJsonObject valObj;
+		valObj["value"] = m_propertyEntries[i].value;
+		valObj["isPresent"] = m_propertyEntries[i].isPresent;
+		output[key] = valObj;
 	}
 
-	output["property-entries-enabled"] = _PropertyEntriesEnabled ? "True" : "False";
+	output["property-entries-enabled"] = m_propertyEntriesEnabled ? "True" : "False";
 
-	if (_BlendInput) {
+	if (m_blendInput) {
 		QJsonObject blendInput;
-		for (size_t idx = 0; idx < _BlendInput->rowCount(); idx++) {
+		for (size_t idx = 0; idx < m_blendInput->rowCount(); idx++) {
 			QJsonObject obj;
-			obj["range"] = _BlendInput->getRangeValue(static_cast<int>(idx));
-			obj["weight"] = _BlendInput->getWeightValue(static_cast<int>(idx));
+			obj["range"] = m_blendInput->getRangeValue(static_cast<int>(idx));
+			obj["weight"] = m_blendInput->getWeightValue(static_cast<int>(idx));
 			blendInput[std::to_string(idx).c_str()] = obj;
 		}
 		output["blend-input"] = blendInput;
@@ -198,106 +204,121 @@ QJsonObject AgxPort_SFBGS::Save() const {
 	return output; 
 }
 
-QString AgxPort_SFBGS::Caption(bool formatted) const {
+QString AgxPort_SFBGS::caption(const bool formatted) const {
 
-	if (!formatted) return name;
+	if (!formatted)
+		return m_name;
 
-	if(!name.isEmpty())
-		return QString("%1 (Id: %2)").arg(name).arg(_portId);
+	if(!m_name.isEmpty())
+		return QString("%1 (Id: %2)").arg(m_name).arg(m_portId);
 		//return std::format("Id: {}", _portId).c_str();
 
-	return QString("Id: %1").arg(_portId);
+	return QString("Id: %1").arg(m_portId);
 }
 
-void AgxPort_SFBGS::SetPropertySheetEnabled(bool state)
+void AgxPort_SFBGS::setPropertySheetEnabled(const bool state)
 {
-	_PropertyEntriesEnabled = state;
-	Q_EMIT PropertySheetUpdated();
+	m_propertyEntriesEnabled = state;
+	Q_EMIT propertySheetUpdated();
 }
 
-void AgxPort_SFBGS::SetPropertySheetOptional(bool initiallyEnabled)
+void AgxPort_SFBGS::setPropertySheetOptional(const bool initiallyEnabled)
 {
-	if (!GetEmbeddedWidget()) return;
+	if (!getEmbeddedWidget())
+		return;
 
-	_PropertyEntriesEnabled = initiallyEnabled;
-	_ContentWidget->SetupOptionalPropertySheet(true, &_PropertyEntriesEnabled, { "in-ports" , std::to_string(_portId).c_str(), "property-entries-enabled" });
-	Q_EMIT PropertySheetUpdated();
-	
+	m_propertyEntriesEnabled = initiallyEnabled;
+
+	m_contentWidget->SetupOptionalPropertySheet(true, &m_propertyEntriesEnabled,
+		{	"in-ports" ,
+			QString("%1").arg(m_portId),
+			"property-entries-enabled" }
+	);
+
+	Q_EMIT propertySheetUpdated();
 }
 
-QWidget* AgxPort_SFBGS::GetEmbeddedWidget()
+QWidget* AgxPort_SFBGS::getEmbeddedWidget()
 {
-	if (!HasPropertySheet()) return nullptr;
+	if (!hasPropertySheet()) return nullptr;
 
-	if (!_ContentWidget)
+	if (!m_contentWidget)
 	{
-		_ContentWidget = new SFBGS_SidebarContentItem();
-		connect(this, &AgxPort::PropertySheetUpdated, _ContentWidget, [this]() { _ContentWidget->SetTitle(std::format("[Port] {}", Caption().toStdString()).c_str()); });
-		
-		AgxNodePropertiesWidget* inputName = new AgxNodePropertiesWidget();
-		auto nameLine = inputName->CreateSimpleLineEdit(&name, this, nullptr, false, { "in-ports" , std::to_string(_portId).c_str(), "name"});
+		m_contentWidget = new SFBGS_SidebarContentItem();
+		connect(this, &AgxPort::propertySheetUpdated, m_contentWidget, [this]
+		{
+			m_contentWidget->SetTitle(QString("[Port] %1").arg(caption()));
+		});
+
+		const auto inputName = new AgxNodePropertiesWidget();
+		const auto nameLine = inputName->CreateSimpleLineEdit(&m_name, this, nullptr, false, { "in-ports" , QString("%1").arg(m_portId), "name"});
 		nameLine->setCheckbox(false);
-		QCheckBox tempBox;
+		const QCheckBox tempBox;
 		inputName->setContentsMargins(0, 0, tempBox.sizeHint().width() + 11, 0);
 		nameLine->setContentPlaceholderText("Name");
-		_ContentWidget->InsertAdditionalWidget(inputName, 1, Qt::AlignRight);
+		m_contentWidget->InsertAdditionalWidget(inputName, 1, Qt::AlignRight);
 
-		auto propSheet = _ContentWidget->SetupPropertySheet();
+		const auto propSheet = m_contentWidget->SetupPropertySheet();
 		
-		propSheet->CreatePropertyEntries(&_PropertyEntries, this, false, { "in-ports" , std::to_string(_portId).c_str() });
+		propSheet->CreatePropertyEntries(&m_propertyEntries, this, false,
+			{	"in-ports" ,
+				QString("%1").arg(m_portId)}
+		);
 		
-		connect(this, &AgxPort::PropertySheetUpdated, _ContentWidget, [this, inputName]() {
-			_ContentWidget->SetOptionalPropertySheetState(_PropertyEntriesEnabled && _IsConnected);
-				});
+		connect(this, &AgxPort::propertySheetUpdated, m_contentWidget, [this]
+		{
+			m_contentWidget->SetOptionalPropertySheetState(m_propertyEntriesEnabled && m_isConnected);
+		});
 
-		if (_BlendInput) {
-			AgxBlendInputView* tView = new AgxBlendInputView(_BlendInput);
-			tView->SetBasePath({ "in-ports" , std::to_string(_portId).c_str(), "blend-input" });
-			_ContentWidget->InsertAdditionalWidget(tView, 1, Qt::AlignRight);
+		if (m_blendInput)
+		{
+			const auto tView = new AgxBlendInputView(m_blendInput);
+			tView->SetBasePath({ "in-ports" , std::to_string(m_portId).c_str(), "blend-input" });
+			m_contentWidget->InsertAdditionalWidget(tView, 1, Qt::AlignRight);
 		}
 
-		Q_EMIT _parentNode->PropertySheetUpdated();
-		Q_EMIT PropertySheetUpdated();
+		Q_EMIT m_parentNode->PropertySheetUpdated();
+		Q_EMIT propertySheetUpdated();
 	}
 
-	return _ContentWidget;
+	return m_contentWidget;
 }
 
-AgxBlendInputModel* AgxPort_SFBGS::GetBlendInput() const
+AgxBlendInputModel* AgxPort_SFBGS::getBlendInput() const
 {
-	return _BlendInput;
+	return m_blendInput;
 }
 
-void AgxPort_SFBGS::AddBlendInput()
+void AgxPort_SFBGS::addBlendInput()
 {
-	_BlendInput = new AgxBlendInputModel(this, this);
+	m_blendInput = new AgxBlendInputModel(this, this);
 }
 
 void AgxPort_SFBGS::externalCommand(const QString& commandTag, const QString& payload)
 {
 	if (commandTag == "blend-input-insert") {
-		if (!_BlendInput) return;
+		if (!m_blendInput) return;
 		bool ok = false;
 		int row = payload.toInt(&ok);
-		if (!ok) row = _BlendInput->getDataRowCount();
-		_BlendInput->addDataRow(row);
+		if (!ok) row = m_blendInput->getDataRowCount();
+		m_blendInput->addDataRow(row);
 	}
 
 	if (commandTag == "blend-input-remove") {
-		if (!_BlendInput) return;
+		if (!m_blendInput) return;
 		bool ok = false;
 		int row = payload.toInt(&ok);
-		if (!ok) row = _BlendInput->getDataRowCount();
-		_BlendInput->removeDataRow(row);
+		if (!ok) row = m_blendInput->getDataRowCount();
+		m_blendInput->removeDataRow(row);
 	}
 }
 
-void AgxPort_SFBGS::SavePropertySheet(pugi::xml_node& parent)
+void AgxPort_SFBGS::savePropertySheet(pugi::xml_node& parent)
 {
-	if (!_PropertyEntriesEnabled) return;
+	if (!m_propertyEntriesEnabled) return;
 
-	FormatBasicPropertySheet(parent, _PropertyEntries);
+	FormatBasicPropertySheet(parent, m_propertyEntries);
 }
 
-AgxPortIndex AgxPort::GetPortIndex() { if (_parentNode) return _parentNode->GetPortIndex(this); return InvalidPortIndex; }
+AgxPortIndex AgxPort::getPortIndex() { if (m_parentNode) return m_parentNode->GetPortIndex(this); return InvalidPortIndex; }
 

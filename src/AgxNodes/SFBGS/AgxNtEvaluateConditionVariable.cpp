@@ -12,9 +12,9 @@
 namespace SFBGS {
     AgxNtEvaluateConditionVariable::AgxNtEvaluateConditionVariable(AgxGraphModel* rootGraphRef) :SFBGSNode(rootGraphRef)
     {
-        _nameProperty = "Evaluate Condition Variable";
+        m_nameProperty = "Evaluate Condition Variable";
 
-        _PropertyEntries.push_back(AgxPropertyEntryDefinition(&AgxDictionary::Name, "Evaluate Condition Variable", AgxColumnTypes::BasicString));
+        m_propertyEntries.push_back(AgxPropertyEntryDefinition(&AgxDictionary::Name, "Evaluate Condition Variable", AgxColumnTypes::BasicString));
 
         AgxPropertyBlockData multiBlock({
             AgxPropertyEntryDefinition(&AgxDictionary::BlankEntry,"",AgxColumnTypes::BasicString),
@@ -23,9 +23,9 @@ namespace SFBGS {
                                         }, nullptr);
 
 
-        _PropertyBlocks.insert(&AgxDictionary::Entries, multiBlock);
+        m_PropertyBlocks.insert(&AgxDictionary::Entries, multiBlock);
 
-        _BlockOrder = { &AgxDictionary::Entries, &AgxDictionary::EnterEvents, &AgxDictionary::ExitEvents};
+        m_blockOrder = { &AgxDictionary::Entries, &AgxDictionary::EnterEvents, &AgxDictionary::ExitEvents};
     }
 
     std::shared_ptr<AgxPort> AgxNtEvaluateConditionVariable::_AddPort(AgxPortType portType, AgxPortIndex index, QJsonObject data)
@@ -37,10 +37,10 @@ namespace SFBGS {
             switch (portType)
             {
                 case AgxPortType::In:
-                    sfbgsPort->SetName(QString("input%1").arg(_In_Ports.size()));
+                    sfbgsPort->setName(QString("input%1").arg(m_inPorts.size()));
                     break;
             }
-            Q_EMIT sfbgsPort->PropertySheetUpdated();
+            Q_EMIT sfbgsPort->propertySheetUpdated();
         }
 
         return port;

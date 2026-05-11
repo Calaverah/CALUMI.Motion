@@ -422,78 +422,77 @@ AgxLineEditContainer* AgxWidgetUtil::CreateBasicMuliVarEntry(const QStringList& 
 	AgxLineEditContainer* lineEdit = CreateLineEdit();
 
 	if (autoConnect)
-		target->connect(lineEdit, &AgxLineEditContainer::ContentDoubleClicked, target, [iAgx, lineEdit, keyPath]() {
-		
-		QJsonObject input;
-
-		auto type = GetTypeRequest();
-
-		switch (type)
+		target->connect(lineEdit, &AgxLineEditContainer::ContentDoubleClicked, target, [iAgx, lineEdit, keyPath]
 		{
-			case AgxColumnTypes::BasicString:
-				if (iAgx) {
-					bool ok = false;
-					input["type"] = "BasicString";
-					input["value"] = QInputDialog::getText(nullptr, "Input Dialog", "Enter String",QLineEdit::Normal, lineEdit->text(),&ok);
-					if (ok)
-						iAgx->SendInsertPropertySheetDataCommand(QStringListToQJsonObject(keyPath, input));
-				}
-				break;
-			case AgxColumnTypes::BasicInteger:
-				if (iAgx) {
-					bool ok = false;
-					auto startVal = lineEdit->text().toInt(&ok);
-					if (!ok) startVal = 0;
-					ok = false;
-					input["type"] = "BasicInteger";
-					input["value"] = std::to_string(QInputDialog::getInt(nullptr,"Input Dialog","Enter Integer",startVal,-2147483647,2147483647,1,&ok)).c_str();
-					if(ok)
-						iAgx->SendInsertPropertySheetDataCommand(QStringListToQJsonObject(keyPath, input));
-				}
-				break;
-			case AgxColumnTypes::BasicFloat:
-				if (iAgx) {
-					bool ok = false;
-					auto startVal = lineEdit->text().toDouble(&ok);
-					if (!ok) startVal = 0.0;
-					ok = false;
-					input["type"] = "BasicFloat";
-					input["value"] = std::to_string(QInputDialog::getDouble(nullptr, "Input Dialog", "Enter Float", startVal, -2.147483647E9, 2.147483647E9, 5, &ok)).c_str();
-					if (ok)
-						iAgx->SendInsertPropertySheetDataCommand(QStringListToQJsonObject(keyPath, input));
-				}
-				break;
-			case AgxColumnTypes::BasicVector:
-				if (iAgx) {
-					MultiVariableDialog* dialog = new MultiVariableDialog();
-					dialog->SetCustomVector(true, false);
-					dialog->DisableComboBox();
-					if (dialog->exec() == QDialog::Accepted)
-					{
-						QJsonObject input;
-						input["type"] = "BasicVector";
-						input["value"] = dialog->GetValue();
-						iAgx->SendInsertPropertySheetDataCommand(QStringListToQJsonObject(keyPath, input));
+		
+			QJsonObject input;
+
+			auto type = GetTypeRequest();
+
+			switch (type)
+			{
+				case AgxColumnTypes::BasicString:
+					if (iAgx) {
+						bool ok = false;
+						input["type"] = "BasicString";
+						input["value"] = QInputDialog::getText(nullptr, "Input Dialog", "Enter String",QLineEdit::Normal, lineEdit->text(),&ok);
+						if (ok)
+							iAgx->SendInsertPropertySheetDataCommand(QStringListToQJsonObject(keyPath, input));
 					}
-					dialog->deleteLater();
-				}
-				break;
-			case AgxColumnTypes::BasicBool:
-				if (iAgx) {
-					bool ok = false;
-					int startVal = (_stricmp(lineEdit->text().toStdString().c_str(), "True") == 0) ? 1 : 0;
-					QStringList list = { "False","True" };
-					QJsonObject input;
-					input["type"] = "BasicBoolean";
-					input["value"] = QInputDialog::getItem(nullptr, "Select Boolean", "Value", list, startVal, false, &ok);
-					if(ok)
-						iAgx->SendInsertPropertySheetDataCommand(QStringListToQJsonObject(keyPath, input));
-				}
-				break;
-			default:
-				break;
-		}
-						});
+					break;
+				case AgxColumnTypes::BasicInteger:
+					if (iAgx) {
+						bool ok = false;
+						auto startVal = lineEdit->text().toInt(&ok);
+						if (!ok) startVal = 0;
+						ok = false;
+						input["type"] = "BasicInteger";
+						input["value"] = std::to_string(QInputDialog::getInt(nullptr,"Input Dialog","Enter Integer",startVal,-2147483647,2147483647,1,&ok)).c_str();
+						if(ok)
+							iAgx->SendInsertPropertySheetDataCommand(QStringListToQJsonObject(keyPath, input));
+					}
+					break;
+				case AgxColumnTypes::BasicFloat:
+					if (iAgx) {
+						bool ok = false;
+						auto startVal = lineEdit->text().toDouble(&ok);
+						if (!ok) startVal = 0.0;
+						ok = false;
+						input["type"] = "BasicFloat";
+						input["value"] = std::to_string(QInputDialog::getDouble(nullptr, "Input Dialog", "Enter Float", startVal, -2.147483647E9, 2.147483647E9, 5, &ok)).c_str();
+						if (ok)
+							iAgx->SendInsertPropertySheetDataCommand(QStringListToQJsonObject(keyPath, input));
+					}
+					break;
+				case AgxColumnTypes::BasicVector:
+					if (iAgx) {
+						const auto dialog = new MultiVariableDialog();
+						dialog->SetCustomVector(true, false);
+						dialog->DisableComboBox();
+						if (dialog->exec() == QDialog::Accepted)
+						{
+							input["type"] = "BasicVector";
+							input["value"] = dialog->GetValue();
+							iAgx->SendInsertPropertySheetDataCommand(QStringListToQJsonObject(keyPath, input));
+						}
+						dialog->deleteLater();
+					}
+					break;
+				case AgxColumnTypes::BasicBool:
+					if (iAgx) {
+						bool ok = false;
+						const int startVal = QString("True").compare(lineEdit->text(),Qt::CaseInsensitive) == 0 ? 1 : 0;
+						const QStringList list = { "False","True" };
+						input["type"] = "BasicBoolean";
+						input["value"] = QInputDialog::getItem(nullptr, "Select Boolean", "Value", list, startVal, false, &ok);
+						if(ok)
+							iAgx->SendInsertPropertySheetDataCommand(QStringListToQJsonObject(keyPath, input));
+					}
+					break;
+				default:
+					break;
+			}
+		});
 
 	//lineEdit->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Preferred);
 

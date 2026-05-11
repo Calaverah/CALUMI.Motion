@@ -32,8 +32,7 @@ public:
 
     AgxNodeDelegateModelRegistry& operator=(AgxNodeDelegateModelRegistry&&) = default;
 
-public:
-    template<typename ModelType>
+template<typename ModelType>
     void registerModel(RegistryItemCreator creator, QString const& category = "Nodes")
     {
         QString const name = computeName<ModelType>(HasStaticMethodName<ModelType>{}, creator);
@@ -76,8 +75,7 @@ private:
 
     RegisteredModelCreatorsMap _registeredItemCreators;
 
-private:
-    // If the registered ModelType class has the static member method
+// If the registered ModelType class has the static member method
     // `static QString Name();`, use it. Otherwise use the non-static
     // method: `virtual QString name() const;`
     template<typename T, typename = void>

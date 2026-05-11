@@ -16,6 +16,7 @@
 #include "Models/AgxPort.h"
 #include "CALUMIMotion.h"
 #include "MiniGraphicsView.h"
+#include "Utilities/QWidgetFactories.h"
 #include "Widgets/Dialog/AgxSimpleDialog.h"
 
 AgxNodePropertiesWidget::AgxNodePropertiesWidget(QWidget* parent, bool bblockSignals) : QWidget(parent), IAgxEmbedSceneData()
@@ -48,10 +49,9 @@ AgxNodePropertiesWidget::AgxNodePropertiesWidget(QWidget* parent, bool bblockSig
 	setContentsMargins(3, 3, 3, 3);
 	setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::MinimumExpanding);
 	setMinimumSize(10, 10);
-	QString objname = "AgxNodeProp";
-	setObjectName(objname);
-	setStyleSheet("QWidget#" + objname + " {background-color: transparent; padding: 1px;}");
-	
+
+	SetTransparentBackground(this);
+
 	SendWidthAdjustment();
 }
 
@@ -296,7 +296,7 @@ QList<AgxLineEditContainer*> AgxNodePropertiesWidget::CreatePropertyEntries(QVec
 			SendInsertPropertySheetDataCommand(QStringListToQJsonObject(path, input));	
 		});
 
-		connect(signalSender, &AgxPort::PropertySheetUpdated, output, [output, &dataRefItem]() 
+		connect(signalSender, &AgxPort::propertySheetUpdated, output, [output, &dataRefItem]() 
 		{
 			output->setContentText(dataRefItem.value);
 			output->RefreshContentTooltip(dataRefItem.value);
@@ -474,7 +474,7 @@ ModifiedPushButton* AgxNodePropertiesWidget::CreateFlagEntry(TermRef title, AgxN
 			AgxAnimationFlags flags;
 			flags.SetValue(dialog->GetValues());
 			obj["flags"] = flags.ToJson();
-			_scene->undoStack().push(new InsertPropertySheetDataCommand(_scene, _nodeId, obj));
+			m_scene->undoStack().push(new InsertPropertySheetDataCommand(m_scene, m_nodeId, obj));
 		}
 				
 	});
@@ -546,7 +546,7 @@ AgxLineEditContainer* AgxNodePropertiesWidget::CreateSimpleLineEdit(QString* sou
 		_nextEntryLeft = false;
 	}
 
-	connect(signalSender, &AgxPort::PropertySheetUpdated, output, [output, sourceData]()
+	connect(signalSender, &AgxPort::propertySheetUpdated, output, [output, sourceData]()
 	{
 		output->blockSignals(true);
 		output->setContentText(*sourceData);

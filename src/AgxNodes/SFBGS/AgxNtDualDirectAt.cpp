@@ -8,33 +8,33 @@
 namespace SFBGS {
     AgxNtDualDirectAt::AgxNtDualDirectAt(AgxGraphModel* rootGraphRef) : SFBGSNode(rootGraphRef)
     {
-        _nameProperty = QStringLiteral("Dual Direct At");
+        m_nameProperty = QStringLiteral("Dual Direct At");
 
-        _PropertyEntries.push_back(AgxPropertyEntryDefinition(&AgxDictionary::Name, "Dual Direct At", AgxColumnTypes::BasicString));
-        _PropertyEntries.push_back(AgxPropertyEntryDefinition(&AgxDictionary::SourceBone, "DirectAt", AgxColumnTypes::BasicString));
-        _PropertyEntries.push_back(AgxPropertyEntryDefinition(&AgxDictionary::ChestLocationBone, "C_Chest", AgxColumnTypes::BasicString));
-        _PropertyEntries.push_back(AgxPropertyEntryDefinition(&AgxDictionary::ChestAxisIndex, "1", AgxColumnTypes::BasicInteger));
-        _PropertyEntries.push_back(AgxPropertyEntryDefinition(&AgxDictionary::HeadLocationBone, "C_Head", AgxColumnTypes::BasicString));
-        _PropertyEntries.push_back(AgxPropertyEntryDefinition(&AgxDictionary::AimVectorVariable, "AimAtLocation", AgxColumnTypes::CustomVector));
-        _PropertyEntries.push_back(AgxPropertyEntryDefinition(&AgxDictionary::LookVectorVariable, "LookAtLocation", AgxColumnTypes::CustomVector));
-        _PropertyEntries.push_back(AgxPropertyEntryDefinition(&AgxDictionary::HeadingDeltaVariable, "DirectAt Heading Delta", AgxColumnTypes::CustomFloat));
-        _PropertyEntries.push_back(AgxPropertyEntryDefinition(&AgxDictionary::AimHeadingOffsetOutput, "DirectAtHeadingVar", AgxColumnTypes::CustomFloat));
-        _PropertyEntries.push_back(AgxPropertyEntryDefinition(&AgxDictionary::AimPitchOffsetOutput, "DirectAtPitchVar", AgxColumnTypes::CustomFloat));
-        _PropertyEntries.push_back(AgxPropertyEntryDefinition(&AgxDictionary::HeadingOffsetOutput, "LookAtHeadingVar", AgxColumnTypes::CustomFloat));
-        _PropertyEntries.push_back(AgxPropertyEntryDefinition(&AgxDictionary::PitchOffsetOutput, "LookAtPitchVar", AgxColumnTypes::CustomFloat));
-        _PropertyEntries.push_back(AgxPropertyEntryDefinition(&AgxDictionary::NoHeadTrackVariable, "bNoHeadTrack", AgxColumnTypes::CustomInteger));
-        _PropertyEntries.push_back(AgxPropertyEntryDefinition(&AgxDictionary::IsHeadTrackingActiveVariable, "bHeadTrackingActive", AgxColumnTypes::CustomBool));
-        _PropertyEntries.push_back(AgxPropertyEntryDefinition(&AgxDictionary::NoAimVariable, "bNoAim", AgxColumnTypes::CustomInteger));
-        _PropertyEntries.push_back(AgxPropertyEntryDefinition(&AgxDictionary::IsAimActiveVariable, "bAimActive", AgxColumnTypes::CustomBool));
-        _PropertyEntries.push_back(AgxPropertyEntryDefinition(&AgxDictionary::LagDegrees, "0", AgxColumnTypes::BasicFloat));
-        _PropertyEntries.push_back(AgxPropertyEntryDefinition(&AgxDictionary::HeadLagDegrees, "", AgxColumnTypes::BasicFloat));
-        _PropertyEntries.push_back(AgxPropertyEntryDefinition(&AgxDictionary::BlendRate, "0.25", AgxColumnTypes::BasicFloat));
-        _PropertyEntries.push_back(AgxPropertyEntryDefinition(&AgxDictionary::HeadBlendRate, "", AgxColumnTypes::BasicFloat));
-        _PropertyEntries.push_back(AgxPropertyEntryDefinition(&AgxDictionary::ChestFullBlendMaxAngle, "90", AgxColumnTypes::BasicInteger));
-        _PropertyEntries.push_back(AgxPropertyEntryDefinition(&AgxDictionary::RotateHeadBeforeChest, "True", AgxColumnTypes::BasicBool));
-        _PropertyEntries.push_back(AgxPropertyEntryDefinition(&AgxDictionary::DisableHeadingMin, "DisableHeadingMin", AgxColumnTypes::CustomFloat));
-        _PropertyEntries.push_back(AgxPropertyEntryDefinition(&AgxDictionary::DisableHeadingMax, "DisableHeadingMax", AgxColumnTypes::CustomFloat));
-        _PropertyEntries.push_back(AgxPropertyEntryDefinition(&AgxDictionary::DisableHeadingHysteresis, "10", AgxColumnTypes::BasicFloat));
+        m_propertyEntries.push_back(AgxPropertyEntryDefinition(&AgxDictionary::Name, "Dual Direct At", AgxColumnTypes::BasicString));
+        m_propertyEntries.push_back(AgxPropertyEntryDefinition(&AgxDictionary::SourceBone, "DirectAt", AgxColumnTypes::BasicString));
+        m_propertyEntries.push_back(AgxPropertyEntryDefinition(&AgxDictionary::ChestLocationBone, "C_Chest", AgxColumnTypes::BasicString));
+        m_propertyEntries.push_back(AgxPropertyEntryDefinition(&AgxDictionary::ChestAxisIndex, "1", AgxColumnTypes::BasicInteger));
+        m_propertyEntries.push_back(AgxPropertyEntryDefinition(&AgxDictionary::HeadLocationBone, "C_Head", AgxColumnTypes::BasicString));
+        m_propertyEntries.push_back(AgxPropertyEntryDefinition(&AgxDictionary::AimVectorVariable, "AimAtLocation", AgxColumnTypes::CustomVector));
+        m_propertyEntries.push_back(AgxPropertyEntryDefinition(&AgxDictionary::LookVectorVariable, "LookAtLocation", AgxColumnTypes::CustomVector));
+        m_propertyEntries.push_back(AgxPropertyEntryDefinition(&AgxDictionary::HeadingDeltaVariable, "DirectAt Heading Delta", AgxColumnTypes::CustomFloat));
+        m_propertyEntries.push_back(AgxPropertyEntryDefinition(&AgxDictionary::AimHeadingOffsetOutput, "DirectAtHeadingVar", AgxColumnTypes::CustomFloat));
+        m_propertyEntries.push_back(AgxPropertyEntryDefinition(&AgxDictionary::AimPitchOffsetOutput, "DirectAtPitchVar", AgxColumnTypes::CustomFloat));
+        m_propertyEntries.push_back(AgxPropertyEntryDefinition(&AgxDictionary::HeadingOffsetOutput, "LookAtHeadingVar", AgxColumnTypes::CustomFloat));
+        m_propertyEntries.push_back(AgxPropertyEntryDefinition(&AgxDictionary::PitchOffsetOutput, "LookAtPitchVar", AgxColumnTypes::CustomFloat));
+        m_propertyEntries.push_back(AgxPropertyEntryDefinition(&AgxDictionary::NoHeadTrackVariable, "bNoHeadTrack", AgxColumnTypes::CustomInteger));
+        m_propertyEntries.push_back(AgxPropertyEntryDefinition(&AgxDictionary::IsHeadTrackingActiveVariable, "bHeadTrackingActive", AgxColumnTypes::CustomBool));
+        m_propertyEntries.push_back(AgxPropertyEntryDefinition(&AgxDictionary::NoAimVariable, "bNoAim", AgxColumnTypes::CustomInteger));
+        m_propertyEntries.push_back(AgxPropertyEntryDefinition(&AgxDictionary::IsAimActiveVariable, "bAimActive", AgxColumnTypes::CustomBool));
+        m_propertyEntries.push_back(AgxPropertyEntryDefinition(&AgxDictionary::LagDegrees, "0", AgxColumnTypes::BasicFloat));
+        m_propertyEntries.push_back(AgxPropertyEntryDefinition(&AgxDictionary::HeadLagDegrees, "", AgxColumnTypes::BasicFloat));
+        m_propertyEntries.push_back(AgxPropertyEntryDefinition(&AgxDictionary::BlendRate, "0.25", AgxColumnTypes::BasicFloat));
+        m_propertyEntries.push_back(AgxPropertyEntryDefinition(&AgxDictionary::HeadBlendRate, "", AgxColumnTypes::BasicFloat));
+        m_propertyEntries.push_back(AgxPropertyEntryDefinition(&AgxDictionary::ChestFullBlendMaxAngle, "90", AgxColumnTypes::BasicInteger));
+        m_propertyEntries.push_back(AgxPropertyEntryDefinition(&AgxDictionary::RotateHeadBeforeChest, "True", AgxColumnTypes::BasicBool));
+        m_propertyEntries.push_back(AgxPropertyEntryDefinition(&AgxDictionary::DisableHeadingMin, "DisableHeadingMin", AgxColumnTypes::CustomFloat));
+        m_propertyEntries.push_back(AgxPropertyEntryDefinition(&AgxDictionary::DisableHeadingMax, "DisableHeadingMax", AgxColumnTypes::CustomFloat));
+        m_propertyEntries.push_back(AgxPropertyEntryDefinition(&AgxDictionary::DisableHeadingHysteresis, "10", AgxColumnTypes::BasicFloat));
 
         AgxPropertyBlockData boneBlock({
                                         AgxPropertyEntryDefinition(&AgxDictionary::BlankEntry, "", AgxColumnTypes::BasicString),
@@ -61,10 +61,10 @@ namespace SFBGS {
         boneBlock.SetRow(0, {"Chest","ChestHeadingMin","ChestHeadingMax","",""});
         boneBlock.SetRow(1, {"Head","HeadHeadingMin","HeadHeadingMax","",""});
 
-        _PropertyBlocks.insert(&AgxDictionary::Headings, headingBlock);
-        _PropertyBlocks.insert(&AgxDictionary::Bones, boneBlock);
+        m_PropertyBlocks.insert(&AgxDictionary::Headings, headingBlock);
+        m_PropertyBlocks.insert(&AgxDictionary::Bones, boneBlock);
 
-        _BlockOrder = { &AgxDictionary::Bones, &AgxDictionary::Headings, &AgxDictionary::EnterEvents, &AgxDictionary::ExitEvents};
+        m_blockOrder = { &AgxDictionary::Bones, &AgxDictionary::Headings, &AgxDictionary::EnterEvents, &AgxDictionary::ExitEvents};
 
     }
 
@@ -104,21 +104,21 @@ namespace SFBGS {
             switch (portType)
             {
                 case AgxPortType::In:
-                    switch (_In_Ports.size())
+                    switch (m_inPorts.size())
                     {
-                        case 1: sfbgsPort->SetName("passthrough");
+                        case 1: sfbgsPort->setName("passthrough");
                             break;
-                        case 2: sfbgsPort->SetName("Chest");
+                        case 2: sfbgsPort->setName("Chest");
                             break;
-                        case 3: sfbgsPort->SetName("Head");
+                        case 3: sfbgsPort->setName("Head");
                             break;
                         default:
-                            sfbgsPort->SetName("");
+                            sfbgsPort->setName("");
                             break;
                     }
                     break;
             }
-            Q_EMIT sfbgsPort->PropertySheetUpdated();
+            Q_EMIT sfbgsPort->propertySheetUpdated();
         }
 
         return port;

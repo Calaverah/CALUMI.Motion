@@ -20,8 +20,7 @@ public:
     /// or it is already binding two nodes.
     enum LooseEnd { Pending = 0, Connected = 1 };
 
-public:
-    AgxConnectionState(AgxConnectionGraphicsObject& cgo)
+AgxConnectionState(AgxConnectionGraphicsObject& cgo)
         : _cgo(cgo)
         , _hovered(false)
     {
@@ -35,15 +34,13 @@ public:
 
     ~AgxConnectionState() = default;
 
-public:
-    AgxPortType requiredPort() const;
+AgxPortType requiredPort() const;
     bool requiresPort() const;
 
     bool hovered() const;
     void setHovered(bool hovered);
 
-public:
-    /// Caches NodeId for further interaction.
+/// Caches NodeId for further interaction.
     void setLastHoveredNode(AgxNodeId const nodeId);
 
     AgxNodeId lastHoveredNode() const;

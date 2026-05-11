@@ -8,10 +8,10 @@
 namespace SFBGS {
 	AgxNtMirrorModifier::AgxNtMirrorModifier(AgxGraphModel* rootGraphRef) : SFBGSNode(rootGraphRef)
 	{
-		_nameProperty = QStringLiteral("Mirror Modifier");
-		_PropertyEntries.push_back(AgxPropertyEntryDefinition(&AgxDictionary::Mirror, "True", AgxColumnTypes::BasicBool));
+		m_nameProperty = QStringLiteral("Mirror Modifier");
+		m_propertyEntries.push_back(AgxPropertyEntryDefinition(&AgxDictionary::Mirror, "True", AgxColumnTypes::BasicBool));
 
-		_BlockOrder = { &AgxDictionary::EnterEvents, &AgxDictionary::ExitEvents };
+		m_blockOrder = { &AgxDictionary::EnterEvents, &AgxDictionary::ExitEvents };
 	}
 	QString AgxNtMirrorModifier::name() const
 	{
@@ -37,8 +37,8 @@ namespace SFBGS {
 		if (auto sfbgsPort = dynamic_cast<AgxPort_SFBGS*>(port.get()))
 		{
 			if (portType == AgxPortType::In) {
-				sfbgsPort->SetName("passthrough");
-				Q_EMIT sfbgsPort->PropertySheetUpdated();
+				sfbgsPort->setName("passthrough");
+				Q_EMIT sfbgsPort->propertySheetUpdated();
 			}
 		}
 		return port;

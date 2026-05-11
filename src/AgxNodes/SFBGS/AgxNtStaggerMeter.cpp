@@ -8,20 +8,20 @@
 namespace SFBGS {
     AgxNtStaggerMeter::AgxNtStaggerMeter(AgxGraphModel* rootGraphRef) : SFBGSNode(rootGraphRef)
     {
-        _nameProperty = QStringLiteral("Stagger Meter");
+        m_nameProperty = QStringLiteral("Stagger Meter");
 
-        _PropertyEntries.push_back(AgxPropertyEntryDefinition(&AgxDictionary::Name, "Stagger Meter", AgxColumnTypes::BasicString));
-        _PropertyEntries.push_back(AgxPropertyEntryDefinition(&AgxDictionary::ListenEvent,"StaggerStart", AgxColumnTypes::Event));
-        _PropertyEntries.push_back(AgxPropertyEntryDefinition(&AgxDictionary::StaggerForceVariable, "1", AgxColumnTypes::BasicFloat));
-        _PropertyEntries.push_back(AgxPropertyEntryDefinition(&AgxDictionary::StaggerCooldown, "0.5", AgxColumnTypes::BasicFloat));
-        _PropertyEntries.push_back(AgxPropertyEntryDefinition(&AgxDictionary::ImmunityThreshold, "1.0", AgxColumnTypes::BasicFloat));
-        _PropertyEntries.push_back(AgxPropertyEntryDefinition(&AgxDictionary::ImmunityDelayBeforeDecay, "0.5", AgxColumnTypes::BasicFloat));
-        _PropertyEntries.push_back(AgxPropertyEntryDefinition(&AgxDictionary::ImmunityDecayRate, "1.0", AgxColumnTypes::BasicFloat));
-        _PropertyEntries.push_back(AgxPropertyEntryDefinition(&AgxDictionary::ImmunityConsumeRate, "2.0", AgxColumnTypes::BasicFloat));
-        _PropertyEntries.push_back(AgxPropertyEntryDefinition(&AgxDictionary::CounterAttackEvent, "", AgxColumnTypes::Event));
-        _PropertyEntries.push_back(AgxPropertyEntryDefinition(&AgxDictionary::CounterAttackThreshold, "-1", AgxColumnTypes::BasicFloat));
-        _PropertyEntries.push_back(AgxPropertyEntryDefinition(&AgxDictionary::CounterAttackChance, "0", AgxColumnTypes::BasicFloat));
-        _PropertyEntries.push_back(AgxPropertyEntryDefinition(&AgxDictionary::CounterAttackCooldown, "0", AgxColumnTypes::BasicFloat));
+        m_propertyEntries.push_back(AgxPropertyEntryDefinition(&AgxDictionary::Name, "Stagger Meter", AgxColumnTypes::BasicString));
+        m_propertyEntries.push_back(AgxPropertyEntryDefinition(&AgxDictionary::ListenEvent,"StaggerStart", AgxColumnTypes::Event));
+        m_propertyEntries.push_back(AgxPropertyEntryDefinition(&AgxDictionary::StaggerForceVariable, "1", AgxColumnTypes::BasicFloat));
+        m_propertyEntries.push_back(AgxPropertyEntryDefinition(&AgxDictionary::StaggerCooldown, "0.5", AgxColumnTypes::BasicFloat));
+        m_propertyEntries.push_back(AgxPropertyEntryDefinition(&AgxDictionary::ImmunityThreshold, "1.0", AgxColumnTypes::BasicFloat));
+        m_propertyEntries.push_back(AgxPropertyEntryDefinition(&AgxDictionary::ImmunityDelayBeforeDecay, "0.5", AgxColumnTypes::BasicFloat));
+        m_propertyEntries.push_back(AgxPropertyEntryDefinition(&AgxDictionary::ImmunityDecayRate, "1.0", AgxColumnTypes::BasicFloat));
+        m_propertyEntries.push_back(AgxPropertyEntryDefinition(&AgxDictionary::ImmunityConsumeRate, "2.0", AgxColumnTypes::BasicFloat));
+        m_propertyEntries.push_back(AgxPropertyEntryDefinition(&AgxDictionary::CounterAttackEvent, "", AgxColumnTypes::Event));
+        m_propertyEntries.push_back(AgxPropertyEntryDefinition(&AgxDictionary::CounterAttackThreshold, "-1", AgxColumnTypes::BasicFloat));
+        m_propertyEntries.push_back(AgxPropertyEntryDefinition(&AgxDictionary::CounterAttackChance, "0", AgxColumnTypes::BasicFloat));
+        m_propertyEntries.push_back(AgxPropertyEntryDefinition(&AgxDictionary::CounterAttackCooldown, "0", AgxColumnTypes::BasicFloat));
 
         {
             AgxPropertyBlockData blockDef({
@@ -30,10 +30,10 @@ namespace SFBGS {
                 AgxPropertyEntryDefinition(&AgxDictionary::Threshold,"1",AgxColumnTypes::BasicFloat)
                                           }, nullptr);
 
-            _PropertyBlocks.insert(&AgxDictionary::Entries, blockDef);
+            m_PropertyBlocks.insert(&AgxDictionary::Entries, blockDef);
         }
 
-        _BlockOrder = { &AgxDictionary::Entries, &AgxDictionary::EnterEvents, &AgxDictionary::ExitEvents};
+        m_blockOrder = { &AgxDictionary::Entries, &AgxDictionary::EnterEvents, &AgxDictionary::ExitEvents};
     }
 
     std::shared_ptr<AgxPort> AgxNtStaggerMeter::_AddPort(AgxPortType portType, AgxPortIndex index, QJsonObject data)
@@ -45,15 +45,15 @@ namespace SFBGS {
             switch (portType)
             {
                 case AgxPortType::In:
-                    if(_In_Ports.size() == 1)
-                        sfbgsPort->SetName("base animations");
-                    if(_In_Ports.size() == 2)
-                        sfbgsPort->SetName("stagger animations");
+                    if(m_inPorts.size() == 1)
+                        sfbgsPort->setName("base animations");
+                    if(m_inPorts.size() == 2)
+                        sfbgsPort->setName("stagger animations");
                     break;
                 case AgxPortType::Out:
                     break;
             }
-            Q_EMIT sfbgsPort->PropertySheetUpdated();
+            Q_EMIT sfbgsPort->propertySheetUpdated();
         }
 
         return port;

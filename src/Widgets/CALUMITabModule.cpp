@@ -9,6 +9,8 @@
 #include <Interfaces/IButtonBox.h>
 #include <Widgets/AgxSidebarContent.h>
 
+#include "Utilities/QWidgetFactories.h"
+
 CALUMITabModule::CALUMITabModule(QWidget* content, QFutureWatcher<void>* watcher, int current, int progressShare, QWidget* parent) : QWidget(parent), _mainWidget(content)
 {
 	if (watcher)
@@ -199,6 +201,9 @@ void CALUMITabModule::ResetSideBar_Right()
 	_rightWidget->setLayout(_rightScrollLayout);
 	_rightWidget->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::Expanding);
 	_rightScrollArea->setWidget(_rightWidget);
-	_rightWidget->setStyleSheet("QWidget {border-color: transparent;}");
+
+	// _rightWidget->setStyleSheet("QWidget {border-color: transparent;}");
+	SetTransparentBackground(_rightWidget);
+
 	_rightScrollLayout->addStretch(1);
 }

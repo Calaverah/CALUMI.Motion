@@ -21,8 +21,7 @@ public:
 	FilteredDropDownDialog(QWidget* parent = nullptr);
 	~FilteredDropDownDialog();
 
-public:
-	QComboBox* GetMainComboBox() const;
+QComboBox* GetMainComboBox() const;
 	QComboBox* GetFilterBox() const;
 	QString GetText() const;
 	void SetCustomHolder(const QString& str = "");

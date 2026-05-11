@@ -19,6 +19,8 @@
 #include "version.h"
 #include <Application/CALUMIMotionApplication.h>
 
+#include "Utilities/AgxFormat.h"
+
 AgxGraphModel::AgxGraphModel(AgxGameType type, AgxGraphModel* rootGraph) : _nextNodeId{0}, _gameType(type)
 {
     _registry = AgxNodeRegistry::GetInstance().GetRegistry(_gameType);
@@ -210,7 +212,7 @@ bool AgxGraphModel::connectionPossible(AgxConnectionId const connectionId) const
         };
 
     auto portVacant = [&](AgxPortType const portType) {
-        AgxNodeId const nodeId = getNodeId(portType, connectionId);
+        const AgxNodeId nodeId = getNodeId(portType, connectionId);
         AgxPortIndex const portIndex = getPortIndex(portType, connectionId);
         auto const connected = connections(nodeId, portType, portIndex);
 
@@ -224,16 +226,16 @@ bool AgxGraphModel::connectionPossible(AgxConnectionId const connectionId) const
         && portVacant(AgxPortType::Out) && portVacant(AgxPortType::In)
         && checkPortBounds(AgxPortType::Out) && checkPortBounds(AgxPortType::In);
 
-    // In data-flow mode (this class) it's important to forbid graph loops.
-    // We perform depth-first graph traversal starting from the "Input" port of
-    // the given connection. We should never encounter the starting "Out" node.
-
-    auto hasLoops = [this, &connectionId]() -> bool {
-        std::stack<AgxNodeId> filo;
+    // Not sure loop checks are needed
+    auto hasLoops = [this, &connectionId]() -> bool
+    {
+        return false;
+        /*std::stack<AgxNodeId> filo;
         filo.push(connectionId.inNodeId);
 
-        while (!filo.empty()) {
-            auto id = filo.top();
+        while (!filo.empty())
+        {
+            const auto id = filo.top();
             filo.pop();
 
             if (id == connectionId.outNodeId) { // LOOP!
@@ -244,16 +246,15 @@ bool AgxGraphModel::connectionPossible(AgxConnectionId const connectionId) const
             std::size_t const nOutPorts = nodeData(id, AgxNodeRole::OutPortCount).toUInt();
 
             for (AgxPortIndex index = 0; index < nOutPorts; ++index) {
-                auto const& outConnectionIds = connections(id, AgxPortType::Out, index);
-
-                for (auto& cid : outConnectionIds) {
+                for (auto const& outConnectionIds = connections(id, AgxPortType::Out, index); auto& cid : outConnectionIds)
+                {
                     filo.push(cid.inNodeId);
                 }
             }
         }
 
-        return false;
-        };
+        return false;*/
+    };
 
     return basicChecks && (loopsEnabled() || !hasLoops());
 }
@@ -433,7 +434,7 @@ bool AgxGraphModel::setNodeData(AgxNodeId nodeId, AgxNodeRole role, QVariant val
     case AgxNodeRole::ValidationState: {
         if (value.canConvert<AgxNodeValidationState>()) {
             auto state = value.value<AgxNodeValidationState>();
-            agxNode->setValidatonState(state);
+            agxNode->setValidationState(state);
         }
         Q_EMIT nodeUpdated(nodeId);
     } break;
@@ -466,7 +467,7 @@ void AgxGraphModel::insertPropertySheetData(QJsonObject data)
 
     if (entries.contains("property-blocks")) entries.remove("property-blocks");
 
-    for (auto& prop : _PropertyEntries)
+    for (auto& prop : m_propertyEntries)
     {
         if (entries.contains(prop.Tag())) {
             if(entries[prop.Tag()].toObject().contains("value"))
@@ -480,7 +481,7 @@ void AgxGraphModel::insertPropertySheetData(QJsonObject data)
     if (entries.count() > 0) {
         for (unsigned int i = 0; i < entries.count(); i++) {
             QString key = entries.keys().at(i);
-            _PropertyEntries.push_back(AgxPropertyEntryDefinition(&AgxDictionary::ErrorTerm, entries[key].toString()));
+            m_propertyEntries.push_back(AgxPropertyEntryDefinition(&AgxDictionary::ErrorTerm, entries[key].toString()));
         }
     }
 
@@ -490,12 +491,12 @@ void AgxGraphModel::insertPropertySheetData(QJsonObject data)
     }
 
     //need block data...
-    for (int i = 0; i < _PropertyBlocks.size(); i++)
+    for (int i = 0; i < m_propertyBlocks.size(); i++)
     {
-        auto key = _PropertyBlocks.keys().at(i);
+        auto key = m_propertyBlocks.keys().at(i);
         if (blocks.contains(key().tag))
         {
-            _PropertyBlocks[key].insertPropertyBlockData(blocks[key().tag].toObject());
+            m_propertyBlocks[key].insertPropertyBlockData(blocks[key().tag].toObject());
             blocks.remove(key().tag);
         }
     }
@@ -523,20 +524,20 @@ QJsonObject AgxGraphModel::getPropertySheetData(bool cleared)
     QJsonObject output;
 
     QJsonObject blocks;
-    for (int i = 0; i < _PropertyBlocks.size(); i++)
+    for (int i = 0; i < m_propertyBlocks.size(); i++)
     {
-        auto key = _PropertyBlocks.keys().at(i);
-        blocks[key().tag] = _PropertyBlocks.value(key).getPropertyBlockData(cleared);
+        auto key = m_propertyBlocks.keys().at(i);
+        blocks[key().tag] = m_propertyBlocks.value(key).getPropertyBlockData(cleared);
     }
     output["property-blocks"] = blocks;
 
 
-    for (int i = 0; i < _PropertyEntries.size(); i++)
+    for (int i = 0; i < m_propertyEntries.size(); i++)
     {
-        QString key = _PropertyEntries.at(i).Tag();
+        QString key = m_propertyEntries.at(i).Tag();
         QJsonObject pobj;
-        pobj["value"] = cleared ? "" : _PropertyEntries[i].value;
-        pobj["isPresent"] = cleared ? false : _PropertyEntries[i].isPresent;
+        pobj["value"] = cleared ? "" : m_propertyEntries[i].value;
+        pobj["isPresent"] = cleared ? false : m_propertyEntries[i].isPresent;
         output[key] = pobj;
     }
 
@@ -548,20 +549,20 @@ QJsonObject AgxGraphModel::getPropertySheetData(bool cleared) const
     QJsonObject output;
 
     QJsonObject blocks;
-    for (int i = 0; i < _PropertyBlocks.size(); i++)
+    for (int i = 0; i < m_propertyBlocks.size(); i++)
     {
-        auto key = _PropertyBlocks.keys().at(i);
-        blocks[key().tag] = _PropertyBlocks.value(key).getPropertyBlockData(cleared);
+        auto key = m_propertyBlocks.keys().at(i);
+        blocks[key().tag] = m_propertyBlocks.value(key).getPropertyBlockData(cleared);
     }
     output["property-blocks"] = blocks;
 
 
-    for (int i = 0; i < _PropertyEntries.size(); i++)
+    for (int i = 0; i < m_propertyEntries.size(); i++)
     {
-        QString key = _PropertyEntries.at(i).Tag();
+        QString key = m_propertyEntries.at(i).Tag();
         QJsonObject pobj;
-        pobj["value"] = cleared ? "" : _PropertyEntries[i].value;
-        pobj["isPresent"] = cleared ? false : _PropertyEntries[i].isPresent;
+        pobj["value"] = cleared ? "" : m_propertyEntries[i].value;
+        pobj["isPresent"] = cleared ? false : m_propertyEntries[i].isPresent;
         output[key] = pobj;
     }
 
@@ -593,9 +594,9 @@ void AgxGraphModel::addPropertyBlockEntry(QString block, int index, const QList<
 
 AgxPropertyBlockData* AgxGraphModel::getPropertyBlock(const QString& block)
 {
-    for (auto blockRef : _PropertyBlocks.keys()) {
+    for (auto blockRef : m_propertyBlocks.keys()) {
         if (block.compare(blockRef().tag) == 0) {
-            return &_PropertyBlocks[blockRef];
+            return &m_propertyBlocks[blockRef];
         }
     }
 
@@ -604,10 +605,10 @@ AgxPropertyBlockData* AgxGraphModel::getPropertyBlock(const QString& block)
 
 AgxPropertyBlockData* AgxGraphModel::getPropertyBlock(TermRef ref)
 {
-    if(!_PropertyBlocks.contains(ref))
+    if(!m_propertyBlocks.contains(ref))
         return nullptr;
     
-    return &_PropertyBlocks[ref];
+    return &m_propertyBlocks[ref];
 }
 
 QList<AgxPropertyBlockData::Entry> AgxGraphModel::removePropertyBlockEntry(AgxNodeId nodeId, QString block, int index)
@@ -1005,12 +1006,12 @@ QJsonObject AgxGraphModel::SetNewGraphProperties(const AgxGraphType& graphType)
 
     QJsonObject oldData = getPropertySheetData(false);
 
-    _PropertyBlocks.clear();
-    _PropertyEntries.clear();
+    m_propertyBlocks.clear();
+    m_propertyEntries.clear();
 
-    _PropertyBlocks = newDefinition._defaultBlocks;
-    _PropertyEntries = newDefinition._defaultEntries;
-    _BlockOrder = newDefinition._blockOrder;
+    m_propertyBlocks = newDefinition._defaultBlocks;
+    m_propertyEntries = newDefinition._defaultEntries;
+    m_blockOrder = newDefinition._blockOrder;
     _graphType = graphType;
 
     for (auto key : allNodeIds()) {
@@ -1209,7 +1210,7 @@ void AgxGraphModel::save(pugi::xml_node& parent) const
         {
             auto commentObject = AgxAppend(parent, "comment", AgxFormat::NewLine, 0);
             AgxAppendValue(commentObject, "text", comment->_text, AgxFormat::None, 0);
-            auto position = nodeData(comment->_nodeIdRef, AgxNodeRole::Position).toPointF();
+            auto position = nodeData(comment->m_nodeIdRef, AgxNodeRole::Position).toPointF();
             auto target = comment->_target;
             AgxAppendValue(commentObject, "X", CleanUpDecimals(QString("%1").arg(position.x() / SFBGSxScalar, 0, 'f', 5)), AgxFormat::None, 0);
             AgxAppendValue(commentObject, "Y", CleanUpDecimals(QString("%1").arg(position.y() / SFBGSyScalar,0, 'f', 5)), AgxFormat::None, 0);
@@ -1218,11 +1219,11 @@ void AgxGraphModel::save(pugi::xml_node& parent) const
         }
     }
     
-    FormatBasicPropertySheet(parent, _PropertyEntries);
+    FormatBasicPropertySheet(parent, m_propertyEntries);
 
-    for (auto& blockKey : _BlockOrder)
+    for (auto& blockKey : m_blockOrder)
     {
-        FormatPropertyBlock(parent, _PropertyBlocks[blockKey]);
+        FormatPropertyBlock(parent, m_propertyBlocks[blockKey]);
     }
 
 }
@@ -1405,13 +1406,18 @@ void AgxGraphModel::load(pugi::xml_node& xmlNode)
 
     Q_EMIT statusUpdate(0.1f);
 
-    if (xmlNode.child("Link_Style")) {
+    if (xmlNode.child("Link_Style"))
+    {
         //blockSignals(true);
-        if (_stricmp(xmlNode.child_value("Link_Style"), "0") == 0) SetNewGraphProperties(AgxGraphType::SFBGS_Default);
-        if (_stricmp(xmlNode.child_value("Link_Style"), "1") == 0) SetNewGraphProperties(AgxGraphType::SFBGS_StateMachine);
+        if (QString("0").compare(xmlNode.child_value("Link_Style")) == 0)
+            SetNewGraphProperties(AgxGraphType::SFBGS_Default);
+        if (QString("1").compare(xmlNode.child_value("Link_Style")) == 0)
+            SetNewGraphProperties(AgxGraphType::SFBGS_StateMachine);
         //xmlNode.remove_child("Link_Style");
         //blockSignals(false);
-    } else qDebug() << "ERROR ON GRAPH READ. MISSING LINK STYLE!";
+    }
+    else
+        qDebug() << "ERROR ON GRAPH READ. MISSING LINK STYLE!";
 
     //the index based list of nodes, each connection is hashed with the input index
     QList<QMap<QString, pugi::xml_node>> xmlConnections;
@@ -1550,20 +1556,24 @@ void AgxGraphModel::load(pugi::xml_node& xmlNode)
     
     unsigned int blockCount = 0;
 
-    for (auto& pEntry : _PropertyEntries) {
+    for (auto& pEntry : m_propertyEntries) {
         pEntry.SetIsPresent(false);
     }
 
     Q_EMIT statusUpdate(0.85f);
 
     for (auto& propertySheet : xmlNode.children("property_sheet")) {
-        if (_stricmp(propertySheet.child("column").child_value("header"), "Property") == 0) {
+        if (QString("Property").compare(propertySheet.child("column").child_value("header"), Qt::CaseInsensitive) == 0)
+        {
 
-            for (auto& row : propertySheet.children("row")) {
+            for (auto& row : propertySheet.children("row"))
+            {
                 auto prop = row.first_child();
                 auto value = row.last_child();
-                for (auto& entry : _PropertyEntries) {
-                    if (entry.Tag() == prop.child_value("value")) {
+                for (auto& entry : m_propertyEntries)
+                {
+                    if (entry.Tag() == prop.child_value("value"))
+                    {
                         entry.value = value.child_value("value");
                         entry.SetIsPresent(true);
                         //propertySheet.remove_child(row);
@@ -1573,16 +1583,20 @@ void AgxGraphModel::load(pugi::xml_node& xmlNode)
             }
 
             //xmlNode.remove_child(propertySheet);
-        } else {
+        }
+        else
+        {
             blockCount++;
-            if (blockCount <= _PropertyBlocks.size()) 
+            if (blockCount <= m_propertyBlocks.size())
             {
-                if (_BlockOrder.isEmpty()) _BlockOrder = _PropertyBlocks.keys();
+                if (m_blockOrder.isEmpty())
+                    m_blockOrder = m_propertyBlocks.keys();
 
-                if (blockCount >= 1) {
+                if (blockCount >= 1)
+                {
 
-                    auto blockKey = _BlockOrder.at(blockCount - 1);
-                    auto& block = _PropertyBlocks[blockKey];
+                    auto blockKey = m_blockOrder.at(blockCount - 1);
+                    auto& block = m_propertyBlocks[blockKey];
 
                     block.load(propertySheet);
 

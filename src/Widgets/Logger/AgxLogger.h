@@ -13,19 +13,18 @@ class AgxLogger  : public QWidget
 
 public:
 	explicit AgxLogger(QWidget *parent = nullptr);
-	~AgxLogger();
+	~AgxLogger() override = default;
 
 public slots:
-		void appendMessage(const QString& text, const QtMsgType& type);
+		void appendMessage(const QString& text, const QtMsgType& type) const;
 
 protected:
 	void closeEvent(QCloseEvent* event) override;
 	void hideEvent(QHideEvent* event) override;
 
 private:
-	void writeFormatted(const QString& text, const QColor& color, bool bold = false);
+	void writeFormatted(const QString& text, const QColor& color, bool bold = false) const;
 
-private:
-	QPlainTextEdit* _logTE = nullptr;
+QPlainTextEdit* m_logTE = nullptr;
 };
 

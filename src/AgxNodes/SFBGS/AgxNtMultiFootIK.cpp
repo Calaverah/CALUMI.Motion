@@ -8,29 +8,29 @@
 namespace SFBGS {
     AgxNtMultiFootIK::AgxNtMultiFootIK(AgxGraphModel* rootGraphRef) : SFBGSNode(rootGraphRef)
     {
-        _nameProperty = QStringLiteral("MultiLeg Foot IK");
+        m_nameProperty = QStringLiteral("MultiLeg Foot IK");
 
 
         
-        _PropertyEntries.push_back(AgxPropertyEntryDefinition(&AgxDictionary::Name, "", AgxColumnTypes::BasicString));
-        _PropertyEntries.push_back(AgxPropertyEntryDefinition(&AgxDictionary::BendAxis, _AxisList.at(0)().tag, AgxColumnTypes::CustomDropDown, _AxisList));
-        _PropertyEntries.push_back(AgxPropertyEntryDefinition(&AgxDictionary::MinBendAngle, "30", AgxColumnTypes::BasicFloat));
-        _PropertyEntries.push_back(AgxPropertyEntryDefinition(&AgxDictionary::MaxBendAngle, "90", AgxColumnTypes::BasicFloat));
-        _PropertyEntries.push_back(AgxPropertyEntryDefinition(&AgxDictionary::FinalBoneAxisIndex, "0", AgxColumnTypes::BasicInteger));
-        _PropertyEntries.push_back(AgxPropertyEntryDefinition(&AgxDictionary::CastDistanceUp, "0.5", AgxColumnTypes::BasicFloat));
-        _PropertyEntries.push_back(AgxPropertyEntryDefinition(&AgxDictionary::CastDistanceDown, "0.5", AgxColumnTypes::BasicFloat));
-        _PropertyEntries.push_back(AgxPropertyEntryDefinition(&AgxDictionary::DownErrorBias, "0.5", AgxColumnTypes::BasicFloat));
-        _PropertyEntries.push_back(AgxPropertyEntryDefinition(&AgxDictionary::RootFeedbackWeight, "0.5", AgxColumnTypes::BasicFloat));
-        _PropertyEntries.push_back(AgxPropertyEntryDefinition(&AgxDictionary::TargetBlendTime, "0.3", AgxColumnTypes::BasicFloat));
-        _PropertyEntries.push_back(AgxPropertyEntryDefinition(&AgxDictionary::FootUnlockBlendScalar, "1", AgxColumnTypes::BasicFloat));
-        _PropertyEntries.push_back(AgxPropertyEntryDefinition(&AgxDictionary::XYTransLockTolerance, "0;0;0", AgxColumnTypes::BasicVector));
-        _PropertyEntries.push_back(AgxPropertyEntryDefinition(&AgxDictionary::DisableVariable, "bNoFootIK", AgxColumnTypes::CustomInteger));
-        _PropertyEntries.push_back(AgxPropertyEntryDefinition(&AgxDictionary::BlendOnOfftime, "0.3", AgxColumnTypes::BasicFloat));
-        _PropertyEntries.push_back(AgxPropertyEntryDefinition(&AgxDictionary::AlignOrientPercent, "0.1", AgxColumnTypes::BasicFloat));
-        _PropertyEntries.push_back(AgxPropertyEntryDefinition(&AgxDictionary::PositionChangeEvent, "PositionChange", AgxColumnTypes::Event));
-        _PropertyEntries.push_back(AgxPropertyEntryDefinition(&AgxDictionary::MaxControllerSeperation, "1", AgxColumnTypes::BasicFloat));
-        _PropertyEntries.push_back(AgxPropertyEntryDefinition(&AgxDictionary::ContactNormalBlendRate, "0.5", AgxColumnTypes::BasicFloat));
-        _PropertyEntries.push_back(AgxPropertyEntryDefinition(&AgxDictionary::ScaleSetVariable, "", AgxColumnTypes::CustomInteger));
+        m_propertyEntries.push_back(AgxPropertyEntryDefinition(&AgxDictionary::Name, "", AgxColumnTypes::BasicString));
+        m_propertyEntries.push_back(AgxPropertyEntryDefinition(&AgxDictionary::BendAxis, _AxisList.at(0)().tag, AgxColumnTypes::CustomDropDown, _AxisList));
+        m_propertyEntries.push_back(AgxPropertyEntryDefinition(&AgxDictionary::MinBendAngle, "30", AgxColumnTypes::BasicFloat));
+        m_propertyEntries.push_back(AgxPropertyEntryDefinition(&AgxDictionary::MaxBendAngle, "90", AgxColumnTypes::BasicFloat));
+        m_propertyEntries.push_back(AgxPropertyEntryDefinition(&AgxDictionary::FinalBoneAxisIndex, "0", AgxColumnTypes::BasicInteger));
+        m_propertyEntries.push_back(AgxPropertyEntryDefinition(&AgxDictionary::CastDistanceUp, "0.5", AgxColumnTypes::BasicFloat));
+        m_propertyEntries.push_back(AgxPropertyEntryDefinition(&AgxDictionary::CastDistanceDown, "0.5", AgxColumnTypes::BasicFloat));
+        m_propertyEntries.push_back(AgxPropertyEntryDefinition(&AgxDictionary::DownErrorBias, "0.5", AgxColumnTypes::BasicFloat));
+        m_propertyEntries.push_back(AgxPropertyEntryDefinition(&AgxDictionary::RootFeedbackWeight, "0.5", AgxColumnTypes::BasicFloat));
+        m_propertyEntries.push_back(AgxPropertyEntryDefinition(&AgxDictionary::TargetBlendTime, "0.3", AgxColumnTypes::BasicFloat));
+        m_propertyEntries.push_back(AgxPropertyEntryDefinition(&AgxDictionary::FootUnlockBlendScalar, "1", AgxColumnTypes::BasicFloat));
+        m_propertyEntries.push_back(AgxPropertyEntryDefinition(&AgxDictionary::XYTransLockTolerance, "0;0;0", AgxColumnTypes::BasicVector));
+        m_propertyEntries.push_back(AgxPropertyEntryDefinition(&AgxDictionary::DisableVariable, "bNoFootIK", AgxColumnTypes::CustomInteger));
+        m_propertyEntries.push_back(AgxPropertyEntryDefinition(&AgxDictionary::BlendOnOfftime, "0.3", AgxColumnTypes::BasicFloat));
+        m_propertyEntries.push_back(AgxPropertyEntryDefinition(&AgxDictionary::AlignOrientPercent, "0.1", AgxColumnTypes::BasicFloat));
+        m_propertyEntries.push_back(AgxPropertyEntryDefinition(&AgxDictionary::PositionChangeEvent, "PositionChange", AgxColumnTypes::Event));
+        m_propertyEntries.push_back(AgxPropertyEntryDefinition(&AgxDictionary::MaxControllerSeperation, "1", AgxColumnTypes::BasicFloat));
+        m_propertyEntries.push_back(AgxPropertyEntryDefinition(&AgxDictionary::ContactNormalBlendRate, "0.5", AgxColumnTypes::BasicFloat));
+        m_propertyEntries.push_back(AgxPropertyEntryDefinition(&AgxDictionary::ScaleSetVariable, "", AgxColumnTypes::CustomInteger));
 
         {
             AgxPropertyBlockData entryBlockDef({
@@ -83,12 +83,12 @@ namespace SFBGS {
                 AgxPropertyEntryDefinition(&AgxDictionary::EAnkle,"",AgxColumnTypes::CustomFloat)
                                       }, nullptr);
 
-            _PropertyBlocks.insert(&AgxDictionary::Entries, entryBlockDef);
-            _PropertyBlocks.insert(&AgxDictionary::Unknown1, unk1);
-            _PropertyBlocks.insert(&AgxDictionary::Unknown2, unk2);
-            _PropertyBlocks.insert(&AgxDictionary::Unknown3, unk3);
+            m_PropertyBlocks.insert(&AgxDictionary::Entries, entryBlockDef);
+            m_PropertyBlocks.insert(&AgxDictionary::Unknown1, unk1);
+            m_PropertyBlocks.insert(&AgxDictionary::Unknown2, unk2);
+            m_PropertyBlocks.insert(&AgxDictionary::Unknown3, unk3);
             
-            _BlockOrder = { &AgxDictionary::Entries, &AgxDictionary::Unknown1, &AgxDictionary::Unknown2, &AgxDictionary::Unknown3, &AgxDictionary::EnterEvents, &AgxDictionary::ExitEvents };
+            m_blockOrder = { &AgxDictionary::Entries, &AgxDictionary::Unknown1, &AgxDictionary::Unknown2, &AgxDictionary::Unknown3, &AgxDictionary::EnterEvents, &AgxDictionary::ExitEvents };
         }
 
     }
@@ -123,10 +123,10 @@ namespace SFBGS {
             switch (portType)
             {
                 case AgxPortType::In:
-                    sfbgsPort->SetName("passthrough");
+                    sfbgsPort->setName("passthrough");
                     break;
             }
-            Q_EMIT sfbgsPort->PropertySheetUpdated();
+            Q_EMIT sfbgsPort->propertySheetUpdated();
         }
 
         return port;

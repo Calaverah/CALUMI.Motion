@@ -8,11 +8,11 @@
 namespace SFBGS {
     AgxNtLocomotionBlend::AgxNtLocomotionBlend(AgxGraphModel* rootGraphRef) : SFBGSNode(rootGraphRef)
     {
-        _nameProperty = QStringLiteral("Locomotion Blend");
+        m_nameProperty = QStringLiteral("Locomotion Blend");
 
-        _PropertyEntries.push_back(AgxPropertyEntryDefinition(&AgxDictionary::Name, "", AgxColumnTypes::BasicString));
-        _PropertyEntries.push_back(AgxPropertyEntryDefinition(&AgxDictionary::SpeedParameter, "Speed", AgxColumnTypes::CustomFloat));
-        _PropertyEntries.push_back(AgxPropertyEntryDefinition(&AgxDictionary::MaxBlendTime, "0.3", AgxColumnTypes::BasicFloat));
+        m_propertyEntries.push_back(AgxPropertyEntryDefinition(&AgxDictionary::Name, "", AgxColumnTypes::BasicString));
+        m_propertyEntries.push_back(AgxPropertyEntryDefinition(&AgxDictionary::SpeedParameter, "Speed", AgxColumnTypes::CustomFloat));
+        m_propertyEntries.push_back(AgxPropertyEntryDefinition(&AgxDictionary::MaxBlendTime, "0.3", AgxColumnTypes::BasicFloat));
 
         AgxPropertyBlockData entryBlock({
                                             AgxPropertyEntryDefinition(&AgxDictionary::BlankEntry,"", AgxColumnTypes::BasicString),
@@ -29,9 +29,9 @@ namespace SFBGS {
         entryBlock.SetRow(1, {"Jog","1.5","False","1"});
         entryBlock.SetRow(2, {"Run","1.5","False","1"});
 
-        _PropertyBlocks.insert(&AgxDictionary::Entries, entryBlock);
+        m_PropertyBlocks.insert(&AgxDictionary::Entries, entryBlock);
 
-        _BlockOrder = { &AgxDictionary::Entries, &AgxDictionary::EnterEvents, &AgxDictionary::ExitEvents};
+        m_blockOrder = { &AgxDictionary::Entries, &AgxDictionary::EnterEvents, &AgxDictionary::ExitEvents};
     }
 
     QString AgxNtLocomotionBlend::name() const
@@ -70,21 +70,21 @@ namespace SFBGS {
             switch (portType)
             {
                 case AgxPortType::In:
-                    switch (_In_Ports.size())
+                    switch (m_inPorts.size())
                     {
                         case 1:
-                            sfbgsPort->SetName("Walk");
+                            sfbgsPort->setName("Walk");
                             break;
                         case 2:
-                            sfbgsPort->SetName("Jog");
+                            sfbgsPort->setName("Jog");
                             break;
                         case 3:
-                            sfbgsPort->SetName("Run");
+                            sfbgsPort->setName("Run");
                             break;
                     }
                     break;
             }
-            Q_EMIT sfbgsPort->PropertySheetUpdated();
+            Q_EMIT sfbgsPort->propertySheetUpdated();
         }
 
         return port;

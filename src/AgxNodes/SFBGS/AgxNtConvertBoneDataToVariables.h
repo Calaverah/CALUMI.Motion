@@ -21,7 +21,6 @@ namespace SFBGS {
 		AgxNtConvertBoneDataToVariables(AgxGraphModel* rootGraphRef);
 		~AgxNtConvertBoneDataToVariables() = default;
 
-	public:
 		// Inherited via AgxNode
 		QString name() const override;
 		QString caption() const override;

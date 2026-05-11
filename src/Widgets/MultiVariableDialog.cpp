@@ -5,6 +5,7 @@
 #include "stdafx.h"
 #include "MultiVariableDialog.h"
 #include "CALUMIMotion.h"
+#include "Utilities/AgxFormat.h"
 #include "Utilities/UndoRedoCommands.h"
 
 MultiVariableDialog::MultiVariableDialog(QWidget* parent)

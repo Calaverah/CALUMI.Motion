@@ -225,7 +225,7 @@ void AgxNodeGraphicsObject::mouseReleaseEvent(QGraphicsSceneMouseEvent* event)
 
 void AgxNodeGraphicsObject::hoverEnterEvent(QGraphicsSceneHoverEvent* event)
 {
-    agxNodeScene()->lastHoveredNode = this;
+    agxNodeScene()->m_lastHoveredNode = this;
     
     // bring all the colliding nodes to background
     QList<QGraphicsItem*> overlapItems = collidingItems();
@@ -253,7 +253,7 @@ void AgxNodeGraphicsObject::hoverEnterEvent(QGraphicsSceneHoverEvent* event)
 
 void AgxNodeGraphicsObject::hoverLeaveEvent(QGraphicsSceneHoverEvent* event)
 {
-    agxNodeScene()->lastHoveredNode = nullptr;
+    agxNodeScene()->m_lastHoveredNode = nullptr;
     //QGraphicsObject::hoverLeaveEvent(event);
     
     agxNodeScene()->setGroupHoverState(false,"");
@@ -495,7 +495,7 @@ void AgxCommentGraphicsObject::RecalculateTarget() const
 
 void AgxCommentGraphicsObject::hoverEnterEvent(QGraphicsSceneHoverEvent* event)
 {
-    agxNodeScene()->lastHoveredNode = this;
+    agxNodeScene()->m_lastHoveredNode = this;
 
     // bring this node forward
     setZValue(5);
@@ -514,7 +514,7 @@ void AgxCommentGraphicsObject::hoverEnterEvent(QGraphicsSceneHoverEvent* event)
 
 void AgxCommentGraphicsObject::hoverLeaveEvent(QGraphicsSceneHoverEvent * event)
 {
-    agxNodeScene()->lastHoveredNode = nullptr;
+    agxNodeScene()->m_lastHoveredNode = nullptr;
     //QGraphicsObject::hoverLeaveEvent(event);
 
     agxNodeScene()->setGroupHoverState(false, "");

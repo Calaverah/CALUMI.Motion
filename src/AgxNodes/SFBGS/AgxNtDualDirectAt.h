@@ -21,7 +21,6 @@ namespace SFBGS {
 		AgxNtDualDirectAt(AgxGraphModel* rootGraphRef);
 		~AgxNtDualDirectAt() = default;
 
-	public:
 		// Inherited via AgxNode
 		QString name() const override;
 		QString caption() const override;

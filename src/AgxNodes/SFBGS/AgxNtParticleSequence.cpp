@@ -8,13 +8,13 @@
 namespace SFBGS {
     AgxNtParticleSequence::AgxNtParticleSequence(AgxGraphModel* rootGraphRef) : SFBGSNode(rootGraphRef)
     {
-        _nameProperty = QStringLiteral("Particle Sequence");
+        m_nameProperty = QStringLiteral("Particle Sequence");
 
-        _PropertyEntries.push_back(AgxPropertyEntryDefinition(&AgxDictionary::Name, "Particle Sequence", AgxColumnTypes::BasicString));
-        _PropertyEntries.push_back(AgxPropertyEntryDefinition(&AgxDictionary::SequenceName, "", AgxColumnTypes::BasicString));
-        _PropertyEntries.push_back(AgxPropertyEntryDefinition(&AgxDictionary::PlaybackSpeed, "1", AgxColumnTypes::BasicInteger));
-        _PropertyEntries.push_back(AgxPropertyEntryDefinition(&AgxDictionary::BlendOutTime, "0.3", AgxColumnTypes::BasicFloat));
-        _PropertyEntries.push_back(AgxPropertyEntryDefinition(&AgxDictionary::SyncOnlyTransitionOut, "False", AgxColumnTypes::BasicBool));
+        m_propertyEntries.push_back(AgxPropertyEntryDefinition(&AgxDictionary::Name, "Particle Sequence", AgxColumnTypes::BasicString));
+        m_propertyEntries.push_back(AgxPropertyEntryDefinition(&AgxDictionary::SequenceName, "", AgxColumnTypes::BasicString));
+        m_propertyEntries.push_back(AgxPropertyEntryDefinition(&AgxDictionary::PlaybackSpeed, "1", AgxColumnTypes::BasicInteger));
+        m_propertyEntries.push_back(AgxPropertyEntryDefinition(&AgxDictionary::BlendOutTime, "0.3", AgxColumnTypes::BasicFloat));
+        m_propertyEntries.push_back(AgxPropertyEntryDefinition(&AgxDictionary::SyncOnlyTransitionOut, "False", AgxColumnTypes::BasicBool));
 
         {
             AgxPropertyBlockData blockDef1({
@@ -24,7 +24,7 @@ namespace SFBGS {
                 AgxPropertyEntryDefinition(&AgxDictionary::BindingValue,"",AgxColumnTypes::BasicString)
                                           }, nullptr);
 
-            _PropertyBlocks.insert(&AgxDictionary::Bindings, blockDef1);
+            m_PropertyBlocks.insert(&AgxDictionary::Bindings, blockDef1);
         }
 
         {
@@ -34,10 +34,10 @@ namespace SFBGS {
                 AgxPropertyEntryDefinition(&AgxDictionary::VariableName,"",AgxColumnTypes::CustomFloat)
                                           }, nullptr);
 
-            _PropertyBlocks.insert(&AgxDictionary::BindingVariables, blockDef2);
+            m_PropertyBlocks.insert(&AgxDictionary::BindingVariables, blockDef2);
         }
 
-        _BlockOrder = { &AgxDictionary::Bindings, &AgxDictionary::BindingVariables, &AgxDictionary::EnterEvents, &AgxDictionary::ExitEvents };
+        m_blockOrder = { &AgxDictionary::Bindings, &AgxDictionary::BindingVariables, &AgxDictionary::EnterEvents, &AgxDictionary::ExitEvents };
     }
 
     QString AgxNtParticleSequence::name() const
@@ -52,8 +52,8 @@ namespace SFBGS {
 
     QString AgxNtParticleSequence::SubCaption() const
     {
-        QString cap = _PropertyEntries.at(1).value.isEmpty() ? _PropertyEntries.at(0).value : _PropertyEntries.at(0).value;
-        return QString("%1 (%2)").arg(cap).arg(GetPropertyValue(_SFBGS_Properties, AgxDictionary::UserId().tag, "?"));
+        QString cap = m_propertyEntries.at(1).value.isEmpty() ? m_propertyEntries.at(0).value : m_propertyEntries.at(0).value;
+        return QString("%1 (%2)").arg(cap).arg(GetPropertyValue(m_sfbgsProperties, AgxDictionary::UserId().tag, "?"));
     }
 
     unsigned int AgxNtParticleSequence::nPorts(AgxPortType portType) const
@@ -81,10 +81,10 @@ namespace SFBGS {
             switch (portType)
             {
                 case AgxPortType::In:
-                    sfbgsPort->SetPropertySheetEnabled(true);
+                    sfbgsPort->setPropertySheetEnabled(true);
                     break;
             }
-            Q_EMIT sfbgsPort->PropertySheetUpdated();
+            Q_EMIT sfbgsPort->propertySheetUpdated();
         }
 
         return port;

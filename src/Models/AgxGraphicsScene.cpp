@@ -16,51 +16,53 @@
 #include <Application/CALUMIMotionApplication.h>
 #include <Utilities/AgxConnectionIdUtils.h>
 
+#include "Utilities/QWidgetFactories.h"
+
 AgxGraphicsScene::AgxGraphicsScene(AgxGraphModel& graphModel, QObject* parent) : QGraphicsScene(parent)
-, _agxGraphModel(graphModel)
-, _agxNodeGeometry(std::make_unique<AgxNodeGeometry>(_agxGraphModel))
-, _agxNodePainter(std::make_unique<AgxNodePainter>())
-, _agxConnectionPainter(std::make_unique<AgxConnectionPainter>())
-, _nodeDrag(false)
-, _undoStack(new QUndoStack(this))
-, _orientation(Qt::Horizontal)
+                                                                               , m_agxGraphModel(graphModel)
+                                                                               , m_agxNodeGeometry(std::make_unique<AgxNodeGeometry>(m_agxGraphModel))
+                                                                               , m_agxNodePainter(std::make_unique<AgxNodePainter>())
+                                                                               , m_agxConnectionPainter(std::make_unique<AgxConnectionPainter>())
+                                                                               , m_nodeDrag(false)
+                                                                               , m_undoStack(new QUndoStack(this))
+                                                                               , m_orientation(Qt::Horizontal)
 {
 
-    setItemIndexMethod(QGraphicsScene::NoIndex);
+    setItemIndexMethod(NoIndex);
 
-    connect(&_agxGraphModel,
+    connect(&m_agxGraphModel,
         &AgxGraphModel::connectionCreated,
         this,
         &AgxGraphicsScene::onConnectionCreated);
 
-    connect(&_agxGraphModel,
+    connect(&m_agxGraphModel,
         &AgxGraphModel::connectionDeleted,
         this,
         &AgxGraphicsScene::onConnectionDeleted);
 
-    connect(&_agxGraphModel,
+    connect(&m_agxGraphModel,
         &AgxGraphModel::nodeCreated,
         this,
         &AgxGraphicsScene::onNodeCreated);
 
-    connect(&_agxGraphModel,
+    connect(&m_agxGraphModel,
         &AgxGraphModel::nodeDeleted,
         this,
         &AgxGraphicsScene::onNodeDeleted);
 
-    connect(&_agxGraphModel,
+    connect(&m_agxGraphModel,
         &AgxGraphModel::nodePositionUpdated,
         this,
         &AgxGraphicsScene::onNodePositionUpdated);
 
-    connect(&_agxGraphModel,
+    connect(&m_agxGraphModel,
         &AgxGraphModel::nodeUpdated,
         this,
         &AgxGraphicsScene::onNodeUpdated);
 
     connect(this, &AgxGraphicsScene::nodeClicked, this, &AgxGraphicsScene::onNodeClicked);
 
-    connect(&_agxGraphModel, &AgxGraphModel::modelReset, this, &AgxGraphicsScene::onModelReset);
+    connect(&m_agxGraphModel, &AgxGraphModel::modelReset, this, &AgxGraphicsScene::onModelReset);
 
     connect(&graphModel,
         &AgxGraphModel::inPortDataWasSet,
@@ -70,34 +72,33 @@ AgxGraphicsScene::AgxGraphicsScene(AgxGraphModel& graphModel, QObject* parent) :
 
 }
 
-AgxGraphModel const& AgxGraphicsScene::agxGraphModel() const { return _agxGraphModel; }
+AgxGraphModel const& AgxGraphicsScene::agxGraphModel() const { return m_agxGraphModel; }
 
-AgxGraphModel& AgxGraphicsScene::agxGraphModel() { return _agxGraphModel; }
+AgxGraphModel& AgxGraphicsScene::agxGraphModel() { return m_agxGraphModel; }
 
 AgxNodeGeometry const& AgxGraphicsScene::agxNodeGeometry() const
 {
-    return *_agxNodeGeometry;
+    return *m_agxNodeGeometry;
 }
 
 AgxNodeGeometry& AgxGraphicsScene::agxNodeGeometry()
 {
-    return *_agxNodeGeometry;
+    return *m_agxNodeGeometry;
 }
 
-std::unique_ptr<AgxConnectionGraphicsObject> const& AgxGraphicsScene::makeDraftConnection(AgxConnectionId const newConnectionId)
+std::unique_ptr<AgxConnectionGraphicsObject> const& AgxGraphicsScene::makeDraftConnection(const AgxConnectionId& newConnectionId)
 {
-    _agxDraftConnection = std::make_unique<AgxConnectionGraphicsObject>(*this, newConnectionId);
+    m_agxDraftConnection = std::make_unique<AgxConnectionGraphicsObject>(*this, newConnectionId);
 
-    _agxDraftConnection->grabMouse();
+    m_agxDraftConnection->grabMouse();
 
-    return _agxDraftConnection;
+    return m_agxDraftConnection;
 }
 
-AgxConnectionGraphicsObject* AgxGraphicsScene::agxConnectionGraphicsObject(AgxConnectionId connectionId)
+AgxConnectionGraphicsObject* AgxGraphicsScene::agxConnectionGraphicsObject(const AgxConnectionId& connectionId)
 {
     AgxConnectionGraphicsObject* cgo = nullptr;
-    auto it = _agxConnectionGraphicsObjects.find(connectionId);
-    if (it != _agxConnectionGraphicsObjects.end()) {
+    if (const auto it = m_agxConnectionGraphicsObjects.find(connectionId); it != m_agxConnectionGraphicsObjects.end()) {
         cgo = it->second.get();
     }
     if (cgo)
@@ -106,11 +107,10 @@ AgxConnectionGraphicsObject* AgxGraphicsScene::agxConnectionGraphicsObject(AgxCo
     return nullptr;
 }
 
-AgxNodeGraphicsObject* AgxGraphicsScene::agxNodeGraphicsObject(AgxNodeId nodeId)
+AgxNodeGraphicsObject* AgxGraphicsScene::agxNodeGraphicsObject(const AgxNodeId nodeId)
 {
     AgxNodeGraphicsObject* ngo = nullptr;
-    auto it = _agxNodeGraphicsObjects.find(nodeId);
-    if (it != _agxNodeGraphicsObjects.end()) {
+    if (const auto it = m_agxNodeGraphicsObjects.find(nodeId); it != m_agxNodeGraphicsObjects.end()) {
         ngo = it->second.get();
     }
 
@@ -119,60 +119,58 @@ AgxNodeGraphicsObject* AgxGraphicsScene::agxNodeGraphicsObject(AgxNodeId nodeId)
 
 void AgxGraphicsScene::resetDraftConnection()
 {
-    _agxDraftConnection.reset();
+    m_agxDraftConnection.reset();
 }
 
 void AgxGraphicsScene::clearScene()
 {
-    auto const& allNodeIds = agxGraphModel().allNodeIds();
-
-    for (auto nodeId : allNodeIds) {
+    for (auto const& allNodeIds = agxGraphModel().allNodeIds(); const auto nodeId : allNodeIds) {
         agxGraphModel().deleteNode(nodeId);
     }
 }
 
-AgxNodePainter& AgxGraphicsScene::agxNodePainter()
+AgxNodePainter& AgxGraphicsScene::agxNodePainter() const
 {
-    return *_agxNodePainter;
+    return *m_agxNodePainter;
 }
 
-AgxConnectionPainter& AgxGraphicsScene::agxConnectionPainter()
+AgxConnectionPainter& AgxGraphicsScene::agxConnectionPainter() const
 {
-    return *_agxConnectionPainter;
+    return *m_agxConnectionPainter;
 }
 
 void AgxGraphicsScene::setNodePainter(std::unique_ptr<AgxNodePainter> newPainter)
 {
-    _agxNodePainter = std::move(newPainter);
+    m_agxNodePainter = std::move(newPainter);
 }
 
 void AgxGraphicsScene::setConnectionPainter(std::unique_ptr<AgxConnectionPainter> newPainter)
 {
-    _agxConnectionPainter = std::move(newPainter);
+    m_agxConnectionPainter = std::move(newPainter);
 }
 
 void AgxGraphicsScene::setNodeGeometry(std::unique_ptr<AgxNodeGeometry> newGeom)
 {
-    _agxNodeGeometry = std::move(newGeom);
+    m_agxNodeGeometry = std::move(newGeom);
 }
 
-QUndoStack& AgxGraphicsScene::undoStack()
+QUndoStack& AgxGraphicsScene::undoStack() const
 {
-    return *_undoStack;
+    return *m_undoStack;
 }
 
 void AgxGraphicsScene::setOrientation(Qt::Orientation const orientation)
 {
-    if (_orientation != orientation) {
-        _orientation = orientation;
+    if (m_orientation != orientation) {
+        m_orientation = orientation;
 
-        switch (_orientation) {
+        switch (m_orientation) {
         case Qt::Horizontal:
-            _agxNodeGeometry = std::make_unique<AgxNodeGeometry>(_agxGraphModel);
+            m_agxNodeGeometry = std::make_unique<AgxNodeGeometry>(m_agxGraphModel);
             break;
 
         case Qt::Vertical:
-            _agxNodeGeometry = std::make_unique<AgxNodeGeometry>(_agxGraphModel);
+            m_agxNodeGeometry = std::make_unique<AgxNodeGeometry>(m_agxGraphModel);
             break;
         }
 
@@ -180,15 +178,14 @@ void AgxGraphicsScene::setOrientation(Qt::Orientation const orientation)
     }
 }
 
-void AgxGraphicsScene::onConnectionDeleted(AgxConnectionId const connectionId)
+void AgxGraphicsScene::onConnectionDeleted(const AgxConnectionId& connectionId)
 {
-    auto it = _agxConnectionGraphicsObjects.find(connectionId);
-    if (it != _agxConnectionGraphicsObjects.end()) {
-        _agxConnectionGraphicsObjects.erase(it);
+    if (const auto it = m_agxConnectionGraphicsObjects.find(connectionId); it != m_agxConnectionGraphicsObjects.end()) {
+        m_agxConnectionGraphicsObjects.erase(it);
     }
 
-    if (_agxDraftConnection && _agxDraftConnection->connectionId() == connectionId) {
-        _agxDraftConnection.reset();
+    if (m_agxDraftConnection && m_agxDraftConnection->connectionId() == connectionId) {
+        m_agxDraftConnection.reset();
     }
 
     updateAttachedNodes(connectionId, AgxPortType::Out);
@@ -197,9 +194,9 @@ void AgxGraphicsScene::onConnectionDeleted(AgxConnectionId const connectionId)
     Q_EMIT modified(this);
 }
 
-void AgxGraphicsScene::onConnectionCreated(AgxConnectionId const connectionId)
+void AgxGraphicsScene::onConnectionCreated(const AgxConnectionId& connectionId)
 {
-    _agxConnectionGraphicsObjects[connectionId]
+    m_agxConnectionGraphicsObjects[connectionId]
         = std::make_unique<AgxConnectionGraphicsObject>(*this, connectionId);
 
     updateAttachedNodes(connectionId, AgxPortType::Out);
@@ -216,9 +213,7 @@ std::vector<AgxNodeId> AgxGraphicsScene::selectedNodes() const
     result.reserve(graphicsItems.size());
 
     for (QGraphicsItem* item : graphicsItems) {
-        auto ngo = qgraphicsitem_cast<AgxNodeGraphicsObject*>(item);
-
-        if (ngo != nullptr) {
+        if (const auto ngo = qgraphicsitem_cast<AgxNodeGraphicsObject*>(item); ngo != nullptr) {
             result.push_back(ngo->nodeId());
         }
     }
@@ -228,7 +223,7 @@ std::vector<AgxNodeId> AgxGraphicsScene::selectedNodes() const
 
 QMenu* AgxGraphicsScene::createSceneMenu(QPointF const scenePos)
 {
-    QMenu* modelMenu = new QMenu();
+    auto modelMenu = new QMenu();
     modelMenu->setStyleSheet("QMenu{border-radius: 5px;}");
     modelMenu->setMinimumWidth(300);
 
@@ -245,8 +240,9 @@ QMenu* AgxGraphicsScene::createSceneMenu(QPointF const scenePos)
     modelMenu->addAction(txtBoxAction);
 
     // Add result treeview to the context menu
-    QTreeWidget* treeView = new QTreeWidget(modelMenu);
-    treeView->setStyleSheet("QTreeWidget{background-color: transparent; border-radius: 0px; }");
+    auto treeView = new QTreeWidget(modelMenu);
+    //treeView->setStyleSheet("QTreeWidget{background-color: transparent; border-radius: 0px; }");
+    SetTransparentBackground(treeView);
     treeView->header()->close();
 
     auto* treeViewAction = new QWidgetAction(modelMenu);
@@ -255,30 +251,30 @@ QMenu* AgxGraphicsScene::createSceneMenu(QPointF const scenePos)
     // 2.
     modelMenu->addAction(treeViewAction);
 
-    auto registry = _agxGraphModel.dataModelRegistry();
+    const auto registry = m_agxGraphModel.dataModelRegistry();
 
     for (auto const& cat : registry->categories()) {
-        auto item = new QTreeWidgetItem(treeView);
+        const auto item = new QTreeWidgetItem(treeView);
         item->setText(0, cat);
         item->setFlags(item->flags() & ~Qt::ItemIsSelectable);
     }
 
-    for (auto const& assoc : registry->registeredModelsCategoryAssociation()) {
-        QList<QTreeWidgetItem*> parent = treeView->findItems(assoc.second, Qt::MatchExactly);
+    for (const auto& [itemText, searchTerm] : registry->registeredModelsCategoryAssociation()) {
+        QList<QTreeWidgetItem*> parent = treeView->findItems(searchTerm, Qt::MatchExactly);
 
         if (parent.count() <= 0)
             continue;
 
-        auto item = new QTreeWidgetItem(parent.first());
-        item->setText(0, assoc.first);
+        const auto item = new QTreeWidgetItem(parent.first());
+        item->setText(0, itemText);
     }
 
     treeView->expandAll();
 
     connect(treeView,
         &QTreeWidget::itemClicked,
-        [this, modelMenu, scenePos](QTreeWidgetItem* item, int) {
-            if (!(item->flags() & (Qt::ItemIsSelectable))) {
+        [this, modelMenu, scenePos](const QTreeWidgetItem* item, int) {
+            if (!(item->flags() & Qt::ItemIsSelectable)) {
                 return;
             }
 
@@ -295,7 +291,7 @@ QMenu* AgxGraphicsScene::createSceneMenu(QPointF const scenePos)
         QTreeWidgetItemIterator it(treeView, QTreeWidgetItemIterator::NoChildren);
         while (*it) {
             auto modelName = (*it)->text(0);
-            const bool match = (modelName.contains(text, Qt::CaseInsensitive));
+            const bool match = modelName.contains(text, Qt::CaseInsensitive);
             (*it)->setHidden(!match);
             if (match) {
                 QTreeWidgetItem* parent = (*it)->parent();
@@ -320,61 +316,62 @@ QMenu* AgxGraphicsScene::createSceneMenu(QPointF const scenePos)
 
 void AgxGraphicsScene::traverseGraphAndPopulateGraphicsObjects()
 {
-    auto allNodeIds = _agxGraphModel.allNodeIds();
+    auto allNodeIds = m_agxGraphModel.allNodeIds();
 
     // First create all the nodes.
     for (AgxNodeId const nodeId : allNodeIds) {
-        _agxNodeGraphicsObjects[nodeId] = std::make_unique<AgxNodeGraphicsObject>(*this, nodeId);
+        m_agxNodeGraphicsObjects[nodeId] = std::make_unique<AgxNodeGraphicsObject>(*this, nodeId);
     }
 
     // Then for each node check output connections and insert them.
-    for (AgxNodeId const nodeId : allNodeIds) {
-        auto nOutPorts = _agxGraphModel.nodeData(nodeId, AgxNodeRole::OutPortCount).value<AgxPortCount>();
+    for (AgxNodeId const nodeId : allNodeIds)
+    {
+        const auto nOutPorts = m_agxGraphModel.nodeData(nodeId, AgxNodeRole::OutPortCount).value<AgxPortCount>();
 
-        for (AgxPortIndex index = 0; index < nOutPorts; ++index) {
-            auto const& outConnectionIds = _agxGraphModel.connections(nodeId, AgxPortType::Out, index);
-
-            for (auto& cid : outConnectionIds) {
-                _agxConnectionGraphicsObjects[cid] = std::make_unique<AgxConnectionGraphicsObject>(*this,cid);
+        for (AgxPortIndex index = 0; index < nOutPorts; ++index)
+        {
+            for (auto const& outConnectionIds = m_agxGraphModel.connections(nodeId, AgxPortType::Out, index); auto& cid : outConnectionIds)
+            {
+                m_agxConnectionGraphicsObjects[cid] = std::make_unique<AgxConnectionGraphicsObject>(*this,cid);
             }
         }
     }
 }
 
-void AgxGraphicsScene::updateAttachedNodes(AgxConnectionId const connectionId, AgxPortType const portType)
+void AgxGraphicsScene::updateAttachedNodes(const AgxConnectionId& connectionId, const AgxPortType& portType)
 {
-    auto node = agxNodeGraphicsObject(getNodeId(portType, connectionId));
-
-    if (node) {
+    if (const auto node = agxNodeGraphicsObject(getNodeId(portType, connectionId))) {
         node->update();
     }
 }
 
-void AgxGraphicsScene::onNodeDeleted(AgxNodeId const nodeId)
+void AgxGraphicsScene::onNodeDeleted(const AgxNodeId& nodeId)
 {
-    auto it = _agxNodeGraphicsObjects.find(nodeId);
-    if (it != _agxNodeGraphicsObjects.end()) {
-        _agxNodeGraphicsObjects.erase(it);
-
+    if (const auto it = m_agxNodeGraphicsObjects.find(nodeId); it != m_agxNodeGraphicsObjects.end()) {
+        m_agxNodeGraphicsObjects.erase(it);
         Q_EMIT modified(this);
     }
 }
 
-void AgxGraphicsScene::onNodeCreated(AgxNodeId const nodeId)
+void AgxGraphicsScene::onNodeCreated(const AgxNodeId& nodeId)
 {
     if (agxGraphModel().GetNodeType(nodeId) == AgxNodeType::Comment) {
 
-        _agxNodeGraphicsObjects[nodeId] = std::make_unique<AgxCommentGraphicsObject>(*this, nodeId);
+        m_agxNodeGraphicsObjects[nodeId] = std::make_unique<AgxCommentGraphicsObject>(*this, nodeId);
 
-        QTimer::singleShot(5, this, [this, nodeId]() {
-                           
-        auto pos = agxGraphModel().nodeData(nodeId, AgxNodeRole::Position).toPointF();
+        QTimer::singleShot(5, this, [this, nodeId] {
+
+        const auto pos = agxGraphModel().nodeData(nodeId, AgxNodeRole::Position).toPointF();
 
         //pos -= QPointF(10, 10);
 
-        auto checkData = agxGraphModel().nodeData(nodeId, AgxNodeRole::InternalData).toJsonObject();
-
-        if (checkData.contains("internal-data") && checkData["internal-data"].toObject().contains("comment-target")) return;
+        if (auto checkData = agxGraphModel().nodeData(nodeId, AgxNodeRole::InternalData).toJsonObject();
+            checkData.contains("internal-data") &&
+            checkData["internal-data"].toObject().contains("comment-target")
+            )
+        {
+            return;
+        }
 
         QJsonObject data;
         QJsonObject tgtData;
@@ -386,69 +383,66 @@ void AgxGraphicsScene::onNodeCreated(AgxNodeId const nodeId)
                            });
 
     } else {
-        _agxNodeGraphicsObjects[nodeId] = std::make_unique<AgxNodeGraphicsObject>(*this, nodeId);
+        m_agxNodeGraphicsObjects[nodeId] = std::make_unique<AgxNodeGraphicsObject>(*this, nodeId);
     }
 
     connect(this, &QGraphicsScene::selectionChanged, &agxGraphModel(), [this, nodeId] {
         if (agxGraphModel().nodeExists(nodeId))
             //QTimer::singleShot(0, this, [this, nodeId]() {
-                agxGraphModel().SetNodeSidebarVisibility(nodeId, _agxNodeGraphicsObjects[nodeId]->isSelected());
+                agxGraphModel().SetNodeSidebarVisibility(nodeId, m_agxNodeGraphicsObjects[nodeId]->isSelected());
                                //});
             });
     //Waiting a frame so that the command actually sets the state correctly
     QTimer::singleShot(0, this, [this, nodeId] {
-                agxGraphModel().SetNodeSidebarVisibility(nodeId, _agxNodeGraphicsObjects[nodeId]->isSelected());
+                agxGraphModel().SetNodeSidebarVisibility(nodeId, m_agxNodeGraphicsObjects[nodeId]->isSelected());
                                });
     Q_EMIT modified(this);
 }
 
-void AgxGraphicsScene::onNodePositionUpdated(AgxNodeId const nodeId)
+void AgxGraphicsScene::onNodePositionUpdated(const AgxNodeId& nodeId)
 {
-    auto node = agxNodeGraphicsObject(nodeId);
-    if (node) {
-        node->setPos(_agxGraphModel.nodeData(nodeId, AgxNodeRole::Position).value<QPointF>());
+    if (const auto node = agxNodeGraphicsObject(nodeId))
+    {
+        node->setPos(m_agxGraphModel.nodeData(nodeId, AgxNodeRole::Position).value<QPointF>());
         node->update();
-        _nodeDrag = true;
+        m_nodeDrag = true;
     }
 }
 
-void AgxGraphicsScene::onNodeUpdated(AgxNodeId const nodeId)
+void AgxGraphicsScene::onNodeUpdated(const AgxNodeId& nodeId)
 {
-    auto node = agxNodeGraphicsObject(nodeId);
-
-    if (node) {
+    if (const auto node = agxNodeGraphicsObject(nodeId))
+    {
         node->setGeometryChanged();
 
-        _agxNodeGeometry->recomputeSize(nodeId);
+        m_agxNodeGeometry->recomputeSize(nodeId);
 
         node->updateQWidgetEmbedPos();
         node->update();
         node->moveConnections();
-
-
     }
 }
 
-void AgxGraphicsScene::onNodeClicked(AgxNodeId const nodeId)
+void AgxGraphicsScene::onNodeClicked(const AgxNodeId& nodeId)
 {
-    if (_nodeDrag) {
-        Q_EMIT nodeMoved(nodeId, _agxGraphModel.nodeData(nodeId, AgxNodeRole::Position).value<QPointF>());
+    if (m_nodeDrag) {
+        Q_EMIT nodeMoved(nodeId, m_agxGraphModel.nodeData(nodeId, AgxNodeRole::Position).value<QPointF>());
         Q_EMIT modified(this);
     }
-    _nodeDrag = false;
+    m_nodeDrag = false;
 }
 
 void AgxGraphicsScene::onModelReset()
 {
-    _agxConnectionGraphicsObjects.clear();
-    _agxNodeGraphicsObjects.clear();
+    m_agxConnectionGraphicsObjects.clear();
+    m_agxNodeGraphicsObjects.clear();
 
     clear();
 
     traverseGraphAndPopulateGraphicsObjects();
 }
 
-void AgxGraphicsScene::onSelectAllObjectsOfType(AgxGraphicsItemsFlags flags)
+void AgxGraphicsScene::onSelectAllObjectsOfType(const AgxGraphicsItemsFlags flags)
 {
     if (flags.testFlag(AgxGraphicsItemsFlag::Node))
         onSelectNodes(agxGraphModel().allNodeIds().values());
@@ -457,9 +451,9 @@ void AgxGraphicsScene::onSelectAllObjectsOfType(AgxGraphicsItemsFlags flags)
     if(flags.testFlag(AgxGraphicsItemsFlag::Connection))
     {
         blockSignals(true);
-        for (auto& conn : _agxConnectionGraphicsObjects)
+        for (auto& graphics_object : m_agxConnectionGraphicsObjects | std::views::values)
         {
-            conn.second.get()->setSelected(true);
+            graphics_object.get()->setSelected(true);
         }
         blockSignals(false);
     }
@@ -481,14 +475,23 @@ void AgxGraphicsScene::onSelectedConnections(const QList<AgxConnectionId>& conns
     QCoreApplication::processEvents();
 }
 
+void AgxGraphicsScene::onSelectAnyAndAllObjects()
+{ onSelectAllObjectsOfType(AgxGraphicsItemsFlag::All); }
+
+void AgxGraphicsScene::onSelectAllNodes()
+{ onSelectAllObjectsOfType(AgxGraphicsItemsFlag::Node); }
+
+void AgxGraphicsScene::onSelectAllConnections()
+{ onSelectAllObjectsOfType(AgxGraphicsItemsFlag::Connection); }
+
 void AgxGraphicsScene::onRightRefreshSideBarVisibility()
 {
     QList<AgxNodeId> nodeIds = agxGraphModel().allNodeIds().values();
 
-    QTimer::singleShot(30, this, [this, nodeIds]() {
+    QTimer::singleShot(30, this, [this, nodeIds] {
                                                         size_t i = 0;
                                                         for (auto nodeId = nodeIds.rbegin(); nodeId != nodeIds.rend(); ++nodeId) {
-                                                            auto ngo = agxNodeGraphicsObject(*nodeId);
+                                                            const auto ngo = agxNodeGraphicsObject(*nodeId);
                                                             ngo->blockSignals(true);
                                                             agxGraphModel().SetNodeSidebarVisibility(*nodeId, ngo->isSelected());
                                                             ngo->blockSignals(false);
@@ -517,20 +520,19 @@ void AgxGraphicsScene::onSelectNodes(const QList<AgxNodeId>& nodesToSelect)
     blockSignals(false);
 }
 
-QString AgxGraphicsScene::getLastHoveredGroup()
+QString AgxGraphicsScene::getLastHoveredGroup() const
 {
-    if (lastHoveredNode)
-        return _agxGraphModel.GetNodeGroup(lastHoveredNode->nodeId());
-    else
+    if (m_lastHoveredNode)
+        return m_agxGraphModel.GetNodeGroup(m_lastHoveredNode->nodeId());
+
         return "";
 }
 
-bool AgxGraphicsScene::setGroupHoverState(bool shouldHover, QString groupId)
+bool AgxGraphicsScene::setGroupHoverState(const bool shouldHover, const QString& groupId)
 {
     if (shouldHover && agxGraphModel().GroupExists(groupId))
     {
-        auto list = agxGraphModel().GetNodeGroupAssignmentList();
-        for (auto node : list.at(groupId))
+        for (auto list = agxGraphModel().GetNodeGroupAssignmentList(); const auto node : list.at(groupId))
         {
             agxNodeGraphicsObject(node)->nodeState().setHovered(true);
             agxNodeGraphicsObject(node)->setZValue(1.0);
@@ -539,9 +541,9 @@ bool AgxGraphicsScene::setGroupHoverState(bool shouldHover, QString groupId)
         return true;
     }
 
-    for (auto node : agxGraphModel().allNodeIds())
+    for (const auto node : agxGraphModel().allNodeIds())
     {
-        if(!lastHoveredNode || node != lastHoveredNode->nodeId())
+        if(!m_lastHoveredNode || node != m_lastHoveredNode->nodeId())
         {
             agxNodeGraphicsObject(node)->nodeState().setHovered(false);
             agxNodeGraphicsObject(node)->setZValue(0.0);
@@ -551,11 +553,11 @@ bool AgxGraphicsScene::setGroupHoverState(bool shouldHover, QString groupId)
     return false;
 }
 
-void AgxGraphicsScene::setConnectionsHidden(const QList<AgxConnectionId>& cids, bool hide)
+void AgxGraphicsScene::setConnectionsHidden(const QList<AgxConnectionId>& cidList, const bool hide)
 {
-    for (auto& cid : cids)
+    for (auto& cid : cidList)
     {
-        if (auto cgo = agxConnectionGraphicsObject(cid))
+        if (const auto cgo = agxConnectionGraphicsObject(cid))
         {
             cgo->setConnectionHidden(hide);
         }
@@ -564,10 +566,10 @@ void AgxGraphicsScene::setConnectionsHidden(const QList<AgxConnectionId>& cids, 
 
 size_t AgxGraphicsScene::nodeGraphicItemCount() const
 {
-    return _agxNodeGraphicsObjects.size();
+    return m_agxNodeGraphicsObjects.size();
 }
 
 size_t AgxGraphicsScene::connectionGraphicItemCount() const
 {
-    return _agxConnectionGraphicsObjects.size();
+    return m_agxConnectionGraphicsObjects.size();
 }

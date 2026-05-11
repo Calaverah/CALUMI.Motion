@@ -10,26 +10,26 @@
 #include "Utilities/guidUtil.h"
 #include <Utilities/AgxJsonHelper.h>
 #include <Models/Blend/AgxBlendInputModel.h>
-#include <Widgets/Blend/AgxBlendInputView.h>
 #include "Utilities/AgxFormat.h"
 #include "Widgets/AgxLineEdit.h"
 
 AgxNode::~AgxNode()
 {
-    CloseEmbeddedView();
-    if (_sidebarContent) _sidebarContent->deleteLater();
+    AgxNode::CloseEmbeddedView();
+    if (m_sidebarContent)
+        m_sidebarContent->deleteLater();
 }
 
-AgxNode::AgxNode(AgxGraphModel* rootGraphRef) : _nodeStyle(AgxStyleCollection::nodeStyle()), _NodePropertiesWidget(nullptr), _nextPortId{0}, _RootGraphReference(rootGraphRef)
+AgxNode::AgxNode(AgxGraphModel* rootGraphRef) : m_nextPortId{0}, m_nodePropertiesWidget(nullptr), m_rootGraphReference(rootGraphRef), m_nodeStyle(AgxStyleCollection::nodeStyle())
 {
 
 }
 
-void AgxNode::SetNameProperty(QString newName)
+void AgxNode::SetNameProperty(const QString& newName)
 {
     if (CanSetNameProperty())
     {
-        _nameProperty = newName;
+        m_nameProperty = newName;
         Q_EMIT PropertySheetUpdated();
     }
 }
@@ -41,30 +41,29 @@ QJsonObject AgxNode::save() const
     modelJson["model-name"] = name();
 
     if (CanSetNameProperty())
-        modelJson["nameProperty"] = _nameProperty;
+        modelJson["nameProperty"] = m_nameProperty;
 
-    modelJson["groupId"] = _groupName;
+    modelJson["groupId"] = m_groupName;
 
-    QJsonObject propSheet;
-    propSheet = getPropertySheetData();
+    QJsonObject propSheet = getPropertySheetData();
 
-    modelJson["collapsed"] = collapsed;
+    modelJson["collapsed"] = m_collapsed;
 
 
-    if (_EmbeddedGraphModel.get())
+    if (m_embeddedGraphModel.get())
     {
-        modelJson["embedded-graph"] = _EmbeddedGraphModel->save();
+        modelJson["embedded-graph"] = m_embeddedGraphModel->save();
     }
 
     QJsonObject inPortData;
     QJsonObject outPortData;
-    for (unsigned int i = 0; i < _In_Ports.count(); i++)
+    for (unsigned int i = 0; i < m_inPorts.count(); i++)
     {
-        inPortData[std::to_string(_In_Ports.at(i)->GetId()).c_str()] = _In_Ports.at(i)->Save();
+        inPortData[std::to_string(m_inPorts.at(i)->getId()).c_str()] = m_inPorts.at(i)->save();
     }
-    for (unsigned int i = 0; i < _Out_Ports.count(); i++)
+    for (unsigned int i = 0; i < m_outPorts.count(); i++)
     {
-        outPortData[std::to_string(_Out_Ports.at(i)->GetId()).c_str()] = _Out_Ports.at(i)->Save();
+        outPortData[std::to_string(m_outPorts.at(i)->getId()).c_str()] = m_outPorts.at(i)->save();
     }
 
     propSheet["in-ports"] = inPortData;
@@ -81,7 +80,7 @@ void AgxNode::load(QJsonObject const& data)
     
     if (CanSetNameProperty())
     {
-        QJsonValue s = data["nameProperty"];
+        const QJsonValue s = data["nameProperty"];
         SetNameProperty(s.toString());
     }
     setGroupId(data["groupId"].toString());
@@ -89,38 +88,37 @@ void AgxNode::load(QJsonObject const& data)
     QJsonObject pSheet = data["property-sheet"].toObject();
     QJsonObject blockData = pSheet["property-blocks"].toObject();
 
-    QJsonObject inPortData = pSheet["in-ports"].toObject();
-    QJsonObject outPortData = pSheet["out-ports"].toObject();
+    const QJsonObject inPortData = pSheet["in-ports"].toObject();
+    const QJsonObject outPortData = pSheet["out-ports"].toObject();
     
     for (unsigned int i = 0; i < inPortData.count(); i++)
     {
-        auto port = _AddPort(AgxPortType::In);
-        port->SetId(inPortData.keys().at(i).toUInt());
+        const auto port = _AddPort(AgxPortType::In);
+        port->setId(inPortData.keys().at(i).toUInt());
     }
     for (unsigned int i = 0; i < outPortData.count(); i++)
     {
-        auto port = _AddPort(AgxPortType::Out);
-        port->SetId(outPortData.keys().at(i).toUInt());
+        const auto port = _AddPort(AgxPortType::Out);
+        port->setId(outPortData.keys().at(i).toUInt());
     }
 
-    for (int i = 0; i < _PropertyBlocks.size(); i++)
+    for (int i = 0; i < m_PropertyBlocks.size(); i++)
     {
-        auto key = _PropertyBlocks.keys().at(i);
-        _PropertyBlocks[key].loadDefault(blockData[key().tag].toObject());
+        auto key = m_PropertyBlocks.keys().at(i);
+        m_PropertyBlocks[key].loadDefault(blockData[key().tag].toObject());
     }
 
     insertPropertySheetData(pSheet);
 
-    QJsonValue jCollapse = data["collapsed"];
-    if (jCollapse.toBool())
+    if (const QJsonValue jCollapse = data["collapsed"]; jCollapse.toBool())
     {
         ToggleCollapse();
     }
 
-    if(_EmbeddedGraphModel.get() && data.contains("embedded-graph"))
+    if(m_embeddedGraphModel.get() && data.contains("embedded-graph"))
     {
-        QJsonObject embeddedGraph = data["embedded-graph"].toObject();
-        _EmbeddedGraphModel->load(embeddedGraph);
+        const QJsonObject embeddedGraph = data["embedded-graph"].toObject();
+        m_embeddedGraphModel->load(embeddedGraph);
     }
     blockSignals(false);
 
@@ -133,15 +131,15 @@ void AgxNode::load(pugi::xml_node& xmlNode)
 {
     blockSignals(true);
     if (xmlNode.child("collapsed")) {
-        auto clpsd = xmlNode.child("collapsed").child_value();
-        if ((_stricmp(clpsd, "True") == 0) != collapsed) {
+        if (const auto collapsed = xmlNode.child("collapsed").child_value(); QString("True").compare(collapsed, Qt::CaseInsensitive) == 0 != m_collapsed)
+        {
             ToggleCollapse();
         }
         xmlNode.remove_child("collapsed");
     }
 
     if (xmlNode.child("name")) {
-        _nameProperty = xmlNode.child_value("name");
+        m_nameProperty = xmlNode.child_value("name");
         xmlNode.remove_child("name");
     }
 
@@ -149,7 +147,7 @@ void AgxNode::load(pugi::xml_node& xmlNode)
         
         if (name() != xmlNode.child_value("node_type"))
         {
-            AmmendValidationState("Node Type Does Not Match Input", AgxNodeValidationState::State::Warning);
+            AmendValidationState("Node Type Does Not Match Input", AgxNodeValidationState::State::Warning);
         }
         xmlNode.remove_child("node_type");
     }
@@ -157,10 +155,10 @@ void AgxNode::load(pugi::xml_node& xmlNode)
     {
         std::ostringstream oss;
         xmlNode.print(oss);
-        _ExcessData += oss.str();   
+        m_excessData += oss.str();
     }
 
-    if(!_ExcessData.isEmpty()) AmmendValidationState("Node Not Fully Imported!", AgxNodeValidationState::State::Warning);
+    if(!m_excessData.isEmpty()) AmendValidationState("Node Not Fully Imported!", AgxNodeValidationState::State::Warning);
     blockSignals(false);
 
     Q_EMIT statusUpdate(1.0);
@@ -169,17 +167,18 @@ void AgxNode::load(pugi::xml_node& xmlNode)
     QApplication::processEvents();
 }
 
-AgxConnectionPolicy AgxNode::portConnectionPolicy(AgxPortType portType, AgxPortIndex portIndex) const
+AgxConnectionPolicy AgxNode::portConnectionPolicy(const AgxPortType portType, AgxPortIndex portIndex) const
 {
     auto result = AgxConnectionPolicy::One;
-    switch (portType) {
+    switch (portType)
+    {
         case AgxPortType::In:
             result = AgxConnectionPolicy::One;
             break;
         case AgxPortType::Out:
             result = AgxConnectionPolicy::Many;
             break;
-        case AgxPortType::None:
+        default:
             break;
     }
 
@@ -188,78 +187,78 @@ AgxConnectionPolicy AgxNode::portConnectionPolicy(AgxPortType portType, AgxPortI
 
 const AgxNodeStyle& AgxNode::nodeStyle() const
 {
-    return _nodeStyle;
+    return m_nodeStyle;
 }
 
-void AgxNode::setNodeStyle(const AgxNodeStyle& style) { _nodeStyle = style; }
+void AgxNode::setNodeStyle(const AgxNodeStyle& style) { m_nodeStyle = style; }
 
-void AgxNode::AmmendValidationState(const QString& messageToAdd, const AgxNodeValidationState::State& minState)
+void AgxNode::AmendValidationState(const QString& messageToAdd, const AgxNodeValidationState::State& minState)
 {
     return;
     auto vState = validationState();
-    if (!vState._stateMessage.isEmpty()) vState._stateMessage += "\n";
+    if (!vState.m_stateMessage.isEmpty()) vState.m_stateMessage += "\n";
 
     switch (minState)
     {
         case AgxNodeValidationState::State::Warning: 
-            vState._stateMessage += "WARNING: ";
+            vState.m_stateMessage += "WARNING: ";
             break;
         case AgxNodeValidationState::State::Error:
-            vState._stateMessage += "ERROR: ";
+            vState.m_stateMessage += "ERROR: ";
+            break;
+        default:
             break;
     }
 
-    vState._stateMessage += messageToAdd;
+    vState.m_stateMessage += messageToAdd;
 
-    if (vState._state < minState) vState._state = minState;
+    if (vState.m_state < minState) vState.m_state = minState;
 
-    setValidatonState(vState);
+    setValidationState(vState);
 }
 
-void AgxNode::setValidatonState(const AgxNodeValidationState& validationState)
+void AgxNode::setValidationState(const AgxNodeValidationState& validationState)
 {}
 
 void AgxNode::InitializeWidget()
 {
     //called before any null embedded widget is summoned on child class
-    if (!_NodePropertiesWidget)
+    if (!m_nodePropertiesWidget)
     {
-        _NodePropertiesWidget = new AgxNodePropertiesWidget(nullptr, true);
+        m_nodePropertiesWidget = new AgxNodePropertiesWidget(nullptr, true);
         //enter standard node widgets here
     }
 }
 
 void AgxNode::ToggleCollapse()
 {
-    collapsed = !collapsed;
+    m_collapsed = !m_collapsed;
 }
 
 void AgxNode::insertPropertySheetData(const QJsonObject& data)
 {
     //should be called after child node class override is handled
     if (data.contains("hiddenState"))
-        hiddenState = data.value("hiddenState").toBool();
+        m_hiddenState = data.value("hiddenState").toBool();
 
     //update standard node data here
     QJsonObject jsonBlock = data["property-blocks"].toObject();
-    for (int i = 0; i < _PropertyBlocks.size(); i++)
+    for (int i = 0; i < m_PropertyBlocks.size(); i++)
     {
-        auto key = _PropertyBlocks.keys().at(i);
-        if (jsonBlock.contains(key().tag))
+        if (auto key = m_PropertyBlocks.keys().at(i); jsonBlock.contains(key().tag))
         {
-            _PropertyBlocks[key].insertPropertyBlockData(jsonBlock[key().tag].toObject());
+            m_PropertyBlocks[key].insertPropertyBlockData(jsonBlock[key().tag].toObject());
         }
     }
 
-    for (int i = 0; i < _PropertyEntries.size(); i++)
+    for (int i = 0; i < m_propertyEntries.size(); i++)
     {
-        QString key = _PropertyEntries.at(i).Tag();
-        if (data.contains(key))
+        if (QString key = m_propertyEntries.at(i).Tag(); data.contains(key))
         {
             if(data[key].toObject().contains("value"))
-                _PropertyEntries[i].value = data[key].toObject()["value"].toString();
+                m_propertyEntries[i].value = data[key].toObject()["value"].toString();
             if(data[key].toObject().contains("isPresent"))
-                _PropertyEntries[i].SetIsPresent(data[key].toObject()["isPresent"].toBool());
+                m_propertyEntries[i].SetIsPresent(data[key].toObject()["isPresent"].toBool());
         }
     }
 
@@ -271,11 +270,11 @@ void AgxNode::insertPropertySheetData(const QJsonObject& data)
         QString key = inPortData.keys().at(i);
         //_In_Ports.at(i)->Load(inPortData[key].toObject());
 
-        for (auto port : _In_Ports)
+        for (const auto port : m_inPorts)
         {
-            if (port->GetId() == key.toUInt())
+            if (port->getId() == key.toUInt())
             {
-                port->Load(inPortData[key].toObject());
+                port->load(inPortData[key].toObject());
             }
         }
     }
@@ -283,11 +282,11 @@ void AgxNode::insertPropertySheetData(const QJsonObject& data)
     {
         QString key = outPortData.keys().at(i);
         //_Out_Ports.at(i)->Load(outPortData[key].toObject());
-        for (auto port : _Out_Ports)
+        for (const auto port : m_outPorts)
         {
-            if (port->GetId() == key.toUInt())
+            if (port->getId() == key.toUInt())
             {
-                port->Load(outPortData[key].toObject());
+                port->load(outPortData[key].toObject());
             }
         }
     }
@@ -296,40 +295,40 @@ void AgxNode::insertPropertySheetData(const QJsonObject& data)
     Q_EMIT embeddedWidgetSizeUpdated();
 }
 
-QJsonObject AgxNode::getPropertySheetData(bool cleared) const
+QJsonObject AgxNode::getPropertySheetData(const bool cleared) const
 {
     QJsonObject output;
     //serialize property sheet for parent class
 
-    output["hiddenState"] = QJsonValue(hiddenState);
+    output["hiddenState"] = QJsonValue(m_hiddenState);
 
     QJsonObject blocks;
-    for (int i = 0; i < _PropertyBlocks.size(); i++)
+    for (int i = 0; i < m_PropertyBlocks.size(); i++)
     {
-        auto key = _PropertyBlocks.keys().at(i);
-        blocks[key().tag] = _PropertyBlocks.value(key).getPropertyBlockData(cleared);
+        auto key = m_PropertyBlocks.keys().at(i);
+        blocks[key().tag] = m_PropertyBlocks.value(key).getPropertyBlockData(cleared);
     }
     output["property-blocks"] = blocks;
 
     
-    for (int i = 0; i < _PropertyEntries.size(); i++)
+    for (int i = 0; i < m_propertyEntries.size(); i++)
     {
-        QString key = _PropertyEntries.at(i).Tag();
+        QString key = m_propertyEntries.at(i).Tag();
         QJsonObject pair;
-        pair["value"] = cleared ? "" : _PropertyEntries[i].value;
-        pair["isPresent"] = cleared ? false : _PropertyEntries[i].isPresent;
+        pair["value"] = cleared ? "" : m_propertyEntries[i].value;
+        pair["isPresent"] = cleared ? false : m_propertyEntries[i].isPresent;
         output[key] = pair;
     }
 
     QJsonObject inPortData;
     QJsonObject outPortData;
-    for (unsigned int i = 0; i < _In_Ports.count(); i++)
+    for (unsigned int i = 0; i < m_inPorts.count(); i++)
     {
-        inPortData[std::to_string(_In_Ports.at(i)->GetId()).c_str()] = _In_Ports.at(i)->Save();
+        inPortData[std::to_string(m_inPorts.at(i)->getId()).c_str()] = m_inPorts.at(i)->save();
     }
-    for (unsigned int i = 0; i < _Out_Ports.count(); i++)
+    for (unsigned int i = 0; i < m_outPorts.count(); i++)
     {
-        outPortData[std::to_string(_Out_Ports.at(i)->GetId()).c_str()] = _Out_Ports.at(i)->Save();
+        outPortData[std::to_string(m_outPorts.at(i)->getId()).c_str()] = m_outPorts.at(i)->save();
     }
 
     output["in-ports"] = inPortData;
@@ -338,16 +337,19 @@ QJsonObject AgxNode::getPropertySheetData(bool cleared) const
     return output;
 }
 
-AgxPropertyBlockData* AgxNode::getPropertyBlock(TermRef ref) {
-    if (!_PropertyBlocks.contains(ref)) return nullptr;
+AgxPropertyBlockData* AgxNode::getPropertyBlock(const TermRef ref) {
+    if (!m_PropertyBlocks.contains(ref))
+        return nullptr;
 
-    return &_PropertyBlocks[ref];
+    return &m_PropertyBlocks[ref];
 }
 AgxPropertyBlockData* AgxNode::getPropertyBlock(const QString& block)
 {
-    for (auto blockTermRef : _PropertyBlocks.keys()) {
-        if (blockTermRef().tag.compare(block, Qt::CaseInsensitive) == 0) {
-            return &_PropertyBlocks[blockTermRef];
+    for (const auto blockTermRef : m_PropertyBlocks.keys())
+    {
+        if (blockTermRef().tag.compare(block, Qt::CaseInsensitive) == 0)
+        {
+            return &m_PropertyBlocks[blockTermRef];
         }
     }
 
@@ -355,30 +357,29 @@ AgxPropertyBlockData* AgxNode::getPropertyBlock(const QString& block)
 }
 void AgxNode::SetUpEmbeddedNodeGraph()
 {
-    _EmbeddedGraphModel = std::make_shared<AgxGraphModel>(_gameType, _RootGraphReference);
-    _EmbeddedGraphScene = std::make_shared<AgxGraphicsScene>(*_EmbeddedGraphModel);
+    m_embeddedGraphModel = std::make_shared<AgxGraphModel>(m_gameType, m_rootGraphReference);
+    m_embeddedGraphScene = std::make_shared<AgxGraphicsScene>(*m_embeddedGraphModel);
 }
 
 void AgxNode::CloseEmbeddedView()
 {
-    if (!_EmbeddedGraphScene.get())
+    if (!m_embeddedGraphScene.get())
         return;
 
-    auto views = _EmbeddedGraphScene->views();
+    auto views = m_embeddedGraphScene->views();
     AgxGraphicsView* agxView = nullptr;
-    for (auto entry : views)
+    for (const auto entry : views)
     {
-        if (agxView = dynamic_cast<AgxGraphicsView*>(entry))
+        agxView = dynamic_cast<AgxGraphicsView*>(entry);
+        if (agxView)
         {
             break;
         }
     }
 
-    auto topList = QApplication::topLevelWidgets();
-    
-    for (auto entry : topList)
+    for (auto topList = QApplication::topLevelWidgets(); const auto entry : topList)
     {
-        if (CALUMIMotion* mainWindow = dynamic_cast<CALUMIMotion*>(entry))
+        if (const auto mainWindow = dynamic_cast<CALUMIMotion*>(entry))
         {
             mainWindow->CloseTab(agxView);
         }
@@ -390,33 +391,33 @@ QWidget* AgxNode::GetSideBarContent()
 {
     return nullptr;
 
-    if (!_sidebarContent)
+    if (!m_sidebarContent)
     {
         
-        _sidebarContent = new QWidget();
-        QVBoxLayout* layout = new QVBoxLayout();
-        _sidebarContent->setLayout(layout);
-        QLabel* header = new QLabel(std::format("{} [Node Id: {}]", _nameProperty.toStdString().c_str(),_nodeIdRef).c_str());
-        connect(this, &AgxNode::PropertySheetUpdated, this, [this, header]() {header->setText(std::format("{} [Node Id: {}]", _nameProperty.toStdString().c_str(), _nodeIdRef).c_str()); });
+        m_sidebarContent = new QWidget();
+        auto layout = new QVBoxLayout();
+        m_sidebarContent->setLayout(layout);
+        auto header = new QLabel(std::format("{} [Node Id: {}]", m_nameProperty.toStdString().c_str(),m_nodeIdRef).c_str());
+        connect(this, &AgxNode::PropertySheetUpdated, this, [this, header] {header->setText(std::format("{} [Node Id: {}]", m_nameProperty.toStdString().c_str(), m_nodeIdRef).c_str()); });
 
         header->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
         layout->addWidget(header);
 
-        QFrame* hline = new QFrame();
-        hline->setFrameShape(QFrame::HLine);
-        hline->setFrameShadow(QFrame::Sunken);
-        layout->addWidget(hline);
+        auto hLine = new QFrame();
+        hLine->setFrameShape(QFrame::HLine);
+        hLine->setFrameShadow(QFrame::Sunken);
+        layout->addWidget(hLine);
     }
 
-    return _sidebarContent;
+    return m_sidebarContent;
 }
 
-void AgxNode::SetSidebarVisibility(bool state)
+void AgxNode::SetSidebarVisibility(const bool state)
 {
-    if (_sidebarContent)
+    if (m_sidebarContent)
     {
-        _sidebarContent->setVisible(state);
-        if (auto sfbgsItem = dynamic_cast<AgxSidebarContent*>(_sidebarContent.get()))
+        m_sidebarContent->setVisible(state);
+        if (const auto sfbgsItem = dynamic_cast<AgxSidebarContent*>(m_sidebarContent.get()))
         {
             Q_EMIT sfbgsItem->StateChanged();
         }
@@ -426,72 +427,79 @@ void AgxNode::SetSidebarVisibility(bool state)
 
 void AgxNode::inputConnectionCreated(const AgxConnectionId& connection)
 {
-    if (connection.inPortIndex < _In_Ports.count())
+    if (connection.inPortIndex < m_inPorts.count())
     {
-        _In_Ports.at(connection.inPortIndex)->setConnectionState(true);
+        m_inPorts.at(connection.inPortIndex)->setConnectionState(true);
     }
 }
 void AgxNode::inputConnectionDeleted(const AgxConnectionId& connection)
 {
-    if (connection.inPortIndex < _In_Ports.count())
+    if (connection.inPortIndex < m_inPorts.count())
     {
-        _In_Ports.at(connection.inPortIndex)->setConnectionState(false);
+        m_inPorts.at(connection.inPortIndex)->setConnectionState(false);
     }
 }
 
-std::shared_ptr<AgxPort> AgxNode::_AddPort(AgxPortType portType, AgxPortIndex index, QJsonObject data)
+void AgxNode::SetNodeIdRef(const AgxNodeId& nodeId)
 {
-    unsigned int idxI = index > _In_Ports.count() ? _In_Ports.count() : index;
-    unsigned int idxO = index > _Out_Ports.count() ? _Out_Ports.count() : index;
+    m_nodeIdRef = nodeId;
+    Q_EMIT PropertySheetUpdated();
+}
+
+std::shared_ptr<AgxPort> AgxNode::_AddPort(const AgxPortType portType, const AgxPortIndex index, const QJsonObject data)
+{
+    const unsigned int idxI = index > m_inPorts.count() ? m_inPorts.count() : index;
+    const unsigned int idxO = index > m_outPorts.count() ? m_outPorts.count() : index;
 
     auto agxPort = std::make_shared<AgxPort>(this);
 
     switch (portType)
     {
         case AgxPortType::In:
-            _In_Ports.insert(idxI, agxPort);
+            m_inPorts.insert(idxI, agxPort);
             break;
         case AgxPortType::Out:
-            _Out_Ports.insert(idxO, agxPort);
+            m_outPorts.insert(idxO, agxPort);
             break;
         default:
             return nullptr;
-            break;
     }
 
-    agxPort->Load(data);
+    agxPort->load(data);
 
-    if (agxPort->GetId() == InvalidAgxPortId)
+    if (agxPort->getId() == InvalidAgxPortId)
     {
-        agxPort->SetId(NewPortId());
+        agxPort->setId(NewPortId());
     }
 
-    _nextPortId = agxPort->GetId() >= _nextPortId ? agxPort->GetId() + 1 : _nextPortId;
+    m_nextPortId = agxPort->getId() >= m_nextPortId ? agxPort->getId() + 1 : m_nextPortId;
 
     return agxPort;
 }
 
-void AgxNode::_RemovePort(AgxPortType portType, AgxPortIndex index, bool preserve)
+void AgxNode::_RemovePort(const AgxPortType portType, const AgxPortIndex index, const bool preserve)
 {
     //choosing to leave the possibility of both incase we switch to AgxPortType
-    unsigned int idxI = index >= _In_Ports.count() ? _In_Ports.count() - 1 : index;
-    unsigned int idxO = index >= _Out_Ports.count() ? _Out_Ports.count() - 1 : index;
+    const unsigned int idxI = index >= m_inPorts.count() ? m_inPorts.count() - 1 : index;
+    const unsigned int idxO = index >= m_outPorts.count() ? m_outPorts.count() - 1 : index;
 
     if (preserve)
     {
         switch (portType)
         {
             case AgxPortType::In:
-                if (auto agxPort = dynamic_cast<AgxPort_SFBGS*>(_In_Ports.at(idxI).get())) {
-                    if (agxPort->GetId() == _nextPortId - 1)
-                        _nextPortId--;
+                if (const auto agxPort = dynamic_cast<AgxPort_SFBGS*>(m_inPorts.at(idxI).get())) {
+                    if (agxPort->getId() == m_nextPortId - 1)
+                        m_nextPortId--;
                 }
                 break;
             case AgxPortType::Out:
-                if (auto agxPort = dynamic_cast<AgxPort_SFBGS*>(_Out_Ports.at(idxO).get())) {
-                    if (agxPort->GetId() == _nextPortId - 1)
-                        _nextPortId--;
+                if (const auto agxPort = dynamic_cast<AgxPort_SFBGS*>(m_outPorts.at(idxO).get())) {
+                    if (agxPort->getId() == m_nextPortId - 1)
+                        m_nextPortId--;
                 }
+                break;
+            default:
                 break;
         }
     }
@@ -499,74 +507,82 @@ void AgxNode::_RemovePort(AgxPortType portType, AgxPortIndex index, bool preserv
     switch (portType)
     {
         case AgxPortType::In:
-            _In_Ports.erase(_In_Ports.begin() + idxI);
+            m_inPorts.erase(m_inPorts.begin() + idxI);
             break;
         case AgxPortType::Out:
-            _Out_Ports.erase(_Out_Ports.begin() + idxO);
+            m_outPorts.erase(m_outPorts.begin() + idxO);
+            break;
+        default:
             break;
     }
 }
 
-QJsonObject AgxNode::PortData(AgxPortType portType, AgxPortIndex index)
+QJsonObject AgxNode::PortData(const AgxPortType portType, const AgxPortIndex index)
 {   
     switch (portType)
     {
         case AgxPortType::In:
-            if (index < _In_Ports.count())
-                return _In_Ports.at(index)->Save();
+            if (index < m_inPorts.count())
+                return m_inPorts.at(index)->save();
             break;
         case AgxPortType::Out:
-            if (index < _Out_Ports.count())
-                return _Out_Ports.at(index)->Save();
+            if (index < m_outPorts.count())
+                return m_outPorts.at(index)->save();
+            break;
+        default:
             break;
     }
     return QJsonObject();
 }
 
-void AgxNode::SetPortData(AgxPortType portType, AgxPortIndex index, const QJsonObject& dataSet)
+void AgxNode::SetPortData(const AgxPortType portType, const AgxPortIndex index, const QJsonObject& dataSet)
 {
     switch (portType)
     {
         case AgxPortType::In:
-            if (index < _In_Ports.count())
-                return _In_Ports.at(index)->Load(dataSet);
+            if (index < m_inPorts.count())
+                return m_inPorts.at(index)->load(dataSet);
             break;
         case AgxPortType::Out:
-            if (index < _Out_Ports.count())
-                return _Out_Ports.at(index)->Load(dataSet);
+            if (index < m_outPorts.count())
+                return m_outPorts.at(index)->load(dataSet);
+            break;
+        default:
             break;
     }
 }
 
-unsigned int AgxNode::PortCount(AgxPortType portType) const
+unsigned int AgxNode::PortCount(const AgxPortType portType) const
 {
     switch (portType)
     {
         case AgxPortType::In:
-            return _In_Ports.count();
+            return m_inPorts.count();
         case AgxPortType::Out:
-            return _Out_Ports.count();
+            return m_outPorts.count();
         default:
             return 0;
     }
 }
 
-void AgxNode::SetPortCount(AgxPortType portType, unsigned int count)
+void AgxNode::SetPortCount(const AgxPortType portType, const unsigned int count)
 {
     unsigned int portCount = 0;
 
     switch (portType)
     {
         case AgxPortType::In:
-            portCount = _In_Ports.count();
+            portCount = m_inPorts.count();
             break;
         case AgxPortType::Out:
-            portCount = _Out_Ports.count();
+            portCount = m_outPorts.count();
+            break;
+        default:
             break;
     }
     if (portCount > count)
     {
-        auto size = portCount - count;
+        const auto size = portCount - count;
         for (unsigned int i = 0; i < size; i++)
         {
             _RemovePort(portType, portCount);
@@ -574,7 +590,7 @@ void AgxNode::SetPortCount(AgxPortType portType, unsigned int count)
         }
     } else if (portCount < count)
     {
-        auto size = portCount - count;
+        const auto size = portCount - count;
         for (unsigned int i = 0; i < size; i++)
         {
             _AddPort(portType, portCount);
@@ -586,65 +602,70 @@ void AgxNode::SetPortCount(AgxPortType portType, unsigned int count)
 
 AgxPortType AgxNode::GetPortType(AgxPort* port) const
 {
-    for (unsigned int i = 0; i < _In_Ports.count(); i++)
+    for (unsigned int i = 0; i < m_inPorts.count(); i++)
     {
-        if (_In_Ports[i].get() == port) return AgxPortType::In;
+        if (m_inPorts[i].get() == port) return AgxPortType::In;
     }
-    for (unsigned int i = 0; i < _Out_Ports.count(); i++)
+    for (unsigned int i = 0; i < m_outPorts.count(); i++)
     {
-        if (_Out_Ports[i].get() == port) return AgxPortType::Out;
+        if (m_outPorts[i].get() == port) return AgxPortType::Out;
     }
 
     return AgxPortType::None;
 }
 
-void AgxNode::_ExternalPortCommand(AgxPortType portType, AgxPortIndex index, const QString& command, const QString& payload)
+void AgxNode::_ExternalPortCommand(const AgxPortType portType, const AgxPortIndex index, const QString& command, const QString& payload)
 {
     if (PortCount(portType) <= index) return;
 
     switch (portType)
     {
         case AgxPortType::In:
-            _In_Ports.at(index)->externalCommand(command, payload);
+            m_inPorts.at(index)->externalCommand(command, payload);
             break;
         case AgxPortType::Out:
-            _Out_Ports.at(index)->externalCommand(command, payload);
+            m_outPorts.at(index)->externalCommand(command, payload);
+            break;
+        default:
             break;
     }
 }
 
 AgxPortIndex AgxNode::GetPortIndex(AgxPort* port) const
 {
-    for (unsigned int i = 0; i < _In_Ports.count(); i++)
+    for (unsigned int i = 0; i < m_inPorts.count(); i++)
     {
-        if (_In_Ports[i].get() == port) return i;
+        if (m_inPorts[i].get() == port) return i;
     }
-    for (unsigned int i = 0; i < _Out_Ports.count(); i++)
+    for (unsigned int i = 0; i < m_outPorts.count(); i++)
     {
-        if (_Out_Ports[i].get() == port) return i;
+        if (m_outPorts[i].get() == port) return i;
     }
 
     return InvalidPortIndex;
 }
 
-QString AgxNode::portCaption(AgxPortType portType, AgxPortIndex idx) const
+QString AgxNode::portCaption(const AgxPortType portType, const AgxPortIndex idx) const
 {
     QString output = "Error";
     if (portType == AgxPortType::In) {
-        output = _In_Ports.count() > idx ? _In_Ports.at(idx).get()->Caption() : output;
+        output = m_inPorts.count() > idx ? m_inPorts.at(idx).get()->caption() : output;
     } else if (portType == AgxPortType::Out) {
-        output = _Out_Ports.count() > idx ? _Out_Ports.at(idx).get()->Caption() : output;
+        output = m_outPorts.count() > idx ? m_outPorts.at(idx).get()->caption() : output;
     }
     return output;
 }
 
-bool AgxNode::portCaptionVisible(AgxPortType portType, AgxPortIndex idx) const
+bool AgxNode::portCaptionVisible(const AgxPortType portType, const AgxPortIndex idx) const
 {
     bool output = false;
-    if (portType == AgxPortType::In) {
-        output = _In_Ports.count() > idx ? _In_Ports.at(idx).get()->HasCaption() : output;
-    } else if (portType == AgxPortType::Out) {
-        output = _Out_Ports.count() > idx ? _Out_Ports.at(idx).get()->HasCaption() : output;
+    if (portType == AgxPortType::In)
+    {
+        output = m_inPorts.count() > idx ? m_inPorts.at(idx).get()->hasCaption() : output;
+    }
+    else if (portType == AgxPortType::Out)
+    {
+        output = m_outPorts.count() > idx ? m_outPorts.at(idx).get()->hasCaption() : output;
     }
 
     return output;
@@ -654,34 +675,33 @@ void AgxNode::ResetPorts()
 {
     SetPortCount(AgxPortType::In, 0);
     SetPortCount(AgxPortType::Out, 0);
-    _nextPortId = 0;
+    m_nextPortId = 0;
 }
 
-void SFBGSNode::save(pugi::xml_node& parent, QVector<AgxConnectionId> connections, QVector<AgxNodeId> sortedIds, QPointF pos)
+void SFBGSNode::save(pugi::xml_node& parent, QVector<AgxConnectionId> connections, const QVector<AgxNodeId> sortedIds, const QPointF pos)
 {
     auto nodeObject = AgxAppend(parent, "node", AgxFormat::NewLine, 0);
 
-    if(_SFBGS_Hidden[&AgxDictionary::DefaultState].second.compare("true", Qt::CaseInsensitive) == 0)
+    if(m_sfbgsHidden[&AgxDictionary::DefaultState].second.compare("true", Qt::CaseInsensitive) == 0)
         AgxAppendValue(nodeObject, AgxDictionary::DefaultState().tag, "True", AgxFormat::NewLine);
 
     AgxAppendValue(nodeObject, AgxDictionary::NodeType().tag, typeName(), {AgxFormat::NewLine, AgxFormat::Indent},1);
-    AgxAppendValue(nodeObject, AgxDictionary::noninstanced().tag, _SFBGS_Hidden[&AgxDictionary::noninstanced].second == "-" ? "False" : _SFBGS_Hidden[&AgxDictionary::noninstanced].second, { AgxFormat::NewLine, AgxFormat::Indent }, 1);
+    AgxAppendValue(nodeObject, AgxDictionary::noninstanced().tag, m_sfbgsHidden[&AgxDictionary::noninstanced].second == "-" ? "False" : m_sfbgsHidden[&AgxDictionary::noninstanced].second, { AgxFormat::NewLine, AgxFormat::Indent }, 1);
 
-    auto flagsValue = _flags.GetValue();
-    if (flagsValue != 0) 
+    if (const auto flagsValue = m_flags.GetValue(); flagsValue != 0)
     {
         auto flagsObject = AgxAppend(nodeObject, "flags", { AgxFormat::NewLine, AgxFormat::Indent }, 1);
-        _flags.ToXML(flagsObject);
+        m_flags.ToXML(flagsObject);
     }
 
     if (GetNodeType() == AgxNodeType::NT_BLEND_NODE)
     {
-        AgxAppendValue(nodeObject, "divisions", QString("%1").arg(_Divisions), { AgxFormat::NewLine, AgxFormat::Indent }, 1);
-        for (auto& port : _In_Ports)
+        AgxAppendValue(nodeObject, "divisions", QString("%1").arg(m_divisions), { AgxFormat::NewLine, AgxFormat::Indent }, 1);
+        for (auto& port : m_inPorts)
         {
-            if (auto sfbgsPort = dynamic_cast<AgxPort_SFBGS*>(port.get()))
+            if (const auto sfbgsPort = dynamic_cast<AgxPort_SFBGS*>(port.get()))
             {
-                FormatBlendInput(nodeObject, sfbgsPort->GetBlendInput());
+                FormatBlendInput(nodeObject, sfbgsPort->getBlendInput());
             }
         }
     }
@@ -690,73 +710,75 @@ void SFBGSNode::save(pugi::xml_node& parent, QVector<AgxConnectionId> connection
     AgxAppendValue(nodeObject, AgxDictionary::PosX().tag, CleanUpDecimals(QString("%1").arg(pos.x() / SFBGSxScalar, 0, 'f', 5)), { AgxFormat::NewLine, AgxFormat::Indent }, 1);
     AgxAppendValue(nodeObject, AgxDictionary::PosY().tag, CleanUpDecimals(QString("%1").arg(pos.y() / SFBGSyScalar, 0, 'f', 5)), { AgxFormat::NewLine, AgxFormat::Indent }, 1);
 
-    QString eposx = _SFBGS_Hidden[&AgxDictionary::ExpPosX].second == "-" ? CleanUpDecimals(QString("%1").arg(pos.x() / SFBGSxScalar, 0, 'f', 5)) : _SFBGS_Hidden[&AgxDictionary::ExpPosX].second;
-    AgxAppendValue(nodeObject, AgxDictionary::ExpPosX().tag, eposx, { AgxFormat::NewLine, AgxFormat::Indent }, 1);
-    QString eposy = _SFBGS_Hidden[&AgxDictionary::ExpPosY].second == "-" ? CleanUpDecimals(QString("%1").arg(pos.y() / SFBGSyScalar, 0, 'f', 5)) : _SFBGS_Hidden[&AgxDictionary::ExpPosY].second;
-    AgxAppendValue(nodeObject, AgxDictionary::ExpPosY().tag, eposy, { AgxFormat::NewLine, AgxFormat::Indent }, 1);
+    const QString ePosX = m_sfbgsHidden[&AgxDictionary::ExpPosX].second == "-" ? CleanUpDecimals(QString("%1").arg(pos.x()
+        / SFBGSxScalar, 0, 'f', 5)) : m_sfbgsHidden[&AgxDictionary::ExpPosX].second;
+    AgxAppendValue(nodeObject, AgxDictionary::ExpPosX().tag, ePosX, { AgxFormat::NewLine, AgxFormat::Indent }, 1);
+    const QString ePosY = m_sfbgsHidden[&AgxDictionary::ExpPosY].second == "-" ? CleanUpDecimals(QString("%1").arg(pos.y()
+        / SFBGSyScalar, 0, 'f', 5)) : m_sfbgsHidden[&AgxDictionary::ExpPosY].second;
+    AgxAppendValue(nodeObject, AgxDictionary::ExpPosY().tag, ePosY, { AgxFormat::NewLine, AgxFormat::Indent }, 1);
     
-    AgxAppendValue(nodeObject, AgxDictionary::UseColor().tag, _SFBGS_Hidden[&AgxDictionary::UseColor].second == "-" ? "False" : _SFBGS_Hidden[&AgxDictionary::UseColor].second, { AgxFormat::NewLine, AgxFormat::Indent }, 1);
-    AgxAppendValue(nodeObject, AgxDictionary::UserId().tag, GetPropertyValue(_SFBGS_Properties, AgxDictionary::UserId().tag, "0"), { AgxFormat::NewLine, AgxFormat::Indent }, 1);
+    AgxAppendValue(nodeObject, AgxDictionary::UseColor().tag, m_sfbgsHidden[&AgxDictionary::UseColor].second == "-" ? "False" : m_sfbgsHidden[&AgxDictionary::UseColor].second, { AgxFormat::NewLine, AgxFormat::Indent }, 1);
+    AgxAppendValue(nodeObject, AgxDictionary::UserId().tag, GetPropertyValue(m_sfbgsProperties, AgxDictionary::UserId().tag, "0"), { AgxFormat::NewLine, AgxFormat::Indent }, 1);
     AgxAppendValue(nodeObject, "collapsed", isCollapsed()? "True" : "False", { AgxFormat::NewLine, AgxFormat::Indent }, 1);
     AgxAppendValue(nodeObject, "guid", getGuid().toString(QUuid::WithoutBraces), { AgxFormat::NewLine, AgxFormat::Indent }, 1);
     
-    for (auto& port : _In_Ports)
+    for (auto& port : m_inPorts)
     {
         auto input = AgxAppend(nodeObject, "input", { AgxFormat::NewLine, AgxFormat::Indent }, 1);
-        AgxAppendValue(input, "name", port.get()->Caption(false), AgxFormat::SpaceBefore);
-        AgxAppendValue(input, "id", QString("%1").arg(port.get()->GetId()), AgxFormat::SpaceBefore);
-        AgxAppendValue(input, "idx", QString("%1").arg(port.get()->GetPortIndex()), AgxFormat::SpaceBefore);
+        AgxAppendValue(input, "name", port.get()->caption(false), AgxFormat::SpaceBefore);
+        AgxAppendValue(input, "id", QString("%1").arg(port.get()->getId()), AgxFormat::SpaceBefore);
+        AgxAppendValue(input, "idx", QString("%1").arg(port.get()->getPortIndex()), AgxFormat::SpaceBefore);
         input.append_child(pugi::node_pcdata).set_value("\n");
 
         
         if(!port.get()->isConnected()) 
         {
-            char lineEnd[2] = { 0x20, '\0' };
+            constexpr char lineEnd[2] = { 0x20, '\0' };
             input.append_child(pugi::node_pcdata).set_value(lineEnd);
         } 
         else 
         {
-            for (auto& connection : connections)
+            for (auto& [outNodeId, outPortIndex, inNodeId, inPortIndex, isHidden] : connections)
             {
-                if (connection.inPortIndex != port.get()->GetPortIndex() || connection.inNodeId != _nodeIdRef) continue;
+                if (inPortIndex != port.get()->getPortIndex() || inNodeId != m_nodeIdRef) continue;
 
                 auto link = AgxAppend(input, "link", { AgxFormat::NewLine, AgxFormat::Indent }, 2);
-                AgxAppendValue(link, "node", QString("%1").arg(sortedIds.indexOf(connection.outNodeId) + 1), { AgxFormat::NewLine, AgxFormat::Indent }, 3);
-                AgxAppendValue(link, "output", QString("%1").arg(connection.outPortIndex), AgxFormat::SpaceBefore);
-                AgxAppendValue(link, "hidden", connection.isHidden ? "True" : "False", AgxFormat::SpaceBefore);
-                port.get()->SavePropertySheet(link);
+                AgxAppendValue(link, "node", QString("%1").arg(sortedIds.indexOf(outNodeId) + 1), { AgxFormat::NewLine, AgxFormat::Indent }, 3);
+                AgxAppendValue(link, "output", QString("%1").arg(outPortIndex), AgxFormat::SpaceBefore);
+                AgxAppendValue(link, "hidden", isHidden ? "True" : "False", AgxFormat::SpaceBefore);
+                port.get()->savePropertySheet(link);
                 AgxCloseNode(link, false, true, 2);
-                char lineEnd[3] = { 0x0A,0x20,'\0' };
+                constexpr char lineEnd[3] = { 0x0A,0x20,'\0' };
                 input.append_child(pugi::node_pcdata).set_value(lineEnd);
 
             }
         }
     }
 
-    for (auto& port : _Out_Ports)
+    for (auto& port : m_outPorts)
     {
         auto output = AgxAppend(nodeObject, "output", { AgxFormat::NewLine, AgxFormat::Indent }, 1);
 
-        AgxAppendValue(output, "name", port.get()->Caption(false), AgxFormat::SpaceBefore);
-        AgxAppendValue(output, "id", QString("%1").arg(port.get()->GetId()), AgxFormat::SpaceBefore);
-        AgxAppendValue(output, "idx", QString("%1").arg(port.get()->GetPortIndex()), AgxFormat::SpaceBefore);
+        AgxAppendValue(output, "name", port.get()->caption(false), AgxFormat::SpaceBefore);
+        AgxAppendValue(output, "id", QString("%1").arg(port.get()->getId()), AgxFormat::SpaceBefore);
+        AgxAppendValue(output, "idx", QString("%1").arg(port.get()->getPortIndex()), AgxFormat::SpaceBefore);
         output.append_child(pugi::node_pcdata).set_value("\n");
         output.append_child(pugi::node_pcdata).set_value(" ");
     }
 
-    FormatBasicPropertySheet(nodeObject, _PropertyEntries);
+    FormatBasicPropertySheet(nodeObject, m_propertyEntries);
 
-    for (auto& blockKey : _BlockOrder)
+    for (auto& blockKey : m_blockOrder)
     {
-        if (!_PropertyBlocks[blockKey].IsEnabledState()) continue;
+        if (!m_PropertyBlocks[blockKey].IsEnabledState()) continue;
         
-        FormatPropertyBlock(nodeObject, _PropertyBlocks[blockKey]);
+        FormatPropertyBlock(nodeObject, m_PropertyBlocks[blockKey]);
     }
 
-    if (_EmbeddedGraphModel.get())
+    if (m_embeddedGraphModel.get())
     {
         auto graphObject = AgxAppend(nodeObject, "graph", AgxFormat::NewLine, 0);
-        _EmbeddedGraphModel.get()->save(graphObject);
+        m_embeddedGraphModel.get()->save(graphObject);
         AgxCloseNode(graphObject, false, false, 0);
     }
 
@@ -766,31 +788,31 @@ void SFBGSNode::save(pugi::xml_node& parent, QVector<AgxConnectionId> connection
 QJsonObject SFBGSNode::save() const
 {
     QJsonObject output;
-    QJsonObject agxNode = AgxNode::save();
+    const QJsonObject agxNode = AgxNode::save();
     output = JsonMerge(output, agxNode);
 
-    for (int i = 0; i < _SFBGS_Hidden.size(); i++)
+    for (int i = 0; i < m_sfbgsHidden.size(); i++)
     {
-        auto key = _SFBGS_Hidden.keys().at(i);
-        output[key().tag] = _SFBGS_Hidden[key].second;
+        auto key = m_sfbgsHidden.keys().at(i);
+        output[key().tag] = m_sfbgsHidden[key].second;
     }
 
-    for (int i = 0; i < _SFBGS_Properties.size(); i++)
+    for (int i = 0; i < m_sfbgsProperties.size(); i++)
     {
-        QString key = _SFBGS_Properties.at(i).Tag();
-        output[key] = _SFBGS_Properties[i].value;
+        QString key = m_sfbgsProperties.at(i).Tag();
+        output[key] = m_sfbgsProperties[i].value;
     }
 
     if (GetNodeType() == AgxNodeType::DEBUG || GetNodeType() == AgxNodeType::NT_BLEND_NODE) {
-        output["divisions"] = std::to_string(_Divisions).c_str();
+        output["divisions"] = std::to_string(m_divisions).c_str();
     }
 
     output["guid"] = getGuid().toString(QUuid::StringFormat::WithoutBraces);
 
-    output["flags"] = _flags.ToJson();    
+    output["flags"] = m_flags.ToJson();
 
     QJsonObject userIdVal;
-    userIdVal["value"] = GetPropertyValue(_SFBGS_Properties, AgxDictionary::GetInstance().UserId().tag);
+    userIdVal["value"] = GetPropertyValue(m_sfbgsProperties, AgxDictionary::GetInstance().UserId().tag);
     output[AgxDictionary::GetInstance().UserId().tag] = userIdVal;
 
     return output;
@@ -800,20 +822,18 @@ void SFBGSNode::load(QJsonObject const& data)
 {
     AgxNode::load(data);
 
-    _flags.FromJson(data["flags"]);
+    m_flags.FromJson(data["flags"]);
 
-    for (int i = 0; i < _SFBGS_Hidden.size(); i++)
+    for (int i = 0; i < m_sfbgsHidden.size(); i++)
     {
-        auto key = _SFBGS_Hidden.keys().at(i);
-        if (data.contains(key().tag) && key().tag != "guid")
-            _SFBGS_Hidden[key].second = data.value(key().tag).toString();
+        if (auto key = m_sfbgsHidden.keys().at(i); data.contains(key().tag) && key().tag != "guid")
+            m_sfbgsHidden[key].second = data.value(key().tag).toString();
     }
 
-    for (int i = 0; i < _SFBGS_Properties.size(); i++)
+    for (int i = 0; i < m_sfbgsProperties.size(); i++)
     {
-        QString key = _SFBGS_Properties.at(i).Tag();
-        if(data.contains(key) && key != "guid")
-            _SFBGS_Properties[i].value = data.value(key).toObject().value("value").toString();
+        if(QString key = m_sfbgsProperties.at(i).Tag(); data.contains(key) && key != "guid")
+            m_sfbgsProperties[i].value = data.value(key).toObject().value("value").toString();
     }
 
     if (data.contains("guid"))
@@ -827,19 +847,19 @@ void SFBGSNode::load(pugi::xml_node& xmlNode)
 {
     blockSignals(true);
     if (xmlNode.child("expanded_pos_x")) {
-        _SFBGS_Hidden[&AgxDictionary::ExpPosX].second = xmlNode.child_value("expanded_pos_x");
+        m_sfbgsHidden[&AgxDictionary::ExpPosX].second = xmlNode.child_value("expanded_pos_x");
         xmlNode.remove_child("expanded_pos_x");
     }
     if (xmlNode.child("expanded_pos_y")) {
-        _SFBGS_Hidden[&AgxDictionary::ExpPosY].second = xmlNode.child_value("expanded_pos_y");
+        m_sfbgsHidden[&AgxDictionary::ExpPosY].second = xmlNode.child_value("expanded_pos_y");
         xmlNode.remove_child("expanded_pos_y");
     }
     if (xmlNode.child("pos_x")) {
-        _SFBGS_Hidden[&AgxDictionary::PosX].second = xmlNode.child_value("pos_x");
+        m_sfbgsHidden[&AgxDictionary::PosX].second = xmlNode.child_value("pos_x");
         xmlNode.remove_child("pos_x");
     }
     if(xmlNode.child("pos_y")) {
-        _SFBGS_Hidden[&AgxDictionary::PosY].second = xmlNode.child_value("pos_y");
+        m_sfbgsHidden[&AgxDictionary::PosY].second = xmlNode.child_value("pos_y");
         xmlNode.remove_child("pos_y");
     }
 
@@ -847,14 +867,14 @@ void SFBGSNode::load(pugi::xml_node& xmlNode)
         bool ok = false;
         int divRes = QString(xmlNode.child_value("divisions")).toInt(&ok);
         divRes = ok ? divRes : 0;
-        _Divisions = divRes;
+        m_divisions = divRes;
     }
 
     if (xmlNode.child("flags")) {
         auto flags = xmlNode.child("flags");
-        _flags.FromXML(flags);
+        m_flags.FromXML(flags);
         if(flags.first_child()) {
-            AmmendValidationState("Flags Not Handled!", AgxNodeValidationState::State::Warning);
+            AmendValidationState("Flags Not Handled!", AgxNodeValidationState::State::Warning);
         }
         xmlNode.remove_child("flags");
     }
@@ -865,82 +885,84 @@ void SFBGSNode::load(pugi::xml_node& xmlNode)
 
     if (xmlNode.child("noninstanced"))
     {
-        QString nIns = xmlNode.child_value("noninstanced");
-        _SFBGS_Hidden[&AgxDictionary::noninstanced].second = nIns == "True" ? "True" : "False";
+        const QString nIns = xmlNode.child_value("noninstanced");
+        m_sfbgsHidden[&AgxDictionary::noninstanced].second = nIns == "True" ? "True" : "False";
         if (nIns != "True" && nIns != "False")
-            AmmendValidationState(std::format("Non Instanced Disparity: {}", nIns.toStdString().c_str()).c_str(), AgxNodeValidationState::State::Error);
+            AmendValidationState(std::format("Non Instanced Disparity: {}", nIns.toStdString().c_str()).c_str(), AgxNodeValidationState::State::Error);
         xmlNode.remove_child("noninstanced");
-    }else { AmmendValidationState("NonInstanced Not Found!", AgxNodeValidationState::State::Warning); }
+    }else { AmendValidationState("NonInstanced Not Found!", AgxNodeValidationState::State::Warning); }
 
     if (xmlNode.child("use_color_2"))
     {
-        QString c2Str = xmlNode.child_value("use_color_2");
-        _SFBGS_Hidden[&AgxDictionary::UseColor].second = c2Str.compare("True",Qt::CaseInsensitive) == 0 ? "True" : "False";
+        const QString c2Str = xmlNode.child_value("use_color_2");
+        m_sfbgsHidden[&AgxDictionary::UseColor].second = c2Str.compare("True",Qt::CaseInsensitive) == 0 ? "True" : "False";
         if (c2Str.compare("True",Qt::CaseInsensitive) != 0 && c2Str.compare("False",Qt::CaseInsensitive) != 0)
-            AmmendValidationState(std::format("Use Color Disparity: {}", c2Str.toStdString().c_str()).c_str(), AgxNodeValidationState::State::Error);
+            AmendValidationState(std::format("Use Color Disparity: {}", c2Str.toStdString().c_str()).c_str(), AgxNodeValidationState::State::Error);
         xmlNode.remove_child("use_color_2");
-    } else { AmmendValidationState("use_color_2 Not Found!", AgxNodeValidationState::State::Warning); }
+    } else { AmendValidationState("use_color_2 Not Found!", AgxNodeValidationState::State::Warning); }
 
     if (xmlNode.child("default_state"))
     {
-        QString state = xmlNode.child_value("default_state");
-        _SFBGS_Hidden[&AgxDictionary::DefaultState].second = state.compare("True", Qt::CaseInsensitive) == 0 ? "True" : "False";
+        const QString state = xmlNode.child_value("default_state");
+        m_sfbgsHidden[&AgxDictionary::DefaultState].second = state.compare("True", Qt::CaseInsensitive) == 0 ? "True" : "False";
         if (state != "True" && state != "False")
-            AmmendValidationState(std::format("Default State Disparity: {}", state.toStdString().c_str()).c_str(), AgxNodeValidationState::State::Error);
+            AmendValidationState(std::format("Default State Disparity: {}", state.toStdString().c_str()).c_str(), AgxNodeValidationState::State::Error);
         
         xmlNode.remove_child("default_state");
-    } else _SFBGS_Hidden[&AgxDictionary::DefaultState].second = "NONE";
+    } else m_sfbgsHidden[&AgxDictionary::DefaultState].second = "NONE";
 
     if (xmlNode.child("user_id"))
     {
-        QString uIdStr = xmlNode.child_value("user_id");
+        const QString uIdStr = xmlNode.child_value("user_id");
         bool ok = false;
         auto value = uIdStr.toInt(&ok);
         if (!ok)
         {
             value = 0;
-            AmmendValidationState(std::format("UserId Disparity: {}", uIdStr.toStdString().c_str()).c_str(), AgxNodeValidationState::State::Error);
+            AmendValidationState(std::format("UserId Disparity: {}", uIdStr.toStdString().c_str()).c_str(), AgxNodeValidationState::State::Error);
         }
-        SetPropertyValue(_SFBGS_Properties, AgxDictionary::GetInstance().UserId().tag, QString("%1").arg(value));
+        SetPropertyValue(m_sfbgsProperties, AgxDictionary::GetInstance().UserId().tag, QString("%1").arg(value));
         
         xmlNode.remove_child("user_id");
-    } else { AmmendValidationState(tr("User Id Not Found!"), AgxNodeValidationState::State::Warning); }
+    } else { AmendValidationState(tr("User Id Not Found!"), AgxNodeValidationState::State::Warning); }
 
     if (xmlNode.child("guid"))
     {
-        QUuid guidOld = getGuid();
+        const QUuid guidOld = getGuid();
         QUuid guidNew;
         setGuid(guidNew.fromString(xmlNode.child_value("guid")));
         if (getGuid() == guidOld)
-            AmmendValidationState("GUID NOT SET!", AgxNodeValidationState::State::Error);
+            AmendValidationState("GUID NOT SET!", AgxNodeValidationState::State::Error);
         xmlNode.remove_child("guid");
     }
 
     
 
     if (GetNodeType() == AgxNodeType::NT_BLEND_TREE_EMBEDDED || GetNodeType() == AgxNodeType::NT_STATE_MACHINE_EMBEDDED) {
-        if (!xmlNode.child("graph")) AmmendValidationState("EMBEDDED TYPE HAS NO GRAPH!", AgxNodeValidationState::State::Error);
+        if (!xmlNode.child("graph")) AmendValidationState("EMBEDDED TYPE HAS NO GRAPH!", AgxNodeValidationState::State::Error);
         auto xmlGraph = xmlNode.child("graph");
-        if (_EmbeddedGraphModel) {
+        if (m_embeddedGraphModel) {
 
-            auto connectionToGraph = QObject::connect(_EmbeddedGraphModel.get(), &AgxGraphModel::statusUpdate, this, [this](float loadPercentage, const QString& message) { Q_EMIT statusUpdate(0.2 + 0.4 * loadPercentage, message); });
+            const auto connectionToGraph = connect(m_embeddedGraphModel.get(), &AgxGraphModel::statusUpdate, this, [this](const float loadPercentage, const QString& message) { Q_EMIT statusUpdate(0.2 + 0.4 * loadPercentage, message); });
 
             blockSignals(false);
             Q_EMIT statusUpdate(0.2f, "Loading Embedded Graph Node");
             blockSignals(true);
 
-            _EmbeddedGraphModel->load(xmlGraph);
+            m_embeddedGraphModel->load(xmlGraph);
             
-            QObject::disconnect(connectionToGraph);
+            disconnect(connectionToGraph);
             
         }
         xmlNode.remove_child("graph");
-    } else {
+    }
+    else
+    {
         blockSignals(false);
         Q_EMIT statusUpdate(0.2f);
         blockSignals(true);
 
-        if (xmlNode.child("graph")) AmmendValidationState("NON EMBEDDED TYPE HAS GRAPH!", AgxNodeValidationState::State::Error);
+        if (xmlNode.child("graph")) AmendValidationState("NON EMBEDDED TYPE HAS GRAPH!", AgxNodeValidationState::State::Error);
     }
 
     ResetPorts();
@@ -955,47 +977,48 @@ void SFBGSNode::load(pugi::xml_node& xmlNode)
         }
         blendPointData.append(pointsToAdd);
     }
-    while(xmlNode.remove_child("blendInput"));
+    while(xmlNode.remove_child("blendInput")) {}
 
     for (auto& inputNode : xmlNode.children("input")) {
 
-        QJsonObject jportData;
+        QJsonObject jPortData;
 
-        jportData["agxPortId"] = inputNode.child_value("id");
+        jPortData["agxPortId"] = inputNode.child_value("id");
 
-        auto port = _AddPort(AgxPortType::In, _In_Ports.size(), jportData);
+        auto port = _AddPort(AgxPortType::In, m_inPorts.size(), jPortData);
 
         port->blockSignals(true);
         {
             bool ok = false;
-            auto idx = QString(inputNode.child_value("idx")).toUInt(&ok);
-            if (ok && idx != GetPortIndex(port.get()))
+            if (const auto idx = QString(inputNode.child_value("idx")).toUInt(&ok); ok && idx != GetPortIndex(port.get()))
             {
-                AmmendValidationState("Port Index Mismatch!", AgxNodeValidationState::State::Error);
+                AmendValidationState("Port Index Mismatch!", AgxNodeValidationState::State::Error);
             }
         }
         
-        if (maxPortId <= port->GetId()) maxPortId = port->GetId() + 1;
+        if (maxPortId <= port->getId()) maxPortId = port->getId() + 1;
         
-        if (auto agxPort = dynamic_cast<AgxPort_SFBGS*>(port.get()))
+        if (const auto agxPort = dynamic_cast<AgxPort_SFBGS*>(port.get()))
         {
             if(inputNode.child("name"))
-                agxPort->SetName(inputNode.child_value("name"));
+                agxPort->setName(inputNode.child_value("name"));
             else
-                AmmendValidationState("Missing InPort Name!", AgxNodeValidationState::State::Warning);
+                AmendValidationState("Missing InPort Name!", AgxNodeValidationState::State::Warning);
 
-            { //blend input data transfer
-                auto portIdx = GetPortIndex(port.get());
-                auto blendModel = agxPort->GetBlendInput();
-                if (portIdx < blendPointData.size() && blendModel) {
-                    for (auto& inBModel : blendPointData.at(portIdx)) {
-                        blendModel->addDataRow(blendModel->rowCount(), inBModel.first, inBModel.second);
+            {
+                //blend input data transfer
+                const auto portIdx = GetPortIndex(port.get());
+                if (const auto blendModel = agxPort->getBlendInput(); portIdx < blendPointData.size() && blendModel)
+                {
+                    for (const auto& [sWeight, sRange] : blendPointData.at(portIdx))
+                    {
+                        blendModel->addDataRow(blendModel->rowCount(), sWeight, sRange);
                     }
                 }
             }
 
         }
-        port->Load(inputNode);
+        port->load(inputNode);
 
         inputNode.remove_child("id");
         inputNode.remove_child("idx");
@@ -1004,7 +1027,7 @@ void SFBGSNode::load(pugi::xml_node& xmlNode)
         //xmlNode.remove_child(inputNode);
         //Q_EMIT dataUpdated(GetPortIndex(port.get()));
         port->blockSignals(false);
-        Q_EMIT port->PropertySheetUpdated();
+        Q_EMIT port->propertySheetUpdated();
     }
     blockSignals(false);
     Q_EMIT statusUpdate(0.7f);
@@ -1012,30 +1035,29 @@ void SFBGSNode::load(pugi::xml_node& xmlNode)
 
     for (auto& outputNode : xmlNode.children("output"))
     {
-        auto port = _AddPort(AgxPortType::Out, _Out_Ports.size());
+        auto port = _AddPort(AgxPortType::Out, m_outPorts.size());
         {
             bool ok = false;
-            auto id = QString(outputNode.child_value("id")).toUInt(&ok);
+            const auto id = QString(outputNode.child_value("id")).toUInt(&ok);
             if (ok)
-                port->SetId(id);
+                port->setId(id);
         }
         {
             bool ok = false;
-            auto idx = QString(outputNode.child_value("idx")).toUInt(&ok);
-            if (ok && idx != GetPortIndex(port.get()))
+            if (const auto idx = QString(outputNode.child_value("idx")).toUInt(&ok); ok && idx != GetPortIndex(port.get()))
             {
-                AmmendValidationState("Port Index Mismatch!", AgxNodeValidationState::State::Error);
+                AmendValidationState("Port Index Mismatch!", AgxNodeValidationState::State::Error);
             }
         }
         
-        if (maxPortId <= port->GetId()) maxPortId = port->GetId() + 1;
+        if (maxPortId <= port->getId()) maxPortId = port->getId() + 1;
 
-        if (auto agxPort = dynamic_cast<AgxPort_SFBGS*>(port.get()))
+        if (const auto agxPort = dynamic_cast<AgxPort_SFBGS*>(port.get()))
         {
             if (outputNode.child("name"))
-                agxPort->SetName(outputNode.child_value("name"));
+                agxPort->setName(outputNode.child_value("name"));
             else
-                AmmendValidationState("Missing OutPort Name!", AgxNodeValidationState::State::Warning);
+                AmendValidationState("Missing OutPort Name!", AgxNodeValidationState::State::Warning);
         }
         outputNode.remove_child("id");
         outputNode.remove_child("idx");
@@ -1049,19 +1071,24 @@ void SFBGSNode::load(pugi::xml_node& xmlNode)
 
     unsigned int blockCount = 0;
 
-    for (auto& pEntry : _PropertyEntries) {
+    for (auto& pEntry : m_propertyEntries) {
         pEntry.SetIsPresent(false);
     }
 
     for(auto& propertySheet : xmlNode.children("property_sheet")) {
-        if (_stricmp(propertySheet.child("column").child_value("header"), "Property") == 0) {
-            if (_stricmp(propertySheet.child_value("num_columns"), "2") == 0) AmmendValidationState("Main Property Sheet Disparity!", AgxNodeValidationState::State::Error);
+        if (QString("Property").compare(propertySheet.child("column").child_value("header"), Qt::CaseInsensitive) == 0)
+        {
+            if (QString("2").compare(propertySheet.child_value("num_columns")) == 0)
+                AmendValidationState("Main Property Sheet Disparity!", AgxNodeValidationState::State::Error);
 
-            for (auto& row : propertySheet.children("row")) {
+            for (auto& row : propertySheet.children("row"))
+            {
                 auto prop = row.first_child();
                 auto value = row.last_child();
-                for (auto& entry : _PropertyEntries) {
-                    if (entry.Tag() == prop.child_value("value")) {
+                for (auto& entry : m_propertyEntries)
+                {
+                    if (entry.Tag() == prop.child_value("value"))
+                    {
                         entry.value = value.child_value("value");
                         entry.SetIsPresent(true);
                         //propertySheet.remove_child(row);
@@ -1070,22 +1097,30 @@ void SFBGSNode::load(pugi::xml_node& xmlNode)
                 }
             }
 
-            if(propertySheet.child("row")) AmmendValidationState("Rows Not Read In Main Property Sheet", AgxNodeValidationState::State::Error);
+            if(propertySheet.child("row"))
+                AmendValidationState("Rows Not Read In Main Property Sheet", AgxNodeValidationState::State::Error);
             //xmlNode.remove_child(propertySheet);
         }
         else {
             blockCount++;
-            if (blockCount > _PropertyBlocks.size()) AmmendValidationState("Block Count Mismatch", AgxNodeValidationState::State::Error);
+            if (blockCount > m_PropertyBlocks.size())
+                AmendValidationState("Block Count Mismatch", AgxNodeValidationState::State::Error);
             else {
-                auto blockKey = _BlockOrder.at(blockCount - 1);
-                auto& block = _PropertyBlocks[blockKey];
-                if (_stricmp(propertySheet.child_value("num_columns"), std::to_string(block.GetColumnCount()).c_str()) != 0) AmmendValidationState("Block Column Count Mismatch", AgxNodeValidationState::State::Error);
+                auto blockKey = m_blockOrder.at(blockCount - 1);
+                auto& block = m_PropertyBlocks[blockKey];
+                if (QString(propertySheet.child_value("num_columns")).compare(
+                    QString("%1").arg(block.GetColumnCount())
+                    ) != 0)
+                {
+                    AmendValidationState("Block Column Count Mismatch", AgxNodeValidationState::State::Error);
+                }
 
                 block.load(propertySheet);
                 //for (auto& col : propertySheet.children("column")) propertySheet.remove_child(col);
                 //propertySheet.remove_child("num_columns");
 
-                if(!propertySheet.empty()) AmmendValidationState("Property Sheet Disparity", AgxNodeValidationState::State::Error);
+                if(!propertySheet.empty())
+                    AmendValidationState("Property Sheet Disparity", AgxNodeValidationState::State::Error);
 
                 Q_EMIT block.DataUpdated();
             }
@@ -1096,7 +1131,7 @@ void SFBGSNode::load(pugi::xml_node& xmlNode)
     Q_EMIT statusUpdate(0.9f);
     blockSignals(true);
 
-    _nextPortId = maxPortId;
+    m_nextPortId = maxPortId;
 
     blockSignals(false);
     AgxNode::load(xmlNode);
@@ -1106,78 +1141,43 @@ void SFBGSNode::insertPropertySheetData(const QJsonObject& data)
 {
     //Hidden SFBGS Entries
 
-    for (int i = 0; i < _SFBGS_Hidden.size(); i++)
+    for (int i = 0; i < m_sfbgsHidden.size(); i++)
     {
-        auto key = _SFBGS_Hidden.keys().at(i);
-        if (data.contains(key().tag) && key().tag != "guid")
-            _SFBGS_Hidden[key].second = data.value(key().tag).toString();
+        if (auto key = m_sfbgsHidden.keys().at(i); data.contains(key().tag) && key().tag != "guid")
+            m_sfbgsHidden[key].second = data.value(key().tag).toString();
     }
-
-    /*if (data.contains("POS X")) {
-        _SFBGS_Hidden["POS X"].second = data["POS X"].toString();
-    }
-    if (data.contains("Expanded POS X")) {
-        _SFBGS_Hidden["Expanded POS X"].second = data["Expanded POS X"].toString();
-    }
-    if (data.contains("POS Y")) {
-        _SFBGS_Hidden["POS Y"].second = data["POS Y"].toString();
-    }
-    if (data.contains("Expanded POS Y")) {
-        _SFBGS_Hidden["Expanded POS Y"].second = data["Expanded POS Y"].toString();
-    }
-    if (data.contains("Non Instanced")) {
-        _SFBGS_Hidden["Non Instanced"].second = data["Non Instanced"].toString();
-    }
-    if (data.contains("Use Color")) {
-        _SFBGS_Hidden["Use Color"].second = data["Use Color"].toString();
-    }
-    if (data.contains("Default State")) {
-        _SFBGS_Hidden["Default State"].second = data["Default State"].toString();
-    }*/
-
-
 
     if (data.contains(AgxDictionary::UserId().tag)) {
-        SetPropertyValue(_SFBGS_Properties, AgxDictionary::UserId().tag, data.value(AgxDictionary::UserId().tag).toObject().value("value").toString());
+        SetPropertyValue(m_sfbgsProperties, AgxDictionary::UserId().tag, data.value(AgxDictionary::UserId().tag).toObject().value("value").toString());
     }
 
     //SFBGS Entries
     if (data.contains("flags"))
-        _flags.FromJson(data["flags"]);
+        m_flags.FromJson(data["flags"]);
 
-    _Divisions = data["divisions"].toInt();
+    m_divisions = data["divisions"].toInt();
 
     AgxNode::insertPropertySheetData(data);
 }
 
-QJsonObject SFBGSNode::getPropertySheetData(bool cleared) const
+QJsonObject SFBGSNode::getPropertySheetData(const bool cleared) const
 {
     QJsonObject output = AgxNode::getPropertySheetData(cleared);
 
-    output["divisions"] = cleared ? 0 : _Divisions;
+    output["divisions"] = cleared ? 0 : m_divisions;
 
-    output["flags"] = _flags.ToJson();
+    output["flags"] = m_flags.ToJson();
 
-    output[AgxDictionary::UserId().tag] = GetPropertyValue(_SFBGS_Properties, AgxDictionary::UserId().tag);
-
-    //output["Non Instanced"] = _SFBGS_Hidden["Non Instanced"].second;
-    //output["Use Color"] = _SFBGS_Hidden["Use Color"].second;
-    //output["Default State"] = _SFBGS_Hidden["Default State"].second;
+    output[AgxDictionary::UserId().tag] = GetPropertyValue(m_sfbgsProperties, AgxDictionary::UserId().tag);
     
     QJsonObject userIdObj;
-    userIdObj["value"] = GetPropertyValue(_SFBGS_Properties, AgxDictionary::GetInstance().UserId().tag);
+    userIdObj["value"] = GetPropertyValue(m_sfbgsProperties, AgxDictionary::GetInstance().UserId().tag);
     output[AgxDictionary::GetInstance().UserId().tag] = userIdObj;
-    
-    //output["POS X"] = _SFBGS_Hidden["POS X"].second;
-    //output["POS Y"] = _SFBGS_Hidden["POS Y"].second;
-    //output["Expanded POS X"] = _SFBGS_Hidden["Expanded POS X"].second;
-    //output["Expanded POS Y"] = _SFBGS_Hidden["Expanded POS Y"].second;
 
-    for (int i = 0; i < _SFBGS_Hidden.size(); i++)
+    for (int i = 0; i < m_sfbgsHidden.size(); i++)
     {
-        auto key = _SFBGS_Hidden.keys().at(i);
-        if (key().tag != "guid" && key != &AgxDictionary::NodeType)
-            output[key().tag] = _SFBGS_Hidden[key].second;
+        if (auto key = m_sfbgsHidden.keys().at(i); key().tag != "guid" && key != &AgxDictionary::NodeType)
+            output[key().tag] = m_sfbgsHidden[key].second;
     }
 
     return output;
@@ -1185,93 +1185,92 @@ QJsonObject SFBGSNode::getPropertySheetData(bool cleared) const
 
 QString SFBGSNode::SubCaption() const
 {
-    return QString("%1 (%2)").arg(GetPropertyValue(_PropertyEntries, AgxDictionary::Name().tag, "-")).arg(GetPropertyValue(_SFBGS_Properties, AgxDictionary::UserId().tag, "?"));
+    return QString("%1 (%2)").arg(GetPropertyValue(m_propertyEntries, AgxDictionary::Name().tag, "-")).arg(GetPropertyValue(m_sfbgsProperties, AgxDictionary::UserId().tag, "?"));
 }
 
 bool SFBGSNode::AltState()
 {
-    return _SFBGS_Hidden[&AgxDictionary::DefaultState].second == "True";
+    return m_sfbgsHidden[&AgxDictionary::DefaultState].second == "True";
 }
 
-void SFBGSNode::SetAltState(bool enabled)
+void SFBGSNode::SetAltState(const bool enabled)
 {
-    _SFBGS_Hidden[&AgxDictionary::DefaultState].second = enabled ? "True" : "-";
+    m_sfbgsHidden[&AgxDictionary::DefaultState].second = enabled ? "True" : "-";
     Q_EMIT PropertySheetUpdated();
 }
 
-SFBGSNode::SFBGSNode(AgxGraphModel* rootGraphReference) : guidObject(), AgxNode(rootGraphReference) {
-    {
-        AgxPropertyBlockData enterBlockDef({
-            AgxPropertyEntryDefinition(&AgxDictionary::BlankEntry, "", AgxColumnTypes::BasicString),
-            AgxPropertyEntryDefinition(&AgxDictionary::NonInstanced,"False",AgxColumnTypes::BasicBool),
-            AgxPropertyEntryDefinition(&AgxDictionary::x_EnterEvents_x,"",AgxColumnTypes::Event),
-            AgxPropertyEntryDefinition(&AgxDictionary::Payload,"",AgxColumnTypes::BasicString) }, nullptr);
-        AgxPropertyBlockData exitBlockDef({
-            AgxPropertyEntryDefinition(&AgxDictionary::BlankEntry, "", AgxColumnTypes::BasicString),
-            AgxPropertyEntryDefinition(&AgxDictionary::NonInstanced,"False",AgxColumnTypes::BasicBool),
-            AgxPropertyEntryDefinition(&AgxDictionary::x_ExitEvents_x,"",AgxColumnTypes::Event),
-            AgxPropertyEntryDefinition(&AgxDictionary::Payload,"",AgxColumnTypes::BasicString) }, nullptr);
-        enterBlockDef.SetEnabledState(false);
-        exitBlockDef.SetEnabledState(false);
+SFBGSNode::SFBGSNode(AgxGraphModel* rootGraphRef) : AgxNode(rootGraphRef)
+{
+    AgxPropertyBlockData enterBlockDef({
+        AgxPropertyEntryDefinition(&AgxDictionary::BlankEntry, "", AgxColumnTypes::BasicString),
+        AgxPropertyEntryDefinition(&AgxDictionary::NonInstanced,"False",AgxColumnTypes::BasicBool),
+        AgxPropertyEntryDefinition(&AgxDictionary::x_EnterEvents_x,"",AgxColumnTypes::Event),
+        AgxPropertyEntryDefinition(&AgxDictionary::Payload,"",AgxColumnTypes::BasicString) }, nullptr);
+    AgxPropertyBlockData exitBlockDef({
+        AgxPropertyEntryDefinition(&AgxDictionary::BlankEntry, "", AgxColumnTypes::BasicString),
+        AgxPropertyEntryDefinition(&AgxDictionary::NonInstanced,"False",AgxColumnTypes::BasicBool),
+        AgxPropertyEntryDefinition(&AgxDictionary::x_ExitEvents_x,"",AgxColumnTypes::Event),
+        AgxPropertyEntryDefinition(&AgxDictionary::Payload,"",AgxColumnTypes::BasicString) }, nullptr);
+    enterBlockDef.SetEnabledState(false);
+    exitBlockDef.SetEnabledState(false);
 
-        _PropertyBlocks.insert(&AgxDictionary::EnterEvents, enterBlockDef);
-        _PropertyBlocks.insert(&AgxDictionary::ExitEvents, exitBlockDef);
+    m_PropertyBlocks.insert(&AgxDictionary::EnterEvents, enterBlockDef);
+    m_PropertyBlocks.insert(&AgxDictionary::ExitEvents, exitBlockDef);
 
-        connect(this, &AgxNode::ParentGraphTypeUpdated, this, [this](const AgxGraphType& type) {
-            if (type == AgxGraphType::SFBGS_StateMachine) {
-                _PropertyBlocks[&AgxDictionary::EnterEvents].SetEnabledState(true);
-                _PropertyBlocks[&AgxDictionary::ExitEvents].SetEnabledState(true);
-            } else {
-                _PropertyBlocks[&AgxDictionary::EnterEvents].SetEnabledState(false);
-                _PropertyBlocks[&AgxDictionary::ExitEvents].SetEnabledState(false);
-            }
+    connect(this, &AgxNode::ParentGraphTypeUpdated, this, [this](const AgxGraphType& type) {
+        if (type == AgxGraphType::SFBGS_StateMachine) {
+            m_PropertyBlocks[&AgxDictionary::EnterEvents].SetEnabledState(true);
+            m_PropertyBlocks[&AgxDictionary::ExitEvents].SetEnabledState(true);
+        } else {
+            m_PropertyBlocks[&AgxDictionary::EnterEvents].SetEnabledState(false);
+            m_PropertyBlocks[&AgxDictionary::ExitEvents].SetEnabledState(false);
+        }
 
-                });
+            });
 
-        connect(this, &AgxNode::PropertySheetUpdated, this, [this]() {
-                _SFBGS_Hidden[&AgxDictionary::NodeType].second = name();
-                },Qt::SingleShotConnection);
-    }
+    connect(this, &AgxNode::PropertySheetUpdated, this, [this] {
+            m_sfbgsHidden[&AgxDictionary::NodeType].second = name();
+            },Qt::SingleShotConnection);
 }
 
-std::shared_ptr<AgxPort> SFBGSNode::_AddPort(AgxPortType portType, AgxPortIndex index, QJsonObject data) 
+
+std::shared_ptr<AgxPort> SFBGSNode::_AddPort(const AgxPortType portType, const AgxPortIndex index, const QJsonObject data)
 {
-    unsigned int idxI = index > _In_Ports.count() ? _In_Ports.count() : index;
-    unsigned int idxO = index > _Out_Ports.count() ? _Out_Ports.count() : index;
+    const unsigned int idxI = index > m_inPorts.count() ? m_inPorts.count() : index;
+    const unsigned int idxO = index > m_outPorts.count() ? m_outPorts.count() : index;
 
     auto sfbgsPort = std::make_shared<AgxPort_SFBGS>(this);
 
     switch (portType)
     {
         case AgxPortType::In:
-            sfbgsPort->AddStandardPropertySheet();
+            sfbgsPort->addStandardPropertySheet();
             //sfbgsPort->SetName("In");
-            if (GetNodeType() == AgxNodeType::DEBUG || GetNodeType() == AgxNodeType::NT_BLEND_NODE) sfbgsPort->AddBlendInput();
-            _In_Ports.insert(idxI, sfbgsPort);
-        break;
+            if (GetNodeType() == AgxNodeType::DEBUG || GetNodeType() == AgxNodeType::NT_BLEND_NODE) sfbgsPort->addBlendInput();
+            m_inPorts.insert(idxI, sfbgsPort);
+            break;
         case AgxPortType::Out:
-            sfbgsPort->SetName("Out");
-            _Out_Ports.insert(idxO, sfbgsPort);   
-        break;
+            sfbgsPort->setName("Out");
+            m_outPorts.insert(idxO, sfbgsPort);
+            break;
         default:
             return nullptr;
-        break;
     }
 
-    sfbgsPort->Load(data);
+    sfbgsPort->load(data);
 
-    if (sfbgsPort->GetId() == InvalidAgxPortId)
+    if (sfbgsPort->getId() == InvalidAgxPortId)
     {
-        sfbgsPort->SetId(NewPortId());
+        sfbgsPort->setId(NewPortId());
     }
 
-    _nextPortId = sfbgsPort->GetId() >= _nextPortId ? sfbgsPort->GetId() + 1 : _nextPortId;
+    m_nextPortId = sfbgsPort->getId() >= m_nextPortId ? sfbgsPort->getId() + 1 : m_nextPortId;
 
-    if(_sidebarContent && portType == AgxPortType::In)
+    if(m_sidebarContent && portType == AgxPortType::In)
     {
-        if (auto sfbgsSidebar = dynamic_cast<SFBGS_SidebarContent*>(_sidebarContent.get()))
+        if (const auto sfbgsSidebar = dynamic_cast<SFBGS_SidebarContent*>(m_sidebarContent.get()))
         {
-            auto widget = sfbgsPort->GetEmbeddedWidget();
+            const auto widget = sfbgsPort->getEmbeddedWidget();
             sfbgsSidebar->AddContentItem(widget,idxI);
         }
     }
@@ -1279,104 +1278,104 @@ std::shared_ptr<AgxPort> SFBGSNode::_AddPort(AgxPortType portType, AgxPortIndex 
     return sfbgsPort;
 }
 
-void SFBGSNode::_RemovePort(AgxPortType portType, AgxPortIndex index, bool preserve)
+void SFBGSNode::_RemovePort(const AgxPortType portType, const AgxPortIndex index, const bool preserve)
 {
     AgxNode::_RemovePort(portType, index, preserve);
-    if (auto sfbgsSidebar = dynamic_cast<SFBGS_SidebarContent*>(_sidebarContent.get()))
+    if (auto sfbgsSidebar = dynamic_cast<SFBGS_SidebarContent*>(m_sidebarContent.get()))
     {
-        QTimer::singleShot(1, sfbgsSidebar, [this, sfbgsSidebar]() {Q_EMIT sfbgsSidebar->StateChanged(); });
+        QTimer::singleShot(1, sfbgsSidebar, [sfbgsSidebar] {Q_EMIT sfbgsSidebar->StateChanged(); });
     }
 }
 
-void SFBGSNode::SetPortData(AgxPortType portType, AgxPortIndex index, const QJsonObject& dataSet)
+void SFBGSNode::SetPortData(const AgxPortType portType, const AgxPortIndex index, const QJsonObject& dataSet)
 {
     AgxNode::SetPortData(portType, index, dataSet);
-    if (auto sfbgsPort = dynamic_cast<AgxPort_SFBGS*>(_Out_Ports.at(index).get()))
-        _nextPortId = sfbgsPort->GetId() >= _nextPortId ? sfbgsPort->GetId() + 1 : _nextPortId;
+    if (const auto sfbgsPort = dynamic_cast<AgxPort_SFBGS*>(m_outPorts.at(index).get()))
+        m_nextPortId = sfbgsPort->getId() >= m_nextPortId ? sfbgsPort->getId() + 1 : m_nextPortId;
 }
 
-void SFBGSNode::InitializeWidget(bool split)
+void SFBGSNode::InitializeWidget(const bool split)
 {
     AgxNode::InitializeWidget();
 
-    _NodePropertiesWidget->CreateFlagEntry(AgxDictionary::Flags, this, &_flags);
+    m_nodePropertiesWidget->CreateFlagEntry(AgxDictionary::Flags, this, &m_flags);
 
-    _NodePropertiesWidget->CreateReadOnlyEntries(&_SFBGS_Hidden, this, true, _HiddenOrder);
-    auto sfbgsPropList = _NodePropertiesWidget->CreatePropertyEntries(&_SFBGS_Properties, this, split);
-    for (auto sfbgsProp : sfbgsPropList)
+    m_nodePropertiesWidget->CreateReadOnlyEntries(&m_sfbgsHidden, this, true, m_hiddenOrder);
+    for (auto sfbgsPropList = m_nodePropertiesWidget->CreatePropertyEntries(&m_sfbgsProperties, this, split); const auto sfbgsProp : sfbgsPropList)
     {
         sfbgsProp->setCheckbox(false);
     }
-    _NodePropertiesWidget->CreatePropertyEntries(&_PropertyEntries, this, split);
-    _NodePropertiesWidget->CreateGuidLabel(getGuidRef(), this, split);
+    m_nodePropertiesWidget->CreatePropertyEntries(&m_propertyEntries, this, split);
+    m_nodePropertiesWidget->CreateGuidLabel(getGuidRef(), this, split);
 }
 
 QWidget* SFBGSNode::GetNodePropertyWidget()
 {
-    if (!_NodePropertiesWidget) {
+    if (!m_nodePropertiesWidget) {
         InitializeWidget(false);
 
-        for (auto key : _BlockOrder) {
-            if(_PropertyBlocks.contains(key))
-                _NodePropertiesWidget->CreatePropetryBlock(key, _PropertyBlocks[key]);
+        for (auto key : m_blockOrder)
+        {
+            if (m_PropertyBlocks.contains(key))
+                m_nodePropertiesWidget->CreatePropetryBlock(key, m_PropertyBlocks[key]);
         }
 
         //check for missing blocks
-        for (auto& key : _PropertyBlocks.keys()) {
+        for (auto& key : m_PropertyBlocks.keys()) {
             
-            if (!_BlockOrder.contains(key)) {
-                _NodePropertiesWidget->CreatePropetryBlock(key, _PropertyBlocks[key]);
+            if (!m_blockOrder.contains(key)) {
+                m_nodePropertiesWidget->CreatePropetryBlock(key, m_PropertyBlocks[key]);
                 QMessageBox message(QMessageBox::Critical, AgxDictionary::ErrorTerm().translation, QString(tr("Missing Block In Block Order For %1 On Node %2, Please Copy This Message And Make A Bug Report.")).arg(key().tag).arg(name()), QMessageBox::Ok);
                 message.exec();
             }
         }
 
-        _NodePropertiesWidget->FinalizeWidget();
+        m_nodePropertiesWidget->FinalizeWidget();
     }
 
-    return _NodePropertiesWidget;
+    return m_nodePropertiesWidget;
 }
 
 QWidget* SFBGSNode::GetSideBarContent()
 {
-    if (!_sidebarContent)
+    if (!m_sidebarContent)
     {
-        SFBGS_SidebarContent* sidebar = new SFBGS_SidebarContent();
-        _sidebarContent = sidebar;
+        auto sidebar = new SFBGS_SidebarContent();
+        m_sidebarContent = sidebar;
         
-        sidebar->SetTitle(std::format("{} [Node Id: {}]", _nameProperty.toStdString().c_str(), _nodeIdRef).c_str());
-        connect(this, &AgxNode::PropertySheetUpdated, sidebar, [this, sidebar]() {sidebar->SetTitle(std::format("{} [Node Id: {}]", _nameProperty.toStdString().c_str(), _nodeIdRef).c_str());});
+        sidebar->SetTitle(std::format("{} [Node Id: {}]", m_nameProperty.toStdString().c_str(), m_nodeIdRef).c_str());
+        connect(this, &AgxNode::PropertySheetUpdated, sidebar, [this, sidebar] {sidebar->SetTitle(std::format("{} [Node Id: {}]", m_nameProperty.toStdString().c_str(), m_nodeIdRef).c_str());});
 
         sidebar->AddMainItem(GetNodePropertyWidget(),0,0,Qt::AlignRight);
 
-        for (unsigned int i = 0; i < _In_Ports.size(); i++)
+        for (unsigned int i = 0; i < m_inPorts.size(); i++)
         {
-            sidebar->AddContentItem(_In_Ports.at(i)->GetEmbeddedWidget(),i+1);
+            sidebar->AddContentItem(m_inPorts.at(i)->getEmbeddedWidget(),i+1);
         }
 
         if (GetNodeType() == AgxNodeType::DEBUG || GetNodeType() == AgxNodeType::NT_BLEND_NODE) {
-            QHBoxLayout* hBox = new QHBoxLayout();
+            const auto hBox = new QHBoxLayout();
 
             hBox->addWidget(new QLabel("Divisions: "), 1, Qt::AlignLeft);
-            QSpinBox* box = new QSpinBox();
-            box->setValue(_Divisions);
+            auto box = new QSpinBox();
+            box->setValue(m_divisions);
             hBox->addWidget(box);
-            QWidget* widget = new QWidget();
+            const auto widget = new QWidget();
             widget->setLayout(hBox);
             sidebar->AddContentItem(widget, 0, 0, Qt::AlignRight, true);
 
-            connect(box, &QSpinBox::editingFinished, sidebar, [this, sidebar, box]() {
-                        if(box->value() != _Divisions)
+            connect(box, &QSpinBox::editingFinished, sidebar, [this, sidebar, box] {
+                        if(box->value() != m_divisions)
                             sidebar->SendInsertPropertySheetDataCommand(QStringListToQJsonObject({"divisions"}, box->value()));
                     });
 
-            connect(this, &AgxNode::PropertySheetUpdated, box, [this,box]() {
+            connect(this, &AgxNode::PropertySheetUpdated, box, [this,box] {
                         box->blockSignals(true);
-                        box->setValue(_Divisions);
+                        box->setValue(m_divisions);
                         box->blockSignals(false);
                     });
         }
     }
 
-    return _sidebarContent;
+    return m_sidebarContent;
 }

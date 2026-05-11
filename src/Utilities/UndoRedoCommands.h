@@ -62,8 +62,7 @@ private:
     QJsonObject takeSceneJsonFromClipboard();
     QJsonObject makeNewNodeIdsInScene(QJsonObject const& sceneJson);
 
-private:
-    AgxGraphicsScene* _scene;
+AgxGraphicsScene* _scene;
     QPointF const& _mouseScenePos;
     QJsonObject _newSceneJson;
     std::set<QString> _groupsAdded;

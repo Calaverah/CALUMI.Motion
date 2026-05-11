@@ -8,13 +8,13 @@
 namespace SFBGS {
     AgxNtGraphRef::AgxNtGraphRef(AgxGraphModel* rootGraphRef) :SFBGSNode(rootGraphRef)
     {
-        _nameProperty = QStringLiteral("Graph Reference");
+        m_nameProperty = QStringLiteral("Graph Reference");
 
-        _PropertyEntries.push_back(AgxPropertyEntryDefinition(&AgxDictionary::GraphRef, "", AgxColumnTypes::BasicString));
-        _PropertyEntries.push_back(AgxPropertyEntryDefinition(&AgxDictionary::WrappedGraph, "", AgxColumnTypes::BasicBool));
-        _PropertyEntries.push_back(AgxPropertyEntryDefinition(&AgxDictionary::SyncOnlyTransitionOut, "False", AgxColumnTypes::BasicBool));
+        m_propertyEntries.push_back(AgxPropertyEntryDefinition(&AgxDictionary::GraphRef, "", AgxColumnTypes::BasicString));
+        m_propertyEntries.push_back(AgxPropertyEntryDefinition(&AgxDictionary::WrappedGraph, "", AgxColumnTypes::BasicBool));
+        m_propertyEntries.push_back(AgxPropertyEntryDefinition(&AgxDictionary::SyncOnlyTransitionOut, "False", AgxColumnTypes::BasicBool));
 
-        _BlockOrder = { &AgxDictionary::EnterEvents, &AgxDictionary::ExitEvents };
+        m_blockOrder = { &AgxDictionary::EnterEvents, &AgxDictionary::ExitEvents };
     }
 
     QString AgxNtGraphRef::name() const
@@ -29,8 +29,8 @@ namespace SFBGS {
 
     QString AgxNtGraphRef::SubCaption() const
     {
-        QString cap = _PropertyEntries.at(0).value.isEmpty() ? "-" : _PropertyEntries.at(0).value;
-        return QString("%1 (%2)").arg(cap).arg(GetPropertyValue(_SFBGS_Properties, AgxDictionary::UserId().tag, "?"));
+        QString cap = m_propertyEntries.at(0).value.isEmpty() ? "-" : m_propertyEntries.at(0).value;
+        return QString("%1 (%2)").arg(cap).arg(GetPropertyValue(m_sfbgsProperties, AgxDictionary::UserId().tag, "?"));
     }
 
     unsigned int AgxNtGraphRef::nPorts(AgxPortType portType) const
@@ -57,10 +57,10 @@ namespace SFBGS {
             switch (portType)
             {
                 case AgxPortType::In:
-                    sfbgsPort->SetPropertySheetEnabled(true);
+                    sfbgsPort->setPropertySheetEnabled(true);
                     break;
             }
-            Q_EMIT sfbgsPort->PropertySheetUpdated();
+            Q_EMIT sfbgsPort->propertySheetUpdated();
         }
 
         return port;

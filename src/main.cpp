@@ -5,21 +5,15 @@
 #include "stdafx.h"
 #include "CALUMIMotion.h"
 #pragma warning(push,0)
-
-//
 #include <QtWidgets/QApplication>
 #pragma warning(pop)
-#include <AgxNodes/AgxNodes>
 #include "Utilities/AgxJsonHelper.h"
 #include "Utilities/AgxNodeRegistry.h"
 #include "Utilities/DialogPool.h"
 #include "Utilities/AgxGraphRegistry.h"
-//#include <QOpenGLWidget>
-//#include <QOpenGLWindow>
 #include "Application/CALUMIMotionApplication.h"
 #include "Widgets/TextEditDialog.h"
 #include <Utilities/SettingsRegistry.h>
-#include "Widgets/Logger/AgxLogger.h"
 
 
 int main(int argc, char* argv[])
@@ -28,8 +22,8 @@ int main(int argc, char* argv[])
 
     //app.setStyle("windows");
 
-    QPixmap pixmap(":/Images/Resources/NASA_ISS_LongExposure.png");
-    QSplashScreen splash = QSplashScreen(pixmap);
+    const QPixmap pixmap(":/Images/Resources/NASA_ISS_LongExposure.png");
+    auto splash = QSplashScreen(pixmap);
     splash.showMessage("CALUMI Motion:\nLoading modules...", Qt::AlignBottom | Qt::AlignCenter, Qt::white);
     splash.show();
     
@@ -68,9 +62,9 @@ int main(int argc, char* argv[])
         {
             if(setRef.GetSavedVersion() != app.applicationVersion())
             {
-#ifdef RELEASEBUILD
+#ifdef RELEASE_BUILD
                 //what's new popup?
-#endif // RELEASEBUILD
+#endif
             }
         }
     }

@@ -8,7 +8,7 @@
 
 void AgxCommentNode::ToggleCollapse()
 {
-    if (collapsed)
+    if (m_collapsed)
         _emb->show();
     else
         _emb->hide();
@@ -51,7 +51,7 @@ void AgxCommentNode::insertPropertySheetData(const QJsonObject& data)
     AgxNode::insertPropertySheetData(data);
 }
 
-QJsonObject AgxCommentNode::getPropertySheetData(bool cleared) const
+QJsonObject AgxCommentNode::getPropertySheetData(const bool cleared) const
 {
     QJsonObject output = AgxNode::getPropertySheetData(cleared);
     QJsonObject comment;
@@ -80,7 +80,7 @@ QString AgxCommentNode::name() const
 
 QString AgxCommentNode::caption() const
 {
-    return _nameProperty;
+    return m_nameProperty;
 }
 
 unsigned int AgxCommentNode::nPorts(AgxPortType portType) const
@@ -124,17 +124,17 @@ QWidget* AgxCommentNode::embeddedWidget()
         _emb = new AgxCommentWidget(nullptr, {"comment"});
         _emb->setContentsMargins(3, 3, 3, 3);
 
-        connect(this, &AgxNode::PropertySheetUpdated, _emb, [this]() {
+        connect(this, &AgxNode::PropertySheetUpdated, _emb, [this] {
                 _emb->blockSignals(true);
-                _emb->setText(this->_text);
-                _emb->setFont(this->_font);
+                _emb->setCommentText(this->_text);
+                _emb->setCommentFont(this->_font);
                 _emb->blockSignals(false);
             });
         
         
     }
 
-    if (!collapsed)
+    if (!m_collapsed)
         return _emb;
 
     return nullptr;
@@ -173,19 +173,19 @@ void AgxCommentNode::load(QJsonObject const& data)
         _target.setX(targetPos["x"].toDouble());
         _target.setY(targetPos["y"].toDouble());
     }
-    
-    QJsonObject pSheet = data["property-sheet"].toObject();
+
+    const QJsonObject pSheet = data["property-sheet"].toObject();
     insertPropertySheetData(pSheet);
 }
 
-AgxCommentNode::AgxCommentNode(AgxGraphModel* rootGraphRef) : AgxNode(rootGraphRef), _emb(nullptr) {
+AgxCommentNode::AgxCommentNode(AgxGraphModel* rootGraphRef) : AgxNode(rootGraphRef), _emb(nullptr)
+{
     _font = QFont();
-    _nameProperty = "Comment";
-    AgxNodeStyle style = nodeStyle();
+    m_nameProperty = "Comment";
+    AgxNodeStyle style = AgxNode::nodeStyle();
     style.GradientColor0 = { 60,60,65 };
     style.GradientColor1 = { 60,60,65 };
     style.GradientColor2 = { 60,60,65 };
     style.GradientColor3 = { 60,60,65 };
-    setNodeStyle(style);
-
+    AgxNode::setNodeStyle(style);
 }

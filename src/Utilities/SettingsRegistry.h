@@ -47,7 +47,6 @@ class SettingsDialog;
 
 class SettingsRegistry
 {
-private:
 	SettingsRegistry();
 	~SettingsRegistry();
 
@@ -117,7 +116,6 @@ private:
 	friend class AgxGraphicsViewStyle;
 
 	//Generic
-private:
 	QString _iniPath;
 	QString _themePath;
 	QSettings* _settings = nullptr;
@@ -143,7 +141,6 @@ private:
 	QString _themeFileName;
 
 	//SFBGS
-private:
 	QString _defaultRelDataPath_SFBGS = R"(Data\Meshes\AnimTextData\Tables\Graphs\)";
 	QSet<QString> _categories_SFBGS;
 

@@ -8,15 +8,15 @@
 namespace SFBGS {
     AgxNtMomentumAnimation::AgxNtMomentumAnimation(AgxGraphModel* rootGraphRef) : SFBGSNode(rootGraphRef)
     {
-        _nameProperty = QStringLiteral("Momentum Animation");
+        m_nameProperty = QStringLiteral("Momentum Animation");
 
 
 
-        _PropertyEntries.push_back(AgxPropertyEntryDefinition(&AgxDictionary::Name, "", AgxColumnTypes::BasicString));
-        _PropertyEntries.push_back(AgxPropertyEntryDefinition(&AgxDictionary::CurrentSpeed, "CurrentSpeed", AgxColumnTypes::CustomFloat));
-        _PropertyEntries.push_back(AgxPropertyEntryDefinition(&AgxDictionary::CurrentDirection, "DirectionSmoothed", AgxColumnTypes::CustomFloat));
-        _PropertyEntries.push_back(AgxPropertyEntryDefinition(&AgxDictionary::DesiredSpeed, "Speed", AgxColumnTypes::CustomFloat));
-        _PropertyEntries.push_back(AgxPropertyEntryDefinition(&AgxDictionary::DesiredDirection, "Direction", AgxColumnTypes::CustomFloat));
+        m_propertyEntries.push_back(AgxPropertyEntryDefinition(&AgxDictionary::Name, "", AgxColumnTypes::BasicString));
+        m_propertyEntries.push_back(AgxPropertyEntryDefinition(&AgxDictionary::CurrentSpeed, "CurrentSpeed", AgxColumnTypes::CustomFloat));
+        m_propertyEntries.push_back(AgxPropertyEntryDefinition(&AgxDictionary::CurrentDirection, "DirectionSmoothed", AgxColumnTypes::CustomFloat));
+        m_propertyEntries.push_back(AgxPropertyEntryDefinition(&AgxDictionary::DesiredSpeed, "Speed", AgxColumnTypes::CustomFloat));
+        m_propertyEntries.push_back(AgxPropertyEntryDefinition(&AgxDictionary::DesiredDirection, "Direction", AgxColumnTypes::CustomFloat));
 
         {
             AgxPropertyBlockData entryBlockDef({
@@ -25,10 +25,10 @@ namespace SFBGS {
                 AgxPropertyEntryDefinition(&AgxDictionary::Angle0to1,"0",AgxColumnTypes::BasicInteger)
                                                }, nullptr);
 
-            _PropertyBlocks.insert(&AgxDictionary::Entries, entryBlockDef);
+            m_PropertyBlocks.insert(&AgxDictionary::Entries, entryBlockDef);
         }
 
-        _BlockOrder = { &AgxDictionary::Entries, &AgxDictionary::EnterEvents, &AgxDictionary::ExitEvents};
+        m_blockOrder = { &AgxDictionary::Entries, &AgxDictionary::EnterEvents, &AgxDictionary::ExitEvents};
     }
 
     QString AgxNtMomentumAnimation::name() const

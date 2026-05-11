@@ -8,7 +8,6 @@
 
 class AgxGraphRegistry
 {
-private:
 	AgxGraphRegistry();
 
 	~AgxGraphRegistry() = default;

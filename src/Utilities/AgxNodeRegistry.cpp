@@ -10,7 +10,7 @@ AgxNodeRegistry::AgxNodeRegistry()
 	SFBGS_BuildRegistry();
 }
 
-std::shared_ptr<AgxNodeDelegateModelRegistry>& AgxNodeRegistry::GetRegistry(AgxGameType type)
+std::shared_ptr<AgxNodeDelegateModelRegistry>& AgxNodeRegistry::GetRegistry(const AgxGameType type)
 {
 	switch (type)
 	{
@@ -38,7 +38,7 @@ void AgxNodeRegistry::SFBGS_BuildRegistry()
 	_sfbgsRegistry = std::make_shared<AgxNodeDelegateModelRegistry>();
 	_sfbgsRegistry->registerModel<AgxCommentNode>("Extra");
 
-#ifdef DEBUGBUILD
+#ifdef DEBUG_BUILD
 	_sfbgsRegistry->registerModel<SFBGS::AgxNtDebugNode>("Debug");
 #endif
 

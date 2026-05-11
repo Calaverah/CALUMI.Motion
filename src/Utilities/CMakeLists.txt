@@ -28,4 +28,6 @@ target_sources(${PROJECT_NAME}
   AgxGraphRegistry.cpp
   Hash/AgxConnectionIdHash.h
   Hash/QUuidStdHash.h
+  QWidgetFactories.h
+  QWidgetFactories.cpp
 )

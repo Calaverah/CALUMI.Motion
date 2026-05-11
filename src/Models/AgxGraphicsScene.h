@@ -4,11 +4,7 @@
 
 #pragma once
 #pragma warning(push,0)
-#include "Utilities/Hash/AgxConnectionIdHash.h"
-#include "Utilities/Hash/QUuidStdHash.h"
 #include <QGraphicsScene>
-#include <QUuid>
-#include <QMenu>
 
 #pragma warning(pop)
 #include "AgxGraphModel.h"
@@ -17,9 +13,7 @@
 #include "Painter/AgxNodePainter.h"
 #include "Painter/AgxConnectionPainter.h"
 #include "Painter/AgxNodeGeometry.h"
-#include <functional>
 #include <memory>
-#include <tuple>
 #include <unordered_map>
 
 class QUndoStack;
@@ -35,29 +29,27 @@ class AgxGraphicsScene : public QGraphicsScene
 {
     Q_OBJECT
 public:
-    AgxGraphicsScene(AgxGraphModel& graphModel, QObject* parent = nullptr);
+    explicit AgxGraphicsScene(AgxGraphModel& graphModel, QObject* parent = nullptr);
     AgxGraphicsScene() = delete;
 
-    ~AgxGraphicsScene() = default;
+    ~AgxGraphicsScene() override = default;
 
-public:
-    AgxGraphModel const& agxGraphModel() const;
+AgxGraphModel const& agxGraphModel() const;
     AgxGraphModel& agxGraphModel();
 
     AgxNodeGeometry const& agxNodeGeometry() const;
     AgxNodeGeometry& agxNodeGeometry();
 
-    AgxNodePainter& agxNodePainter();
-    AgxConnectionPainter& agxConnectionPainter();
+    AgxNodePainter& agxNodePainter() const;
+    AgxConnectionPainter& agxConnectionPainter() const;
 
     void setNodePainter(std::unique_ptr<AgxNodePainter> newPainter);
     void setConnectionPainter(std::unique_ptr<AgxConnectionPainter> newPainter);
     void setNodeGeometry(std::unique_ptr<AgxNodeGeometry> newGeom);
 
-    QUndoStack& undoStack();
+    QUndoStack& undoStack() const;
 
-public:
-    /**
+/**
      * @brief Creates a "draft" instance of ConnectionGraphicsObject.
      *
      * The scene caches a "draft" connection which has one loose end.
@@ -66,7 +58,7 @@ public:
      * Function @returns the "draft" instance for further geometry
      * manipulations.
      */
-    std::unique_ptr<AgxConnectionGraphicsObject> const& makeDraftConnection(AgxConnectionId const newConnectionId);
+    std::unique_ptr<AgxConnectionGraphicsObject> const& makeDraftConnection(const AgxConnectionId& newConnectionId);
 
     /**
      * @brief Deletes "draft" connection.
@@ -80,86 +72,79 @@ public:
     /// Deletes all the nodes. Connections are removed automatically.
     void clearScene();
 
-public:
-
-    AgxConnectionGraphicsObject* agxConnectionGraphicsObject(AgxConnectionId connectionId);
+    AgxConnectionGraphicsObject* agxConnectionGraphicsObject(const AgxConnectionId& connectionId);
     AgxNodeGraphicsObject* agxNodeGraphicsObject(AgxNodeId nodeId);
 
-    Qt::Orientation orientation() const { return _orientation; }
-    void setOrientation(Qt::Orientation const orientation);
-    
-public:
-    QMenu* createSceneMenu(QPointF const scenePos);
+    Qt::Orientation orientation() const { return m_orientation; }
+    void setOrientation(Qt::Orientation orientation);
+
+    QMenu* createSceneMenu(QPointF scenePos);
 
     std::vector<AgxNodeId> selectedNodes() const;
     
-    QString getLastHoveredGroup();
-    bool setGroupHoverState(bool value, QString groupId);
+    QString getLastHoveredGroup() const;
+    bool setGroupHoverState(bool shouldHover, const QString& groupId);
 
-    void setConnectionsHidden(const QList<AgxConnectionId>& cids, bool hide);
+    void setConnectionsHidden(const QList<AgxConnectionId>& cidList, bool hide);
 
     size_t nodeGraphicItemCount() const;
     size_t connectionGraphicItemCount() const;
 
 
 Q_SIGNALS:
-    void modified(AgxGraphicsScene*);
-    void nodeMoved(AgxNodeId const nodeId, QPointF const& newLocation);
-    void nodeClicked(AgxNodeId const nodeId);
-    void nodeSelected(AgxNodeId const nodeId);
-    void nodeDoubleClicked(AgxNodeId const nodeId);
-    void nodeHovered(AgxNodeId const nodeId, QPoint const screenPos);
-    void nodeHoverLeft(AgxNodeId const nodeId);
-    void connectionHovered(AgxConnectionId const connectionId, QPoint const screenPos);
-    void connectionHoverLeft(AgxConnectionId const connectionId);
+    void modified(AgxGraphicsScene*agxScene);
+    void nodeMoved(const AgxNodeId& nodeId, const QPointF& newLocation);
+    void nodeClicked(const AgxNodeId& nodeId);
+    void nodeSelected(const AgxNodeId& nodeId);
+    void nodeDoubleClicked(const AgxNodeId& nodeId);
+    void nodeHovered(const AgxNodeId& nodeId, QPoint screenPos);
+    void nodeHoverLeft(const AgxNodeId& nodeId);
+    void connectionHovered(AgxConnectionId connectionId, QPoint screenPos);
+    void connectionHoverLeft(AgxConnectionId connectionId);
     void sceneLoaded();
-    void nodePreClicked(AgxNodeId const nodeId, bool additive = false);
-    void nodeContextMenu(AgxNodeId const nodeId, QPointF const pos);
+    void nodePreClicked(const AgxNodeId& nodeId, bool additive = false);
+    void nodeContextMenu(const AgxNodeId& nodeId, QPointF pos);
 
 protected:
     void traverseGraphAndPopulateGraphicsObjects();
 
-    void updateAttachedNodes(AgxConnectionId const connectionId, AgxPortType const portType);
+    void updateAttachedNodes(const AgxConnectionId& connectionId, const AgxPortType& portType);
 
 
 public Q_SLOTS:
-    void onConnectionDeleted(AgxConnectionId const connectionId);
-    void onConnectionCreated(AgxConnectionId const connectionId);
+    void onConnectionDeleted(const AgxConnectionId& connectionId);
+    void onConnectionCreated(const AgxConnectionId& connectionId);
 
-    void onNodeDeleted(AgxNodeId const nodeId);
-    void onNodeCreated(AgxNodeId const nodeId);
-    void onNodePositionUpdated(AgxNodeId const nodeId);
-    void onNodeUpdated(AgxNodeId const nodeId);
-    void onNodeClicked(AgxNodeId const nodeId);
+    void onNodeDeleted(const AgxNodeId& nodeId);
+    void onNodeCreated(const AgxNodeId& nodeId);
+    void onNodePositionUpdated(const AgxNodeId& nodeId);
+    void onNodeUpdated(const AgxNodeId& nodeId);
+    void onNodeClicked(const AgxNodeId& nodeId);
     void onModelReset();
 
     void onSelectAllObjectsOfType(AgxGraphicsItemsFlags flags);
     void onSelectNodes(const QList<AgxNodeId>& nodesToSelect);
     void onSelectedConnections(const QList<AgxConnectionId>& connsToSelect);
-    inline void onSelectAnyAndAllObjects() { onSelectAllObjectsOfType(AgxGraphicsItemsFlag::All); }
-    inline void onSelectAllNodes() { onSelectAllObjectsOfType(AgxGraphicsItemsFlag::Node); }
-    inline void onSelectAllConnections() { onSelectAllObjectsOfType(AgxGraphicsItemsFlag::Connection); }
+    void onSelectAnyAndAllObjects();
+    void onSelectAllNodes();
+    void onSelectAllConnections();
     void onRightRefreshSideBarVisibility();
 
-public Q_SLOTS:
-    inline bool save() const { return false; }
-    inline bool load() { return false; }
-
 private:
-    AgxGraphModel& _agxGraphModel;
-    std::unique_ptr<AgxConnectionGraphicsObject> _agxDraftConnection;
-    std::unordered_map<AgxNodeId, std::unique_ptr<AgxNodeGraphicsObject>> _agxNodeGraphicsObjects;
-    std::unordered_map<AgxConnectionId, std::unique_ptr<AgxConnectionGraphicsObject>> _agxConnectionGraphicsObjects;
-    std::unique_ptr<AgxNodeGeometry> _agxNodeGeometry;
-    std::unique_ptr<AgxNodePainter> _agxNodePainter;
-    std::unique_ptr<AgxConnectionPainter> _agxConnectionPainter;
-    bool _nodeDrag;
-    QUndoStack* _undoStack;
-    Qt::Orientation _orientation;
+    AgxGraphModel& m_agxGraphModel;
+    std::unique_ptr<AgxConnectionGraphicsObject> m_agxDraftConnection;
+    std::unordered_map<AgxNodeId, std::unique_ptr<AgxNodeGraphicsObject>> m_agxNodeGraphicsObjects;
+    std::unordered_map<AgxConnectionId, std::unique_ptr<AgxConnectionGraphicsObject>> m_agxConnectionGraphicsObjects;
+    std::unique_ptr<AgxNodeGeometry> m_agxNodeGeometry;
+    std::unique_ptr<AgxNodePainter> m_agxNodePainter;
+    std::unique_ptr<AgxConnectionPainter> m_agxConnectionPainter;
+    bool m_nodeDrag;
+    QUndoStack* m_undoStack;
+    Qt::Orientation m_orientation;
     
 public:
-    bool _groupHovered = false;
-    AgxNodeGraphicsObject* lastHoveredNode = nullptr;
+    bool m_groupHovered = false;
+    AgxNodeGraphicsObject* m_lastHoveredNode = nullptr;
     
     
 };

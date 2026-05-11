@@ -21,7 +21,6 @@ namespace SFBGS {
 		AgxNtMomentumSwitchback(AgxGraphModel* rootGraphRef);
 		~AgxNtMomentumSwitchback() = default;
 
-	public:
 		// Inherited via AgxNode
 		QString name() const override;
 		QString caption() const override;

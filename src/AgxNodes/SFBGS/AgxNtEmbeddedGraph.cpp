@@ -15,20 +15,20 @@
 namespace SFBGS {
     AgxNtEmbeddedGraph::AgxNtEmbeddedGraph(AgxGraphModel* rootGraphRef) :SFBGSNode(rootGraphRef)
     {
-        _nameProperty = _blendName;
+        m_nameProperty = _blendName;
 
         {
-            _blendPropIdx = _PropertyEntries.size();
-            _PropertyEntries.push_back(AgxPropertyEntryDefinition(&AgxDictionary::BlendTreeName, "", AgxColumnTypes::BasicString));
+            _blendPropIdx = m_propertyEntries.size();
+            m_propertyEntries.push_back(AgxPropertyEntryDefinition(&AgxDictionary::BlendTreeName, "", AgxColumnTypes::BasicString));
             
-            _statePropIdx = _PropertyEntries.size();
-            _PropertyEntries.push_back(AgxPropertyEntryDefinition(&AgxDictionary::StateMachineName, "", AgxColumnTypes::BasicString));
-            _PropertyEntries[_statePropIdx].SetEnabledState(false);
+            _statePropIdx = m_propertyEntries.size();
+            m_propertyEntries.push_back(AgxPropertyEntryDefinition(&AgxDictionary::StateMachineName, "", AgxColumnTypes::BasicString));
+            m_propertyEntries[_statePropIdx].SetEnabledState(false);
         }
 
-        _PropertyEntries.push_back(AgxPropertyEntryDefinition(&AgxDictionary::SyncOnlyTransitionOut, "False", AgxColumnTypes::BasicBool));
+        m_propertyEntries.push_back(AgxPropertyEntryDefinition(&AgxDictionary::SyncOnlyTransitionOut, "False", AgxColumnTypes::BasicBool));
 
-        _BlockOrder = { &AgxDictionary::EnterEvents, &AgxDictionary::ExitEvents };
+        m_blockOrder = { &AgxDictionary::EnterEvents, &AgxDictionary::ExitEvents };
 
         
     }
@@ -40,9 +40,9 @@ namespace SFBGS {
         if (auto sfbgsPort = dynamic_cast<AgxPort_SFBGS*>(port.get()))
         {
             if(portType == AgxPortType::In)
-                sfbgsPort->SetPropertySheetEnabled(true);
+                sfbgsPort->setPropertySheetEnabled(true);
 
-            Q_EMIT sfbgsPort->PropertySheetUpdated();
+            Q_EMIT sfbgsPort->propertySheetUpdated();
         }
 
         return port;
@@ -55,7 +55,7 @@ namespace SFBGS {
 
     QString AgxNtEmbeddedGraph::typeName() const
     {
-        switch (_EmbeddedGraphModel->getGraphType())
+        switch (m_embeddedGraphModel->getGraphType())
         {
             case AgxGraphType::SFBGS_StateMachine:
                 return QStringLiteral("NT_STATE_MACHINE_EMBEDDED");
@@ -68,7 +68,7 @@ namespace SFBGS {
 
     QString AgxNtEmbeddedGraph::caption() const
     {
-        switch (_EmbeddedGraphModel->getGraphType())
+        switch (m_embeddedGraphModel->getGraphType())
         {
             case AgxGraphType::SFBGS_StateMachine:
                 return tr("State Machine Embedded");
@@ -81,14 +81,14 @@ namespace SFBGS {
 
     QString AgxNtEmbeddedGraph::SubCaptionUnformatted() const
     {
-        if (_EmbeddedGraphModel) {
-            switch (_EmbeddedGraphModel->getGraphType())
+        if (m_embeddedGraphModel) {
+            switch (m_embeddedGraphModel->getGraphType())
             {
                 case AgxGraphType::SFBGS_StateMachine:
-                    return _PropertyEntries.at(1).value;
+                    return m_propertyEntries.at(1).value;
                     break;
                 case AgxGraphType::SFBGS_Default:
-                    return _PropertyEntries.at(0).value;
+                    return m_propertyEntries.at(0).value;
                     break;
             }
         }
@@ -97,7 +97,7 @@ namespace SFBGS {
 
     QString AgxNtEmbeddedGraph::SubCaption() const
     {
-        return QString("%1 (%2)").arg(SubCaptionUnformatted()).arg(GetPropertyValue(_SFBGS_Properties, AgxDictionary::UserId().tag, "?"));
+        return QString("%1 (%2)").arg(SubCaptionUnformatted()).arg(GetPropertyValue(m_sfbgsProperties, AgxDictionary::UserId().tag, "?"));
     }
 
     unsigned int AgxNtEmbeddedGraph::nPorts(AgxPortType portType) const
@@ -107,11 +107,11 @@ namespace SFBGS {
 
     void AgxNtEmbeddedGraph::ToggleCollapse()
     {
-        collapsed = !collapsed;
+        m_collapsed = !m_collapsed;
 
         if (!_embGraphWidget) return;
 
-        if (!collapsed)
+        if (!m_collapsed)
             _embGraphWidget->show();
         else
             _embGraphWidget->hide();
@@ -122,7 +122,7 @@ namespace SFBGS {
     {
 
         if (!_embGraphWidget) {
-            _embGraphWidget = new MiniGraphicsView(_EmbeddedGraphScene.get());
+            _embGraphWidget = new MiniGraphicsView(m_embeddedGraphScene.get());
             //_MainVBoxLayout->addWidget(miniView);
             _embGraphWidget->setMinimumHeight(50);
             _embGraphWidget->setMinimumWidth(50);
@@ -134,12 +134,12 @@ namespace SFBGS {
                 auto widget = QApplication::activeWindow();
 
                 if (auto calumiWindow = dynamic_cast<CALUMIMotion*>(widget))
-                    calumiWindow->Create_SFBGSTab(_EmbeddedGraphScene, _EmbeddedGraphModel);
+                    calumiWindow->Create_SFBGSTab(m_embeddedGraphScene, m_embeddedGraphModel);
 
                     });
         }
 
-        if (!collapsed)
+        if (!m_collapsed)
         {
             return _embGraphWidget;
         }
@@ -149,8 +149,8 @@ namespace SFBGS {
 
     AgxNodeType AgxNtEmbeddedGraph::GetNodeType() const
     {
-        if (_EmbeddedGraphModel) {
-            switch (_EmbeddedGraphModel->getGraphType())
+        if (m_embeddedGraphModel) {
+            switch (m_embeddedGraphModel->getGraphType())
             {
                 case AgxGraphType::SFBGS_StateMachine:
                     return AgxNodeType::NT_STATE_MACHINE_EMBEDDED;
@@ -168,39 +168,39 @@ namespace SFBGS {
         SFBGSNode::SetUpNode(type);
         SetUpEmbeddedNodeGraph();
 
-        if (_EmbeddedGraphModel) {
-            connect(_EmbeddedGraphModel.get(), &AgxGraphModel::GraphTypeUpdated, this, [this]() {
-                switch (_EmbeddedGraphModel->getGraphType())
+        if (m_embeddedGraphModel) {
+            connect(m_embeddedGraphModel.get(), &AgxGraphModel::GraphTypeUpdated, this, [this]() {
+                switch (m_embeddedGraphModel->getGraphType())
                 {
                     case AgxGraphType::SFBGS_StateMachine:
-                        _nameProperty = _stateName;
-                        _PropertyEntries[_statePropIdx].SetEnabledState(true);
-                        _PropertyEntries[_blendPropIdx].SetEnabledState(false);
+                        m_nameProperty = _stateName;
+                        m_propertyEntries[_statePropIdx].SetEnabledState(true);
+                        m_propertyEntries[_blendPropIdx].SetEnabledState(false);
                         break;
                     case AgxGraphType::SFBGS_Default:
-                        _nameProperty = _blendName;
-                        _PropertyEntries[_statePropIdx].SetEnabledState(false);
-                        _PropertyEntries[_blendPropIdx].SetEnabledState(true);
+                        m_nameProperty = _blendName;
+                        m_propertyEntries[_statePropIdx].SetEnabledState(false);
+                        m_propertyEntries[_blendPropIdx].SetEnabledState(true);
                         break;
                     default:
-                        _nameProperty = "ERROR: UNDEFINED";
-                        _PropertyEntries[_statePropIdx].SetEnabledState(false);
-                        _PropertyEntries[_blendPropIdx].SetEnabledState(false);
+                        m_nameProperty = "ERROR: UNDEFINED";
+                        m_propertyEntries[_statePropIdx].SetEnabledState(false);
+                        m_propertyEntries[_blendPropIdx].SetEnabledState(false);
                         AgxNodeValidationState vState = validationState();
-                        vState._state = AgxNodeValidationState::State::Error;
-                        if (!vState._stateMessage.isEmpty()) vState._stateMessage += "\n";
-                        vState._stateMessage += "UNKNOWN EMBEDDED GRAPH TYPE";
-                        setValidatonState(vState);
+                        vState.m_state = AgxNodeValidationState::State::Error;
+                        if (!vState.m_stateMessage.isEmpty()) vState.m_stateMessage += "\n";
+                        vState.m_stateMessage += "UNKNOWN EMBEDDED GRAPH TYPE";
+                        setValidationState(vState);
                         break;
                 }
                 Q_EMIT PropertySheetUpdated();
                     });
         }
-        if (_EmbeddedGraphScene)
+        if (m_embeddedGraphScene)
         {
-            connect(this, &AgxNode::PropertySheetUpdated, _EmbeddedGraphScene.get(), [this]() {
+            connect(this, &AgxNode::PropertySheetUpdated, m_embeddedGraphScene.get(), [this]() {
                         QString tabTitle = SubCaptionUnformatted().isEmpty() ? "graph" : SubCaptionUnformatted();
-                        _EmbeddedGraphScene->agxGraphModel().SetGraphTitle("embedded_" + tabTitle, false);
+                        m_embeddedGraphScene->agxGraphModel().SetGraphTitle("embedded_" + tabTitle, false);
                     });
         }
     }

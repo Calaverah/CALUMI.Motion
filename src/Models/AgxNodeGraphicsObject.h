@@ -25,15 +25,13 @@ public:
 
 	int type() const override { return Type; }
 
-public:
-	AgxNodeGraphicsObject(AgxGraphicsScene& scene, AgxNodeId nodeId);
+AgxNodeGraphicsObject(AgxGraphicsScene& scene, AgxNodeId nodeId);
 
 	~AgxNodeGraphicsObject() override = default;
 
 	AgxGraphicsScene* agxNodeScene() const;
 
-public:
-    AgxGraphModel& graphModel() const;
+AgxGraphModel& graphModel() const;
 
     AgxNodeId nodeId() { return _nodeId; }
 
@@ -146,8 +144,7 @@ public:
     void hoverEnterEvent(QGraphicsSceneHoverEvent* event) override;
     void hoverLeaveEvent(QGraphicsSceneHoverEvent* event) override;
 
-public Q_SLOT:
-    void RecalculateTarget() const;
+void RecalculateTarget() const;
 
 private:
     AgxArrowGraphicsObject* _arrowGraphicsObject = nullptr;

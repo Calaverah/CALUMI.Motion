@@ -12,7 +12,6 @@
 
 class AgxStyleCollection
 {
-private:
     AgxStyleCollection() = default;
 
     AgxStyleCollection(const AgxStyleCollection&) = delete;

@@ -8,12 +8,12 @@
 namespace SFBGS {
     AgxNtCurvedPathBlender::AgxNtCurvedPathBlender(AgxGraphModel* rootGraphRef) : SFBGSNode(rootGraphRef)
     {
-        _nameProperty = QStringLiteral("Curved Path Blender");
+        m_nameProperty = QStringLiteral("Curved Path Blender");
 
-        _PropertyEntries.push_back(AgxPropertyEntryDefinition(&AgxDictionary::Name, "Curved Path Blender", AgxColumnTypes::BasicString));
-        _PropertyEntries.push_back(AgxPropertyEntryDefinition(&AgxDictionary::BlendRate, "0.05", AgxColumnTypes::BasicFloat));
+        m_propertyEntries.push_back(AgxPropertyEntryDefinition(&AgxDictionary::Name, "Curved Path Blender", AgxColumnTypes::BasicString));
+        m_propertyEntries.push_back(AgxPropertyEntryDefinition(&AgxDictionary::BlendRate, "0.05", AgxColumnTypes::BasicFloat));
         
-        _BlockOrder = { &AgxDictionary::EnterEvents, &AgxDictionary::ExitEvents };
+        m_blockOrder = { &AgxDictionary::EnterEvents, &AgxDictionary::ExitEvents };
     }
 
     QString AgxNtCurvedPathBlender::name() const
@@ -46,13 +46,13 @@ namespace SFBGS {
             switch (portType)
             {
                 case AgxPortType::In:
-                    if (_In_Ports.size() == 1)
-                        sfbgsPort->SetName("default");
+                    if (m_inPorts.size() == 1)
+                        sfbgsPort->setName("default");
                     else
-                        sfbgsPort->SetName(std::format("Input{}", _In_Ports.size()).c_str());
+                        sfbgsPort->setName(std::format("Input{}", m_inPorts.size()).c_str());
                     break;
             }
-            Q_EMIT sfbgsPort->PropertySheetUpdated();
+            Q_EMIT sfbgsPort->propertySheetUpdated();
         }
 
         return port;

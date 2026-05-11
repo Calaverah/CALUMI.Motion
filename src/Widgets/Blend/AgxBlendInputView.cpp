@@ -59,13 +59,13 @@ void AgxBlendInputView::OnContextMenuRequested(const QPoint& pos) {
 		QAction* removeRowAction = menu->addAction("Remove Row");
 		connect(removeRowAction, &QAction::triggered, this, [this, index]() {
 					if (auto modelRef = dynamic_cast<AgxBlendInputModel*>(model())) {
-						if (_scene && modelRef->_port) {
+						if (m_scene && modelRef->_port) {
 							QJsonObject data;
 							data["command-text"] = "Remove Blend Point";
 							data["command-undo"] = "blend-input-insert";
 							data["command-redo"] = "blend-input-remove";
 							data["command-payload"] = std::to_string(index).c_str();
-							_scene->undoStack().push(new AgxPortCommandPayloadCommand(_scene,_nodeId,AgxPortType::In,modelRef->_port->GetPortIndex(), data));
+							m_scene->undoStack().push(new AgxPortCommandPayloadCommand(m_scene,m_nodeId,AgxPortType::In,modelRef->_port->getPortIndex(), data));
 						}
 					}
 				});
@@ -75,13 +75,13 @@ void AgxBlendInputView::OnContextMenuRequested(const QPoint& pos) {
 	QAction* insertRowAboveAction = menu->addAction(insertString);
 	connect(insertRowAboveAction, &QAction::triggered, this, [this, index]() {
 				if (auto modelRef = dynamic_cast<AgxBlendInputModel*>(model())) {
-					if (_scene && modelRef->_port) {
+					if (m_scene && modelRef->_port) {
 						QJsonObject data;
 						data["command-text"] = "Insert Blend Point";
 						data["command-undo"] = "blend-input-remove";
 						data["command-redo"] = "blend-input-insert";
 						data["command-payload"] = std::to_string(index).c_str();
-						_scene->undoStack().push(new AgxPortCommandPayloadCommand(_scene, _nodeId, AgxPortType::In, modelRef->_port->GetPortIndex(), data));
+						m_scene->undoStack().push(new AgxPortCommandPayloadCommand(m_scene, m_nodeId, AgxPortType::In, modelRef->_port->getPortIndex(), data));
 					}
 				}
 			});
@@ -90,13 +90,13 @@ void AgxBlendInputView::OnContextMenuRequested(const QPoint& pos) {
 		QAction* insertRowBelowAction = menu->addAction("Insert Row Below");
 		connect(insertRowBelowAction, &QAction::triggered, this, [this, index]() {
 					if (auto modelRef = dynamic_cast<AgxBlendInputModel*>(model())) {
-						if (_scene && modelRef->_port) {
+						if (m_scene && modelRef->_port) {
 							QJsonObject data;
 							data["command-text"] = "Remove Blend Point";
 							data["command-undo"] = "blend-input-remove";
 							data["command-redo"] = "blend-input-insert";
 							data["command-payload"] = std::to_string(index+1).c_str();
-							_scene->undoStack().push(new AgxPortCommandPayloadCommand(_scene, _nodeId, AgxPortType::In, modelRef->_port->GetPortIndex(), data));
+							m_scene->undoStack().push(new AgxPortCommandPayloadCommand(m_scene, m_nodeId, AgxPortType::In, modelRef->_port->getPortIndex(), data));
 						}
 					}
 				});

@@ -8,13 +8,13 @@
 namespace SFBGS {
     AgxNtNormalizeRotation::AgxNtNormalizeRotation(AgxGraphModel* rootGraphRef) : SFBGSNode(rootGraphRef)
     {
-        _nameProperty = QStringLiteral("Normalize Rotation");
+        m_nameProperty = QStringLiteral("Normalize Rotation");
 
-        _PropertyEntries.push_back(AgxPropertyEntryDefinition(&AgxDictionary::Name, "Normalize Rotation", AgxColumnTypes::BasicString));
-        _PropertyEntries.push_back(AgxPropertyEntryDefinition(&AgxDictionary::BoneName, "", AgxColumnTypes::BasicString));
-        _PropertyEntries.push_back(AgxPropertyEntryDefinition(&AgxDictionary::NormalizeLength, "90", AgxColumnTypes::BasicInteger));
+        m_propertyEntries.push_back(AgxPropertyEntryDefinition(&AgxDictionary::Name, "Normalize Rotation", AgxColumnTypes::BasicString));
+        m_propertyEntries.push_back(AgxPropertyEntryDefinition(&AgxDictionary::BoneName, "", AgxColumnTypes::BasicString));
+        m_propertyEntries.push_back(AgxPropertyEntryDefinition(&AgxDictionary::NormalizeLength, "90", AgxColumnTypes::BasicInteger));
 
-        _BlockOrder = { &AgxDictionary::Entries, &AgxDictionary::EnterEvents, &AgxDictionary::ExitEvents};
+        m_blockOrder = { &AgxDictionary::Entries, &AgxDictionary::EnterEvents, &AgxDictionary::ExitEvents};
     }
 
     QString AgxNtNormalizeRotation::name() const
@@ -47,11 +47,11 @@ namespace SFBGS {
             switch (portType)
             {
                 case AgxPortType::In:
-                    if (_In_Ports.size() == 1)
-                        sfbgsPort->SetName("Passthrough");
+                    if (m_inPorts.size() == 1)
+                        sfbgsPort->setName("Passthrough");
                     break;
             }
-            Q_EMIT sfbgsPort->PropertySheetUpdated();
+            Q_EMIT sfbgsPort->propertySheetUpdated();
         }
 
         return port;
