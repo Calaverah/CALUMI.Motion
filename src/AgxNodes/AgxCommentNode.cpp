@@ -31,19 +31,19 @@ void AgxCommentNode::insertPropertySheetData(const QJsonObject& data)
             _text = comment["text"].toString();
 
         if (comment.contains("font"))
-            _font.fromString(comment["font"].toString());
+            m_font.fromString(comment["font"].toString());
     }
 
     if (data.contains("comment-target"))
     {
-        _hasTarget = true;
+        m_hasTarget = true;
         auto targetPos = data["comment-target"].toObject();
 
         if(targetPos.contains("x"))
-            _target.setX(targetPos["x"].toDouble());
+            m_target.setX(targetPos["x"].toDouble());
     
         if(targetPos.contains("y"))
-            _target.setY(targetPos["y"].toDouble());
+            m_target.setY(targetPos["y"].toDouble());
     }
     
 
@@ -56,15 +56,15 @@ QJsonObject AgxCommentNode::getPropertySheetData(const bool cleared) const
     QJsonObject output = AgxNode::getPropertySheetData(cleared);
     QJsonObject comment;
     comment["text"] = cleared ? "" : _text;
-    comment["font"] = cleared ? QFont().toString() : _font.toString();
+    comment["font"] = cleared ? QFont().toString() : m_font.toString();
 
     output["comment"] = comment;
 
-    if (_hasTarget) {
+    if (m_hasTarget) {
         QJsonObject pt;
 
-        pt["x"] = _target.x();
-        pt["y"] = _target.y();
+        pt["x"] = m_target.x();
+        pt["y"] = m_target.y();
 
         output["comment-target"] = pt;
     }
@@ -127,7 +127,7 @@ QWidget* AgxCommentNode::embeddedWidget()
         connect(this, &AgxNode::PropertySheetUpdated, _emb, [this] {
                 _emb->blockSignals(true);
                 _emb->setCommentText(this->_text);
-                _emb->setCommentFont(this->_font);
+                _emb->setCommentFont(this->m_font);
                 _emb->blockSignals(false);
             });
         
@@ -151,11 +151,11 @@ QJsonObject AgxCommentNode::save() const
     
     output["property-sheet"] = getPropertySheetData(false);
 
-    if (_hasTarget) {
+    if (m_hasTarget) {
         QJsonObject pt;
 
-        pt["x"] = _target.x();
-        pt["y"] = _target.y();
+        pt["x"] = m_target.x();
+        pt["y"] = m_target.y();
 
         output["comment-target"] = pt;
     }
@@ -168,10 +168,10 @@ void AgxCommentNode::load(QJsonObject const& data)
 
     if (data.contains("comment-target"))
     {
-        _hasTarget = true;
+        m_hasTarget = true;
         auto targetPos = data["comment-target"].toObject();
-        _target.setX(targetPos["x"].toDouble());
-        _target.setY(targetPos["y"].toDouble());
+        m_target.setX(targetPos["x"].toDouble());
+        m_target.setY(targetPos["y"].toDouble());
     }
 
     const QJsonObject pSheet = data["property-sheet"].toObject();
@@ -180,12 +180,6 @@ void AgxCommentNode::load(QJsonObject const& data)
 
 AgxCommentNode::AgxCommentNode(AgxGraphModel* rootGraphRef) : AgxNode(rootGraphRef), _emb(nullptr)
 {
-    _font = QFont();
+    m_font = QFont();
     m_nameProperty = "Comment";
-    AgxNodeStyle style = AgxNode::nodeStyle();
-    style.GradientColor0 = { 60,60,65 };
-    style.GradientColor1 = { 60,60,65 };
-    style.GradientColor2 = { 60,60,65 };
-    style.GradientColor3 = { 60,60,65 };
-    AgxNode::setNodeStyle(style);
 }

@@ -20,7 +20,7 @@ AgxNode::~AgxNode()
         m_sidebarContent->deleteLater();
 }
 
-AgxNode::AgxNode(AgxGraphModel* rootGraphRef) : m_nextPortId{0}, m_nodePropertiesWidget(nullptr), m_rootGraphReference(rootGraphRef), m_nodeStyle(AgxStyleCollection::nodeStyle())
+AgxNode::AgxNode(AgxGraphModel* rootGraphRef) : m_nextPortId{0}, m_nodePropertiesWidget(nullptr), m_rootGraphReference(rootGraphRef)
 {
 
 }
@@ -184,13 +184,6 @@ AgxConnectionPolicy AgxNode::portConnectionPolicy(const AgxPortType portType, Ag
 
     return result;
 }
-
-const AgxNodeStyle& AgxNode::nodeStyle() const
-{
-    return m_nodeStyle;
-}
-
-void AgxNode::setNodeStyle(const AgxNodeStyle& style) { m_nodeStyle = style; }
 
 void AgxNode::AmendValidationState(const QString& messageToAdd, const AgxNodeValidationState::State& minState)
 {

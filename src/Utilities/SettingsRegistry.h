@@ -5,9 +5,9 @@
 #pragma warning(pop)
 
 #include "Utilities/AgxDefinitions.h"
-#include <qtranslator.h>
-#include <qsyntaxhighlighter.h>
+#include <QTranslator>
 #include <QSettings>
+#include <QPointer>
 
 #pragma region Definitions
 
@@ -18,9 +18,9 @@ enum class LanguageCode : unsigned int
 	French,
 	German,
 	Russian,
-	Ukranian,
+	Ukrainian,
 	
-	Max = Ukranian
+	Max = Ukrainian
 };
 
 static inline QStringList LanguageStrings = {
@@ -35,7 +35,7 @@ static inline QStringList LanguageStrings = {
 QString LanguageCodeToString(LanguageCode code = LanguageCode::English);
 LanguageCode LanguageCodeFromString(const QString& code = "English");
 
-enum class StartupVisibiltyPreference : uint8_t {
+enum class StartupVisibilityPreference : uint8_t {
 	Never,
 	Remember,
 	Always
@@ -62,52 +62,52 @@ public:
 		return instance;
 	}
 
-	QString LastDirectory(AgxGameType type = AgxGameType::None) const;
+	[[nodiscard]] QString LastDirectory(AgxGameType type = AgxGameType::None) const;
 	void SetLastDirectory(const QString& dir, AgxGameType type = AgxGameType::None);
 
 	QString GetRelativeDataPath(AgxGameType type);
-	void SaveRelativeDataPath(AgxGameType type, const QString& pathToSave);
+	void SaveRelativeDataPath(AgxGameType type, const QString& pathToSave) const;
 
 	void SetLanguage(LanguageCode code);
-	inline LanguageCode GetLanguage() const { return _language; }
+	[[nodiscard]] LanguageCode GetLanguage() const { return m_language; }
 
-	inline StartupVisibiltyPreference GetPropertySidebarVisibilityPreference() const { return _sidebarVis; }
-	inline void SetPropertySidebarVisibilityPreference(StartupVisibiltyPreference pref) { _sidebarVis = pref; }
+	[[nodiscard]] StartupVisibilityPreference GetPropertySidebarVisibilityPreference() const { return m_sidebarVis; }
+	void SetPropertySidebarVisibilityPreference(const StartupVisibilityPreference pref) { m_sidebarVis = pref; }
 	void SetPropertySidebarVisibilityPreference(int pref);
 
-	inline StartupVisibiltyPreference GetConsoleVisibilityPreference() const { return _consoleVis; }
-	inline void SetConsoleVisibilityPreference(StartupVisibiltyPreference pref) { _consoleVis = pref; }
+	[[nodiscard]] StartupVisibilityPreference GetConsoleVisibilityPreference() const { return m_consoleVis; }
+	void SetConsoleVisibilityPreference(const StartupVisibilityPreference pref) { m_consoleVis = pref; }
 	void SetConsoleVisibilityPreference(int pref);
 
-	inline bool GetConvertFunctionsSetting() const { return _convertFunctions; }
-	inline void SetConvertFunctionsSetting(bool setting) { _convertFunctions = setting; }
+	[[nodiscard]] bool GetConvertFunctionsSetting() const { return m_convertFunctions; }
+	void SetConvertFunctionsSetting(const bool setting) { m_convertFunctions = setting; }
 
 	void SyncSettings() const;
 
-	QByteArray GetSavedWindowGeometry(const QString& key) const;
-	void SaveWindowGeometry(const QString& key, const QByteArray& array);
+	[[nodiscard]] QByteArray GetSavedWindowGeometry(const QString& key) const;
+	void SaveWindowGeometry(const QString& key, const QByteArray& array) const;
 
-	bool GetLastState(const QString& key, bool defValue = true) const;
-	void SaveLastState(const QString& key, bool state);
+	[[nodiscard]] bool GetLastState(const QString& key, bool defValue = true) const;
+	void SaveLastState(const QString& key, bool state) const;
 
-	QString GetSavedVersion();
+	[[nodiscard]] QString GetSavedVersion() const;
 
-	inline bool UseSavedGeometry() const { return _rememberMainGeometry; }
-	inline void SetUseSavedGeometry(bool setting) { _rememberMainGeometry = setting; }
+	[[nodiscard]] bool UseSavedGeometry() const { return m_rememberMainGeometry; }
+	void SetUseSavedGeometry(const bool setting) { m_rememberMainGeometry = setting; }
 
-	inline bool UseSavedConsoledGeometry() const { return _rememberConsoleGeometry; }
-	inline void SetUseSavedConsoledGeometry(bool setting) { _rememberConsoleGeometry = setting; }
+	[[nodiscard]] bool UseSavedConsoledGeometry() const { return m_rememberConsoleGeometry; }
+	void SetUseSavedConsoledGeometry(const bool setting) { m_rememberConsoleGeometry = setting; }
 
-	QSet<QString> GetCustomCategories(AgxGameType game = AgxGameType::SFBGS, bool withDefault = true) const;
-	void AddCustomCatgeory(const QString& item, AgxGameType game = AgxGameType::SFBGS);
+	[[nodiscard]] QSet<QString> GetCustomCategories(AgxGameType game = AgxGameType::SFBGS, bool withDefault = true) const;
+	void AddCustomCategory(const QString& item, AgxGameType game = AgxGameType::SFBGS);
 
-	QString GetThemeFilePath() const;
-	QString GetThemeFileName() const;
+	[[nodiscard]] QString GetThemeFilePath() const;
+	[[nodiscard]] QString GetThemeFileName() const;
 	void SetThemeFileName(const QString& path);
 
 private:
 	void SetDefaultLanguage();
-	QString IniPath() const;
+	[[nodiscard]] QString IniPath() const;
 	static bool CreateDirectoryIfNDef(const QString& fileString);
 
 	friend class AgxStyle;
@@ -116,33 +116,33 @@ private:
 	friend class AgxGraphicsViewStyle;
 
 	//Generic
-	QString _iniPath;
-	QString _themePath;
-	QSettings* _settings = nullptr;
-	QSettings* _dataStorage = nullptr;
-	QString _lastDirectory;
-	QString _sfbgsDirectory;
+	QString m_iniPath;
+	QString m_themePath;
+	QSettings* m_settings = nullptr;
+	QSettings* m_dataStorage = nullptr;
+	QString m_lastDirectory;
+	QString m_sfbgsDirectory;
 
-	QPointer<QTranslator> _translator = nullptr;
-	LanguageCode _language = LanguageCode::English;
+	QPointer<QTranslator> m_translator = nullptr;
+	LanguageCode m_language = LanguageCode::English;
 
-	StartupVisibiltyPreference _sidebarVis = StartupVisibiltyPreference::Remember;
-	bool _sidebarLastState = true;
+	StartupVisibilityPreference m_sidebarVis = StartupVisibilityPreference::Remember;
+	bool m_sidebarLastState = true;
 
-	StartupVisibiltyPreference _consoleVis = StartupVisibiltyPreference::Remember;
-	bool _consoleLastState = true;
+	StartupVisibilityPreference m_consoleVis = StartupVisibilityPreference::Remember;
+	bool m_consoleLastState = true;
 
-	bool _convertFunctions = true;
-	bool _rememberMainGeometry = true;
-	bool _rememberConsoleGeometry = true;
+	bool m_convertFunctions = true;
+	bool m_rememberMainGeometry = true;
+	bool m_rememberConsoleGeometry = true;
 
-	QSet<QString> _categories_Default;
+	QSet<QString> m_categories_Default;
 
-	QString _themeFileName;
+	QString m_themeFileName;
 
 	//SFBGS
-	QString _defaultRelDataPath_SFBGS = R"(Data\Meshes\AnimTextData\Tables\Graphs\)";
-	QSet<QString> _categories_SFBGS;
+	QString m_defaultRelDataPath_SFBGS = R"(Data\Meshes\AnimTextData\Tables\Graphs\)";
+	QSet<QString> m_categories_SFBGS;
 
 
 public:
@@ -152,17 +152,17 @@ public:
 	};
 
 	void SetSymbolColor(QColor color);
-	const QColor& GetSymbolColor() const;
+	[[nodiscard]] const QColor& GetSymbolColor() const;
 	void SetDecodedColor(QColor color);
-	const QColor& GetDecodedColor() const;
-	inline const QVector<HighlightingRule>& GetHighlightingRules() { return _highlightingRules; }
+	[[nodiscard]] const QColor& GetDecodedColor() const;
+	const QVector<HighlightingRule>& GetHighlightingRules() { return m_highlightingRules; }
 
 private:
-	QVector<HighlightingRule> _highlightingRules;
+	QVector<HighlightingRule> m_highlightingRules;
 	
-	QColor _symColorDefault = QColor(Qt::cyan);
-	QTextCharFormat _symbolFormat;
-	QColor _decodedColorDefault = QColor(Qt::red);
-	QTextCharFormat _decodedFormat;
+	QColor m_symColorDefault = QColor(Qt::cyan);
+	QTextCharFormat m_symbolFormat;
+	QColor m_decodedColorDefault = QColor(Qt::red);
+	QTextCharFormat m_decodedFormat;
 
 };

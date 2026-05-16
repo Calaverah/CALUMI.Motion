@@ -23,7 +23,6 @@ class AgxGraphModel;
 class AgxNodePainter;
 class AgxNodeGraphicsObject;
 class AgxConnectionGraphicsObject;
-class NodeStyle;
 
 class AgxGraphicsScene : public QGraphicsScene
 {
@@ -34,7 +33,7 @@ public:
 
     ~AgxGraphicsScene() override = default;
 
-AgxGraphModel const& agxGraphModel() const;
+    AgxGraphModel const& agxGraphModel() const;
     AgxGraphModel& agxGraphModel();
 
     AgxNodeGeometry const& agxNodeGeometry() const;

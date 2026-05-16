@@ -2,14 +2,12 @@
 //License: https://www.gnu.org/licenses/lgpl-3.0.html
 //Contact: Calaverahmedia@gmail.com
 
+// ReSharper disable CppTooWideScope
 #include "stdafx.h"
 #pragma warning(push,0)
 
-#include "Painter/AgxStyleCollection.h"
 #include <QGraphicsScene>
 #include <QMenu>
-
-#include <QDebug>
 #include <QPointF>
 #include <QRectF>
 #include <QBrush>
@@ -24,30 +22,30 @@
 #include "Models/AgxNodeGraphicsObject.h"
 #include "Utilities/UndoRedoCommands.h"
 #include <algorithm>
-
-
 #include <Utilities/AgxGraphRegistry.h>
+#include "Utilities/Hash/AgxConnectionIdHash.h"
 
 void AgxGraphicsView::ToggleNodeCollapse(const AgxNodeId nodeId)
 {
-	if(auto agxModel = &(agxNodeScene()->agxGraphModel()))
+	if(const auto agxModel = &agxNodeScene()->agxGraphModel())
 		agxModel->ToggleNodeCollapse(nodeId);
 
 }
 
-void AgxGraphicsView::SelectNodeGroup(const AgxNodeId nodeId, bool additive)
+void AgxGraphicsView::SelectNodeGroup(const AgxNodeId nodeId, const bool additive)
 {
-	
-	auto agxModel = &agxNodeScene()->agxGraphModel();
-	if (agxModel)
+	if (const auto agxModel = &agxNodeScene()->agxGraphModel())
 	{
-		auto nodeGroup = agxModel->GetNodeGroup(nodeId);
+		const auto nodeGroup = agxModel->GetNodeGroup(nodeId);
 		if (nodeGroup == "") 
 		{
 			bool setting = true;
+
 			if (additive)
 				setting = !agxNodeScene()->agxNodeGraphicsObject(nodeId)->isSelected();
+
 			agxNodeScene()->agxNodeGraphicsObject(nodeId)->setSelected(setting);
+
 			return;
 		}
 		SelectNodeGroup(nodeGroup, agxModel, additive);
@@ -55,24 +53,27 @@ void AgxGraphicsView::SelectNodeGroup(const AgxNodeId nodeId, bool additive)
 	
 }
 
-void AgxGraphicsView::SelectNodeGroup(const QString nodeGroup, AgxGraphModel* agxModel, bool additive)
+void AgxGraphicsView::SelectNodeGroup(const QString& nodeGroup, const AgxGraphModel* agxModel, const bool additive)
 {
-	if (nodeGroup == "") return;
+	if (nodeGroup == "")
+		return;
 
 	if (!agxModel)
 		agxModel = &agxNodeScene()->agxGraphModel();
+
 	bool setting = true;
+
 	if(additive)
 	{
 		setting = false;
-		for (auto id : agxModel->allNodeIds())
+		for (const auto id : agxModel->allNodeIds())
 		{
 			//is it good to loop twice through to determine if the group is selected? Probably not, but it beats trying to add tons of select/deselect logic for groups elsewhere
 			if (agxModel->GetNodeGroup(id) == nodeGroup && !agxNodeScene()->agxNodeGraphicsObject(id)->isSelected())
 				setting = true;
 		}
 	}
-	for (auto id : agxModel->allNodeIds())
+	for (const auto id : agxModel->allNodeIds())
 	{
 		if (agxModel->GetNodeGroup(id) == nodeGroup)
 			agxNodeScene()->agxNodeGraphicsObject(id)->setSelected(setting);
@@ -81,64 +82,62 @@ void AgxGraphicsView::SelectNodeGroup(const QString nodeGroup, AgxGraphModel* ag
 
 void AgxGraphicsView::ShowContextMenu(AgxNodeId const nodeId, QPointF const pos)
 {
-	AgxNodeGeometry& geom = agxNodeScene()->agxNodeGeometry();
-	QTransform scT = agxNodeScene()->agxNodeGraphicsObject(nodeId)->sceneTransform();
-	auto gModel = &(agxNodeScene()->agxGraphModel());
+	const AgxNodeGeometry& geom = agxNodeScene()->agxNodeGeometry();
+	const QTransform scT = agxNodeScene()->agxNodeGraphicsObject(nodeId)->sceneTransform();
+	const auto gModel = &agxNodeScene()->agxGraphModel();
 	
-	if (!gModel) return;
+	if (!gModel)
+		return;
 
 	QMenu cMenu(this);
+
 	if (!gModel->nodeExists(nodeId))
 		return;
 
-	/*QAction* setHidden = new QAction("Toggle Hidden Entries");
-	cMenu.addAction(setHidden);
-	connect(setHidden, &QAction::triggered, this, [this, nodeId]() { agxNodeScene()->undoStack().push(new ToggleNodeHiddenStateCommand(agxNodeScene(), nodeId)); });*/
-
-	AgxGraphDefinition graphDefinition = AgxGraphRegistry::GetInstance().GetGraphDefinition(gModel->getGraphType());
-	if (graphDefinition._hasDefault)
+	if (const AgxGraphDefinition graphDefinition = AgxGraphRegistry::GetInstance().GetGraphDefinition(gModel->getGraphType()); graphDefinition._hasDefault)
 	{
 		bool unset = gModel->nodeData(nodeId, AgxNodeRole::AlternateState).toBool();
-		QString defActionTitle = unset ? "Remove As " : "Set As ";
-		QAction* setDefaultAction = cMenu.addAction(defActionTitle + "Default");
-		connect(setDefaultAction, &QAction::triggered, this, [this, nodeId, unset]() { 
+
+		const QString defActionTitle = unset ? "Remove As " : "Set As ";
+		const QAction* setDefaultAction = cMenu.addAction(defActionTitle + "Default");
+
+		connect(setDefaultAction, &QAction::triggered, this, [this, nodeId, unset] {
 					agxNodeScene()->undoStack().push(new AgxNodeAltStateCommand(agxNodeScene(), nodeId, unset));
-				});
+			});
 	}
 
-	QSize nodeSize = gModel->nodeData(nodeId, AgxNodeRole::Size).toSize();
-	QPointF nodePos = gModel->nodeData(nodeId, AgxNodeRole::Position).toPointF();
+	const QSize nodeSize = gModel->nodeData(nodeId, AgxNodeRole::Size).toSize();
+	const QPointF nodePos = gModel->nodeData(nodeId, AgxNodeRole::Position).toPointF();
 
-	QAction* removePortAction = nullptr;
-	QAction* addPortAction = nullptr;
+	const QAction* removePortAction = nullptr;
+	const QAction* addPortAction = nullptr;
 
 	if (agxNodeScene()->selectedNodes().size() > 0)
 	{
-		QString nodeGroupItem = agxNodeScene()->selectedNodes().size() > 1 ? "Selected Nodes" : gModel->GetNodeNameProperty(nodeId);
-		QAction* addToNodeGroup = cMenu.addAction("Add " + nodeGroupItem + " To Node Group");
-		connect(addToNodeGroup, &QAction::triggered, this, [this, nodeId]() { this->ShowNodeGroupMenu(agxNodeScene()->selectedNodes()); });
+		const QString nodeGroupItem = agxNodeScene()->selectedNodes().size() > 1 ? "Selected Nodes" : gModel->GetNodeNameProperty(nodeId);
+		const QAction* addToNodeGroup = cMenu.addAction("Add " + nodeGroupItem + " To Node Group");
+		connect(addToNodeGroup, &QAction::triggered, this, [this] { this->ShowNodeGroupMenu(agxNodeScene()->selectedNodes()); });
 	}
 
-	QAction* selectNodeGroup = cMenu.addAction("Select Node Group");
+	const QAction* selectNodeGroup = cMenu.addAction("Select Node Group");
 
 	if(gModel->GroupExists(gModel->GetNodeGroup(nodeId)))
 	{
-		QString str = std::format("Remove From {}", gModel->GetNodeGroup(nodeId).toStdString()).c_str();
-		QAction* removeFromNodeGroup = cMenu.addAction(str);
-		connect(removeFromNodeGroup, &QAction::triggered, this, [this, nodeId]() { agxNodeScene()->undoStack().push(new RemoveNodeFromGroupCommand(agxNodeScene(), nodeId)); });
+		const QString str = std::format("Remove From {}", gModel->GetNodeGroup(nodeId).toStdString()).c_str();
+		const QAction* removeFromNodeGroup = cMenu.addAction(str);
+		connect(removeFromNodeGroup, &QAction::triggered, this, [this, nodeId] { agxNodeScene()->undoStack().push(new RemoveNodeFromGroupCommand(agxNodeScene(), nodeId)); });
 	}
 	cMenu.addSeparator();
-	connect(selectNodeGroup, &QAction::triggered, this, [this, nodeId]() {SelectNodeGroup(nodeId); });
+	connect(selectNodeGroup, &QAction::triggered, this, [this, nodeId] {SelectNodeGroup(nodeId); });
 
 	
 
 	if(gModel->CanSetNodeNameProperty(nodeId))
 	{
-		QAction* renamePopup = cMenu.addAction("Rename Node");
-		connect(renamePopup, &QAction::triggered, this, [this, nodeId]() {
+		const QAction* renamePopup = cMenu.addAction("Rename Node");
+		connect(renamePopup, &QAction::triggered, this, [this, nodeId] {
 			StringEntryPopup popup(this);
-			int result = popup.exec();
-			if (result == QDialog::Accepted)
+			if (const int result = popup.exec(); result == QDialog::Accepted)
 			{	
 				agxNodeScene()->undoStack().push(new RenameNodeCommand(agxNodeScene(), nodeId, popup.getInputText()));
 			}
@@ -146,17 +145,17 @@ void AgxGraphicsView::ShowContextMenu(AgxNodeId const nodeId, QPointF const pos)
 			});
 	}
 	cMenu.addSeparator();
-	auto portAllowance = gModel->CanModifyPorts(nodeId);
-	if(portAllowance != AgxPortType::None)
+	if(const auto portAllowance = gModel->CanModifyPorts(nodeId); portAllowance != AgxPortType::None)
 	{
 		if (pos.x() < nodePos.x() + nodeSize.width() / 2.0f && (portAllowance == AgxPortType::Both || portAllowance == AgxPortType::In))
 		{
 			addPortAction = cMenu.addAction("Add Input");
-			connect(addPortAction, &QAction::triggered, agxNodeScene(), [this, nodeId]()
+
+			connect(addPortAction, &QAction::triggered, agxNodeScene(), [this, nodeId]
 				{
-					//agxModel->addPort(nodeId, AgxPortType::In, agxModel->nodeData(nodeId, AgxNodeRole::InPortCount).toUInt());
 					agxNodeScene()->undoStack().push(new AddPortCommand(agxNodeScene(), nodeId, AgxPortType::In));
 				});
+
 			for (int i = 0; i < gModel->nodeData(nodeId, AgxNodeRole::InPortCount).toInt(); i++)
 			{
 				QPointF scPos = geom.portScenePosition(nodeId, AgxPortType::In, i, scT);
@@ -166,17 +165,17 @@ void AgxGraphicsView::ShowContextMenu(AgxNodeId const nodeId, QPointF const pos)
 				{
 					
 					removePortAction = cMenu.addAction("Remove Input");
-					connect(removePortAction, &QAction::triggered, agxNodeScene(), [this, nodeId, i]()
+					connect(removePortAction, &QAction::triggered, agxNodeScene(), [this, nodeId, i]
 						{
 							agxNodeScene()->undoStack().push(new RemovePortCommand(agxNodeScene(), nodeId, AgxPortType::In, i));
 						});
 				}
 			}
 		}
-		else if((portAllowance == AgxPortType::Both || portAllowance == AgxPortType::Out))
+		else if(portAllowance == AgxPortType::Both || portAllowance == AgxPortType::Out)
 		{
 			addPortAction = cMenu.addAction("Add Output");
-			connect(addPortAction, &QAction::triggered, agxNodeScene(), [this, nodeId]()
+			connect(addPortAction, &QAction::triggered, agxNodeScene(), [this, nodeId]
 				{
 					agxNodeScene()->undoStack().push(new AddPortCommand(agxNodeScene(), nodeId, AgxPortType::Out));
 				});
@@ -188,7 +187,7 @@ void AgxGraphicsView::ShowContextMenu(AgxNodeId const nodeId, QPointF const pos)
 				if (abs(pos.x() - scPos.x()) < 10 && abs(pos.y() - scPos.y()) < 10 || txtRect.contains(pos))
 				{
 					removePortAction = cMenu.addAction("Remove Output");
-					connect(removePortAction, &QAction::triggered, agxNodeScene(), [this, nodeId, i]()
+					connect(removePortAction, &QAction::triggered, agxNodeScene(), [this, nodeId, i]
 						{
 							agxNodeScene()->undoStack().push(new RemovePortCommand(agxNodeScene(), nodeId, AgxPortType::Out, i));
 						});
@@ -203,44 +202,32 @@ void AgxGraphicsView::ShowContextMenu(AgxNodeId const nodeId, QPointF const pos)
 	cMenu.exec(mapToGlobal(mapFromScene(pos)));
 }
 
-AgxGraphicsView::AgxGraphicsView(QWidget* parent) : QGraphicsView(parent), _clearSelectionAction(Q_NULLPTR), 
-_deleteSelectionAction(Q_NULLPTR), 
-_duplicateSelectionAction(Q_NULLPTR), 
-_copySelectionAction(Q_NULLPTR), 
-_pasteAction(Q_NULLPTR), 
-_cutSelectionAction(Q_NULLPTR), 
-_centerAction(Q_NULLPTR)
+AgxGraphicsView::AgxGraphicsView(QWidget* parent) : QGraphicsView(parent)
 {
-	setDragMode(QGraphicsView::ScrollHandDrag);
+	setDragMode(ScrollHandDrag);
 	setRenderHint(QPainter::Antialiasing);
 
 	if (!_rubberband)
 		_rubberband = new QRubberBand(QRubberBand::Rectangle, this);
 
-	auto const& flowViewStyle = AgxStyleCollection::flowViewStyle();
+	auto const& graphPalette = AgxPalette::GetInstance().graphPalette();
 
-	setBackgroundBrush(flowViewStyle.BackgroundColor);
+	setBackgroundBrush(graphPalette.BackgroundColor);
 
 	setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
 	setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
 
-	setTransformationAnchor(QGraphicsView::AnchorUnderMouse);
+	setTransformationAnchor(AnchorUnderMouse);
 
-	setCacheMode(QGraphicsView::CacheBackground);
-	//setViewport(new QOpenGLWidget()); //consider at a later date
-	setViewportUpdateMode(QGraphicsView::BoundingRectViewportUpdate);
-	/*setViewportUpdateMode(QGraphicsView::NoViewportUpdate);
-
-	QTimer* refresh = new QTimer(this);
-	connect(refresh, &QTimer::timeout, this, [this]() { viewport()->update(); });
-	refresh->start(1000.0f/30.0f);*/
+	setCacheMode(CacheBackground);
+	setViewportUpdateMode(BoundingRectViewportUpdate);
 
 	setScaleRange(0.05, 8);
 
 	// Sets the scene rect to its maximum possible ranges to avoid autu scene range
 	// re-calculation when expanding the all QGraphicsItems common rect.
-	int maxSize = 32767;
-	setSceneRect(-maxSize, -maxSize, (maxSize * 2), (maxSize * 2));
+	constexpr int maxSize = 32767;
+	setSceneRect(-maxSize, -maxSize, maxSize * 2, maxSize * 2);
 
 	_toolbar = new QWidget();
 	_toolbarLayout = new QHBoxLayout();
@@ -261,13 +248,15 @@ AgxGraphicsView::AgxGraphicsView(AgxGraphicsScene* scene, QWidget* parent) : Agx
 {
 	setScene(scene);
 
-	connect(&scene->agxGraphModel(),&AgxGraphModel::nodeCreated, this, [this](AgxNodeId nodeId) {
-		auto sidebar = agxNodeScene()->agxGraphModel().GetNodeSidebarContent(nodeId);
-		if (auto iagx = dynamic_cast<AgxSidebarContent*>(sidebar)) {
-			iagx->SetRefData(nodeId, agxNodeScene());
-		}
-		Q_EMIT broadcastSidebarItem(sidebar);
-			});
+	connect(&scene->agxGraphModel(),&AgxGraphModel::nodeCreated, this, [this](const AgxNodeId nodeId) {
+			const auto sidebar = agxNodeScene()->agxGraphModel().GetNodeSidebarContent(nodeId);
+			if (const auto iAgx = dynamic_cast<AgxSidebarContent*>(sidebar))
+			{
+				iAgx->SetRefData(nodeId, agxNodeScene());
+			}
+
+			Q_EMIT broadcastSidebarItem(sidebar);
+		});
 
 	if (!_rubberband)
 		_rubberband = new QRubberBand(QRubberBand::Rectangle, this);
@@ -404,12 +393,12 @@ void AgxGraphicsView::setScene(AgxGraphicsScene* scene)
 		addAction(_pasteAction);
 	}
 
-	auto undoAction = scene->undoStack().createUndoAction(this, tr("&Undo"));
+	const auto undoAction = scene->undoStack().createUndoAction(this, tr("&Undo"));
 	undoAction->setShortcuts(QKeySequence::Undo);
 	addAction(undoAction);
 	_undoAction = undoAction;
 
-	auto redoAction = scene->undoStack().createRedoAction(this, tr("&Redo"));
+	const auto redoAction = scene->undoStack().createRedoAction(this, tr("&Redo"));
 	redoAction->setShortcuts(QKeySequence::Redo);
 	addAction(redoAction);
 	_redoAction = redoAction;
@@ -530,9 +519,10 @@ void AgxGraphicsView::centerScene()
 	if (scene()) {
 		scene()->setSceneRect(QRectF());
 
-		QRectF sceneRect = scene()->sceneRect();
+		const QRectF sceneRect = scene()->sceneRect();
 
-		if (sceneRect.width() > this->rect().width() || sceneRect.height() > this->rect().height()) {
+		if (sceneRect.width() > this->rect().width() || sceneRect.height() > this->rect().height())
+		{
 			fitInView(sceneRect, Qt::KeepAspectRatio);
 		}
 
@@ -544,6 +534,7 @@ void AgxGraphicsView::setScaleRange(double minimum, double maximum)
 {
 	if (maximum < minimum)
 		std::swap(minimum, maximum);
+
 	minimum = std::max(0.0, minimum);
 	maximum = std::max(0.0, maximum);
 
@@ -552,7 +543,7 @@ void AgxGraphicsView::setScaleRange(double minimum, double maximum)
 	setupScale(transform().m11());
 }
 
-void AgxGraphicsView::setScaleRange(ScaleRange range)
+void AgxGraphicsView::setScaleRange(const ScaleRange range)
 {
 	setScaleRange(range.minimum, range.maximum);
 }
@@ -564,13 +555,16 @@ double AgxGraphicsView::getScale() const
 
 void AgxGraphicsView::scaleDown()
 {
-	double const step = 1.2;
+	constexpr double step = 1.2;
 	double const factor = std::pow(step, -1.0);
 
-	if (_scaleRange.minimum > 0) {
+	if (_scaleRange.minimum > 0)
+	{
 		QTransform t = transform();
 		t.scale(factor, factor);
-		if (t.m11() <= _scaleRange.minimum) {
+
+		if (t.m11() <= _scaleRange.minimum)
+		{
 			setupScale(t.m11());
 			return;
 		}
@@ -648,13 +642,15 @@ void AgxGraphicsView::unhideSelectedObjects()
 
 void AgxGraphicsView::scaleUp()
 {
-	double const step = 1.2;
+	constexpr double step = 1.2;
 	double const factor = std::pow(step, 1.0);
 
-	if (_scaleRange.maximum > 0) {
+	if (_scaleRange.maximum > 0)
+	{
 		QTransform t = transform();
 		t.scale(factor, factor);
-		if (t.m11() >= _scaleRange.maximum) {
+		if (t.m11() >= _scaleRange.maximum)
+		{
 			setupScale(t.m11());
 			return;
 		}
@@ -666,7 +662,8 @@ void AgxGraphicsView::scaleUp()
 
 void AgxGraphicsView::contextMenuEvent(QContextMenuEvent* event)
 {
-	if (auto agxItem = dynamic_cast<AgxArrowGraphicsObject*>(itemAt(event->pos()))) {
+	if (dynamic_cast<AgxArrowGraphicsObject*>(itemAt(event->pos())))
+	{
 		//
 	} 
 	else if(itemAt(event->pos()))
@@ -686,22 +683,21 @@ void AgxGraphicsView::contextMenuEvent(QContextMenuEvent* event)
 	}
 
 	//changes cursor/drag mode if exiting right clicked context menu while rubberbanding
-	if (dragMode() == QGraphicsView::NoDrag)
-		setDragMode(QGraphicsView::ScrollHandDrag);
+	if (dragMode() == NoDrag)
+		setDragMode(ScrollHandDrag);
 }
 
 void AgxGraphicsView::wheelEvent(QWheelEvent* event)
 {
-	QPoint delta = event->angleDelta();
+	const QPoint delta = event->angleDelta();
 
-	if (delta.y() == 0) {
+	if (delta.y() == 0)
+	{
 		event->ignore();
 		return;
 	}
 
-	double const d = delta.y() / std::abs(delta.y());
-
-	if (d > 0.0)
+	if (double const d = delta.y() / std::abs(delta.y()); d > 0.0)
 		scaleUp();
 	else
 		scaleDown();
@@ -715,13 +711,14 @@ void AgxGraphicsView::keyPressEvent(QKeyEvent* event)
 	}
 	else
 	{
-		switch (event->key()) {
+		switch (event->key())
+		{
 		case Qt::Key_Shift:
-			setDragMode(QGraphicsView::NoDrag);
+			setDragMode(NoDrag);
 			viewport()->setCursor(Qt::CrossCursor);
 			break;
 		case Qt::Key_Control:
-			setDragMode(QGraphicsView::NoDrag);
+			setDragMode(NoDrag);
 			viewport()->setCursor(Qt::PointingHandCursor);
 			break;
 		default:			
@@ -739,28 +736,20 @@ void AgxGraphicsView::keyReleaseEvent(QKeyEvent* event)
 	{
 		agxNodeScene()->setGroupHoverState(false, "");
 	}
-	/*switch (event->key()) {
-	case Qt::Key_Shift:
-	case Qt::Key_Control:
-		
-		break;
-	default:
-		break;
-	}*/
 
 	if ((event->modifiers() & Qt::ShiftModifier) != 0)
 	{
 		viewport()->setCursor(Qt::CrossCursor);
-		setDragMode(QGraphicsView::NoDrag);
+		setDragMode(NoDrag);
 	}
 	else if ((event->modifiers() & Qt::ControlModifier) != 0)
 	{
 		viewport()->setCursor(Qt::PointingHandCursor);
-		setDragMode(QGraphicsView::NoDrag);
+		setDragMode(NoDrag);
 	}
 	else
 	{
-		setDragMode(QGraphicsView::ScrollHandDrag);
+		setDragMode(ScrollHandDrag);
 		_rubberband->hide();
 	}
 	
@@ -769,10 +758,10 @@ void AgxGraphicsView::keyReleaseEvent(QKeyEvent* event)
 
 void AgxGraphicsView::mousePressEvent(QMouseEvent* event)
 {
-	if (dragMode() == QGraphicsView::NoDrag) 
+	if (dragMode() == NoDrag)
 	{
 		if((event->modifiers() & Qt::ShiftModifier) == 0 && (event->modifiers() & Qt::ControlModifier) == 0)
-			setDragMode(QGraphicsView::ScrollHandDrag);
+			setDragMode(ScrollHandDrag);
 	}
 
 	if (event->button() == Qt::MiddleButton) {
@@ -796,23 +785,21 @@ void AgxGraphicsView::mousePressEvent(QMouseEvent* event)
 	
 }
 
-void AgxGraphicsView::rubberBandAgxItemsSelection(AgxGraphicsItemsFlags flags)
+void AgxGraphicsView::rubberBandAgxItemsSelection(const AgxGraphicsItemsFlags flags)
 {
-	QRect rect = _rubberband->geometry();
-	//scene()->blockSignals(true);
+	const QRect rect = _rubberband->geometry();
+
 	QPainterPath path;
 	path.addRect(mapToScene(rect).boundingRect());
-	//scene()->setSelectionArea(path);
-	//scene()->blockSignals(false);
 
 	QSet<AgxNodeId> nodesToSelect;
 	QSet<AgxConnectionId> connectionsToSelect;
 
-	for (auto item : scene()->items(path))
+	for (const auto item : scene()->items(path))
 	{
-		if (auto node = dynamic_cast<AgxNodeGraphicsObject*>(item))
+		if (const auto node = dynamic_cast<AgxNodeGraphicsObject*>(item))
 			nodesToSelect.insert(node->nodeId());
-		else if (auto conn = dynamic_cast<AgxConnectionGraphicsObject*>(item))
+		else if (const auto conn = dynamic_cast<AgxConnectionGraphicsObject*>(item))
 			connectionsToSelect.insert(conn->connectionId());
 	}
 
@@ -902,9 +889,7 @@ void AgxGraphicsView::drawBackground(QPainter* painter, const QRectF& r)
 		}
 		};
 
-	auto const& flowViewStyle = AgxStyleCollection::flowViewStyle();
-
-
+	auto const& flowViewStyle = AgxPalette::GetInstance().graphPalette();
 
 	if(lod < 2){
 		QPen pfine(flowViewStyle.FineGridColor, 1.0);

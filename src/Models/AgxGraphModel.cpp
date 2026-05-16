@@ -21,18 +21,18 @@
 
 #include "Utilities/AgxFormat.h"
 
-AgxGraphModel::AgxGraphModel(AgxGameType type, AgxGraphModel* rootGraph) : _nextNodeId{0}, _gameType(type)
+AgxGraphModel::AgxGraphModel(AgxGameType type, AgxGraphModel* rootGraph) : m_nextNodeId{0}, m_gameType(type)
 {
-    _registry = AgxNodeRegistry::GetInstance().GetRegistry(_gameType);
-    SetNewGraphProperties(AgxGetDefaultGraphType(_gameType));
+    m_registry = AgxNodeRegistry::GetInstance().GetRegistry(m_gameType);
+    SetNewGraphProperties(AgxGetDefaultGraphType(m_gameType));
 
-    _rootReference = rootGraph ? rootGraph : this;
+    m_rootReference = rootGraph ? rootGraph : this;
 }
 
 QSet<AgxNodeId> AgxGraphModel::allNodeIds() const
 {
     QSet<AgxNodeId> nodeIds;
-    for_each(_models.begin(), _models.end(), [&nodeIds](auto const& p) { nodeIds.insert(p.first); });
+    for_each(m_models.begin(), m_models.end(), [&nodeIds](auto const& p) { nodeIds.insert(p.first); });
 
     return nodeIds;
 }
@@ -41,8 +41,8 @@ std::unordered_set<AgxConnectionId> AgxGraphModel::allConnectionIds(AgxNodeId co
 {
     std::unordered_set<AgxConnectionId> result;
 
-    std::copy_if(_connectivity.begin(),
-                _connectivity.end(),
+    std::copy_if(m_connectivity.begin(),
+                m_connectivity.end(),
                 std::inserter(result, std::end(result)),
                 [&nodeId](AgxConnectionId const& cid) {
                     return cid.inNodeId == nodeId || cid.outNodeId == nodeId;
@@ -55,8 +55,8 @@ std::unordered_set<AgxConnectionId> AgxGraphModel::connections(AgxNodeId nodeId,
 {
     std::unordered_set<AgxConnectionId> result;
 
-    std::copy_if(_connectivity.begin(),
-                _connectivity.end(),
+    std::copy_if(m_connectivity.begin(),
+                m_connectivity.end(),
                 std::inserter(result, std::end(result)),
                 [&portType, &portIndex, &nodeId](AgxConnectionId const& cid) {
                     return (getNodeId(portType, cid) == nodeId
@@ -68,17 +68,17 @@ std::unordered_set<AgxConnectionId> AgxGraphModel::connections(AgxNodeId nodeId,
 
 bool AgxGraphModel::connectionExists(AgxConnectionId const connectionId) const
 {
-    return (_connectivity.find(connectionId) != _connectivity.end());
+    return (m_connectivity.find(connectionId) != m_connectivity.end());
 }
 
 AgxNodeId AgxGraphModel::addNode(QString const nodeType)
 {
-    std::unique_ptr<AgxNode> model = _registry->create(nodeType, this);
+    std::unique_ptr<AgxNode> model = m_registry->create(nodeType, this);
 
     if (model) {
         AgxNodeId newId;
 
-        model->SetUpNode(_gameType);
+        model->SetUpNode(m_gameType);
         for (unsigned int j = 0; j < model->nPorts(AgxPortType::In); j++)
         {
             model->_AddPort(AgxPortType::In,j);
@@ -88,20 +88,20 @@ AgxNodeId AgxGraphModel::addNode(QString const nodeType)
             model->_AddPort(AgxPortType::Out,j);
         }
         {
-            Q_EMIT model->ParentGraphTypeUpdated(_graphType);
+            Q_EMIT model->ParentGraphTypeUpdated(m_graphType);
         }
-        
+
 
         if (dynamic_cast<AgxCommentNode*>(model.get()))
         {
-            if (_nextMiscNodeId >= (InvalidNodeId - 1))
+            if (m_nextMiscNodeId >= InvalidNodeId - 1)
                 return InvalidNodeId;
 
             newId = newMiscNodeId();
         }
         else
         {
-            if (_nextNodeId >= (_firstMiscNodeId - 1))
+            if (m_nextNodeId >= (m_firstMiscNodeId - 1))
                 return InvalidNodeId;
 
             newId = newNodeId();
@@ -139,9 +139,9 @@ AgxNodeId AgxGraphModel::addNode(QString const nodeType)
             this,
             &AgxGraphModel::portsInserted);
 
-        _models[newId] = std::move(model);
+        m_models[newId] = std::move(model);
         //_nodePortCounts.insert({ newId, { _models[newId]->nPorts(AgxPortType::In), _models[newId]->nPorts(AgxPortType::Out)} });
-        
+
 
         Q_EMIT nodeCreated(newId);
 
@@ -155,7 +155,7 @@ void AgxGraphModel::HandleEmbeddedClosures()
 {
     for (auto nodeId : allNodeIds())
     {
-        if (auto agxNode = _models[nodeId].get())
+        if (auto agxNode = m_models[nodeId].get())
         {
             agxNode->CloseEmbeddedView();
         }
@@ -164,7 +164,7 @@ void AgxGraphModel::HandleEmbeddedClosures()
 
 QWidget* AgxGraphModel::GetNodeSidebarContent(const AgxNodeId& nodeId)
 {
-    if (auto agxNode = _models.at(nodeId).get())
+    if (auto agxNode = m_models.at(nodeId).get())
     {
         return agxNode->GetSideBarContent();
     }
@@ -174,7 +174,7 @@ QWidget* AgxGraphModel::GetNodeSidebarContent(const AgxNodeId& nodeId)
 
 void AgxGraphModel::SetNodeSidebarVisibility(const AgxNodeId& nodeId, bool state)
 {
-    if (auto agxNode = _models.at(nodeId).get())
+    if (auto agxNode = m_models.at(nodeId).get())
     {
         agxNode->SetSidebarVisibility(state);
     }
@@ -261,7 +261,7 @@ bool AgxGraphModel::connectionPossible(AgxConnectionId const connectionId) const
 
 void AgxGraphModel::addConnection(AgxConnectionId const connectionId)
 {
-    _connectivity.insert(connectionId);
+    m_connectivity.insert(connectionId);
 
     sendConnectionCreation(connectionId);
 
@@ -279,15 +279,15 @@ void AgxGraphModel::addConnection(AgxConnectionId const connectionId)
 
 bool AgxGraphModel::nodeExists(AgxNodeId const nodeId) const
 {
-    return (_models.find(nodeId) != _models.end());
+    return (m_models.find(nodeId) != m_models.end());
 }
 
 QVariant AgxGraphModel::nodeData(AgxNodeId nodeId, AgxNodeRole role) const
 {
     QVariant result;
 
-    auto it = _models.find(nodeId);
-    if (it == _models.end())
+    auto it = m_models.find(nodeId);
+    if (it == m_models.end())
         return result;
 
     auto& model = it->second;
@@ -298,11 +298,11 @@ QVariant AgxGraphModel::nodeData(AgxNodeId nodeId, AgxNodeRole role) const
             break;
 
         case AgxNodeRole::Position:
-            result = _nodeGeometryData[nodeId].pos;
+            result = m_nodeGeometryData[nodeId].pos;
             break;
 
         case AgxNodeRole::Size:
-            result = _nodeGeometryData[nodeId].size;
+            result = m_nodeGeometryData[nodeId].size;
             break;
 
         case AgxNodeRole::CaptionVisible:
@@ -313,18 +313,11 @@ QVariant AgxGraphModel::nodeData(AgxNodeId nodeId, AgxNodeRole role) const
             result = model->caption();
             break;
 
-        case AgxNodeRole::Style:
-        {
-            auto& style = _models.at(nodeId).get()->nodeStyle();
-
-            result = style.toJson().toVariantMap();
-        } break;
-
         case AgxNodeRole::InternalData:
         {
             QJsonObject nodeJson;
 
-            nodeJson["internal-data"] = _models.at(nodeId)->save();
+            nodeJson["internal-data"] = m_models.at(nodeId)->save();
 
             result = nodeJson.toVariantMap();
             break;
@@ -349,7 +342,7 @@ QVariant AgxGraphModel::nodeData(AgxNodeId nodeId, AgxNodeRole role) const
         }   break;
 
         case AgxNodeRole::AlternateState: {
-            result = model->AltState();   
+            result = model->AltState();
         }   break;
 
         case AgxNodeRole::SubCaption: {
@@ -366,10 +359,10 @@ QVariant AgxGraphModel::nodeData(AgxNodeId nodeId, AgxNodeRole role) const
 
 AgxNodeFlags AgxGraphModel::nodeFlags(AgxNodeId nodeId) const
 {
-    auto it = _models.find(nodeId);
+    auto it = m_models.find(nodeId);
     auto flags = AgxNodeFlag::NoFlags;
 
-    if (it == _models.end())
+    if (it == m_models.end())
         return flags;
 
 
@@ -387,7 +380,7 @@ bool AgxGraphModel::setNodeData(AgxNodeId nodeId, AgxNodeRole role, QVariant val
 
     bool result = false;
 
-    auto agxNode = _models.at(nodeId).get();
+    auto agxNode = m_models.at(nodeId).get();
 
     if (!agxNode) return result;
 
@@ -395,7 +388,7 @@ bool AgxGraphModel::setNodeData(AgxNodeId nodeId, AgxNodeRole role, QVariant val
     case AgxNodeRole::Type:
         break;
     case AgxNodeRole::Position: {
-        _nodeGeometryData[nodeId].pos = value.value<QPointF>();
+        m_nodeGeometryData[nodeId].pos = value.value<QPointF>();
 
         Q_EMIT nodePositionUpdated(nodeId);
 
@@ -403,7 +396,7 @@ bool AgxGraphModel::setNodeData(AgxNodeId nodeId, AgxNodeRole role, QVariant val
     } break;
 
     case AgxNodeRole::Size: {
-        _nodeGeometryData[nodeId].size = value.value<QSize>();
+        m_nodeGeometryData[nodeId].size = value.value<QSize>();
         result = true;
     } break;
 
@@ -411,9 +404,6 @@ bool AgxGraphModel::setNodeData(AgxNodeId nodeId, AgxNodeRole role, QVariant val
         break;
 
     case AgxNodeRole::Caption:
-        break;
-
-    case AgxNodeRole::Style:
         break;
 
     case AgxNodeRole::InternalData: {
@@ -441,7 +431,7 @@ bool AgxGraphModel::setNodeData(AgxNodeId nodeId, AgxNodeRole role, QVariant val
     case AgxNodeRole::AlternateState: {
         agxNode->SetAltState(value.toBool());
     }   break;
-    case AgxNodeRole::SubCaption: 
+    case AgxNodeRole::SubCaption:
         break;
     case AgxNodeRole::CollapseState: {
         if (agxNode->isCollapsed() != value.toBool())
@@ -454,7 +444,7 @@ bool AgxGraphModel::setNodeData(AgxNodeId nodeId, AgxNodeRole role, QVariant val
 
 void AgxGraphModel::insertPropertySheetData(AgxNodeId nodeId, QJsonObject data)
 {
-    if (auto agxNode = _models[nodeId].get()) {
+    if (auto agxNode = m_models[nodeId].get()) {
         agxNode->insertPropertySheetData(data);
     }
 }
@@ -512,7 +502,7 @@ QJsonObject AgxGraphModel::getPropertySheetData(AgxNodeId nodeId, bool cleared)
 {
     QJsonObject output;
 
-    if (auto agxNode = _models[nodeId].get()) {
+    if (auto agxNode = m_models[nodeId].get()) {
         output = agxNode->getPropertySheetData(cleared);
     }
 
@@ -571,7 +561,7 @@ QJsonObject AgxGraphModel::getPropertySheetData(bool cleared) const
 
 void AgxGraphModel::addPropertyBlockEntry(AgxNodeId nodeId, QString block, int index, const QList<AgxPropertyBlockData::Entry>& data)
 {
-    if (auto agxNode = _models[nodeId].get())
+    if (auto agxNode = m_models[nodeId].get())
     {
         if (auto blockPtr = agxNode->getPropertyBlock(block))
         {
@@ -607,13 +597,13 @@ AgxPropertyBlockData* AgxGraphModel::getPropertyBlock(TermRef ref)
 {
     if(!m_propertyBlocks.contains(ref))
         return nullptr;
-    
+
     return &m_propertyBlocks[ref];
 }
 
 QList<AgxPropertyBlockData::Entry> AgxGraphModel::removePropertyBlockEntry(AgxNodeId nodeId, QString block, int index)
 {
-    if (auto agxNode = _models[nodeId].get())
+    if (auto agxNode = m_models[nodeId].get())
     {
         if (auto blockPtr = agxNode->getPropertyBlock(block))
         {
@@ -640,8 +630,8 @@ QVariant AgxGraphModel::portData(AgxNodeId nodeId, AgxPortType portType, AgxPort
 {
     QVariant result;
 
-    auto it = _models.find(nodeId);
-    if (it == _models.end())
+    auto it = m_models.find(nodeId);
+    if (it == m_models.end())
         return result;
 
     auto& model = it->second;
@@ -683,8 +673,8 @@ bool AgxGraphModel::setPortData(AgxNodeId nodeId, AgxPortType portType, AgxPortI
 
     QVariant result;
 
-    auto it = _models.find(nodeId);
-    if (it == _models.end())
+    auto it = m_models.find(nodeId);
+    if (it == m_models.end())
         return false;
 
     auto& model = it->second;
@@ -710,23 +700,23 @@ bool AgxGraphModel::setPortData(AgxNodeId nodeId, AgxPortType portType, AgxPortI
 
 void AgxGraphModel::sendPortCommand(AgxNodeId nodeId, AgxPortType portType, AgxPortIndex portIndex, const QString& command, const QString& payload)
 {
-    auto it = _models.find(nodeId);
-    if (it == _models.end()) return;
+    auto it = m_models.find(nodeId);
+    if (it == m_models.end()) return;
 
     auto& model = it->second;
-    model->_ExternalPortCommand(portType, portIndex, command, payload);    
+    model->_ExternalPortCommand(portType, portIndex, command, payload);
 }
 
 bool AgxGraphModel::deleteConnection(AgxConnectionId const connectionId)
 {
     bool disconnected = false;
 
-    auto it = _connectivity.find(connectionId);
+    auto it = m_connectivity.find(connectionId);
 
-    if (it != _connectivity.end()) {
+    if (it != m_connectivity.end()) {
         disconnected = true;
 
-        _connectivity.erase(it);
+        m_connectivity.erase(it);
     }
 
     if (disconnected) {
@@ -747,8 +737,8 @@ bool AgxGraphModel::deleteNode(AgxNodeId const nodeId)
         deleteConnection(cId);
     }
 
-    _nodeGeometryData.erase(nodeId);
-    _models.erase(nodeId);
+    m_nodeGeometryData.erase(nodeId);
+    m_models.erase(nodeId);
     //_nodePortCounts.erase(nodeId);
 
     Q_EMIT nodeDeleted(nodeId);
@@ -771,7 +761,7 @@ void AgxGraphModel::onOutPortDataUpdated(AgxNodeId const nodeId, AgxPortIndex co
 
 void AgxGraphModel::SetNodeNameProperty(const AgxNodeId nodeId, const QString& newName)
 {
-    auto node = _models[nodeId].get();
+    auto node = m_models[nodeId].get();
     if (node && node->CanSetNameProperty())
     {
         node->SetNameProperty(newName);
@@ -781,13 +771,13 @@ void AgxGraphModel::SetNodeNameProperty(const AgxNodeId nodeId, const QString& n
 
 QString AgxGraphModel::GetNodeNameProperty(const AgxNodeId nodeId) const
 {
-    return _models.at(nodeId).get()->caption();
+    return m_models.at(nodeId).get()->caption();
 }
 
 bool AgxGraphModel::CanSetNodeNameProperty(const AgxNodeId nodeId)
 {
-    
-    if (auto node = _models[nodeId].get()) {
+
+    if (auto node = m_models[nodeId].get()) {
         return node->CanSetNameProperty();
     }
     return false;
@@ -795,8 +785,8 @@ bool AgxGraphModel::CanSetNodeNameProperty(const AgxNodeId nodeId)
 
 void AgxGraphModel::ToggleNodeCollapse(const AgxNodeId nodeId)
 {
-    
-    if (auto node = _models[nodeId].get()) {
+
+    if (auto node = m_models[nodeId].get()) {
         node->ToggleCollapse();
         Q_EMIT nodeUpdated(nodeId);
     }
@@ -806,7 +796,7 @@ void AgxGraphModel::SetNodesCollapsed(const QList<AgxNodeId>& nodes, bool collap
 {
     for (auto& nodeId : nodes)
     {
-        if (auto node = _models[nodeId].get())
+        if (auto node = m_models[nodeId].get())
         {
             if(node->isCollapsed() != collapsed)
             {
@@ -820,7 +810,7 @@ void AgxGraphModel::SetNodesCollapsed(const QList<AgxNodeId>& nodes, bool collap
 
 AgxPortType AgxGraphModel::CanModifyPorts(const AgxNodeId nodeId)
 {
-    if (auto node = _models[nodeId].get())
+    if (auto node = m_models[nodeId].get())
     {
         return node->CanModifyPorts();
     }
@@ -829,7 +819,7 @@ AgxPortType AgxGraphModel::CanModifyPorts(const AgxNodeId nodeId)
 
 AgxNodeType AgxGraphModel::GetNodeType(const AgxNodeId nodeId)
 {
-    if (auto node = _models[nodeId].get())
+    if (auto node = m_models[nodeId].get())
     {
         return node->GetNodeType();
     }
@@ -838,7 +828,7 @@ AgxNodeType AgxGraphModel::GetNodeType(const AgxNodeId nodeId)
 
 QString AgxGraphModel::GetNodeGroup(const AgxNodeId nodeId) const
 {
-    if (auto node = _models.at(nodeId).get()) {
+    if (auto node = m_models.at(nodeId).get()) {
         const QString& name = node->getGroupId();
         if (GroupExists(name))
             return name; }
@@ -848,7 +838,7 @@ QString AgxGraphModel::GetNodeGroup(const AgxNodeId nodeId) const
 std::vector<QString> AgxGraphModel::GetNodeGroupList() const
 {
     std::vector<QString> output;
-    for (auto& entry : _nodeGroups)
+    for (auto& entry : m_nodeGroups)
     {
         output.push_back(entry.first);
     }
@@ -858,7 +848,7 @@ std::vector<QString> AgxGraphModel::GetNodeGroupList() const
 QColor AgxGraphModel::GetGroupColor(QString groupName) const
 {
     if (GroupExists(groupName))
-        return _nodeGroups.at(groupName);
+        return m_nodeGroups.at(groupName);
 
     return generateRandomQColor();
 }
@@ -867,7 +857,7 @@ void AgxGraphModel::SetGroupColor(const QString& groupName, const QColor& color)
 {
     if (GroupExists(groupName))
     {
-        _nodeGroups.at(groupName) = color;
+        m_nodeGroups.at(groupName) = color;
     }
 }
 
@@ -875,12 +865,12 @@ std::unordered_map<QString, QVector<AgxNodeId>> AgxGraphModel::GetNodeGroupAssig
 {
     std::unordered_map<QString, QVector<AgxNodeId>> output;
 
-    for (auto& group : _nodeGroups)
+    for (auto& group : m_nodeGroups)
     {
         output[group.first] = {};
     }
 
-    for (auto& entry : _models)
+    for (auto& entry : m_models)
     {
         auto node = entry.second.get();
 
@@ -898,7 +888,7 @@ std::unordered_map<QString, QVector<AgxNodeId>> AgxGraphModel::GetNodeGroupAssig
 
 bool AgxGraphModel::GroupExists(QString groupName) const
 {
-    for (auto& entry : _nodeGroups)
+    for (auto& entry : m_nodeGroups)
     {
         if (entry.first == groupName)
             return true;
@@ -910,18 +900,18 @@ bool AgxGraphModel::AddToNodeGroup(const AgxNodeId nodeId, QString nodeGroup)
 {
     if (nodeGroup == "" || nodeGroup == "NONE") return false;
 
-    if (auto node = _models.at(nodeId).get())
+    if (auto node = m_models.at(nodeId).get())
         node->setGroupId(nodeGroup);
 
-    bool output = _nodeGroups.insert({ nodeGroup, generateRandomQColor()}).second;
-    
+    bool output = m_nodeGroups.insert({ nodeGroup, generateRandomQColor()}).second;
+
     Q_EMIT nodeUpdated(nodeId);
     return output;
 }
 
 void AgxGraphModel::RemoveFromNodeGroup(const AgxNodeId nodeId)
 {
-    if (auto node = _models.at(nodeId).get())
+    if (auto node = m_models.at(nodeId).get())
         node->setGroupId("");
 
     Q_EMIT nodeUpdated(nodeId);
@@ -931,12 +921,12 @@ bool AgxGraphModel::CreateNodeGroup(QString nodeGroup, QColor groupColor)
 {
     if (nodeGroup == "" || nodeGroup == "NONE") return false;
 
-    return _nodeGroups.insert({ nodeGroup, groupColor }).second;
+    return m_nodeGroups.insert({ nodeGroup, groupColor }).second;
 }
 
 bool AgxGraphModel::EraseNodeGroup(QString nodeGroup)
 {
-    for (auto& entry : _models)
+    for (auto& entry : m_models)
     {
         auto node = entry.second.get();
 
@@ -946,7 +936,7 @@ bool AgxGraphModel::EraseNodeGroup(QString nodeGroup)
             Q_EMIT nodeUpdated(entry.first);
         }
     }
-    return static_cast<bool>(_nodeGroups.erase(nodeGroup));
+    return static_cast<bool>(m_nodeGroups.erase(nodeGroup));
 }
 
 void AgxGraphModel::SetRelativeDataPath(const QString& fileName, const QString& relPath)
@@ -955,34 +945,34 @@ void AgxGraphModel::SetRelativeDataPath(const QString& fileName, const QString& 
     QString fileStem = fileName.isEmpty() ? "untitled" : fileInfo.baseName();
     fileStem[0] = fileStem[0].toUpper();
 
-    _graphRelDataPath = relPath.isEmpty() ? SettingsRegistry::GetInstance().GetRelativeDataPath(_gameType) + fileStem + ".agx" : relPath + fileName + ".agx";
+    m_graphRelDataPath = relPath.isEmpty() ? SettingsRegistry::GetInstance().GetRelativeDataPath(m_gameType) + fileStem + ".agx" : relPath + fileName + ".agx";
 }
 
 QString AgxGraphModel::GetRelativeDataPath() const
 {
-    return _graphRelDataPath;
+    return m_graphRelDataPath;
 }
 
 const QString& AgxGraphModel::GetModelFilePath() const
 {
-    return _file;
+    return m_file;
 }
 
 void AgxGraphModel::SetModelFilePath(const QString& file)
 {
-    _file = file;
+    m_file = file;
 }
 
 void AgxGraphModel::SetGraphTitle(const QString& title, bool root)
 {
     if(root)
     {
-        _rootReference->_agxGraphTitle = title.isEmpty() ? "untitled" : title;
-        Q_EMIT _rootReference->PropertySheetUpdated();
+        m_rootReference->m_agxGraphTitle = title.isEmpty() ? "untitled" : title;
+        Q_EMIT m_rootReference->PropertySheetUpdated();
     }
     else
     {
-        _agxGraphTitle = title.isEmpty() ? "untitled" : title;
+        m_agxGraphTitle = title.isEmpty() ? "untitled" : title;
         Q_EMIT PropertySheetUpdated();
     }
 
@@ -995,9 +985,9 @@ void AgxGraphModel::SetGraphTitle(const QString& title, bool root)
 QString AgxGraphModel::GetGraphTitle(bool root) const
 {
     if(root)
-        return rootGraphReference()->_agxGraphTitle;
+        return rootGraphReference()->m_agxGraphTitle;
 
-    return _agxGraphTitle;
+    return m_agxGraphTitle;
 }
 
 QJsonObject AgxGraphModel::SetNewGraphProperties(const AgxGraphType& graphType)
@@ -1012,12 +1002,12 @@ QJsonObject AgxGraphModel::SetNewGraphProperties(const AgxGraphType& graphType)
     m_propertyBlocks = newDefinition._defaultBlocks;
     m_propertyEntries = newDefinition._defaultEntries;
     m_blockOrder = newDefinition._blockOrder;
-    _graphType = graphType;
+    m_graphType = graphType;
 
     for (auto key : allNodeIds()) {
-        
-        if (auto agxNode = _models.at(key).get()) {
-            Q_EMIT agxNode->ParentGraphTypeUpdated(_graphType);
+
+        if (auto agxNode = m_models.at(key).get()) {
+            Q_EMIT agxNode->ParentGraphTypeUpdated(m_graphType);
             Q_EMIT agxNode->PropertySheetUpdated();
             //Q_EMIT agxNode->embeddedWidgetSizeUpdated();
             if (agxNode->AltState())
@@ -1031,13 +1021,13 @@ QJsonObject AgxGraphModel::SetNewGraphProperties(const AgxGraphType& graphType)
     return oldData;
 }
 
-void AgxGraphModel::setGraphCategory(const QString& cat) { 
-    _category = cat; 
+void AgxGraphModel::setGraphCategory(const QString& cat) {
+    m_category = cat;
 }
 
 const AgxGraphModel* AgxGraphModel::rootGraphReference() const {
-    if (_rootReference)
-        return _rootReference;
+    if (m_rootReference)
+        return m_rootReference;
 
     return this;
 }
@@ -1051,7 +1041,7 @@ void AgxGraphModel::addPort(AgxNodeId nodeId, AgxPortType portType, AgxPortIndex
     AgxPortIndex last = first;
     portsAboutToBeInserted(nodeId, portType, first, last);
 
-    auto agxNode = _models.at(nodeId).get();
+    auto agxNode = m_models.at(nodeId).get();
 
     // STAGE 2. Change the number of connections in your model
     if (portType == AgxPortType::In && agxNode)
@@ -1071,7 +1061,7 @@ QJsonObject AgxGraphModel::removePort(AgxNodeId nodeId, AgxPortType portType, Ag
 {
     QJsonObject output;
 
-    if(auto agxNode = _models.at(nodeId).get())
+    if(auto agxNode = m_models.at(nodeId).get())
     {
         // STAGE 1.
         // Compute new addresses for the existing connections that are shifted upwards
@@ -1100,7 +1090,7 @@ QJsonObject AgxGraphModel::saveNode(AgxNodeId const nodeId) const
 
     nodeJson["id"] = static_cast<qint64>(nodeId);
 
-    nodeJson["internal-data"] = _models.at(nodeId)->save();
+    nodeJson["internal-data"] = m_models.at(nodeId)->save();
 
     {
         QPointF const pos = nodeData(nodeId, AgxNodeRole::Position).value<QPointF>();
@@ -1128,7 +1118,7 @@ QJsonObject AgxGraphModel::save() const
 {
     QJsonObject sceneJson;
 
-    if (_rootReference == this || !_rootReference) {
+    if (m_rootReference == this || !m_rootReference) {
         QJsonArray versionArray = {MAJORVAL, MINORVAL, PATCHVAL, REVISIONVAL};
         sceneJson["file-version"] = versionArray;
         sceneJson["file-type"] = AgxFileTypeToString(AgxFileType::BehaviorFile);
@@ -1149,17 +1139,17 @@ QJsonObject AgxGraphModel::save() const
     sceneJson["groups"] = groupJsonArray;
 
     QJsonArray connJsonArray;
-    for (auto const& cid : _connectivity) {
+    for (auto const& cid : m_connectivity) {
         connJsonArray.append(toJson(cid));
     }
     sceneJson["connections"] = connJsonArray;
 
-    sceneJson["game-type"] = AgxGameTypeToString(_gameType);
+    sceneJson["game-type"] = AgxGameTypeToString(m_gameType);
 
-    sceneJson["graph-category"] = _category;
-    sceneJson["graph-type"] = AgxGraphTypeAsString(_graphType);
+    sceneJson["graph-category"] = m_category;
+    sceneJson["graph-type"] = AgxGraphTypeAsString(m_graphType);
 
-    
+
     sceneJson["properties"] = getPropertySheetData();
 
     return sceneJson;
@@ -1167,7 +1157,7 @@ QJsonObject AgxGraphModel::save() const
 
 void AgxGraphModel::save(pugi::xml_node& parent) const
 {
-    AgxAppendValue(parent, "Link_Style", AgxGraphRegistry::GetInstance().GetGraphDefinition(_graphType)._tags.value("Link_Style"), AgxFormat::NewLine, 0);
+    AgxAppendValue(parent, "Link_Style", AgxGraphRegistry::GetInstance().GetGraphDefinition(m_graphType)._tags.value("Link_Style"), AgxFormat::NewLine, 0);
 
     //Nodes
     {
@@ -1178,15 +1168,15 @@ void AgxGraphModel::save(pugi::xml_node& parent) const
 
         for (auto& nodeId : nodeList)
         {
-            if (_models.at(nodeId).get()->GetNodeType() == AgxNodeType::Comment) 
+            if (m_models.at(nodeId).get()->GetNodeType() == AgxNodeType::Comment)
             {
-                if (auto cNodePtr = dynamic_cast<AgxCommentNode*>(_models.at(nodeId).get())) commentNodes.push_back(cNodePtr);
+                if (auto cNodePtr = dynamic_cast<AgxCommentNode*>(m_models.at(nodeId).get())) commentNodes.push_back(cNodePtr);
                 continue;
             }
 
             auto conns = allConnectionIds(nodeId);
 
-            _models.at(nodeId).get()->save(parent, QVector<AgxConnectionId>({ conns.begin(), conns.end() }), nodeList, nodeData(nodeId, AgxNodeRole::Position).toPointF());
+            m_models.at(nodeId).get()->save(parent, QVector<AgxConnectionId>({ conns.begin(), conns.end() }), nodeList, nodeData(nodeId, AgxNodeRole::Position).toPointF());
         }
 
         for (auto& group : GetNodeGroupAssignmentList())
@@ -1211,14 +1201,14 @@ void AgxGraphModel::save(pugi::xml_node& parent) const
             auto commentObject = AgxAppend(parent, "comment", AgxFormat::NewLine, 0);
             AgxAppendValue(commentObject, "text", comment->_text, AgxFormat::None, 0);
             auto position = nodeData(comment->m_nodeIdRef, AgxNodeRole::Position).toPointF();
-            auto target = comment->_target;
+            auto target = comment->m_target;
             AgxAppendValue(commentObject, "X", CleanUpDecimals(QString("%1").arg(position.x() / SFBGSxScalar, 0, 'f', 5)), AgxFormat::None, 0);
             AgxAppendValue(commentObject, "Y", CleanUpDecimals(QString("%1").arg(position.y() / SFBGSyScalar,0, 'f', 5)), AgxFormat::None, 0);
             AgxAppendValue(commentObject, "TargetX", CleanUpDecimals(QString("%1").arg(target.x()/ SFBGSxScalar,0, 'f', 5)), AgxFormat::None, 0);
             AgxAppendValue(commentObject, "TargetY", CleanUpDecimals(QString("%1").arg(target.y()/ SFBGSyScalar,0, 'f', 5)), AgxFormat::None, 0);
         }
     }
-    
+
     FormatBasicPropertySheet(parent, m_propertyEntries);
 
     for (auto& blockKey : m_blockOrder)
@@ -1245,13 +1235,13 @@ void AgxGraphModel::loadNode(QJsonObject const& nodeJson)
 
     QString delegateModelName = internalDataJson["model-name"].toString();
 
-    std::unique_ptr<AgxNode> model = _registry->create(delegateModelName, this);
+    std::unique_ptr<AgxNode> model = m_registry->create(delegateModelName, this);
 
     if (model) {
 
-        model->SetUpNode(_gameType);
+        model->SetUpNode(m_gameType);
         model->SetNodeIdRef(restoredNodeId);
-        Q_EMIT model->ParentGraphTypeUpdated(_graphType);
+        Q_EMIT model->ParentGraphTypeUpdated(m_graphType);
 
         connect(model.get(),
             &AgxNode::dataUpdated,
@@ -1285,7 +1275,7 @@ void AgxGraphModel::loadNode(QJsonObject const& nodeJson)
             this,
             &AgxGraphModel::portsInserted);
 
-        _models[restoredNodeId] = std::move(model);
+        m_models[restoredNodeId] = std::move(model);
 
         Q_EMIT nodeCreated(restoredNodeId);
 
@@ -1308,11 +1298,11 @@ void AgxGraphModel::loadNode(QJsonObject const& nodeJson)
             }
         }
 
-        _models[restoredNodeId]->load(internalDataJson);
+        m_models[restoredNodeId]->load(internalDataJson);
 
         for (auto& key : allNodeIds()) {
-            if (_models[key] && _models[key]->AltState() && key != restoredNodeId) {
-                _models[restoredNodeId]->SetAltState(false);
+            if (m_models[key] && m_models[key]->AltState() && key != restoredNodeId) {
+                m_models[restoredNodeId]->SetAltState(false);
                 break;
             }
         }
@@ -1326,17 +1316,17 @@ void AgxGraphModel::loadNode(QJsonObject const& nodeJson)
 
 void AgxGraphModel::load(QJsonObject const& jsonDocument)
 {
-    if (jsonDocument.contains("game-type")) _gameType = AgxGameTypeFromString(jsonDocument["game-type"].toString());
-    else _gameType = AgxGameType::None;
+    if (jsonDocument.contains("game-type")) m_gameType = AgxGameTypeFromString(jsonDocument["game-type"].toString());
+    else m_gameType = AgxGameType::None;
 
-    if (jsonDocument.contains("graph-category")) _category = jsonDocument["graph-category"].toString();
-    else _category = "NONE";
+    if (jsonDocument.contains("graph-category")) m_category = jsonDocument["graph-category"].toString();
+    else m_category = "NONE";
 
     AgxGraphType type;
     if (jsonDocument.contains("graph-type")) {
         type = static_cast<AgxGraphType>(jsonDocument.value("graph-type").toString("0").toUInt());
     } else {
-        type = AgxGetDefaultGraphType(_gameType);
+        type = AgxGetDefaultGraphType(m_gameType);
     }
 
     SetNewGraphProperties(type);
@@ -1390,16 +1380,16 @@ void AgxGraphModel::load(pugi::xml_node& xmlNode)
         contentSize++;
     }
 
-    if (_rootReference == this) {
+    if (m_rootReference == this) {
         if (xmlNode.child("Category")) {
-            _category = xmlNode.child_value("Category");
+            m_category = xmlNode.child_value("Category");
             xmlNode.remove_child("Category");
         }
         if (xmlNode.child("Name")) {
-            _graphRelDataPath = xmlNode.child_value("Name");
+            m_graphRelDataPath = xmlNode.child_value("Name");
             xmlNode.remove_child("Name");
 
-            QFileInfo relFile(_graphRelDataPath);
+            QFileInfo relFile(m_graphRelDataPath);
             SetGraphTitle(relFile.baseName());
         }
     }
@@ -1435,7 +1425,7 @@ void AgxGraphModel::load(pugi::xml_node& xmlNode)
 
     Q_EMIT statusUpdate(0.15f);
 
-    for (auto& node : xmlNode.children("node")) 
+    for (auto& node : xmlNode.children("node"))
     {
         QString nodeTypeStr = node.child_value("node_type");
         nodeTypeStr = nodeTypeStr == "NT_STATE_MACHINE_EMBEDDED" || nodeTypeStr == "NT_BLEND_TREE_EMBEDDED" ? "NT_EMBEDDED_GRAPH" : nodeTypeStr;
@@ -1443,20 +1433,20 @@ void AgxGraphModel::load(pugi::xml_node& xmlNode)
 
         if (nodeId == InvalidNodeId) continue;
 
-        if (auto agxNode = _models[nodeId].get()) {
+        if (auto agxNode = m_models[nodeId].get()) {
             QString xpos = node.child("pos_x") ? node.child_value("pos_x") : "0";
             QString ypos = node.child("pos_y") ? node.child_value("pos_y") : "0";
 
             QPointF pos(SFBGSxScalar *xpos.toDouble(), SFBGSyScalar *ypos.toDouble());
             setNodeData(nodeId, AgxNodeRole::Position, pos);
 
-            auto connectionToNode = QObject::connect(agxNode, &AgxNode::statusUpdate, [this, contentSize, contentProc](float loadPercentage, const QString& message) { 
-                Q_EMIT statusUpdate(0.15 + 0.45*(static_cast<float>(contentProc) + loadPercentage) / static_cast<float>(contentSize), message); 
+            auto connectionToNode = QObject::connect(agxNode, &AgxNode::statusUpdate, [this, contentSize, contentProc](float loadPercentage, const QString& message) {
+                Q_EMIT statusUpdate(0.15 + 0.45*(static_cast<float>(contentProc) + loadPercentage) / static_cast<float>(contentSize), message);
                                                      });
-            
+
             agxNode->load(node);
             QObject::disconnect(connectionToNode);
-            
+
             Q_EMIT nodeUpdated(nodeId);
         } else qDebug() << "ERROR ON NODE READ: " << node.child_value("node_type");
 
@@ -1467,7 +1457,7 @@ void AgxGraphModel::load(pugi::xml_node& xmlNode)
 
     for (auto& xmlComment : xmlNode.children("comment")) {
         auto nodeId = addNode("COMMENT");
-        if (auto cNode = dynamic_cast<AgxCommentNode*>(_models[nodeId].get())) {
+        if (auto cNode = dynamic_cast<AgxCommentNode*>(m_models[nodeId].get())) {
             if (xmlComment.child("text")) {
                 cNode->_text = xmlComment.child_value("text");
                 //xmlComment.remove_child("text");
@@ -1476,7 +1466,7 @@ void AgxGraphModel::load(pugi::xml_node& xmlNode)
                 QPointF targetF;
                 if (xmlComment.child("TargetX")) {
                     bool ok = false;
-                    cNode->_hasTarget = true;
+                    cNode->m_hasTarget = true;
                     QString x = xmlComment.child_value("TargetX");
                     auto value = x.toDouble(&ok);
                     value = ok ? value : 0.0;
@@ -1485,14 +1475,14 @@ void AgxGraphModel::load(pugi::xml_node& xmlNode)
                 }
                 if (xmlComment.child("TargetY")) {
                     bool ok = false;
-                    cNode->_hasTarget = true;
+                    cNode->m_hasTarget = true;
                     QString y = xmlComment.child_value("TargetY");
                     auto value = y.toDouble(&ok);
                     value = ok ? value : 0.0;
                     targetF.setY(SFBGSyScalar *value);
                     //xmlComment.remove_child("TargetY");
                 }
-                cNode->_target = targetF;
+                cNode->m_target = targetF;
             }
             {
                 QPointF posF;
@@ -1553,7 +1543,7 @@ void AgxGraphModel::load(pugi::xml_node& xmlNode)
             }
         }
     }
-    
+
     unsigned int blockCount = 0;
 
     for (auto& pEntry : m_propertyEntries) {
@@ -1615,9 +1605,9 @@ void AgxGraphModel::sendConnectionCreation(AgxConnectionId const connectionId)
 {
     Q_EMIT connectionCreated(connectionId);
 
-    auto iti = _models.find(connectionId.inNodeId);
-    auto ito = _models.find(connectionId.outNodeId);
-    if (iti != _models.end() && ito != _models.end()) {
+    auto iti = m_models.find(connectionId.inNodeId);
+    auto ito = m_models.find(connectionId.outNodeId);
+    if (iti != m_models.end() && ito != m_models.end()) {
         auto& modeli = iti->second;
         auto& modelo = ito->second;
         modeli->inputConnectionCreated(connectionId);
@@ -1629,9 +1619,9 @@ void AgxGraphModel::sendConnectionDeletion(AgxConnectionId const connectionId)
 {
     Q_EMIT connectionDeleted(connectionId);
 
-    auto iti = _models.find(connectionId.inNodeId);
-    auto ito = _models.find(connectionId.outNodeId);
-    if (iti != _models.end() && ito != _models.end()) {
+    auto iti = m_models.find(connectionId.inNodeId);
+    auto ito = m_models.find(connectionId.outNodeId);
+    if (iti != m_models.end() && ito != m_models.end()) {
         auto& modeli = iti->second;
         auto& modelo = ito->second;
         modeli->inputConnectionDeleted(connectionId);
@@ -1641,7 +1631,7 @@ void AgxGraphModel::sendConnectionDeletion(AgxConnectionId const connectionId)
 
 void AgxGraphModel::portsAboutToBeDeleted(AgxNodeId const nodeId, AgxPortType const portType, AgxPortIndex const first, AgxPortIndex const last)
 {
-    _shiftedByDynamicPortsConnections.clear();
+    m_shiftedByDynamicPortsConnections.clear();
 
     auto portCountRole = portType == AgxPortType::In ? AgxNodeRole::InPortCount : AgxNodeRole::OutPortCount;
 
@@ -1674,7 +1664,7 @@ void AgxGraphModel::portsAboutToBeDeleted(AgxNodeId const nodeId, AgxPortType co
 
             c = makeCompleteConnectionId(c, nodeId, portIndex - nRemovedPorts);
 
-            _shiftedByDynamicPortsConnections.push_back(c);
+            m_shiftedByDynamicPortsConnections.push_back(c);
 
             deleteConnection(connectionId);
         }
@@ -1684,16 +1674,16 @@ void AgxGraphModel::portsAboutToBeDeleted(AgxNodeId const nodeId, AgxPortType co
 
 void AgxGraphModel::portsDeleted()
 {
-    for (const auto& connectionId : _shiftedByDynamicPortsConnections) {
+    for (const auto& connectionId : m_shiftedByDynamicPortsConnections) {
         addConnection(connectionId);
     }
 
-    _shiftedByDynamicPortsConnections.clear();
+    m_shiftedByDynamicPortsConnections.clear();
 }
 
 void AgxGraphModel::portsAboutToBeInserted(const AgxNodeId& nodeId, const AgxPortType& portType, const AgxPortIndex& first, const AgxPortIndex& last)
 {
-    _shiftedByDynamicPortsConnections.clear();
+    m_shiftedByDynamicPortsConnections.clear();
 
     auto portCountRole = portType == AgxPortType::In ? AgxNodeRole::InPortCount : AgxNodeRole::OutPortCount;
 
@@ -1716,7 +1706,7 @@ void AgxGraphModel::portsAboutToBeInserted(const AgxNodeId& nodeId, const AgxPor
 
             c = makeCompleteConnectionId(c, nodeId, portIndex + nNewPorts);
 
-            _shiftedByDynamicPortsConnections.push_back(c);
+            m_shiftedByDynamicPortsConnections.push_back(c);
 
             deleteConnection(connectionId);
         }
@@ -1725,11 +1715,11 @@ void AgxGraphModel::portsAboutToBeInserted(const AgxNodeId& nodeId, const AgxPor
 
 void AgxGraphModel::portsInserted()
 {
-    for (auto const connectionId : _shiftedByDynamicPortsConnections) {
+    for (auto const connectionId : m_shiftedByDynamicPortsConnections) {
         addConnection(connectionId);
     }
 
-    _shiftedByDynamicPortsConnections.clear();
+    m_shiftedByDynamicPortsConnections.clear();
 }
 
 void AgxGraphModel::propagateEmptyDataTo(AgxNodeId const nodeId, AgxPortIndex const portIndex)

@@ -4,75 +4,75 @@
 
 SettingsRegistry::SettingsRegistry()
 {
-	_iniPath = QApplication::applicationDirPath() + "/CALUMIMotionPrefs.ini";
-	_themePath = QApplication::applicationDirPath() + "/themes/";
-	CreateDirectoryIfNDef(_themePath);
+	m_iniPath = QApplication::applicationDirPath() + "/CALUMIMotionPrefs.ini";
+	m_themePath = QApplication::applicationDirPath() + "/themes/";
+	CreateDirectoryIfNDef(m_themePath);
 
-	_settings = new QSettings(_iniPath, QSettings::IniFormat);
-	_dataStorage = new QSettings(QApplication::applicationDirPath() + "/appcache.ini", QSettings::IniFormat);
+	m_settings = new QSettings(m_iniPath, QSettings::IniFormat);
+	m_dataStorage = new QSettings(QApplication::applicationDirPath() + "/appcache.ini", QSettings::IniFormat);
 
-	_translator = new QTranslator();
-	QCoreApplication::installTranslator(_translator);
+	m_translator = new QTranslator();
+	QCoreApplication::installTranslator(m_translator);
 
-	_sfbgsDirectory = _dataStorage->value("SFBGS/Directory").toString();
-	_lastDirectory = _dataStorage->value("Default/Directory").toString();
+	m_sfbgsDirectory = m_dataStorage->value("SFBGS/Directory").toString();
+	m_lastDirectory = m_dataStorage->value("Default/Directory").toString();
 
-	if (_lastDirectory.isEmpty()) _lastDirectory = QDir::homePath();
-	if (_sfbgsDirectory.isEmpty()) _sfbgsDirectory = QDir::homePath();
+	if (m_lastDirectory.isEmpty()) m_lastDirectory = QDir::homePath();
+	if (m_sfbgsDirectory.isEmpty()) m_sfbgsDirectory = QDir::homePath();
 
-	if (_settings->contains("Language"))
-		SetLanguage(LanguageCodeFromString(_settings->value("Language").toString()));
+	if (m_settings->contains("Language"))
+		SetLanguage(LanguageCodeFromString(m_settings->value("Language").toString()));
 
-	if (_settings->contains("Sidebar"))
-		SetPropertySidebarVisibilityPreference(_settings->value("Sidebar").toInt());
+	if (m_settings->contains("Sidebar"))
+		SetPropertySidebarVisibilityPreference(m_settings->value("Sidebar").toInt());
 
-	if (_settings->contains("Log/Startup"))
-		SetConsoleVisibilityPreference(_settings->value("Log/Startup").toInt());
+	if (m_settings->contains("Log/Startup"))
+		SetConsoleVisibilityPreference(m_settings->value("Log/Startup").toInt());
 
-	if (_settings->contains("ConvertFunctions"))
-		SetConvertFunctionsSetting(_settings->value("ConvertFunctions").toBool());
+	if (m_settings->contains("ConvertFunctions"))
+		SetConvertFunctionsSetting(m_settings->value("ConvertFunctions").toBool());
 
-	if (_settings->contains("UseSaveGeometry"))
-		SetUseSavedGeometry(_settings->value("UseSaveGeometry").toBool());
+	if (m_settings->contains("UseSaveGeometry"))
+		SetUseSavedGeometry(m_settings->value("UseSaveGeometry").toBool());
 
-	if (_settings->contains("Log/UseSaveGeometry"))
-		SetUseSavedConsoledGeometry(_settings->value("Log/UseSaveGeometry").toBool());
+	if (m_settings->contains("Log/UseSaveGeometry"))
+		SetUseSavedConsoledGeometry(m_settings->value("Log/UseSaveGeometry").toBool());
 
 	{
-		QStringList catList = _settings->value("Categories", QStringList()).toStringList();
-		_categories_Default = QSet<QString>(catList.begin(), catList.end());
+		QStringList catList = m_settings->value("Categories", QStringList()).toStringList();
+		m_categories_Default = QSet(catList.begin(), catList.end());
 	}
 
 	{
-		QStringList catList = _settings->value("SFBGS/Categories", QStringList()).toStringList();
-		_categories_SFBGS = QSet<QString>(catList.begin(), catList.end());
+		QStringList catList = m_settings->value("SFBGS/Categories", QStringList()).toStringList();
+		m_categories_SFBGS = QSet(catList.begin(), catList.end());
 	}
 
 	{
 		HighlightingRule rule;
 
-		QColor symColor = _settings->value("Colors/Symbol").toString();
-		symColor = symColor.isValid() ? symColor : _symColorDefault;
+		QColor symColor = m_settings->value("Colors/Symbol").toString();
+		symColor = symColor.isValid() ? symColor : m_symColorDefault;
 		symColor.setAlphaF(1.0f);
 
-		QColor decodedColor = _settings->value("Colors/Decoded").toString();
-		decodedColor = decodedColor.isValid() ? decodedColor : _decodedColorDefault;
+		QColor decodedColor = m_settings->value("Colors/Decoded").toString();
+		decodedColor = decodedColor.isValid() ? decodedColor : m_decodedColorDefault;
 		decodedColor.setAlphaF(1.0f);
 
-		_symbolFormat.setForeground(symColor);
+		m_symbolFormat.setForeground(symColor);
 		rule.pattern = QRegularExpression(R"([<=>&])");
-		rule.format = _symbolFormat;
-		_highlightingRules.append(rule);
+		rule.format = m_symbolFormat;
+		m_highlightingRules.append(rule);
 
-		_decodedFormat.setForeground(decodedColor);
+		m_decodedFormat.setForeground(decodedColor);
 		rule.pattern = QRegularExpression(R"(!.*?!)");
-		rule.format = _decodedFormat;
-		_highlightingRules.append(rule);
+		rule.format = m_decodedFormat;
+		m_highlightingRules.append(rule);
 	}
 
 	{
-		if (_settings->contains("Theme"))
-			_themeFileName = _settings->value("Theme").toString();
+		if (m_settings->contains("Theme"))
+			m_themeFileName = m_settings->value("Theme").toString();
 	}
 
 }
@@ -85,91 +85,90 @@ SettingsRegistry::~SettingsRegistry()
 
 void SettingsRegistry::SyncSettings() const
 {
-	if (!_sfbgsDirectory.isEmpty())
+	if (!m_sfbgsDirectory.isEmpty())
 	{
-		_dataStorage->setValue("SFBGS/Directory", _sfbgsDirectory);
+		m_dataStorage->setValue("SFBGS/Directory", m_sfbgsDirectory);
 	}
 
-	if (!_lastDirectory.isEmpty())
+	if (!m_lastDirectory.isEmpty())
 	{
-		_dataStorage->setValue("Default/Directory", _lastDirectory);
+		m_dataStorage->setValue("Default/Directory", m_lastDirectory);
 	}
 
-	_settings->setValue("Language", LanguageCodeToString(_language));
+	m_settings->setValue("Language", LanguageCodeToString(m_language));
 
-	_settings->setValue("Sidebar", static_cast<unsigned int>(_sidebarVis));
-	_settings->setValue("Log/Startup", static_cast<unsigned int>(_consoleVis));
+	m_settings->setValue("Sidebar", static_cast<unsigned int>(m_sidebarVis));
+	m_settings->setValue("Log/Startup", static_cast<unsigned int>(m_consoleVis));
 		
-	_settings->setValue("ConvertFunctions", _convertFunctions);
-	_settings->setValue("Log/UseSaveGeometry", _rememberConsoleGeometry);
-	_settings->setValue("UseSaveGeometry", _rememberMainGeometry);
+	m_settings->setValue("ConvertFunctions", m_convertFunctions);
+	m_settings->setValue("Log/UseSaveGeometry", m_rememberConsoleGeometry);
+	m_settings->setValue("UseSaveGeometry", m_rememberMainGeometry);
 
-	if(!_categories_Default.isEmpty())
-		_settings->setValue("Categories", _categories_Default.values());
+	if(!m_categories_Default.isEmpty())
+		m_settings->setValue("Categories", m_categories_Default.values());
 	
-	if(!_categories_SFBGS.isEmpty())
-		_settings->setValue("SFBGS/Categories", _categories_SFBGS.values());
+	if(!m_categories_SFBGS.isEmpty())
+		m_settings->setValue("SFBGS/Categories", m_categories_SFBGS.values());
 	
-	_dataStorage->setValue("LastVersion", QCoreApplication::applicationVersion());
+	m_dataStorage->setValue("LastVersion", QCoreApplication::applicationVersion());
 
 	
-	_settings->setValue("Colors/Symbol", GetSymbolColor().name());
+	m_settings->setValue("Colors/Symbol", GetSymbolColor().name());
 	
-	_settings->setValue("Colors/Decoded", GetDecodedColor().name());
+	m_settings->setValue("Colors/Decoded", GetDecodedColor().name());
 
-	_settings->setValue("Theme", _themeFileName);
+	m_settings->setValue("Theme", m_themeFileName);
 
-	_settings->sync();
-	_dataStorage->sync();
+	m_settings->sync();
+	m_dataStorage->sync();
 }
 
 QByteArray SettingsRegistry::GetSavedWindowGeometry(const QString& key) const
 {
-	if (_dataStorage->contains(key))
-		return _dataStorage->value(key).toByteArray();
+	if (m_dataStorage->contains(key))
+		return m_dataStorage->value(key).toByteArray();
 
-	return QByteArray();
+	return {};
 }
 
-void SettingsRegistry::SaveWindowGeometry(const QString& key, const QByteArray& array)
+void SettingsRegistry::SaveWindowGeometry(const QString& key, const QByteArray& array) const
 {
-	_dataStorage->setValue(key, array);
-	_dataStorage->sync();
+	m_dataStorage->setValue(key, array);
+	m_dataStorage->sync();
 }
 
-bool SettingsRegistry::GetLastState(const QString& key, bool defValue) const
+bool SettingsRegistry::GetLastState(const QString& key, const bool defValue) const
 {
-	if (_dataStorage->contains(key))
-		return _dataStorage->value(key).toBool();
+	if (m_dataStorage->contains(key))
+		return m_dataStorage->value(key).toBool();
 
 	return defValue;
 }
 
-void SettingsRegistry::SaveLastState(const QString& key, bool state)
+void SettingsRegistry::SaveLastState(const QString& key, const bool state) const
 {
-	_dataStorage->setValue(key, state);
-	_dataStorage->sync();
+	m_dataStorage->setValue(key, state);
+	m_dataStorage->sync();
 }
 
-QString SettingsRegistry::GetSavedVersion()
+QString SettingsRegistry::GetSavedVersion() const
 {
-	if (_dataStorage->contains("LastVersion"))
-		return _dataStorage->value("LastVersion").toString();
+	if (m_dataStorage->contains("LastVersion"))
+		return m_dataStorage->value("LastVersion").toString();
 
 	return {};
 }
 
 QString SettingsRegistry::IniPath() const
 {
-	return _iniPath;
+	return m_iniPath;
 }
 
 bool SettingsRegistry::CreateDirectoryIfNDef(const QString& fileString)
 {
-	QString dirPath = QFileInfo(fileString).absolutePath();
+	const QString dirPath = QFileInfo(fileString).absolutePath();
 
-	QDir dir;
-	if (!dir.mkpath(dirPath))
+	if (const QDir dir; !dir.mkpath(dirPath))
 	{
 		qCritical() << "Could not create directory path: " << dirPath;
 		return false;
@@ -179,66 +178,66 @@ bool SettingsRegistry::CreateDirectoryIfNDef(const QString& fileString)
 	return true;
 }
 
-void SettingsRegistry::SetSymbolColor(QColor color)
+void SettingsRegistry::SetSymbolColor(const QColor color)
 {
-	_highlightingRules[0].format.setForeground(color);
+	m_highlightingRules[0].format.setForeground(color);
 }
 
 const QColor& SettingsRegistry::GetSymbolColor() const
 {
-	return _highlightingRules.at(0).format.foreground().color();
+	return m_highlightingRules.at(0).format.foreground().color();
 }
 
-void SettingsRegistry::SetDecodedColor(QColor color)
+void SettingsRegistry::SetDecodedColor(const QColor color)
 {
-	_highlightingRules[1].format.setForeground(color);
+	m_highlightingRules[1].format.setForeground(color);
 }
 
 const QColor& SettingsRegistry::GetDecodedColor() const
 {
-	return _highlightingRules.at(1).format.foreground().color();
+	return m_highlightingRules.at(1).format.foreground().color();
 }
 
-QString SettingsRegistry::LastDirectory(AgxGameType type) const
+QString SettingsRegistry::LastDirectory(const AgxGameType type) const
 {
 	switch (type)
 	{
 		case AgxGameType::SFBGS:
-			return _sfbgsDirectory;
+			return m_sfbgsDirectory;
 		default:
-			return _lastDirectory;
+			return m_lastDirectory;
 	}
 }
 
-void SettingsRegistry::SetLastDirectory(const QString& dir, AgxGameType type)
+void SettingsRegistry::SetLastDirectory(const QString& dir, const AgxGameType type)
 {
-	QFileInfo info(dir);
+	const QFileInfo info(dir);
 	
 	if (!info.exists()) return;
 
-	QString path = info.isFile() ? info.path() : dir;
+	const QString path = info.isFile() ? info.path() : dir;
 
 	switch (type)
 	{
 		case AgxGameType::SFBGS:
-			_sfbgsDirectory = path;
+			m_sfbgsDirectory = path;
 			break;
 		default:
 			break;
 	}
 
-	_lastDirectory = path;
+	m_lastDirectory = path;
 }
 
-QString SettingsRegistry::GetRelativeDataPath(AgxGameType type)
+QString SettingsRegistry::GetRelativeDataPath(const AgxGameType type)
 {
 	QString path;
-	if(!_settings) return path;
+	if(!m_settings) return path;
 	
 	switch (type)
 	{
 		case AgxGameType::SFBGS: {	
-			path = _settings->contains("SFBGS/GraphRelativePath") ? _settings->value("SFBGS/GraphRelativePath").toString() : _defaultRelDataPath_SFBGS;
+			path = m_settings->contains("SFBGS/GraphRelativePath") ? m_settings->value("SFBGS/GraphRelativePath").toString() : m_defaultRelDataPath_SFBGS;
 			break;
 		default:
 			break;
@@ -248,26 +247,26 @@ QString SettingsRegistry::GetRelativeDataPath(AgxGameType type)
 	return path;
 }
 
-void SettingsRegistry::SaveRelativeDataPath(AgxGameType type, const QString& pathToSave)
+void SettingsRegistry::SaveRelativeDataPath(const AgxGameType type, const QString& pathToSave) const
 {
-	if (!_settings) return;
+	if (!m_settings) return;
 
 	switch (type)
 	{
 		case AgxGameType::SFBGS:
 			if(pathToSave.compare(R"(Data\Meshes\AnimTextData\Tables\Graphs\)") != 0)
-				_settings->setValue("SFBGS/GraphRelativePath", pathToSave);
+				m_settings->setValue("SFBGS/GraphRelativePath", pathToSave);
 			break;
 		default:
 			break;
 	}
 }
 
-void SettingsRegistry::SetLanguage(LanguageCode code)
+void SettingsRegistry::SetLanguage(const LanguageCode code)
 {
-	if (code == _language) return;
+	if (code == m_language) return;
 
-	QString prefixPath = QApplication::applicationDirPath() +"/";
+	const QString prefixPath = QApplication::applicationDirPath() +"/";
 	QString file;
 
 
@@ -285,7 +284,7 @@ void SettingsRegistry::SetLanguage(LanguageCode code)
 		case LanguageCode::Russian:
 			file = "motion_ru.qm";
 			break;
-		case LanguageCode::Ukranian:
+		case LanguageCode::Ukrainian:
 			file = "motion_uk.qm";
 			break;
 		default:
@@ -294,9 +293,9 @@ void SettingsRegistry::SetLanguage(LanguageCode code)
 	}
 
 	//_translator = new QTranslator();
-	if (_translator->load(prefixPath + file)) {
+	if (m_translator->load(prefixPath + file)) {
 		//QCoreApplication::installTranslator(_translator);
-		_language = code;
+		m_language = code;
 		qInfo() << QObject::tr("Language Changed To: %1 (%2)").arg(LanguageCodeToString(code)).arg(file);
 	} else {
 		SetDefaultLanguage();
@@ -304,19 +303,19 @@ void SettingsRegistry::SetLanguage(LanguageCode code)
 
 }
 
-QSet<QString> SettingsRegistry::GetCustomCategories(AgxGameType game, bool withDefault) const
+QSet<QString> SettingsRegistry::GetCustomCategories(const AgxGameType game, const bool withDefault) const
 {
 	QSet<QString> customList;
 
 	if (withDefault)
 	{
-		customList.unite(_categories_Default);
+		customList.unite(m_categories_Default);
 	}
 
 	switch (game)
 	{
 		case AgxGameType::SFBGS:
-			customList.unite(_categories_SFBGS);
+			customList.unite(m_categories_SFBGS);
 			break;
 		default:
 			break;
@@ -337,73 +336,71 @@ QSet<QString> SettingsRegistry::GetCustomCategories(AgxGameType game, bool withD
 	return customList;
 }
 
-void SettingsRegistry::AddCustomCatgeory(const QString& item, AgxGameType game)
+void SettingsRegistry::AddCustomCategory(const QString& item, const AgxGameType game)
 {
 	switch (game)
 	{
 		case AgxGameType::SFBGS:
-			_categories_SFBGS.insert(item);
+			m_categories_SFBGS.insert(item);
 			break;
 		default:
-			_categories_Default.insert(item);
+			m_categories_Default.insert(item);
 			break;
 	}
 }
 
 QString SettingsRegistry::GetThemeFilePath() const
 {
-	return _themePath + _themeFileName;
+	return m_themePath + m_themeFileName;
 }
 
 QString SettingsRegistry::GetThemeFileName() const
 {
-	return _themeFileName;
+	return m_themeFileName;
 }
 
 void SettingsRegistry::SetThemeFileName(const QString& path)
 {
-	QFileInfo file(path);
-	
-	auto fileName = file.fileName();
-	
-	if(_themeFileName != fileName)
+	const QFileInfo file(path);
+
+	if(const auto fileName = file.fileName(); m_themeFileName != fileName)
 	{
-		_themeFileName = fileName;
+		m_themeFileName = fileName;
 		qInfo() << "Theme Change Requires Application Restart!";
 	}
 }
 
 void SettingsRegistry::SetDefaultLanguage()
 {
-	_language = LanguageCode::English;
-	qInfo() << QObject::tr("Language Changed To: %1").arg(LanguageCodeToString(_language));
+	m_language = LanguageCode::English;
+	qInfo() << QObject::tr("Language Changed To: %1").arg(LanguageCodeToString(m_language));
 	
-	QCoreApplication::removeTranslator(_translator);
-	delete _translator;
+	QCoreApplication::removeTranslator(m_translator);
+	delete m_translator;
 
-	_translator = new QTranslator();
-	QCoreApplication::installTranslator(_translator);
+	m_translator = new QTranslator();
+	QCoreApplication::installTranslator(m_translator);
 }
 
-static StartupVisibiltyPreference Helper_GetVisibilitySafe(int pref)
+static StartupVisibilityPreference Helper_GetVisibilitySafe(const int pref)
 {
 	switch (pref)
 	{
 		case 0:
-			return StartupVisibiltyPreference::Never;
+			return StartupVisibilityPreference::Never;
 		case 2:
-			return StartupVisibiltyPreference::Always;
+			return StartupVisibilityPreference::Always;
 		default:
-			return StartupVisibiltyPreference::Remember;
+			return StartupVisibilityPreference::Remember;
 	}
 }
 
-void SettingsRegistry::SetPropertySidebarVisibilityPreference(int pref)
+void SettingsRegistry::SetPropertySidebarVisibilityPreference(const int pref)
 {
 	SetPropertySidebarVisibilityPreference(Helper_GetVisibilitySafe(pref));
 }
 
-void SettingsRegistry::SetConsoleVisibilityPreference(int pref)
+void SettingsRegistry::SetConsoleVisibilityPreference(const int pref)
 {
 	SetConsoleVisibilityPreference(Helper_GetVisibilitySafe(pref));
 }
@@ -429,13 +426,14 @@ LanguageCode LanguageCodeFromString(const QString& code)
 		if (code.compare("German", Qt::CaseInsensitive) == 0 || code.compare("DE", Qt::CaseInsensitive) == 0 || code.compare("GER", Qt::CaseInsensitive) == 0 || code.compare("DEU", Qt::CaseInsensitive) == 0)
 			return LanguageCode::German;
 		if (code.compare("Ukrainian", Qt::CaseInsensitive) == 0 || code.compare("UK", Qt::CaseInsensitive) == 0 || code.compare("UKR", Qt::CaseInsensitive) == 0)
-			return LanguageCode::Ukranian;
+			return LanguageCode::Ukrainian;
 		if (code.compare("Russian", Qt::CaseInsensitive) == 0 || code.compare("RU", Qt::CaseInsensitive) == 0 || code.compare("RUS", Qt::CaseInsensitive) == 0)
 			return LanguageCode::Russian;
 
 		return LanguageCode::English;
+	}
 
-	}else if (static_cast<unsigned int>(LanguageCode::Max) < index) {
+	if (static_cast<unsigned int>(LanguageCode::Max) < index) {
 		return LanguageCode::English;
 	}
 

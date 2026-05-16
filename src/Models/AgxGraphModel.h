@@ -8,6 +8,7 @@
 
 #pragma warning(pop)
 
+// ReSharper disable once CppUnusedIncludeDirective
 #include "Utilities/Hash/AgxConnectionIdHash.h"
 #include "Utilities/AgxDefinitions.h"
 #include "AgxNodes/AgxNode.h"
@@ -25,33 +26,33 @@ public:
         QPointF pos;
     };
 
-AgxGraphModel(AgxGameType type, AgxGraphModel* rootGraph = nullptr);
+    explicit AgxGraphModel(AgxGameType type, AgxGraphModel* rootGraph = nullptr);
 
-    inline std::shared_ptr<AgxNodeDelegateModelRegistry> dataModelRegistry() { return _registry; }
+    std::shared_ptr<AgxNodeDelegateModelRegistry> dataModelRegistry() { return m_registry; }
 
     ~AgxGraphModel() override = default;
 
     virtual QSet<AgxNodeId> allNodeIds() const;
 
-    virtual std::unordered_set<AgxConnectionId> allConnectionIds(AgxNodeId const nodeId) const;
+    virtual std::unordered_set<AgxConnectionId> allConnectionIds(AgxNodeId nodeId) const;
 
     virtual std::unordered_set<AgxConnectionId> connections(AgxNodeId nodeId,
         AgxPortType portType,
         AgxPortIndex portIndex) const;
 
-    virtual bool connectionExists(AgxConnectionId const connectionId) const;
+    virtual bool connectionExists(AgxConnectionId connectionId) const;
 
-    virtual AgxNodeId addNode(QString const nodeType);
+    virtual AgxNodeId addNode(QString nodeType);
 
     void HandleEmbeddedClosures();
     QWidget* GetNodeSidebarContent(const AgxNodeId& nodeId);
     void SetNodeSidebarVisibility(const AgxNodeId& nodeId, bool state);
 
-    virtual bool connectionPossible(AgxConnectionId const connectionId) const;
+    virtual bool connectionPossible(AgxConnectionId connectionId) const;
 
-    virtual void addConnection(AgxConnectionId const connectionId);
+    virtual void addConnection(AgxConnectionId connectionId);
 
-    virtual bool nodeExists(AgxNodeId const nodeId) const;
+    virtual bool nodeExists(AgxNodeId nodeId) const;
 
     /// Defines if detaching the connection is possible.
     virtual bool detachPossible(AgxConnectionId const) const { return true; }
@@ -59,7 +60,7 @@ AgxGraphModel(AgxGameType type, AgxGraphModel* rootGraph = nullptr);
     virtual QVariant nodeData(AgxNodeId nodeId, AgxNodeRole role) const;
 
     template<typename T>
-    inline T nodeData(AgxNodeId nodeId, AgxNodeRole role) const
+    T nodeData(const AgxNodeId nodeId, const AgxNodeRole role) const
     {
         return nodeData(nodeId, role).value<T>();
     }
@@ -80,13 +81,13 @@ AgxGraphModel(AgxGameType type, AgxGraphModel* rootGraph = nullptr);
     void addPropertyBlockEntry(QString block, int index, const QList<AgxPropertyBlockData::Entry>& data = {});
     QList<AgxPropertyBlockData::Entry> removePropertyBlockEntry(AgxNodeId nodeId, QString block, int index);
     QList<AgxPropertyBlockData::Entry> removePropertyBlockEntry(QString block, int index);
-    inline QVector<AgxPropertyEntryDefinition>* GetPropertyEntries() { return &m_propertyEntries; }
-    inline QMap<TermRef, AgxPropertyBlockData>* GetPropertyBlocks() { return &m_propertyBlocks; }
+    QVector<AgxPropertyEntryDefinition>* GetPropertyEntries() { return &m_propertyEntries; }
+    QMap<TermRef, AgxPropertyBlockData>* GetPropertyBlocks() { return &m_propertyBlocks; }
     QJsonObject SetNewGraphProperties(const AgxGraphType& graphType);
-    inline AgxGraphType getGraphType() const { return _graphType; }
+    AgxGraphType getGraphType() const { return m_graphType; }
 
     void setGraphCategory(const QString& cat);
-    inline QString getGraphCategory() const { return _category; }
+    QString getGraphCategory() const { return m_category; }
     const AgxGraphModel* rootGraphReference() const;
 
 Q_SIGNALS:
@@ -95,7 +96,7 @@ Q_SIGNALS:
 
 public:
     template<typename T>
-    inline T portData(AgxNodeId nodeId, AgxPortType portType, AgxPortIndex index, AgxPortRole role) const
+    T portData(const AgxNodeId nodeId, const AgxPortType portType, const AgxPortIndex index, const AgxPortRole role) const
     {
         return portData(nodeId, portType, index, role).value<T>();
     }
@@ -109,7 +110,7 @@ public:
         AgxPortType portType,
         AgxPortIndex portIndex,
         QVariant const& value,
-        AgxPortRole role = AgxPortRole::Data);
+        AgxPortRole role);
 
     virtual void sendPortCommand(AgxNodeId nodeId,
                          AgxPortType portType,
@@ -117,19 +118,19 @@ public:
                          const QString& command,
                          const QString& payload);
 
-    virtual bool deleteConnection(AgxConnectionId const connectionId);
+    virtual bool deleteConnection(AgxConnectionId connectionId);
 
-    virtual bool deleteNode(AgxNodeId const nodeId);
+    virtual bool deleteNode(AgxNodeId nodeId);
 
     /**
     * Fetches the NodeDelegateModel for the given `nodeId` and tries to cast the
     * stored pointer to the given type
     */
     template<typename NodeDelegateModelType>
-    inline NodeDelegateModelType* delegateModel(AgxNodeId const nodeId)
+    NodeDelegateModelType* delegateModel(AgxNodeId const nodeId)
     {
-        auto it = _models.find(nodeId);
-        if (it == _models.end())
+        const auto it = m_models.find(nodeId);
+        if (it == m_models.end())
             return nullptr;
 
         auto model = dynamic_cast<NodeDelegateModelType*>(it->second.get());
@@ -137,17 +138,17 @@ public:
         return model;
     }
 
-    void SetNodeNameProperty(const AgxNodeId nodeId, const QString& newName);
-    QString GetNodeNameProperty(const AgxNodeId nodeId) const;
-    bool CanSetNodeNameProperty(const AgxNodeId nodeId);
+    void SetNodeNameProperty(AgxNodeId nodeId, const QString& newName);
+    QString GetNodeNameProperty(AgxNodeId nodeId) const;
+    bool CanSetNodeNameProperty(AgxNodeId nodeId);
 
-    void ToggleNodeCollapse(const AgxNodeId nodeId);
+    void ToggleNodeCollapse(AgxNodeId nodeId);
     void SetNodesCollapsed(const QList<AgxNodeId>& nodes, bool collapsed = true);
 
-    AgxPortType CanModifyPorts(const AgxNodeId nodeId);
-    AgxNodeType GetNodeType(const AgxNodeId nodeId);
+    AgxPortType CanModifyPorts(AgxNodeId nodeId);
+    AgxNodeType GetNodeType(AgxNodeId nodeId);
 
-    QString GetNodeGroup(const AgxNodeId nodeId) const;
+    QString GetNodeGroup(AgxNodeId nodeId) const;
     std::vector<QString> GetNodeGroupList() const;
     QColor GetGroupColor(QString groupName) const;
     void SetGroupColor(const QString& groupName, const QColor& color);
@@ -156,21 +157,21 @@ public:
 
 
     
-    virtual inline bool loopsEnabled() const { return true; }
+    virtual bool loopsEnabled() const { return true; }
 
-    virtual void addPort(AgxNodeId nodeId, AgxPortType portType, AgxPortIndex portIndex, QJsonObject data = QJsonObject());
-    virtual QJsonObject removePort(AgxNodeId nodeId, AgxPortType portType, AgxPortIndex portIndex, bool preserve = false);
+    virtual void addPort(AgxNodeId nodeId, AgxPortType portType, AgxPortIndex portIndex, QJsonObject data);
+    virtual QJsonObject removePort(AgxNodeId nodeId, AgxPortType portType, AgxPortIndex portIndex, bool preserve);
 
-    virtual QJsonObject saveNode(AgxNodeId const nodeId) const;
+    virtual QJsonObject saveNode(AgxNodeId nodeId) const;
 
     virtual QJsonObject save() const;
     virtual void save(pugi::xml_node& parent) const;
 
-    /// @brief Creates a new node based on the informatoin in `nodeJson`.
     /**
-   * @param nodeJson conains a `NodeId`, node's position, internal node
-   * information.
-   */
+     *@brief Creates a new node based on the information in `nodeJson`.
+     * @param nodeJson contains a `NodeId`, node's position, internal node
+     * information.
+     */
     virtual void loadNode(QJsonObject const& nodeJson);
 
     virtual void load(QJsonObject const& jsonDocument);
@@ -178,18 +179,18 @@ public:
 
 Q_SIGNALS:
     void statusUpdate(float loadPercentage, const QString& message = QString());
-    void inPortDataWasSet(AgxNodeId const, AgxPortType const, AgxPortIndex const);
-    void portCreated(AgxNodeId const, AgxPortType const, AgxPortIndex const);
-    void portDeleted(AgxNodeId const, AgxPortType const, AgxPortIndex const);
+    void inPortDataWasSet(AgxNodeId, AgxPortType, AgxPortIndex);
+    void portCreated(AgxNodeId, AgxPortType, AgxPortIndex);
+    void portDeleted(AgxNodeId, AgxPortType, AgxPortIndex);
 
 public:
-    virtual inline AgxNodeId newNodeId() { return _nextNodeId++; }
-    virtual inline AgxNodeId newMiscNodeId() {return _nextMiscNodeId++; }
+    virtual AgxNodeId newNodeId() { return m_nextNodeId++; }
+    virtual AgxNodeId newMiscNodeId() {return m_nextMiscNodeId++; }
 
 private:
-    virtual void sendConnectionCreation(AgxConnectionId const connectionId);
+    virtual void sendConnectionCreation(AgxConnectionId connectionId);
 
-    virtual void sendConnectionDeletion(AgxConnectionId const connectionId);
+    virtual void sendConnectionDeletion(AgxConnectionId connectionId);
 
     public:
         /**
@@ -201,10 +202,10 @@ private:
          * @param first Index of the first port to be removed
          * @param last Index of the last port to be removed
          */
-        virtual void portsAboutToBeDeleted(AgxNodeId const nodeId,
-                                   AgxPortType const portType,
-                                   AgxPortIndex const first,
-                                   AgxPortIndex const last);
+        virtual void portsAboutToBeDeleted(AgxNodeId nodeId,
+                                   AgxPortType portType,
+                                   AgxPortIndex first,
+                                   AgxPortIndex last);
 
         /**
          * Signal emitted when model no longer has the old data associated with the
@@ -214,6 +215,8 @@ private:
 
         /**
          * Signal emitted when model is about to create new ports on the given node.
+         * @param nodeId
+         * @param portType
          * @param first Is the first index of the new port after insertion.
          * @param last Is the last index of the new port after insertion.
          *
@@ -233,35 +236,35 @@ private:
         virtual void portsInserted();
 
 Q_SIGNALS:
-    void connectionCreated(AgxConnectionId const connectionId);
-    void connectionDeleted(AgxConnectionId const connectionId);
-    void nodeCreated(AgxNodeId const nodeId);
-    void nodeDeleted(AgxNodeId const nodeId);
-    void nodeUpdated(AgxNodeId const nodeId);
-    void nodeFlagsUpdated(AgxNodeId const nodeId);
-    void nodePositionUpdated(AgxNodeId const nodeId);
+    void connectionCreated(AgxConnectionId connectionId);
+    void connectionDeleted(AgxConnectionId connectionId);
+    void nodeCreated(AgxNodeId nodeId);
+    void nodeDeleted(AgxNodeId nodeId);
+    void nodeUpdated(AgxNodeId nodeId);
+    void nodeFlagsUpdated(AgxNodeId nodeId);
+    void nodePositionUpdated(AgxNodeId nodeId);
     void modelReset();
 
 
 private Q_SLOTS:
     /**
-     * Fuction is called in three cases:
+     * Function is called in three cases:
      *
      * - By underlying NodeDelegateModel when a node has new data to propagate.
      *   @see DataFlowGraphModel::addNode
      * - When a new connection is created.
      *   @see DataFlowGraphModel::addConnection
-     * - When a node restored from JSON an needs to send data downstream.
+     * - When a node restored from JSON needs to send data downstream.
      *   @see DataFlowGraphModel::loadNode
      */
-    void onOutPortDataUpdated(AgxNodeId const nodeId, AgxPortIndex const portIndex);
+    void onOutPortDataUpdated(AgxNodeId nodeId, AgxPortIndex portIndex);
 
     /// Function is called after detaching a connection.
-    void propagateEmptyDataTo(AgxNodeId const nodeId, AgxPortIndex const portIndex);
+    void propagateEmptyDataTo(AgxNodeId nodeId, AgxPortIndex portIndex);
 
 public Q_SLOTS:
-    bool AddToNodeGroup(const AgxNodeId nodeId, QString nodeGroup);
-    void RemoveFromNodeGroup(const AgxNodeId nodeId);
+    bool AddToNodeGroup(AgxNodeId nodeId, QString nodeGroup);
+    void RemoveFromNodeGroup(AgxNodeId nodeId);
     bool CreateNodeGroup(QString nodeGroup, QColor groupColor = generateRandomQColor());
     bool EraseNodeGroup(QString nodeGroup);
 
@@ -284,10 +287,11 @@ public:
     /// <param name="file">Full File Path</param>
     void SetModelFilePath(const QString& file);
 
-/// <summary>
+    /// <summary>
     /// Used for tab titling only
     /// </summary>
     /// <param name="title">Tab Title String</param>
+    /// <param name="root"></param>
     void SetGraphTitle(const QString& title = QString(), bool root = true);
     /// <summary>
     /// Used for tab titling only
@@ -300,37 +304,37 @@ private:
     QString GetRelativeDataPath() const;
 
     //Used for tracking save/source file
-    QString _file;
+    QString m_file;
     
     // Used For Tab Title
-    QString _agxGraphTitle = "untitled";
+    QString m_agxGraphTitle = "untitled";
 
-    AgxGameType _gameType;
-    AgxGraphType _graphType = AgxGraphType::UNDEFINED;
-    QString _graphRelDataPath;
-    QString _category = "NONE";
-    AgxGraphModel* _rootReference = nullptr;
+    AgxGameType m_gameType;
+    AgxGraphType m_graphType = AgxGraphType::UNDEFINED;
+    QString m_graphRelDataPath;
+    QString m_category = "NONE";
+    AgxGraphModel* m_rootReference = nullptr;
 
-    std::shared_ptr<AgxNodeDelegateModelRegistry> _registry;
+    std::shared_ptr<AgxNodeDelegateModelRegistry> m_registry;
 
-    AgxNodeId _nextNodeId; //max 3,999,999,999
-    AgxNodeId _nextMiscNodeId = static_cast<AgxNodeId>(4000000000); //allows for 4,000,000,000 - max u32 nodes to be used for special cases like comments. 294,967,295 nodes can be used for this.
-    AgxNodeId _firstMiscNodeId = _nextMiscNodeId;
+    AgxNodeId m_nextNodeId; //max 3,999,999,999
+    AgxNodeId m_nextMiscNodeId = 4000000000; //allows for 4,000,000,000 - max u32 nodes to be used for special cases like comments. 294,967,295 nodes can be used for this.
+    AgxNodeId m_firstMiscNodeId = m_nextMiscNodeId;
 
-    std::unordered_map<AgxNodeId, std::unique_ptr<AgxNode>> _models;
+    std::unordered_map<AgxNodeId, std::unique_ptr<AgxNode>> m_models;
 
-    std::unordered_set<AgxConnectionId> _connectivity;
+    std::unordered_set<AgxConnectionId> m_connectivity;
 
-    mutable std::unordered_map<AgxNodeId, NodeGeometryData> _nodeGeometryData;
+    mutable std::unordered_map<AgxNodeId, NodeGeometryData> m_nodeGeometryData;
 
-    std::unordered_map<QString, QColor> _nodeGroups;
+    std::unordered_map<QString, QColor> m_nodeGroups;
 
     QMap<TermRef, AgxPropertyBlockData> m_propertyBlocks;
     QList<TermRef> m_blockOrder;
 
     QVector<AgxPropertyEntryDefinition> m_propertyEntries;
 
-QVector<AgxConnectionId> _shiftedByDynamicPortsConnections;
+    QVector<AgxConnectionId> m_shiftedByDynamicPortsConnections;
 
     friend class SFBGS_GraphPropertiesDialogWidget;
 };

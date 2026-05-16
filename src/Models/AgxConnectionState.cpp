@@ -8,7 +8,7 @@
 
 AgxPortType AgxConnectionState::requiredPort() const
 {
-    AgxPortType t = AgxPortType::None;
+    auto t = AgxPortType::None;
 
     if (_cgo.connectionId().outNodeId == InvalidNodeId) {
         t = AgxPortType::Out;
@@ -31,7 +31,7 @@ bool AgxConnectionState::hovered() const
     return _hovered;
 }
 
-void AgxConnectionState::setHovered(bool hovered)
+void AgxConnectionState::setHovered(const bool hovered)
 {
     _hovered = hovered;
 }
@@ -49,7 +49,7 @@ AgxNodeId AgxConnectionState::lastHoveredNode() const
 void AgxConnectionState::resetLastHoveredNode()
 {
     if (_lastHoveredNode != InvalidNodeId) {
-        auto ngo = _cgo.agxNodeScene()->agxNodeGraphicsObject(_lastHoveredNode);
+        const auto ngo = _cgo.agxNodeScene()->agxNodeGraphicsObject(_lastHoveredNode);
         ngo->update();
     }
 

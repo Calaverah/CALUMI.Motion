@@ -6,12 +6,12 @@
 
 
 #pragma warning(push,0)
-#include <QUuid>
 #include <QGraphicsObject>
 #pragma warning(pop)
 #include "AgxNodeState.h"
-#include "Painter/AgxConnectionStyle.h"
 #include <Utilities/AgxDefinitions.h>
+
+#include "Painter/AgxPalette.h"
 
 class AgxGraphicsScene;
 class AgxGraphModel;
@@ -23,25 +23,23 @@ public:
 	// Needed for qgraphicsitem_cast
 	enum { Type = UserType + 1 };
 
-	int type() const override { return Type; }
+	int type() const override { return Type; } // NOLINT(*-use-nodiscard)
 
-AgxNodeGraphicsObject(AgxGraphicsScene& scene, AgxNodeId nodeId);
+    AgxNodeGraphicsObject(AgxGraphicsScene& scene, AgxNodeId nodeId);
 
 	~AgxNodeGraphicsObject() override = default;
 
-	AgxGraphicsScene* agxNodeScene() const;
+	[[nodiscard]] AgxGraphicsScene* agxNodeScene() const;
 
-AgxGraphModel& graphModel() const;
+    [[nodiscard]] AgxGraphModel& graphModel() const;
 
-    AgxNodeId nodeId() { return _nodeId; }
+    [[nodiscard]] AgxNodeId nodeId() const { return m_nodeId; }
 
-    AgxNodeId nodeId() const { return _nodeId; }
+    [[nodiscard]] AgxNodeState& nodeState() { return m_nodeState; }
 
-    AgxNodeState& nodeState() { return _nodeState; }
+    [[nodiscard]] AgxNodeState const& nodeState() const { return m_nodeState; }
 
-    AgxNodeState const& nodeState() const { return _nodeState; }
-
-    QRectF boundingRect() const override;
+    QRectF boundingRect() const override; // NOLINT(*-use-nodiscard)
 
     void setGeometryChanged();
 
@@ -52,13 +50,13 @@ AgxGraphModel& graphModel() const;
     /// Repaints the node once with reacting ports.
     void reactToConnection(AgxConnectionGraphicsObject const* cgo);
 
-    void updateQWidgetEmbedPos();
+    void updateQWidgetEmbedPos() const;
 
-protected:
     void paint(QPainter* painter,
         QStyleOptionGraphicsItem const* option,
-        QWidget* widget = nullptr) override;
+        QWidget* widget) override;
 
+protected:
     QVariant itemChange(GraphicsItemChange change, const QVariant& value) override;
 
 
@@ -76,14 +74,14 @@ private:
     void setLockedState();
 
 protected:
-    AgxNodeId _nodeId;
+    AgxNodeId m_nodeId;
 
-    AgxGraphModel& _graphModel;
+    AgxGraphModel& m_graphModel;
 
-    AgxNodeState _nodeState;
+    AgxNodeState m_nodeState;
 
     // either nullptr or owned by parent QGraphicsItem
-    QGraphicsProxyWidget* _proxyWidget;
+    QGraphicsProxyWidget* m_proxyWidget;
 
     friend class AgxNodePainter;
 };
@@ -95,15 +93,16 @@ class AgxArrowGraphicsObject : public QGraphicsObject
 {
     Q_OBJECT
 public:
-    AgxArrowGraphicsObject(QGraphicsObject* parent = nullptr);
+    explicit AgxArrowGraphicsObject(QGraphicsObject* parent = nullptr);
 
     // Inherited via QGraphicsObject
-    QRectF boundingRect() const override;
+    QRectF boundingRect() const override; // NOLINT(*-use-nodiscard)
 
     void paint(QPainter* painter, const QStyleOptionGraphicsItem* option, QWidget* widget) override;
 
+protected:
     void mousePressEvent(QGraphicsSceneMouseEvent* event) override;
-    void mouseReleaseEvent(QGraphicsSceneMouseEvent* event);
+    void mouseReleaseEvent(QGraphicsSceneMouseEvent* event) override;
     void hoverEnterEvent(QGraphicsSceneHoverEvent* event) override;
     void hoverLeaveEvent(QGraphicsSceneHoverEvent* event) override;
     void hoverMoveEvent(QGraphicsSceneHoverEvent* event) override;
@@ -117,13 +116,13 @@ Q_SIGNALS:
     void TargetUpdated(const QPointF& target);
 
 private:
-    bool _renderLine = true;
-    bool _hovered = false;
-    QPointF _origin;
-    QPointF _target;
-    QPointF _targetPersistent;
-    AgxConnectionStyle _connectionStyle;
-    QRectF _arrowRect;
+    bool m_renderLine = true;
+    bool m_hovered = false;
+    QPointF m_origin;
+    QPointF m_target;
+    QPointF m_targetPersistent;
+    const AgxConnectionPalette* m_connPalette = nullptr;
+    QRectF m_arrowRect;
 
     friend class AgxNodeGraphicsObject;
 };
@@ -138,6 +137,7 @@ class AgxCommentGraphicsObject : public AgxNodeGraphicsObject {
 public:
     AgxCommentGraphicsObject(AgxGraphicsScene& scene, AgxNodeId nodeId);
 
+protected:
     QVariant itemChange(GraphicsItemChange change, const QVariant& value) override;
 
     //void paint(QPainter* painter, const QStyleOptionGraphicsItem* option, QWidget* widget) override;
@@ -147,6 +147,6 @@ public:
 void RecalculateTarget() const;
 
 private:
-    AgxArrowGraphicsObject* _arrowGraphicsObject = nullptr;
-    QJsonObject _iData;
+    AgxArrowGraphicsObject* m_arrowGraphicsObject = nullptr;
+    QJsonObject m_iData;
 };

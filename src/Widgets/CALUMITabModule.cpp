@@ -162,6 +162,10 @@ void CALUMITabModule::SetSideBarItem_Left(QWidget* item, bool show)
 	auto s = _centralLayout->sizes();
 	s[0] = _leftAreaParent->sizeHint().width();
 	_centralLayout->setSizes(s);
+	
+	auto leftPalette = _leftAreaParent->palette();
+	leftPalette.setColor(QPalette::Window, AgxPalette::GetInstance().subPanelColor());
+	_leftAreaParent->setPalette(leftPalette);
 
 	if(auto bWidget = dynamic_cast<IButtonBox*>(item))
 	{
@@ -202,7 +206,6 @@ void CALUMITabModule::ResetSideBar_Right()
 	_rightWidget->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::Expanding);
 	_rightScrollArea->setWidget(_rightWidget);
 
-	// _rightWidget->setStyleSheet("QWidget {border-color: transparent;}");
 	SetTransparentBackground(_rightWidget);
 
 	_rightScrollLayout->addStretch(1);

@@ -42,11 +42,11 @@ private:
 	AgxCommentWidget* _emb;
 	QWidget* _dummyWidget = nullptr;
 
-QFont _font;
+QFont m_font;
 	QString _text;
 
-	QPointF _target;
-	bool _hasTarget = false;
+	QPointF m_target;
+	bool m_hasTarget = false;
 
 public:
 	friend class AgxGraphModel;

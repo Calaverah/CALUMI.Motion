@@ -12,8 +12,7 @@ AgxColorBox::AgxColorBox(QWidget *parent)
 	setFixedSize(16, 16);
 }
 
-AgxColorBox::~AgxColorBox()
-{}
+AgxColorBox::~AgxColorBox() = default;
 
 void AgxColorBox::setColor(QColor color)
 {

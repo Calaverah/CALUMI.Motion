@@ -4,9 +4,7 @@
 
 #include "stdafx.h"
 #include "MiniGraphicsView.h"
-#include <QDebug>
-#include <QTimer>
-#include "Painter/AgxStyleCollection.h"
+#include "Painter/AgxPalette.h"
 
 MiniGraphicsView::MiniGraphicsView(QWidget* parent)
     : QGraphicsView(parent)
@@ -15,7 +13,7 @@ MiniGraphicsView::MiniGraphicsView(QWidget* parent)
     setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
     setMinimumSize(100, 100);
 
-    MiniViewMouseEventFilter* filter = new MiniViewMouseEventFilter();
+    const auto filter = new MiniViewMouseEventFilter();
     installEventFilter(filter);
 }
 
@@ -26,15 +24,15 @@ MiniGraphicsView::MiniGraphicsView(QGraphicsScene* scene, QWidget* parent)
     setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
     connect(scene, &QGraphicsScene::changed, this, &MiniGraphicsView::OnSceneChange);
 
-    auto const& flowViewStyle = AgxStyleCollection::flowViewStyle();
+    auto const& flowViewStyle = AgxPalette::GetInstance().graphPalette();
 
     setBackgroundBrush(flowViewStyle.BackgroundColor);
     
     setToolTip("Double Click To Open Embedded Graph");
 
-    setFrameStyle(QFrame::Plain);
+    setFrameStyle(Plain);
 
-    MiniViewMouseEventFilter* filter = new MiniViewMouseEventFilter();
+    const auto filter = new MiniViewMouseEventFilter();
     installEventFilter(filter);
 }
 
@@ -60,7 +58,7 @@ void MiniGraphicsView::mouseDoubleClickEvent(QMouseEvent* event)
     }
     if (event->button() == Qt::LeftButton && event->pos() == mousePressPos) {
 
-        QPointF sceneCoords = mapToScene(event->pos());
+        const QPointF sceneCoords = mapToScene(event->pos());
         Q_EMIT clicked(sceneCoords);
     }
     event->accept();

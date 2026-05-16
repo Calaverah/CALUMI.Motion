@@ -771,13 +771,15 @@ void RemovePortCommand::undo()
 void RemovePortCommand::redo()
 {
     _connections = _scene->agxGraphModel().connections(_node, _type, _port);
-    _data = _scene->agxGraphModel().removePort(_node, _type, _port);
+    _data = _scene->agxGraphModel().removePort(_node, _type, _port, false);
 }
 
-ChangeGroupColorCommand::ChangeGroupColorCommand(AgxGraphicsScene* scene, const QString& groupId, QColor newColor) : _scene(scene), _groupId(groupId), _newColor(newColor)
+ChangeGroupColorCommand::ChangeGroupColorCommand(AgxGraphicsScene* scene, const QString& groupId, QColor newColor) : _scene(scene), _groupId(groupId), _newColor(newColor) // NOLINT(*-pass-by-value)
 {
     setText("Change Group Color For " + _groupId);
-    if (!_newColor.isValid()) setObsolete(true);
+
+    if (!_newColor.isValid())
+        setObsolete(true);
 
     _oldColor = _scene->agxGraphModel().GetGroupColor(_groupId);
 }

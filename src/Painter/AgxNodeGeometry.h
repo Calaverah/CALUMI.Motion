@@ -11,53 +11,53 @@ class AgxGraphModel;
 class AgxNodeGeometry
 {
 public:
-	AgxNodeGeometry(AgxGraphModel& graphModel);
+	explicit AgxNodeGeometry(AgxGraphModel& graphModel);
 
-	QRect groupIconPosition(AgxNodeId const nodeId) const;
+	QRect groupIconPosition(AgxNodeId nodeId) const;
 
-	QRectF agxPortTextRect(AgxNodeId const nodeId,
-		AgxPortType const portType,
-		AgxPortIndex const portIndex) const;
+	QRectF agxPortTextRect(AgxNodeId nodeId,
+						   AgxPortType portType,
+						   AgxPortIndex portIndex) const;
 	QRectF titleCaptionRect(const QString& string) const;
 	QRectF subtitleCaptionRect(const QString& string) const;
 
 private:
-	QRectF portTextRect(AgxNodeId const nodeId,
-						AgxPortType const portType,
-						AgxPortIndex const portIndex) const;
+	QRectF portTextRect(AgxNodeId nodeId,
+						AgxPortType portType,
+						AgxPortIndex portIndex) const;
 	/// Finds max number of ports and multiplies by (a port height + interval)
-	unsigned int maxVerticalPortsExtent(AgxNodeId const nodeId) const;
+	unsigned int maxVerticalPortsExtent(AgxNodeId nodeId) const;
 
-	unsigned int maxPortsTextAdvance(AgxNodeId const nodeId, AgxPortType const portType) const;
+	unsigned int maxPortsTextAdvance(AgxNodeId nodeId, AgxPortType portType) const;
 
 public:
 	// Inherited via AbstractNodeGeometry
-	QRectF boundingRect(AgxNodeId const nodeId) const;
+	QRectF boundingRect(AgxNodeId nodeId) const;
 	QRectF collapsedBoundingRect(const AgxNodeId& nodeId) const;
-	QSize size(AgxNodeId const nodeId) const;
-	void recomputeSize(AgxNodeId const nodeId) const;
-	QSize collapsedSize(AgxNodeId const nodeId) const;
+	QSize size(AgxNodeId nodeId) const;
+	void recomputeSize(AgxNodeId nodeId) const;
+	QSize collapsedSize(AgxNodeId nodeId) const;
 	QPointF collapsedPortPosition(const AgxNodeId& nodeId, const AgxPortType& portType) const;
-	QPointF portPosition(AgxNodeId const nodeId, AgxPortType const portType, AgxPortIndex const portIndex) const;
-	QPointF portScenePosition(AgxNodeId const nodeId, AgxPortType const portType, AgxPortIndex const index, QTransform const& t) const;
-	QPointF portTextPosition(AgxNodeId const nodeId, AgxPortType const portType, AgxPortIndex const portIndex) const;
+	QPointF portPosition(AgxNodeId nodeId, AgxPortType portType, AgxPortIndex portIndex) const;
+	QPointF portScenePosition(AgxNodeId nodeId, AgxPortType portType, AgxPortIndex index, QTransform const& t) const;
+	QPointF portTextPosition(AgxNodeId nodeId, AgxPortType portType, AgxPortIndex portIndex) const;
 
-	QPointF captionPosition(AgxNodeId const nodeId) const;
+	QPointF captionPosition(AgxNodeId nodeId) const;
 	QPair<QPointF, QPointF> dualCaptionPosition(const AgxNodeId& nodeId, const QString& title, const QString& subtitle, bool collapsed = false) const;
 	QPair<QPointF, QPointF> dualCaptionPosition(const AgxNodeId& nodeId) const;
 
-	QRectF captionRect(AgxNodeId const nodeId) const;
+	QRectF captionRect(AgxNodeId nodeId) const;
 
-	QPointF widgetPosition(AgxNodeId const nodeId) const;
-	QRect resizeHandleRect(AgxNodeId const nodeId) const;
-	AgxPortIndex checkPortHit(AgxNodeId const nodeId, AgxPortType const portType, QPointF const nodePoint) const;
+	QPointF widgetPosition(AgxNodeId nodeId) const;
+	QRect resizeHandleRect(AgxNodeId nodeId) const;
+	AgxPortIndex checkPortHit(AgxNodeId nodeId, AgxPortType portType, QPointF nodePoint) const;
 
 protected:
-	mutable unsigned int _portSize;
-	unsigned int _portSpacing;
-	mutable QFontMetrics _fontMetrics;
-	mutable QFontMetrics _boldFontMetrics;
+	mutable unsigned int m_portSize;
+	unsigned int m_portSpacing;
+	mutable QFontMetrics m_fontMetrics;
+	mutable QFontMetrics m_boldFontMetrics;
 
-AgxGraphModel& _graphModel;
+AgxGraphModel& m_graphModel;
 
 };

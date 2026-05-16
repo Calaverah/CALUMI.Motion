@@ -6,7 +6,6 @@
 #include <utility>
 
 #pragma warning(push,0)
-#include <QUuid>
 #include <QGraphicsObject>
 #include "AgxConnectionState.h"
 
@@ -27,10 +26,10 @@ public:
     enum { Type = UserType + 2 };
 
     int type() const override { return Type; }
-	AgxConnectionGraphicsObject(AgxGraphicsScene& scene, AgxConnectionId const connectionId);
-	~AgxConnectionGraphicsObject() = default;
+	AgxConnectionGraphicsObject(AgxGraphicsScene& scene, const AgxConnectionId& connectionId);
+	~AgxConnectionGraphicsObject() override = default;
 
-AgxGraphModel& graphModel() const;
+    AgxGraphModel& graphModel() const;
 
     AgxGraphicsScene* agxNodeScene() const;
 
@@ -48,7 +47,7 @@ AgxGraphModel& graphModel() const;
 
     std::pair<QPointF, QPointF> pointsC1C2() const;
 
-    void setEndPoint(AgxPortType portType, QPointF const& point);
+    void setEndPoint(AgxPortType portType, QPointF const& point) const;
 
     /// Updates the position of both ends
     void move();
@@ -59,11 +58,11 @@ AgxGraphModel& graphModel() const;
 
     void setConnectionHidden(bool hidden);
 
-protected:
     void paint(QPainter* painter,
         QStyleOptionGraphicsItem const* option,
-        QWidget* widget = 0) override;
+        QWidget* widget) override;
 
+protected:
     void mousePressEvent(QGraphicsSceneMouseEvent* event) override;
 
     void mouseDoubleClickEvent(QGraphicsSceneMouseEvent* event) override;
@@ -96,7 +95,7 @@ private:
     /// <returns></returns>
     QPointF GetInPosition() const;
 
-AgxConnectionId _connectionId;
+    AgxConnectionId _connectionId;
 
     AgxGraphModel& _graphModel;
 

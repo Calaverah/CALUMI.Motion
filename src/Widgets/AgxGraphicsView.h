@@ -21,10 +21,11 @@ public:
 		double minimum = 0;
 		double maximum = 0;
 	};
-	AgxGraphicsView(QWidget* parent = Q_NULLPTR);
-	AgxGraphicsView(AgxGraphicsScene* scene, QWidget* parent = Q_NULLPTR);
 
-	~AgxGraphicsView();
+	explicit AgxGraphicsView(QWidget* parent = Q_NULLPTR);
+	explicit AgxGraphicsView(AgxGraphicsScene* scene, QWidget* parent = Q_NULLPTR);
+
+	~AgxGraphicsView() override;
 
 	AgxGraphicsView(const AgxGraphicsView&) = delete;
 	AgxGraphicsView operator=(const AgxGraphicsView&) = delete;
@@ -85,12 +86,12 @@ protected:
 	void showEvent(QShowEvent* event) override;
 
 public Q_SLOTS:
-	void ShowContextMenu(AgxNodeId const nodeId, QPointF const pos);
-	void ToggleNodeCollapse(const AgxNodeId nodeId);
-	void SelectNodeGroup(const AgxNodeId nodeId, bool additive = false);
-	void SelectNodeGroup(const QString nodeGroup, AgxGraphModel* agxModel = nullptr, bool additive = false);
+	void ShowContextMenu(AgxNodeId nodeId, QPointF pos);
+	void ToggleNodeCollapse(AgxNodeId nodeId);
+	void SelectNodeGroup(AgxNodeId nodeId, bool additive = false);
+	void SelectNodeGroup(const QString& nodeGroup, const AgxGraphModel* agxModel = nullptr, bool additive = false);
 	void ShowNodeGroupMenu(const std::vector<AgxNodeId>& nodeIds);
-	void OnNodePreClicked(const AgxNodeId nodeId, bool additive);
+	void OnNodePreClicked(AgxNodeId nodeId, bool additive);
 	void FilterSelection_Nodes();
 	void FilterSelection_Connections();
 
@@ -122,38 +123,38 @@ public:
 	QHBoxLayout* getToolBarLayout();
 
 private:
-	QAction* _clearSelectionAction = nullptr;
-	QAction* _deleteSelectionAction = nullptr;
-	QAction* _duplicateSelectionAction = nullptr;
-	QAction* _copySelectionAction = nullptr;
-	QAction* _pasteAction = nullptr;
-	QAction* _cutSelectionAction = nullptr;
+	QAction* _clearSelectionAction = Q_NULLPTR;
+	QAction* _deleteSelectionAction = Q_NULLPTR;
+	QAction* _duplicateSelectionAction = Q_NULLPTR;
+	QAction* _copySelectionAction = Q_NULLPTR;
+	QAction* _pasteAction = Q_NULLPTR;
+	QAction* _cutSelectionAction = Q_NULLPTR;
 
-	QAction* _selectAllAction = nullptr;
-	QAction* _selectAllNodesAction = nullptr;
-	QAction* _selectAllConnectionsAction = nullptr;
+	QAction* _selectAllAction = Q_NULLPTR;
+	QAction* _selectAllNodesAction = Q_NULLPTR;
+	QAction* _selectAllConnectionsAction = Q_NULLPTR;
 
-	QMenu* _selectionFilterMenu = nullptr;
-	QAction* _selectFilterNodes = nullptr;
-	QAction* _selectFilterConnections = nullptr;
+	QMenu* _selectionFilterMenu = Q_NULLPTR;
+	QAction* _selectFilterNodes = Q_NULLPTR;
+	QAction* _selectFilterConnections = Q_NULLPTR;
 	
-	QAction* _saveGraphModelAction = nullptr;
+	QAction* _saveGraphModelAction = Q_NULLPTR;
 
-	QAction* _centerAction = nullptr;
-	QAction* _hideAction = nullptr;
-	QAction* _unhideAction = nullptr;
+	QAction* _centerAction = Q_NULLPTR;
+	QAction* _hideAction = Q_NULLPTR;
+	QAction* _unhideAction = Q_NULLPTR;
 
-	QAction* _undoAction = nullptr;
-	QAction* _redoAction = nullptr;
+	QAction* _undoAction = Q_NULLPTR;
+	QAction* _redoAction = Q_NULLPTR;
 
 	QPointF _clickPos;
 	ScaleRange _scaleRange;
 
-	QWidget* _toolbar;
-	QHBoxLayout* _toolbarLayout;
-	QGridLayout* _overlayLayout;
+	QWidget* _toolbar = Q_NULLPTR;
+	QHBoxLayout* _toolbarLayout = Q_NULLPTR;
+	QGridLayout* _overlayLayout = Q_NULLPTR;
 
-	QRubberBand* _rubberband = nullptr;
+	QRubberBand* _rubberband = Q_NULLPTR;
 
 	bool _firstOpen = true;
 };

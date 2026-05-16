@@ -16,6 +16,8 @@
 #include <Application/CALUMIMotionApplication.h>
 #include <Utilities/AgxConnectionIdUtils.h>
 
+#include <ranges>
+
 #include "Utilities/QWidgetFactories.h"
 
 AgxGraphicsScene::AgxGraphicsScene(AgxGraphModel& graphModel, QObject* parent) : QGraphicsScene(parent)
@@ -161,18 +163,11 @@ QUndoStack& AgxGraphicsScene::undoStack() const
 
 void AgxGraphicsScene::setOrientation(Qt::Orientation const orientation)
 {
-    if (m_orientation != orientation) {
+    if (m_orientation != orientation)
+    {
         m_orientation = orientation;
 
-        switch (m_orientation) {
-        case Qt::Horizontal:
-            m_agxNodeGeometry = std::make_unique<AgxNodeGeometry>(m_agxGraphModel);
-            break;
-
-        case Qt::Vertical:
-            m_agxNodeGeometry = std::make_unique<AgxNodeGeometry>(m_agxGraphModel);
-            break;
-        }
+        m_agxNodeGeometry = std::make_unique<AgxNodeGeometry>(m_agxGraphModel);
 
         onModelReset();
     }
@@ -489,16 +484,17 @@ void AgxGraphicsScene::onRightRefreshSideBarVisibility()
     QList<AgxNodeId> nodeIds = agxGraphModel().allNodeIds().values();
 
     QTimer::singleShot(30, this, [this, nodeIds] {
-                                                        size_t i = 0;
-                                                        for (auto nodeId = nodeIds.rbegin(); nodeId != nodeIds.rend(); ++nodeId) {
-                                                            const auto ngo = agxNodeGraphicsObject(*nodeId);
-                                                            ngo->blockSignals(true);
-                                                            agxGraphModel().SetNodeSidebarVisibility(*nodeId, ngo->isSelected());
-                                                            ngo->blockSignals(false);
-                                                            i++;
-                                                            if (i % 5 == 0) QCoreApplication::processEvents();
-                                                        }
-                                                   });
+            size_t i = 0;
+            for (unsigned int nodeId : std::views::reverse(nodeIds))
+            {
+                const auto ngo = agxNodeGraphicsObject(nodeId);
+                ngo->blockSignals(true);
+                agxGraphModel().SetNodeSidebarVisibility(nodeId, ngo->isSelected());
+                ngo->blockSignals(false);
+                i++;
+                if (i % 5 == 0) QCoreApplication::processEvents();
+            }
+       });
 
 }
 
@@ -514,7 +510,7 @@ void AgxGraphicsScene::onSelectNodes(const QList<AgxNodeId>& nodesToSelect)
     }
 
     //We manually set sidebar visibility as doing so via QT "selection" signal events is expensive and will lag the view
-    //In fact, even this method is slightly laggy hence the concurrant QTimer shot
+    //In fact, even this method is slightly laggy hence the concurrent QTimer shot
     onRightRefreshSideBarVisibility();
 
     blockSignals(false);
@@ -525,7 +521,7 @@ QString AgxGraphicsScene::getLastHoveredGroup() const
     if (m_lastHoveredNode)
         return m_agxGraphModel.GetNodeGroup(m_lastHoveredNode->nodeId());
 
-        return "";
+    return "";
 }
 
 bool AgxGraphicsScene::setGroupHoverState(const bool shouldHover, const QString& groupId)

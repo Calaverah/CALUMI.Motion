@@ -2,6 +2,8 @@
 //License: https://www.gnu.org/licenses/lgpl-3.0.html
 //Contact: Calaverahmedia@gmail.com
 
+// ReSharper disable CppTooWideScopeInitStatement
+// ReSharper disable CppTooWideScope
 #include "stdafx.h"
 #include "CALUMIMotion.h"
 #include "Widgets/AgxGraphicsView.h"
@@ -15,7 +17,10 @@
 #include <Widgets/Dialog/AgxProgressDialog.h>
 #include <Utilities/SettingsRegistry.h>
 #include "Application/CALUMIMotionApplication.h"
+#include "oclero/qlementine/icons/Icons16.hpp"
+#include <QtSvg/QSvgRenderer>
 #include "Utilities/AgxFormat.h"
+#include "Utilities/QWidgetFactories.h"
 #include "Widgets/Settings/SettingsDialog.h"
 #include "Utilities/UndoRedoCommands.h"
 
@@ -41,8 +46,8 @@ CALUMIMotion::CALUMIMotion(QWidget *parent) : QMainWindow(parent)
     connect(ui.menuHelp, &QMenu::aboutToShow, this, &CALUMIMotion::GetHelpMenu);
 
     connect(ui.actionAbout, &QAction::triggered, this, &CALUMIMotion::ShowAboutDialog);
-    
-    auto& settings = SettingsRegistry::GetInstance();
+
+    const auto& settings = SettingsRegistry::GetInstance();
 
     const QByteArray& bytes = settings.GetSavedWindowGeometry("Geometry");
     
@@ -50,16 +55,16 @@ CALUMIMotion::CALUMIMotion(QWidget *parent) : QMainWindow(parent)
         restoreGeometry(settings.GetSavedWindowGeometry("Geometry"));
     else
         resize(1280, 800);
-    StartupVisibiltyPreference propPref = settings.GetPropertySidebarVisibilityPreference();
+    const StartupVisibilityPreference propPref = settings.GetPropertySidebarVisibilityPreference();
     switch (propPref)
     {
-        case StartupVisibiltyPreference::Never:
+        case StartupVisibilityPreference::Never:
             _showPropertiesSidebar = false;
             break;
-        case StartupVisibiltyPreference::Remember:
+        case StartupVisibilityPreference::Remember:
             _showPropertiesSidebar = settings.GetLastState("Sidebar/State", _showPropertiesSidebar);
             break;
-        case StartupVisibiltyPreference::Always:
+        case StartupVisibilityPreference::Always:
             _showPropertiesSidebar = true;
             break;
     }
@@ -73,11 +78,11 @@ CALUMIMotion::~CALUMIMotion() {
 
 void CALUMIMotion::closeEvent(QCloseEvent* event)
 {
-    if (auto calumiApp = dynamic_cast<CALUMIMotionApplication*>(QCoreApplication::instance()))
+    if (const auto calumiApp = dynamic_cast<CALUMIMotionApplication*>(QCoreApplication::instance()))
     {
         size_t topLevelCount = 0;
         
-        for (auto window : calumiApp->topLevelWindows())
+        for (const auto window : calumiApp->topLevelWindows())
         {
             //TBD: there has to be a better solution for this but whatever.
             if (window->objectName() == "CALUMIMotionObjectWindow" && window->isVisible())
@@ -86,7 +91,7 @@ void CALUMIMotion::closeEvent(QCloseEvent* event)
             }
         }
 
-        auto& settingIns = SettingsRegistry::GetInstance();
+        const auto& settingIns = SettingsRegistry::GetInstance();
         
         settingIns.SaveLastState("Log/State", calumiApp->LoggerVisible());
 
@@ -110,12 +115,12 @@ void CALUMIMotion::changeEvent(QEvent* event)
     QMainWindow::changeEvent(event);
 }
 
-void CALUMIMotion::CloseTab(int i)
+void CALUMIMotion::CloseTab(const int i) const
 {
     if (ui.tabWidget && ui.tabWidget->count()>i && i >= 0)
     {
         //ui.tabWidget->removeTab(i);
-        if (auto agxView = GetAgxViewFromTab(i))
+        if (const auto agxView = GetAgxViewFromTab(i))
         {
             if (agxView->pagxNodeScene())
             {
@@ -141,7 +146,7 @@ void CALUMIMotion::TogglePropertiesSidebar()
     {
         for (int i = 0; i < ui.tabWidget->count(); i++)
         {
-            if (auto tab = dynamic_cast<CALUMITabModule*>(ui.tabWidget->widget(i)))
+            if (const auto tab = dynamic_cast<CALUMITabModule*>(ui.tabWidget->widget(i)))
             {
                 tab->SetSidebarVisibility_Right(_showPropertiesSidebar);
             }
@@ -151,15 +156,15 @@ void CALUMIMotion::TogglePropertiesSidebar()
     SettingsRegistry::GetInstance().SaveLastState("Sidebar/State", _showPropertiesSidebar);
 }
 
-void CALUMIMotion::ToggleApplicationConsole() const
+void CALUMIMotion::ToggleApplicationConsole()
 {
-    if (auto calumiApp = dynamic_cast<CALUMIMotionApplication*>(QCoreApplication::instance()))
+    if (const auto calumiApp = dynamic_cast<CALUMIMotionApplication*>(QCoreApplication::instance()))
     {
         calumiApp->ToggleLogger();
     }
 }
 
-void CALUMIMotion::CloseTab(QWidget* widget)
+void CALUMIMotion::CloseTab(const QWidget* widget) const
 {
     if (!widget) return;
 
@@ -175,27 +180,30 @@ void CALUMIMotion::CloseTab(QWidget* widget)
     }
 }
 
-bool CALUMIMotion::HasScene(AgxGraphicsScene* scene)
+bool CALUMIMotion::HasScene(const AgxGraphicsScene* scene) const
 {
-    for (auto& entry : tabMap) {
-        if (entry.second._AgxGraphicsScene.get() == scene) return true;
+    for (auto& pair : tabMap | std::views::values)
+    {
+        if (pair.m_AgxGraphicsScene.get() == scene)
+            return true;
     }
 
     return false;
 }
 
-AgxGraphicsView* CALUMIMotion::GetAgxViewFromTab(int idx)
+AgxGraphicsView* CALUMIMotion::GetAgxViewFromTab(const int idx) const
 {
-    if (idx >= ui.tabWidget->count() || idx < 0) return nullptr;
+    if (idx >= ui.tabWidget->count() || idx < 0)
+        return nullptr;
 
-    if (auto agxView = dynamic_cast<AgxGraphicsView*>(ui.tabWidget->widget(idx)))
+    if (const auto agxView = dynamic_cast<AgxGraphicsView*>(ui.tabWidget->widget(idx)))
     {
         return agxView;
     }
 
-    if (auto module = dynamic_cast<CALUMITabModule*>(ui.tabWidget->widget(idx)))
+    if (const auto module = dynamic_cast<CALUMITabModule*>(ui.tabWidget->widget(idx)))
     {
-        if (auto agxView = dynamic_cast<AgxGraphicsView*>(module->GetMainWidget()))
+        if (const auto agxView = dynamic_cast<AgxGraphicsView*>(module->GetMainWidget()))
         {
             return agxView;
         }
@@ -204,15 +212,15 @@ AgxGraphicsView* CALUMIMotion::GetAgxViewFromTab(int idx)
     return nullptr;
 }
 
-void CALUMIMotion::UpdateTabTitles()
+void CALUMIMotion::UpdateTabTitles() const
 {
     if (ui.tabWidget)
     {
         for (int i = 0; i < ui.tabWidget->count(); i++)
         {
-            if (auto tab = dynamic_cast<CALUMITabModule*>(ui.tabWidget->widget(i)))
+            if (const auto tab = dynamic_cast<CALUMITabModule*>(ui.tabWidget->widget(i)))
             {
-                if (auto view = dynamic_cast<AgxGraphicsView*>(tab->GetMainWidget()))
+                if (const auto view = dynamic_cast<AgxGraphicsView*>(tab->GetMainWidget()))
                 {
                     ui.tabWidget->setTabText(i, view->pagxNodeScene()->agxGraphModel().GetGraphTitle(false));
                     if (view->pagxNodeScene()->agxGraphModel().rootGraphReference() != &view->pagxNodeScene()->agxGraphModel())
@@ -223,16 +231,16 @@ void CALUMIMotion::UpdateTabTitles()
     }
 }
 
-void CALUMIMotion::ShowNodeGroupMenu()
+void CALUMIMotion::ShowNodeGroupMenu() const
 {
     if (ui.tabWidget->count() <= 0) return;
-    QDialog* gWindow = new QDialog();
-    
-    QGridLayout* pgrid = new QGridLayout();
-    QTabWidget* tabWidget = new QTabWidget(gWindow);
+    const auto gWindow = new QDialog();
+
+    const auto pgrid = new QGridLayout();
+    const auto tabWidget = new QTabWidget(gWindow);
     pgrid->addWidget(tabWidget);
     tabWidget->clear();
-    QGridLayout* grid = new QGridLayout();
+    const auto grid = new QGridLayout();
     gWindow->setLayout(pgrid);
     tabWidget->setLayout(grid);
     gWindow->setSizePolicy(QSizePolicy::Minimum,QSizePolicy::Minimum);
@@ -241,9 +249,10 @@ void CALUMIMotion::ShowNodeGroupMenu()
     {
         auto agxView = GetAgxViewFromTab(i);
 
-        if (agxView) {
-            auto agxScene = tabMap.at(agxView)._AgxGraphicsScene.get();
-            auto newTabView = new NodeGroupMenuPopup(nullptr, *agxScene, agxView, ui.tabWidget);
+        if (agxView)
+        {
+            const auto agxScene = tabMap.at(agxView).m_AgxGraphicsScene.get();
+            const auto newTabView = new NodeGroupMenuPopup(nullptr, *agxScene, agxView, ui.tabWidget);
             tabWidget->addTab(newTabView, ui.tabWidget->tabText(i));
 
             if (tabWidget->count() == ui.tabWidget->count())
@@ -251,9 +260,7 @@ void CALUMIMotion::ShowNodeGroupMenu()
         }
     }
     gWindow->exec();
-
-    if (gWindow)
-        gWindow->deleteLater();
+    gWindow->deleteLater();
 }
 
 void CALUMIMotion::HandleNodeGroupMenuVisibility() const
@@ -282,7 +289,7 @@ void CALUMIMotion::GetEditMenu()
     BuildSettingsMenu();
 }
 
-void CALUMIMotion::GetFileMenu()
+void CALUMIMotion::GetFileMenu() const
 {
     BuildFileInOutMenu();
 }
@@ -298,6 +305,7 @@ void CALUMIMotion::GetViewMenu()
         ui.actionHide_Properties->setText(tr("Show Property Sidebar "));
 }
 
+// ReSharper disable once CppMemberFunctionMayBeStatic
 void CALUMIMotion::GetHelpMenu()
 {
 
@@ -306,7 +314,7 @@ void CALUMIMotion::GetHelpMenu()
 void CALUMIMotion::BuildUndoViewMenu()
 {
     if (ui.tabWidget->count() <= 0) { 
-        //set dummy actions. Probably a cleaner way to do this but it's fine for now
+        //set dummy actions. Probably a cleaner way to do this, but it's fine for now
         QAction* undoAction = ui.menuEdit->addAction(tr("Undo"));
         undoAction->setShortcut(QKeySequence::Undo); 
         undoAction->setEnabled(false);
@@ -319,7 +327,7 @@ void CALUMIMotion::BuildUndoViewMenu()
         undoStackAction->setEnabled(false);
         QMenu* redoStackAction = ui.menuEdit->addMenu(tr("Redo History"));
         redoStackAction->setEnabled(false);
-        QAction* sep = ui.menuEdit->addSeparator();
+        const QAction* sep = ui.menuEdit->addSeparator();
         
         connect(ui.menuEdit, &QMenu::aboutToHide, undoStackAction, &QMenu::deleteLater);
         connect(ui.menuEdit, &QMenu::aboutToHide, undoAction, &QAction::deleteLater);
@@ -335,7 +343,7 @@ void CALUMIMotion::BuildUndoViewMenu()
         ui.menuEdit->addAction(view->undoActionRef());
         ui.menuEdit->addAction(view->redoActionRef());
 
-        auto removals = connect(ui.menuEdit, &QMenu::aboutToHide, this, [this, view]() {
+        auto removals = connect(ui.menuEdit, &QMenu::aboutToHide, this, [this, view] {
             ui.menuEdit->removeAction(view->undoActionRef());
             ui.menuEdit->removeAction(view->redoActionRef()); }, Qt::SingleShotConnection);
 
@@ -348,14 +356,14 @@ void CALUMIMotion::BuildUndoViewMenu()
         {
             text = view->undoStackRef().command(i)->text();
             QAction* menuItem = undoStackMenu->addAction(text);
-            connect(menuItem, &QAction::triggered, view, [view, i]() {view->undoStackRef().setIndex(i); });
+            connect(menuItem, &QAction::triggered, view, [view, i] {view->undoStackRef().setIndex(i); });
             if (i == view->undoStackRef().index() - 1) menuItem->setIcon(QIcon::fromTheme("edit-undo"));
         }
         for (int i = view->undoStackRef().index(); i < view->undoStackRef().count(); i++)
         {
             text = view->undoStackRef().command(i)->text();
             QAction* menuItem = redoStackMenu->addAction(text);
-            connect(menuItem, &QAction::triggered, view, [view, i]() {view->undoStackRef().setIndex(i + 1); });
+            connect(menuItem, &QAction::triggered, view, [view, i] {view->undoStackRef().setIndex(i + 1); });
             if (i == view->undoStackRef().index()) menuItem->setIcon(QIcon::fromTheme("edit-redo"));
         }
             
@@ -365,7 +373,7 @@ void CALUMIMotion::BuildUndoViewMenu()
         redoStackMenu->setEnabled(!redoStackMenu->actions().isEmpty());
         connect(ui.menuEdit, &QMenu::aboutToHide, redoStackMenu, &QMenu::deleteLater);
 
-        QAction* sep = ui.menuEdit->addSeparator();
+        const QAction* sep = ui.menuEdit->addSeparator();
         connect(ui.menuEdit, &QMenu::aboutToHide, sep, &QAction::deleteLater);
     }
     
@@ -390,7 +398,7 @@ void CALUMIMotion::BuildCutCopyPasteMenu()
         QAction* dummyDel = ui.menuEdit->addAction(tr("Delete"), QKeySequence::Delete);
         dummyDel->setEnabled(false);
         connect(ui.menuEdit, &QMenu::aboutToHide, dummyDel, &QAction::deleteLater);
-        QAction* sep = ui.menuEdit->addSeparator();
+        const QAction* sep = ui.menuEdit->addSeparator();
         connect(ui.menuEdit, &QMenu::aboutToHide, sep, &QAction::deleteLater);
         return;
     }
@@ -399,10 +407,10 @@ void CALUMIMotion::BuildCutCopyPasteMenu()
 
     if (!view) return;
 
-    if (tabMap.at(view)._AgxGraphicsScene->selectedItems().size() != 0) {
+    if (tabMap.at(view).m_AgxGraphicsScene->selectedItems().size() != 0) {
         ui.menuEdit->addAction(view->cutActionRef());
         ui.menuEdit->addAction(view->copyActionRef());
-        auto removals = connect(ui.menuEdit, &QMenu::aboutToHide, this, [this, view]() {
+        auto removals = connect(ui.menuEdit, &QMenu::aboutToHide, this, [this, view] {
             ui.menuEdit->removeAction(view->cutActionRef());
             ui.menuEdit->removeAction(view->copyActionRef()); }, Qt::SingleShotConnection);
     }
@@ -416,13 +424,13 @@ void CALUMIMotion::BuildCutCopyPasteMenu()
     }
     
     ui.menuEdit->addAction(view->pasteActionRef());
-    auto removals = connect(ui.menuEdit, &QMenu::aboutToHide, this, [this, view]() {
+    auto removals = connect(ui.menuEdit, &QMenu::aboutToHide, this, [this, view] {
     ui.menuEdit->removeAction(view->pasteActionRef()); }, Qt::SingleShotConnection);
     
-    if (tabMap.at(view)._AgxGraphicsScene->selectedItems().size() != 0) {
+    if (tabMap.at(view).m_AgxGraphicsScene->selectedItems().size() != 0) {
         ui.menuEdit->addAction(view->duplicateActionRef());
         ui.menuEdit->addAction(view->deleteActionRef());
-        auto removals = connect(ui.menuEdit, &QMenu::aboutToHide, this, [this, view]() {
+        auto dRemovals = connect(ui.menuEdit, &QMenu::aboutToHide, this, [this, view] {
             ui.menuEdit->removeAction(view->duplicateActionRef());
             ui.menuEdit->removeAction(view->deleteActionRef()); }, Qt::SingleShotConnection);
     }
@@ -434,13 +442,14 @@ void CALUMIMotion::BuildCutCopyPasteMenu()
         dummyDel->setEnabled(false);
         connect(ui.menuEdit, &QMenu::aboutToHide, dummyDel, &QAction::deleteLater);
     }
-    QAction* sep = ui.menuEdit->addSeparator();
+    const QAction* sep = ui.menuEdit->addSeparator();
     connect(ui.menuEdit, &QMenu::aboutToHide, sep, &QAction::deleteLater);
 }
 
 void CALUMIMotion::BuildCenterViewMenu()
 {
-    if (!ui.tabWidget) return;
+    if (!ui.tabWidget)
+        return;
 
     if(ui.tabWidget->count()==0){
         QAction* centerView = ui.menuView->addAction(tr("Center View"));
@@ -451,7 +460,7 @@ void CALUMIMotion::BuildCenterViewMenu()
     else if(const auto view = GetAgxViewFromTab(ui.tabWidget->currentIndex())) {        
         QAction* actionRef = view->centerActionRef();
         ui.menuView->addAction(actionRef);
-        connect(ui.menuView, &QMenu::aboutToHide, this, [this, view]() {
+        connect(ui.menuView, &QMenu::aboutToHide, this, [this, view] {
                 ui.menuView->removeAction(view->centerActionRef());
             }, Qt::SingleShotConnection);
     }
@@ -460,12 +469,12 @@ void CALUMIMotion::BuildCenterViewMenu()
 void CALUMIMotion::BuildSettingsMenu()
 {
 
-    QAction* settingsA = ui.menuEdit->addAction(QIcon::fromTheme("document-properties"), tr("Settings"));
+    const QAction* settingsA = ui.menuEdit->addAction(QIcon::fromTheme("document-properties"), tr("Settings"));
     connect(ui.menuEdit, &QMenu::aboutToHide, settingsA, &QAction::deleteLater);
-    connect(settingsA, &QAction::triggered, this, [this]() {
-                                                                SettingsDialog dialog;
-                                                                dialog.exec();
-                                                            });
+    connect(settingsA, &QAction::triggered, this, [] {
+            SettingsDialog dialog;
+            dialog.exec();
+        });
 
 }
 
@@ -474,9 +483,9 @@ void CALUMIMotion::BuildGraphEditMenu()
     if (ui.tabWidget->count() <= 0) return;
 
     if (const auto view = GetAgxViewFromTab(ui.tabWidget->currentIndex())) {
-        QAction* newTitleAction = ui.menuEdit->addAction(tr("Edit Graph Title"));
+        const QAction* newTitleAction = ui.menuEdit->addAction(tr("Edit Graph Title"));
         connect(ui.menuEdit, &QMenu::aboutToHide, newTitleAction, &QAction::deleteLater);
-        connect(newTitleAction, &QAction::triggered, this, [this, view]() {
+        connect(newTitleAction, &QAction::triggered, this, [this, view] {
             bool ok = false;
             QString result = QInputDialog::getText(this, tr("Input New Graph Title"),
                                   tr("Graph Title:"), QLineEdit::Normal,
@@ -489,7 +498,7 @@ void CALUMIMotion::BuildGraphEditMenu()
             view->pagxNodeScene()->undoStack().push(new AgxSetGraphTitleCommand(&view->pagxNodeScene()->agxGraphModel(), result));
 
                 });
-        QAction* sep = ui.menuEdit->addSeparator();
+        const QAction* sep = ui.menuEdit->addSeparator();
         connect(ui.menuEdit, &QMenu::aboutToHide, sep, &QAction::deleteLater);
     }
 }
@@ -519,14 +528,15 @@ void CALUMIMotion::BuildItemSelectionMenu()
 
     const auto view = GetAgxViewFromTab(ui.tabWidget->currentIndex());
 
-    if (!view) return;
+    if (!view)
+        return;
 
     ui.menuEdit->addAction(view->selectAllActionRef());
     ui.menuEdit->addAction(view->selectAllNodesActionRef());
     ui.menuEdit->addAction(view->selectAllConnectionsActionRef());
     ui.menuEdit->addMenu(view->selectionFilterMenu());
 
-    auto removals = connect(ui.menuEdit, &QMenu::aboutToHide, this, [this, view]() {
+    auto removals = connect(ui.menuEdit, &QMenu::aboutToHide, this, [this, view] {
         ui.menuEdit->removeAction(view->selectAllActionRef());
         ui.menuEdit->removeAction(view->selectAllNodesActionRef());          
         ui.menuEdit->removeAction(view->selectAllConnectionsActionRef());      
@@ -534,7 +544,7 @@ void CALUMIMotion::BuildItemSelectionMenu()
                                                                                    }, Qt::SingleShotConnection);
 
 
-    QAction* sep = ui.menuEdit->addSeparator();
+    const QAction* sep = ui.menuEdit->addSeparator();
     connect(ui.menuEdit, &QMenu::aboutToHide, sep, &QAction::deleteLater);
 }
 
@@ -544,11 +554,11 @@ void CALUMIMotion::onSave()
     if (!ui.tabWidget || ui.tabWidget->count() == 0) return;
 
     if (const auto view = GetAgxViewFromTab(ui.tabWidget->currentIndex())) {
-        QString fileStr = view->pagxNodeScene()->agxGraphModel().GetModelFilePath();
+        const QString fileStr = view->pagxNodeScene()->agxGraphModel().GetModelFilePath();
         QSaveFile sFile(fileStr);
         if (!fileStr.isEmpty() && QFileInfo(fileStr).exists() && sFile.open(QIODevice::WriteOnly)) {
-            auto doc = view->pagxNodeScene()->agxGraphModel().rootGraphReference()->save();
-            QJsonDocument document(doc);
+            const auto doc = view->pagxNodeScene()->agxGraphModel().rootGraphReference()->save();
+            const QJsonDocument document(doc);
 
             QTextStream out(&sFile);
             out << document.toJson();
@@ -569,23 +579,22 @@ void CALUMIMotion::onSaveAs()
     if (!ui.tabWidget || ui.tabWidget->count() == 0) return;
 
     if (const auto view = GetAgxViewFromTab(ui.tabWidget->currentIndex())) {
-        QString initialFilePath = view->pagxNodeScene()->agxGraphModel().GetModelFilePath();
-        QFileInfo initialFileName(initialFilePath);
-        
-        QString graphTitle = view->pagxNodeScene()->agxGraphModel().GetGraphTitle();
-        QString fileNameString = cleanFileName(graphTitle + ".agx");
+        const QString initialFilePath = view->pagxNodeScene()->agxGraphModel().GetModelFilePath();
+        const QFileInfo initialFileName(initialFilePath);
+
+        const QString graphTitle = view->pagxNodeScene()->agxGraphModel().GetGraphTitle();
+        const QString fileNameString = cleanFileName(graphTitle + ".jagx");
 
         //QString fileNameString = initialFileName.fileName().isEmpty() ? "untitled.jagx" : initialFileName.fileName();
-        QString fileDirString = initialFileName.path().isEmpty() && initialFileName.dir().exists() ? QDir::homePath() : initialFileName.path();
+        const QString fileDirString = initialFileName.path().isEmpty() && initialFileName.dir().exists() ? QDir::homePath() : initialFileName.path();
         QString fileStemString = initialFileName.baseName().isEmpty() ? "untitled" : initialFileName.baseName();
 
-        QString filePath = QFileDialog::getSaveFileName(this, tr("Save Graph As"), fileDirString + "/" + fileNameString);
+        const QString filePath = QFileDialog::getSaveFileName(this, tr("Save Graph As"), fileDirString + "/" + fileNameString);
         if (filePath.isEmpty()) return;
         QFile file(filePath);
         if (!file.open(QIODevice::WriteOnly | QIODevice::Text)) { QMessageBox::critical(this, tr("Error"), tr("Could not save to file")); return; }
-        //view->pagxNodeScene()->agxGraphModel().SetGraphFilePath(QFileInfo(file).fileName());
-        auto doc = view->pagxNodeScene()->agxGraphModel().rootGraphReference()->save();
-        QJsonDocument document(doc);
+        const auto doc = view->pagxNodeScene()->agxGraphModel().rootGraphReference()->save();
+        const QJsonDocument document(doc);
         file.write(document.toJson());
         qInfo() << tr("Saved .jagx File As: ") << filePath;
         view->pagxNodeScene()->agxGraphModel().SetModelFilePath(filePath);
@@ -598,9 +607,10 @@ void CALUMIMotion::onSaveAs()
 
 void CALUMIMotion::onOpen()
 {
-    QString fileString = QFileDialog::getOpenFileName(this, tr("Open File"), SettingsRegistry::GetInstance().LastDirectory(), tr("Motion Files (*.jagx);;All Files (*.*)"));
+    const QString fileString = QFileDialog::getOpenFileName(this, tr("Open File"), SettingsRegistry::GetInstance().LastDirectory(), tr("Motion Files (*.jagx);;All Files (*.*)"));
 
-    if (fileString.isEmpty()) return;
+    if (fileString.isEmpty())
+        return;
 
     QFile file(fileString);
     if (!file.open(QIODevice::ReadOnly | QIODevice::Text)) {
@@ -608,11 +618,11 @@ void CALUMIMotion::onOpen()
         return;
     }
 
-    QByteArray byteArray = file.readAll();
+    const QByteArray byteArray = file.readAll();
     file.close();
 
     QJsonParseError parseError;
-    QJsonDocument doc = QJsonDocument::fromJson(byteArray, &parseError);
+    const QJsonDocument doc = QJsonDocument::fromJson(byteArray, &parseError);
 
     if (parseError.error != QJsonParseError::NoError) {
         QMessageBox::critical(this, tr("Error"), tr("Json Parsing Failed: ") + parseError.errorString());
@@ -621,8 +631,8 @@ void CALUMIMotion::onOpen()
 
     if (doc.isObject()) {
 
-        QJsonObject obj = doc.object();
-        AgxFileType type = AgxFileTypeFromString(obj.value("file-type").toString());
+        const QJsonObject obj = doc.object();
+        const AgxFileType type = AgxFileTypeFromString(obj.value("file-type").toString());
         switch (type)
         {
             case AgxFileType::BehaviorFile:
@@ -639,7 +649,7 @@ void CALUMIMotion::onOpen()
 
 }
 
-void CALUMIMotion::BuildFileInOutMenu()
+void CALUMIMotion::BuildFileInOutMenu() const
 {
     const auto view = GetAgxViewFromTab(ui.tabWidget->currentIndex());
 
@@ -650,39 +660,44 @@ void CALUMIMotion::BuildFileInOutMenu()
 
 void CALUMIMotion::ImportFile_Agx_SFBGS() {
 
-    QString dir = SettingsRegistry::GetInstance().LastDirectory(AgxGameType::SFBGS).isEmpty() ? SettingsRegistry::GetInstance().LastDirectory() : SettingsRegistry::GetInstance().LastDirectory(AgxGameType::SFBGS);
-    QString filePath = QFileDialog::getOpenFileName(this, tr("Open Starfield Agx File"), dir, tr("Agx Files (*.agx);;All files (*.*)"));
+    const QString dir = SettingsRegistry::GetInstance().LastDirectory(AgxGameType::SFBGS).isEmpty() ? SettingsRegistry::GetInstance().LastDirectory() : SettingsRegistry::GetInstance().LastDirectory(AgxGameType::SFBGS);
+    const QString filePath = QFileDialog::getOpenFileName(this, tr("Open Starfield Agx File"), dir, tr("Agx Files (*.agx);;All files (*.*)"));
 
-    if (filePath.isEmpty()) return;
+    if (filePath.isEmpty())
+        return;
 
     SettingsRegistry::GetInstance().SetLastDirectory(filePath, AgxGameType::SFBGS);
 
     pugi::xml_document doc;
     doc.load_file(filePath.toStdString().c_str());
-    if (!doc) return;
+
+    if (!doc)
+        return;
 
     if (!doc.child("root"))
     {
-        QMessageBox::StandardButton reply = QMessageBox::critical(nullptr, tr("File Content Warning"), tr("File is missing root and may not import properly..."), QMessageBox::Ok | QMessageBox::Abort);
+        const QMessageBox::StandardButton reply = QMessageBox::critical(nullptr, tr("File Content Warning"), tr("File is missing root and may not import properly..."), QMessageBox::Ok | QMessageBox::Abort);
 
-        if (reply == QMessageBox::Abort) return;
+        if (reply == QMessageBox::Abort)
+            return;
     }
 
     if (ui.tabWidget)
     {
-        std::shared_ptr<AgxGraphModel> agxGraphModel = std::make_shared<AgxGraphModel>(AgxGameType::SFBGS);
-        std::shared_ptr<AgxGraphicsScene> scene = std::make_shared<AgxGraphicsScene>(*agxGraphModel);
+        const auto agxGraphModel = std::make_shared<AgxGraphModel>(AgxGameType::SFBGS);
+        auto scene = std::make_shared<AgxGraphicsScene>(*agxGraphModel);
 
-        AgxProgressDialog* progBar = new AgxProgressDialog(tr("Loading Agx File..."), "", 0, 1000, this);
-        QFutureWatcher<void>* watcher = new QFutureWatcher<void>(this);
+        const auto progBar = new AgxProgressDialog(tr("Loading Agx File..."), "", 0, 1000, this);
+        auto watcher = new QFutureWatcher<void>(this);
         connect(watcher, &QFutureWatcher<void>::progressValueChanged, progBar, &QProgressDialog::setValue);
         connect(watcher, &QFutureWatcher<void>::progressTextChanged, progBar, &QProgressDialog::setLabelText);
         connect(watcher, &QFutureWatcher<void>::finished, progBar, &QProgressDialog::deleteLater);
         connect(watcher, &QFutureWatcher<void>::finished, watcher, &QFutureWatcher<void>::deleteLater);
-        connect(agxGraphModel.get(), &AgxGraphModel::statusUpdate, watcher, [this, watcher](float loadPercentage, const QString& message) {
-            Q_EMIT watcher->progressValueChanged(static_cast<int>(0.49 * loadPercentage * 1000));
-            if (!message.isEmpty()) Q_EMIT watcher->progressTextChanged(message);
-                });
+        connect(agxGraphModel.get(), &AgxGraphModel::statusUpdate, watcher, [watcher](const float loadPercentage, const QString& message) {
+                Q_EMIT watcher->progressValueChanged(static_cast<int>(0.49 * loadPercentage * 1000));
+                if (!message.isEmpty())
+                    Q_EMIT watcher->progressTextChanged(message);
+            });
         progBar->show();
 
         auto graphNode = doc.child("root");
@@ -704,7 +719,7 @@ void CALUMIMotion::ImportFile_Agx_SFBGS() {
         Q_EMIT watcher->progressValueChanged(500);
         Q_EMIT watcher->progressTextChanged(tr("Loading View"));
 
-        CALUMITabModule* module = new CALUMITabModule(newTabView, watcher, 500, 450);
+        auto module = new CALUMITabModule(newTabView, watcher, 500, 450);
 
         QFileInfo pathInfo(filePath);
 
@@ -713,7 +728,7 @@ void CALUMIMotion::ImportFile_Agx_SFBGS() {
         ui.tabWidget->addTab(module, "");
 
         //scene->agxGraphModel().SetGraphTitle(pathInfo.baseName());
-        if (auto cApp = dynamic_cast<CALUMIMotionApplication*>(QCoreApplication::instance()))
+        if (const auto cApp = dynamic_cast<CALUMIMotionApplication*>(QCoreApplication::instance()))
         {
             cApp->UpdateApplicationTabWidgets();
         }
@@ -728,34 +743,34 @@ void CALUMIMotion::ImportFile_Agx_SFBGS() {
 
         Q_EMIT watcher->progressValueChanged(990);
 
-        QObject::connect(scene.get(), &AgxGraphicsScene::nodeContextMenu, newTabView, &AgxGraphicsView::ShowContextMenu);
-        QObject::connect(scene.get(), &AgxGraphicsScene::nodeDoubleClicked, newTabView, &AgxGraphicsView::ToggleNodeCollapse);
-        QObject::connect(scene.get(), &AgxGraphicsScene::nodePreClicked, newTabView, &AgxGraphicsView::OnNodePreClicked);
+        connect(scene.get(), &AgxGraphicsScene::nodeContextMenu, newTabView, &AgxGraphicsView::ShowContextMenu);
+        connect(scene.get(), &AgxGraphicsScene::nodeDoubleClicked, newTabView, &AgxGraphicsView::ToggleNodeCollapse);
+        connect(scene.get(), &AgxGraphicsScene::nodePreClicked, newTabView, &AgxGraphicsView::OnNodePreClicked);
 
         HandleNodeGroupMenuVisibility();
 
         Q_EMIT watcher->progressValueChanged(995);
         Q_EMIT watcher->progressTextChanged(tr("Finalizing View"));
 
-        if (auto toolbar = newTabView->getToolBarLayout()) {
-            QPushButton* butt = new QPushButton("P");
-            //QPushButton* buttr = new QPushButton("R");
-            butt->setFixedSize(QSize(48, 48));
-            //buttr->setFixedSize(QSize(48,48));
-            toolbar->addWidget(butt);
-            //toolbar->addWidget(buttr);
+        if (const auto toolbar = newTabView->getToolBarLayout())
+        {
+            const auto propIcon = QIcon::fromTheme("navigation/menu-burger");
+            const auto propButton = new QPushButton(propIcon, "Graph Properties");
+            propButton->setFixedSize(QSize(48, 48));
+            toolbar->addWidget(propButton);
 
-            connect(butt, &QPushButton::pressed, this, [this, scene, module]() {
+
+            connect(propButton, &QPushButton::pressed, this, [scene, module] {
                 if (module->GetSideBarVisibility_Left())
                     module->CloseSideBarItem_Left();
                 else {
-                    SFBGS_GraphPropertiesDialogWidget* rootProperties = new SFBGS_GraphPropertiesDialogWidget(*scene);
+                    const auto rootProperties = new SFBGS_GraphPropertiesDialogWidget(*scene);
                     module->SetSideBarItem_Left(rootProperties, true);
                 }
                     });
 
-            connect(agxGraphModel.get(), &AgxGraphModel::GraphTypeUpdated, this, [this, scene, module]() {
-                SFBGS_GraphPropertiesDialogWidget* rootProperties = new SFBGS_GraphPropertiesDialogWidget(*scene);
+            connect(agxGraphModel.get(), &AgxGraphModel::GraphTypeUpdated, this, [scene, module] {
+                const auto rootProperties = new SFBGS_GraphPropertiesDialogWidget(*scene);
                 module->SetSideBarItem_Left(rootProperties, module->GetSideBarVisibility_Left());
                     });
 
@@ -791,16 +806,23 @@ void CALUMIMotion::ExportFile_Agx_SFBGS()
         return;
     }
 
-        QString graphTitle = agxModel->GetGraphTitle();
-        QString fileNameString = cleanFileName(graphTitle + ".agx");
-        QString filePathToOpen = SettingsRegistry::GetInstance().LastDirectory(AgxGameType::SFBGS) + "/" + fileNameString;
+        const QString graphTitle = agxModel->GetGraphTitle();
+        const QString fileNameString = cleanFileName(graphTitle + ".agx");
+        const QString filePathToOpen = SettingsRegistry::GetInstance().LastDirectory(AgxGameType::SFBGS) + "/" + fileNameString;
 
-    QString filePath = QFileDialog::getSaveFileName(this, tr("Export As Animation Behavior Graph"), filePathToOpen, tr("Agx Files (*.agx);;All files (*.*)"));
-    if (filePath.isEmpty()) return;
+    const QString filePath = QFileDialog::getSaveFileName(this, tr("Export As Animation Behavior Graph"), filePathToOpen, tr("Agx Files (*.agx);;All files (*.*)"));
+
+    if (filePath.isEmpty())
+        return;
+
     QSaveFile file(filePath);
-    if (!file.open(QIODevice::WriteOnly | QIODevice::Text)) { QMessageBox::critical(this, tr("Error"), tr("Could not save to file")); return; }
 
-    QString fileName = QFileInfo(file).baseName() + ".agx";
+    if (!file.open(QIODevice::WriteOnly | QIODevice::Text))
+    {
+        QMessageBox::critical(this, tr("Error"), tr("Could not save to file")); return;
+    }
+
+    const QString fileName = QFileInfo(file).baseName() + ".agx";
 
     pugi::xml_document doc;
     auto root = doc.append_child("root");
@@ -808,8 +830,7 @@ void CALUMIMotion::ExportFile_Agx_SFBGS()
     {
         AgxAppendValue(root, "Name", SettingsRegistry::GetInstance().GetRelativeDataPath(AgxGameType::SFBGS) + fileName, AgxFormat::NewLine);
 
-        QString category = agxModel->getGraphCategory();
-        if (!category.isEmpty() && category.compare("None", Qt::CaseInsensitive) != 0 && category.compare("<none>", Qt::CaseInsensitive) != 0)
+        if (const QString category = agxModel->getGraphCategory(); !category.isEmpty() && category.compare("None", Qt::CaseInsensitive) != 0 && category.compare("<none>", Qt::CaseInsensitive) != 0)
             AgxAppendValue(root, "Category", category, AgxFormat::NewLine, 0);
     }    
 
@@ -819,13 +840,13 @@ void CALUMIMotion::ExportFile_Agx_SFBGS()
 
     std::stringstream buffer;
     doc.save(buffer, "\t", pugi::format_no_declaration | pugi::format_raw);
-    buffer << char(0x0A);
-    std::string bufferData = buffer.str();
+    buffer << static_cast<char>(0x0A);
+    const std::string bufferData = buffer.str();
     file.write(bufferData.c_str(), bufferData.size());
 
     if (!file.commit())
     {
-        QString msg = "File Could Not Be Exported...";
+        const QString msg = "File Could Not Be Exported...";
         qCritical() << msg;
         QMessageBox::critical(this, "Error", msg, QMessageBox::StandardButton::Ok);
     }
@@ -835,23 +856,25 @@ void CALUMIMotion::ExportFile_Agx_SFBGS()
     }
 }
 
-void CALUMIMotion::OpenFile_Behavior_SFBGS(QJsonObject& object)
+void CALUMIMotion::OpenFile_Behavior_SFBGS(const QJsonObject& object)
 {
     if (ui.tabWidget)
     {
-        std::shared_ptr<AgxGraphModel> agxGraphModel = std::make_shared<AgxGraphModel>(AgxGameType::SFBGS);
-        std::shared_ptr<AgxGraphicsScene> scene = std::make_shared<AgxGraphicsScene>(*agxGraphModel);
+        const auto agxGraphModel = std::make_shared<AgxGraphModel>(AgxGameType::SFBGS);
+        auto scene = std::make_shared<AgxGraphicsScene>(*agxGraphModel);
 
-        AgxProgressDialog* progBar = new AgxProgressDialog(tr("Loading jagx Behavior File..."), "", 0, 1000, this);
-        QFutureWatcher<void>* watcher = new QFutureWatcher<void>(this);
+        const auto progBar = new AgxProgressDialog(tr("Loading jagx Behavior File..."), "", 0, 1000, this);
+        auto watcher = new QFutureWatcher<void>(this);
         connect(watcher, &QFutureWatcher<void>::progressValueChanged, progBar, &QProgressDialog::setValue);
         connect(watcher, &QFutureWatcher<void>::progressTextChanged, progBar, &QProgressDialog::setLabelText);
         connect(watcher, &QFutureWatcher<void>::finished, progBar, &QProgressDialog::deleteLater);
         connect(watcher, &QFutureWatcher<void>::finished, watcher, &QFutureWatcher<void>::deleteLater);
-        connect(agxGraphModel.get(), &AgxGraphModel::statusUpdate, watcher, [this, watcher](float loadPercentage, const QString& message) {
-            Q_EMIT watcher->progressValueChanged(static_cast<int>(0.49 * loadPercentage * 1000));
-            if (!message.isEmpty()) Q_EMIT watcher->progressTextChanged(message);
-                });
+        connect(agxGraphModel.get(), &AgxGraphModel::statusUpdate, watcher, [watcher](const float loadPercentage, const QString& message) {
+                Q_EMIT watcher->progressValueChanged(static_cast<int>(0.49 * loadPercentage * 1000));
+
+                if (!message.isEmpty())
+                        Q_EMIT watcher->progressTextChanged(message);
+            });
         progBar->show();
 
         
@@ -863,25 +886,17 @@ void CALUMIMotion::OpenFile_Behavior_SFBGS(QJsonObject& object)
         Q_EMIT watcher->progressValueChanged(495);
         Q_EMIT watcher->progressTextChanged(tr("Processing Scene"));
 
-        //newTabView->setUpdatesEnabled(false);
-        //auto tempUpdateMode = newTabView->viewportUpdateMode();
-        //newTabView->setViewportUpdateMode(QGraphicsView::NoViewportUpdate);
-
         TabDataPair pairCopy(agxGraphModel, scene);
         tabMap.insert({ newTabView,pairCopy });
 
         Q_EMIT watcher->progressValueChanged(500);
         Q_EMIT watcher->progressTextChanged(tr("Loading View"));
 
-        CALUMITabModule* module = new CALUMITabModule(newTabView, watcher, 500, 450);
-
-        //QFileInfo pathInfo(filePath);
+        auto module = new CALUMITabModule(newTabView, watcher, 500, 450);
 
         Q_EMIT watcher->progressValueChanged(960);
 
         ui.tabWidget->addTab(module, "");
-
-        //scene->SetGraphTitle(pathInfo.baseName());
 
         Q_EMIT watcher->progressValueChanged(970);
 
@@ -893,36 +908,36 @@ void CALUMIMotion::OpenFile_Behavior_SFBGS(QJsonObject& object)
 
         Q_EMIT watcher->progressValueChanged(990);
 
-        QObject::connect(scene.get(), &AgxGraphicsScene::nodeContextMenu, newTabView, &AgxGraphicsView::ShowContextMenu);
-        QObject::connect(scene.get(), &AgxGraphicsScene::nodeDoubleClicked, newTabView, &AgxGraphicsView::ToggleNodeCollapse);
-        QObject::connect(scene.get(), &AgxGraphicsScene::nodePreClicked, newTabView, &AgxGraphicsView::OnNodePreClicked);
+        connect(scene.get(), &AgxGraphicsScene::nodeContextMenu, newTabView, &AgxGraphicsView::ShowContextMenu);
+        connect(scene.get(), &AgxGraphicsScene::nodeDoubleClicked, newTabView, &AgxGraphicsView::ToggleNodeCollapse);
+        connect(scene.get(), &AgxGraphicsScene::nodePreClicked, newTabView, &AgxGraphicsView::OnNodePreClicked);
 
         HandleNodeGroupMenuVisibility();
 
         Q_EMIT watcher->progressValueChanged(995);
         Q_EMIT watcher->progressTextChanged(tr("Finalizing View"));
 
-        if (auto toolbar = newTabView->getToolBarLayout()) {
-            QPushButton* butt = new QPushButton("P");
-            //QPushButton* buttr = new QPushButton("R");
-            butt->setFixedSize(QSize(48, 48));
-            //buttr->setFixedSize(QSize(48,48));
-            toolbar->addWidget(butt);
-            //toolbar->addWidget(buttr);
+        if (const auto toolbar = newTabView->getToolBarLayout())
+        {
+            const auto propIcon = QIcon::fromTheme("navigation/menu-burger");
+            const auto propButton = new QPushButton(propIcon, "Graph Properties");
+            propButton->setFixedSize(QSize(48, 48));
+            toolbar->addWidget(propButton);
 
-            connect(butt, &QPushButton::pressed, this, [this, scene, module]() {
-                if (module->GetSideBarVisibility_Left())
-                    module->CloseSideBarItem_Left();
-                else {
-                    SFBGS_GraphPropertiesDialogWidget* rootProperties = new SFBGS_GraphPropertiesDialogWidget(*scene);
-                    module->SetSideBarItem_Left(rootProperties, true);
-                }
-                    });
+            connect(propButton, &QPushButton::pressed, this, [scene, module] {
+                    if (module->GetSideBarVisibility_Left())
+                        module->CloseSideBarItem_Left();
+                    else
+                    {
+                        const auto rootProperties = new SFBGS_GraphPropertiesDialogWidget(*scene);
+                        module->SetSideBarItem_Left(rootProperties, true);
+                    }
+                });
 
-            connect(agxGraphModel.get(), &AgxGraphModel::GraphTypeUpdated, this, [this, scene, module]() {
-                SFBGS_GraphPropertiesDialogWidget* rootProperties = new SFBGS_GraphPropertiesDialogWidget(*scene);
-                module->SetSideBarItem_Left(rootProperties, module->GetSideBarVisibility_Left());
-                    });
+            connect(agxGraphModel.get(), &AgxGraphModel::GraphTypeUpdated, this, [scene, module] {
+                    const auto rootProperties = new SFBGS_GraphPropertiesDialogWidget(*scene);
+                    module->SetSideBarItem_Left(rootProperties, module->GetSideBarVisibility_Left());
+                });
 
         }
 
@@ -942,7 +957,7 @@ void CALUMIMotion::Create_SFBGSTab(std::shared_ptr<AgxGraphicsScene> scene, std:
 
     for (int i = 0; i < ui.tabWidget->count(); i++)
     {
-        if (auto view = GetAgxViewFromTab(i))
+        if (const auto view = GetAgxViewFromTab(i))
         {
             if (view->pagxNodeScene() == scene.get())
             {
@@ -956,7 +971,7 @@ void CALUMIMotion::Create_SFBGSTab(std::shared_ptr<AgxGraphicsScene> scene, std:
     TabDataPair pairCopy(model, scene);
     tabMap.insert({ newTabView,pairCopy });
 
-    CALUMITabModule* module = new CALUMITabModule(newTabView);
+    auto module = new CALUMITabModule(newTabView);
     ui.tabWidget->addTab(module, scene->agxGraphModel().GetGraphTitle(false));
     ui.tabWidget->setCurrentWidget(module);
 
@@ -965,16 +980,16 @@ void CALUMIMotion::Create_SFBGSTab(std::shared_ptr<AgxGraphicsScene> scene, std:
     //ui.tabWidget->addTab(newTabView, "EmbeddedUntitledAnimationGraph");
     //ui.tabWidget->setCurrentWidget(newTabView);
 
-    QObject::connect(scene.get(), &AgxGraphicsScene::nodeContextMenu, newTabView, &AgxGraphicsView::ShowContextMenu);
-    QObject::connect(scene.get(), &AgxGraphicsScene::nodeDoubleClicked, newTabView, &AgxGraphicsView::ToggleNodeCollapse);
-    QObject::connect(scene.get(), &AgxGraphicsScene::nodePreClicked, newTabView, &AgxGraphicsView::OnNodePreClicked);
+    connect(scene.get(), &AgxGraphicsScene::nodeContextMenu, newTabView, &AgxGraphicsView::ShowContextMenu);
+    connect(scene.get(), &AgxGraphicsScene::nodeDoubleClicked, newTabView, &AgxGraphicsView::ToggleNodeCollapse);
+    connect(scene.get(), &AgxGraphicsScene::nodePreClicked, newTabView, &AgxGraphicsView::OnNodePreClicked);
 
-    if (auto toolbar = newTabView->getToolBarLayout()) {
+    if (const auto toolbar = newTabView->getToolBarLayout()) {
         
         if(model->rootGraphReference() != model.get())
         {
-            QLabel* embLabel = new QLabel(tr("EMBEDDED GRAPH"));
-            connect(this, &CALUMIMotion::LanguageChanged, embLabel, [this, embLabel]() { embLabel->setText(tr("EMBEDDED GRAPH")); });
+            auto embLabel = new QLabel(tr("EMBEDDED GRAPH"));
+            connect(this, &CALUMIMotion::LanguageChanged, embLabel, [embLabel] { embLabel->setText(tr("EMBEDDED GRAPH")); });
 
             embLabel->setFixedHeight(48);
             auto font = embLabel->font();
@@ -985,26 +1000,29 @@ void CALUMIMotion::Create_SFBGSTab(std::shared_ptr<AgxGraphicsScene> scene, std:
             toolbar->addWidget(embLabel);
             toolbar->addItem(new QSpacerItem(12, 10));
         }
-        
-        QPushButton* butt = new QPushButton("P");
-        //QPushButton* buttr = new QPushButton("R");
-        butt->setFixedSize(QSize(48, 48));
-        //buttr->setFixedSize(QSize(48,48));
-        toolbar->addWidget(butt);
-        //toolbar->addWidget(buttr);
 
-        connect(butt, &QPushButton::pressed, this, [this, scene, module]() {
+        const auto propButton = new QPushButton();
+        {
+            const auto iconPath = oclero::qlementine::icons::iconPath(oclero::qlementine::icons::Icons16::Navigation_MenuBurger);
+            const auto ico = GetColoredIconFromSVG(iconPath);
+            propButton->setIcon(ico);
+        }
+
+        propButton->setFixedSize(QSize(48, 48));
+        toolbar->addWidget(propButton);
+
+        connect(propButton, &QPushButton::pressed, this, [scene, module] {
 
             if (module->GetSideBarVisibility_Left())
                 module->CloseSideBarItem_Left();
             else {
-                SFBGS_GraphPropertiesDialogWidget* rootProperties = new SFBGS_GraphPropertiesDialogWidget(*scene);
+                const auto rootProperties = new SFBGS_GraphPropertiesDialogWidget(*scene);
                 module->SetSideBarItem_Left(rootProperties);
             }
                 });
 
-        connect(model.get(), &AgxGraphModel::GraphTypeUpdated, this, [this, scene, module]() {
-            SFBGS_GraphPropertiesDialogWidget* rootProperties = new SFBGS_GraphPropertiesDialogWidget(*scene);
+        connect(model.get(), &AgxGraphModel::GraphTypeUpdated, this, [scene, module] {
+            const auto rootProperties = new SFBGS_GraphPropertiesDialogWidget(*scene);
             module->SetSideBarItem_Left(rootProperties, module->GetSideBarVisibility_Left());
                 });
 
@@ -1013,9 +1031,10 @@ void CALUMIMotion::Create_SFBGSTab(std::shared_ptr<AgxGraphicsScene> scene, std:
     newTabView->setFocus();
 }
 
-bool CALUMIMotion::HasTab(QWidget* widget)
+bool CALUMIMotion::HasTab(const QWidget* widget) const
 {
-    if (!widget) return false;
+    if (!widget)
+        return false;
 
     if (ui.tabWidget)
     {
@@ -1031,4 +1050,4 @@ bool CALUMIMotion::HasTab(QWidget* widget)
     return false;
 }
 
-TabDataPair::TabDataPair(const std::shared_ptr<AgxGraphModel>& _AgxGraphModel, const std::shared_ptr<AgxGraphicsScene>& _AgxGraphicsScene) : _AgxGraphModel(_AgxGraphModel), _AgxGraphicsScene(_AgxGraphicsScene) {}
+TabDataPair::TabDataPair(const std::shared_ptr<AgxGraphModel>& _AgxGraphModel, const std::shared_ptr<AgxGraphicsScene>& _AgxGraphicsScene) : m_AgxGraphModel(_AgxGraphModel), m_AgxGraphicsScene(_AgxGraphicsScene) {}

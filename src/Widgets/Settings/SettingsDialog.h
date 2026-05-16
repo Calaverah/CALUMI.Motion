@@ -15,27 +15,26 @@ class SettingsDialog : public QDialog
 	Q_OBJECT
 
 public:
-	SettingsDialog(QWidget *parent = nullptr);
-	~SettingsDialog();
+	explicit SettingsDialog(QWidget *parent = nullptr);
+	~SettingsDialog() override = default;
 
 public slots:
-	void ApplySettings();
+	void ApplySettings() const;
 
 protected:
 	void changeEvent(QEvent* event) override;
+public:
 	void accept() override;
 
 private:
 	void RefreshUiValues() const;
 
-Ui::SettingsDialogClass ui;
+	Ui::SettingsDialogClass ui{};
 
-	QStringList _StartupVisibilityStrings = {
+	QStringList m_startupVisibilityStrings = {
 		QObject::tr("Never"),
 		QObject::tr("Remember"),
 		QObject::tr("Always")
 	};
-
-	//AgxColorBox* _symbolColorBox;
 };
 

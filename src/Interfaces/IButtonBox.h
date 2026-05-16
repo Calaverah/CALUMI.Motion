@@ -11,5 +11,6 @@
 class IButtonBox
 {
 public:
+	virtual ~IButtonBox() = default;
 	virtual QDialogButtonBox* GetButtonBox() const = 0;
 };

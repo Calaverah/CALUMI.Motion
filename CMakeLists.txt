@@ -1,11 +1,21 @@
-cmake_minimum_required(VERSION 3.16)
+cmake_minimum_required(VERSION 3.26)
 
 project(CALUMI.Motion VERSION 0.2.0.0 LANGUAGES CXX)
+
+include(FetchContent)
+FetchContent_Declare(qlementine-icons GIT_REPOSITORY "https://github.com/oclero/qlementine-icons.git")
+FetchContent_MakeAvailable(qlementine-icons)
 
 set(CMAKE_CXX_STANDARD 23)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-find_package(Qt6 REQUIRED COMPONENTS Core Widgets Gui LinguistTools)
+find_package(Qt6 REQUIRED COMPONENTS
+        Core
+        Widgets
+        Gui
+        LinguistTools
+        Svg
+)
 
 set(CMAKE_AUTORCC ON)
 
@@ -38,10 +48,11 @@ add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/src/Utilities)
 add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/src/Widgets)
 
 target_link_libraries(${PROJECT_NAME}
-  PRIVATE
-    Qt6::Core
-    Qt6::Widgets
-    Qt6::Gui
+        PRIVATE
+        Qt6::Core
+        Qt6::Widgets
+        Qt6::Gui
+        qlementine-icons
 )
 
 target_include_directories(${PROJECT_NAME}

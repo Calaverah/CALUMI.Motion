@@ -6,13 +6,13 @@
 
 #pragma warning(push,0)
 #include <QIcon>
-#include <QtGui/QPainter>
 #pragma warning(pop)
 
 #include <AgxNodes/AgxNode.h>
 #include <Utilities/AgxDefinitions.h>
 #include <cstdint>
 
+#include "AgxPalette.h"
 
 class AgxNodeGraphicsObject;
 class AgxNodeGeometry;
@@ -37,16 +37,17 @@ public:
 
     void drawValidationIcon(QPainter* painter, AgxNodeGraphicsObject& ngo) const;
 
-    void drawWrappedTextInWidgetBounds(QPainter* painter, AgxNodeGraphicsObject& ngo, const QString& string = QString()) const;
+    void drawWrappedTextInWidgetBounds(QPainter* painter, const AgxNodeGraphicsObject& ngo, const QString& string = QString()) const;
 
 private:
-    QIcon _toolTipIcon{ ":/CALUMIMotion/Resources/info-tooltip.svg" };
+    QIcon m_toolTipIcon{ ":/CALUMIMotion/Resources/info-tooltip.svg" };
 
-    AgxNodeStyle _nodeStyle;
-    AgxNodeGeometry* _geometry = nullptr;
-    AgxNodeValidationState _vState;
-    AgxNodeId _nodeId = InvalidNodeId;
-    AgxGraphModel* _model = nullptr;
-    bool _collapsed = false;
-    uint8_t _lod = 0;
+    const AgxNodePalette* m_nodePalette = nullptr;
+
+    AgxNodeGeometry* m_geometry = nullptr;
+    AgxNodeValidationState m_vState;
+    AgxNodeId m_nodeId = InvalidNodeId;
+    AgxGraphModel* m_model = nullptr;
+    bool m_collapsed = false;
+    uint8_t m_lod = 0;
 };

@@ -27,13 +27,13 @@ AgxLogger::AgxLogger(QWidget* parent) : QWidget(parent), m_logTE(new QPlainTextE
 
 	switch (pref)
 	{
-		case StartupVisibiltyPreference::Never:
+		case StartupVisibilityPreference::Never:
 			show = false;
 			break;
-		case StartupVisibiltyPreference::Remember:
+		case StartupVisibilityPreference::Remember:
 			show = settingIns.GetLastState("Log/State");
 			break;
-		case StartupVisibiltyPreference::Always:
+		case StartupVisibilityPreference::Always:
 			show = true;
 			break;
 		default:

@@ -6,3 +6,4 @@
 #include <QWidget>
 
 void SetTransparentBackground(QWidget* widget);
+QIcon GetColoredIconFromSVG(const QString& path);

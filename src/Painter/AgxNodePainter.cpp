@@ -1,68 +1,75 @@
-//Copyright © 2025-2026 Calaverah. All rights reserved.
-//License: https://www.gnu.org/licenses/lgpl-3.0.html
-//Contact: Calaverahmedia@gmail.com
+// Copyright © 2025-2026 Calaverah. All rights reserved.
+// License: https://www.gnu.org/licenses/lgpl-3.0.html
+// Contact: Calaverahmedia@gmail.com
 
+// ReSharper disable CppTooWideScopeInitStatement
 #include "stdafx.h"
 #include "AgxNodePainter.h"
 #pragma warning(push,0)
-
-#include "AgxStyleCollection.h"
-#include <QtCore/QMargins>
-#include <cmath>
 #include "Models/AgxNodeGraphicsObject.h"
 #include "AgxNodeGeometry.h"
 #pragma warning(pop)
 #include "Models/AgxGraphicsScene.h"
-#include <Widgets/MiniGraphicsView.h>
 #include <Utilities/AgxGraphRegistry.h>
 #include <Utilities/AgxConnectionIdUtils.h>
+#include "AgxPalette.h"
 
 void AgxNodePainter::paint(QPainter* painter, AgxNodeGraphicsObject& ngo)
 {
-    _nodeId = ngo.nodeId();
+    m_nodePalette = &AgxPalette::GetInstance().nodePalette();
 
-    if(!_model)
-        _model = &ngo.agxNodeScene()->agxGraphModel();
+    if (!m_nodePalette)
+        qFatal() << "AgxNodePainter::paint(QPainter* painter, AgxNodeGraphicsObject& ngo): node palette could not be "
+                    "referenced";
 
-    _nodeStyle = QJsonDocument::fromVariant(_model->nodeData(_nodeId, AgxNodeRole::Style)).object();
+    m_nodeId = ngo.nodeId();
 
-    if(!_geometry)
-        _geometry = &ngo.agxNodeScene()->agxNodeGeometry();
+    if(!m_model)
+        m_model = &ngo.agxNodeScene()->agxGraphModel();
 
-    if (!_geometry || !_model) return;
+    if(!m_geometry)
+        m_geometry = &ngo.agxNodeScene()->agxNodeGeometry();
 
-    auto var = _model->nodeData(_nodeId, AgxNodeRole::ValidationState);
-    if (var.canConvert<AgxNodeValidationState>()) {
-        _vState = var.value<AgxNodeValidationState>();
-    } else { 
-        _vState.m_stateMessage = "AGX NODE PAINT ERROR PASSING VALIDATION STATE";
-        _vState.m_state = AgxNodeValidationState::State::Error;
+    if (!m_geometry || !m_model) return;
+
+    if (const auto var = m_model->nodeData(m_nodeId, AgxNodeRole::ValidationState); var.canConvert<AgxNodeValidationState>())
+    {
+        m_vState = var.value<AgxNodeValidationState>();
+    }
+    else
+    {
+        m_vState.m_stateMessage = "AGX NODE PAINT ERROR PASSING VALIDATION STATE";
+        m_vState.m_state = AgxNodeValidationState::State::Error;
     }
 
-    _collapsed = _model->nodeData(_nodeId, AgxNodeRole::CollapseState).toBool();
+    m_collapsed = m_model->nodeData(m_nodeId, AgxNodeRole::CollapseState).toBool();
 
-    qreal lodPercentage = QStyleOptionGraphicsItem::levelOfDetailFromTransform(painter->worldTransform());
+    // ReSharper disable once CppTooWideScopeInitStatement
+    const qreal lodPercentage = QStyleOptionGraphicsItem::levelOfDetailFromTransform(painter->worldTransform());
 
-    if (lodPercentage > 0.5) _lod = 0;
-    else if (lodPercentage > 0.2) _lod = 1;
-    else _lod = 2;
+    if (lodPercentage > 0.5)
+        m_lod = 0;
+    else if (lodPercentage > 0.2)
+        m_lod = 1;
+    else
+        m_lod = 2;
 
     drawNodeRect(painter, ngo);
     
-    if(_lod < 3)
+    if(m_lod < 3)
         drawConnectionPoints(painter, ngo);
 
-    if(_lod < 1 && !_collapsed)
+    if(m_lod < 1 && !m_collapsed)
     {
         drawFilledConnectionPoints(painter, ngo);
     }
 
-    if(_lod <2) {
+    if(m_lod <2) {
         drawNodeCaption(painter, ngo);
         drawValidationIcon(painter, ngo);
     }
 
-    if(!_collapsed && _lod < 1) {
+    if(!m_collapsed && m_lod < 1) {
         drawEntryLabels(painter, ngo);
         drawResizeRect(painter, ngo);
     }
@@ -71,31 +78,31 @@ void AgxNodePainter::paint(QPainter* painter, AgxNodeGraphicsObject& ngo)
 void AgxNodePainter::drawNodeRect(QPainter* painter, AgxNodeGraphicsObject& ngo) const
 {
 
-    QSize size = _collapsed ? _geometry->collapsedSize(_nodeId) : _geometry->size(_nodeId);
+    QSize size = m_collapsed ? m_geometry->collapsedSize(m_nodeId) : m_geometry->size(m_nodeId);
 
     /*QColor color = ngo.isSelected() ? nodeStyle.SelectedBoundaryColor
         : nodeStyle.NormalBoundaryColor;*/
 
-    if(_lod < 3){
+    if(m_lod < 3){
         QColor color;
 
         if (ngo.isSelected()) {
-            color = _nodeStyle.SelectedBoundaryColor;
+            color = m_nodePalette->SelectedBoundaryColor;
         } else {
-            QString gid = _model->GetNodeGroup(_nodeId);
-            color = _model->GroupExists(gid) ? _model->GetGroupColor(gid) : _nodeStyle.NormalBoundaryColor;
+            QString gid = m_model->GetNodeGroup(m_nodeId);
+            color = m_model->GroupExists(gid) ? m_model->GetGroupColor(gid) : m_nodePalette->NormalBoundaryColor;
         }
 
         //model.SetNodeSidebarVisibility(nodeId, ngo.isSelected());
         bool dashed = false;
 
-        switch (_vState.m_state) {
+        switch (m_vState.m_state) {
             case AgxNodeValidationState::State::Error:
-                color = _nodeStyle.ErrorColor;
+                color = m_nodePalette->ErrorColor;
                 dashed = true;
                 break;
             case AgxNodeValidationState::State::Warning:
-                color = _nodeStyle.WarningColor;
+                color = m_nodePalette->WarningColor;
                 dashed = true;
                 break;
             default:
@@ -106,14 +113,14 @@ void AgxNodePainter::drawNodeRect(QPainter* painter, AgxNodeGraphicsObject& ngo)
         float penWidth;
         if (ngo.nodeState().hovered())
         {
-            penWidth = _nodeStyle.HoveredPenWidth;
+            penWidth = m_nodePalette->HoveredPenWidth;
         } else {
-            penWidth = _nodeStyle.PenWidth;
+            penWidth = m_nodePalette->PenWidth;
         }
 
 
-        if (_vState.m_state != AgxNodeValidationState::State::Valid) {
-            float factor = (_vState.m_state == AgxNodeValidationState::State::Error) ? 3.0f : 2.0f;
+        if (m_vState.m_state != AgxNodeValidationState::State::Valid) {
+            float factor = m_vState.m_state == AgxNodeValidationState::State::Error ? 3.0f : 2.0f;
             penWidth *= factor;
         }
         auto pstyle = dashed ? Qt::PenStyle::DotLine : Qt::PenStyle::SolidLine;
@@ -122,121 +129,110 @@ void AgxNodePainter::drawNodeRect(QPainter* painter, AgxNodeGraphicsObject& ngo)
     }
     
     //QLinearGradient gradient(QPointF(0.0, 0.0), QPointF(2.0, size.height()));
-    bool canBeAlt = AgxGraphRegistry::GetInstance().GetGraphDefinition(_model->getGraphType())._hasDefault;
 
-    if (_lod < 3 && _model->nodeData(_nodeId, AgxNodeRole::AlternateState).toBool() && canBeAlt) {
-        /*gradient.setColorAt(0.0, Qt::darkCyan);
-        gradient.setColorAt(0.10, Qt::darkCyan);
-        gradient.setColorAt(0.90, Qt::darkCyan);
-        gradient.setColorAt(1.0, Qt::darkCyan);*/
-        painter->setBrush(_nodeStyle.AlternateStateColor);
-    } else {
-        /*gradient.setColorAt(0.0, _nodeStyle.GradientColor0);
-        gradient.setColorAt(0.10, _nodeStyle.GradientColor1);
-        gradient.setColorAt(0.90, _nodeStyle.GradientColor2);
-        gradient.setColorAt(1.0, _nodeStyle.GradientColor3);*/
-        painter->setBrush(_nodeStyle.GradientColor0);
+    // ReSharper disable once CppTooWideScopeInitStatement
+    bool canBeAlt = AgxGraphRegistry::GetInstance().GetGraphDefinition(m_model->getGraphType())._hasDefault;
+
+    if (m_lod < 3 && m_model->nodeData(m_nodeId, AgxNodeRole::AlternateState).toBool() && canBeAlt)
+    {
+        painter->setBrush(m_nodePalette->AlternateStateColor);
+    }
+    else
+    {
+        painter->setBrush(m_nodePalette->NormalStateColor);
     }
 
 
     QRectF boundary(0, 0, size.width(), size.height());
 
-    double const radius = 3.0;
+    constexpr double radius = 3.0;
 
     painter->drawRoundedRect(boundary, radius, radius);
 }
 
 void AgxNodePainter::drawConnectionPoints(QPainter* painter, AgxNodeGraphicsObject& ngo) const
 {
-    auto const& connectionStyle = AgxStyleCollection::connectionStyle();
+    const auto reducedDiameter = m_nodePalette->ConnectionPointDiameter * 0.6;
 
-    auto reducedDiameter = _nodeStyle.ConnectionPointDiameter * 0.6;
-
-    for (AgxPortType portType : {AgxPortType::Out, AgxPortType::In}) {
-
-        auto portCountRole = (portType == AgxPortType::Out) ? AgxNodeRole::OutPortCount
+    for (const AgxPortType portType : {AgxPortType::Out, AgxPortType::In})
+    {
+        const auto portCountRole = portType == AgxPortType::Out ? AgxNodeRole::OutPortCount
             : AgxNodeRole::InPortCount;
-        size_t const n = _model->nodeData(_nodeId, portCountRole).toUInt();
-        const size_t nC = _collapsed ? 1 : n;
+        size_t const n = m_model->nodeData(m_nodeId, portCountRole).toUInt();
+        const size_t nC = m_collapsed ? 1 : n;
 
-        for (AgxPortIndex portIndex = 0; portIndex < n && portIndex < nC; ++portIndex) {
-            QPointF poi = _geometry->portPosition(_nodeId, portType, portIndex);
+        for (AgxPortIndex portIndex = 0; portIndex < n && portIndex < nC; ++portIndex)
+        {
+            QPointF poi = m_geometry->portPosition(m_nodeId, portType, portIndex);
 
-            auto const& dataType = _model->portData(_nodeId, portType, portIndex, AgxPortRole::DataType).value<AgxNodeDataType>();
+            const auto& [portId, portName] = m_model->portData(m_nodeId, portType, portIndex, AgxPortRole::DataType).value<AgxNodeDataType>();
 
             double r = 1.0;
 
             AgxNodeState const& state = ngo.nodeState();
 
-            if (auto const* cgo = state.connectionForReaction()) {
-                AgxPortType requiredPort = cgo->connectionState().requiredPort();
+            if (auto const* cgo = state.connectionForReaction())
+            {
+                const AgxPortType requiredPort = cgo->connectionState().requiredPort();
 
-                if (requiredPort == portType) {
-                    AgxConnectionId possibleConnectionId = makeCompleteConnectionId(cgo->connectionId(),
-                        _nodeId,
-                        portIndex);
+                if (requiredPort == portType)
+                {
+                    const AgxConnectionId possibleConnectionId = makeCompleteConnectionId(cgo->connectionId(),
+                                                                                            m_nodeId,
+                                                                                            portIndex);
 
-                    bool const possible = _model->connectionPossible(possibleConnectionId);
+                    bool const possible = m_model->connectionPossible(possibleConnectionId);
 
                     auto cp = cgo->sceneTransform().map(cgo->endPoint(requiredPort));
                     cp = ngo.sceneTransform().inverted().map(cp);
 
                     auto diff = cp - poi;
-                    double dist = std::sqrt(QPointF::dotProduct(diff, diff));
+                    const double dist = std::sqrt(QPointF::dotProduct(diff, diff));
 
-                    if (possible) {
-                        double const thres = 40.0;
-                        r = (dist < thres) ? (2.0 - dist / thres) : 1.0;
+                    if (possible)
+                    {
+                        constexpr double threshold = 40.0;
+                        r = dist < threshold ? 2.0 - dist / threshold : 1.0;
                     }
-                    else {
-                        double const thres = 80.0;
-                        r = (dist < thres) ? (dist / thres) : 1.0;
+                    else
+                    {
+                        constexpr double threshold = 80.0;
+                        r = dist < threshold ? dist / threshold : 1.0;
                     }
                 }
             }
 
-            if (connectionStyle.useDataDefinedColors()) {
-                painter->setBrush(connectionStyle.normalColor(dataType.id));
-            }
-            else {
-                painter->setBrush(_nodeStyle.ConnectionPointColor);
-            }
-
+            painter->setBrush(m_nodePalette->ConnectionPointColor);
             painter->drawEllipse(poi, reducedDiameter * r, reducedDiameter * r);
         }
     }
 
-    if (ngo.nodeState().connectionForReaction()) {
+    if (ngo.nodeState().connectionForReaction())
+    {
         ngo.nodeState().resetConnectionForReaction();
     }
 }
 
-void AgxNodePainter::drawFilledConnectionPoints(QPainter* painter, AgxNodeGraphicsObject& ngo) const
-{   
+void AgxNodePainter::drawFilledConnectionPoints(QPainter* painter, [[maybe_unused]] AgxNodeGraphicsObject& ngo) const
+{
+    const auto reducedDiameter = m_nodePalette->ConnectionPointDiameter * 0.4;
 
-    auto reducedDiameter = _nodeStyle.ConnectionPointDiameter * 0.4;
+    for (const AgxPortType portType : {AgxPortType::Out, AgxPortType::In})
+    {
+        size_t const n = m_model->nodeData( m_nodeId, portType == AgxPortType::Out ? AgxNodeRole::OutPortCount : AgxNodeRole::InPortCount).toUInt();
 
-    for (AgxPortType portType : {AgxPortType::Out, AgxPortType::In}) {
-        size_t const n = _model->nodeData( _nodeId, (portType == AgxPortType::Out) ? AgxNodeRole::OutPortCount : AgxNodeRole::InPortCount).toUInt();
+        for (AgxPortIndex portIndex = 0; portIndex < n; ++portIndex)
+        {
+            QPointF p = m_geometry->portPosition(m_nodeId, portType, portIndex);
 
-        for (AgxPortIndex portIndex = 0; portIndex < n; ++portIndex) {
-            QPointF p = _geometry->portPosition(_nodeId, portType, portIndex);
+            auto const& connected = m_model->connections(m_nodeId, portType, portIndex);
 
-            auto const& connected = _model->connections(_nodeId, portType, portIndex);
+            if (!connected.empty())
+            {
+                const auto& [portId, portName] = m_model->portData(m_nodeId, portType, portIndex, AgxPortRole::DataType).value<AgxNodeDataType>();
 
-            if (!connected.empty()) {
-                auto const& dataType = _model->portData(_nodeId, portType, portIndex, AgxPortRole::DataType).value<AgxNodeDataType>();
-
-                auto const& connectionStyle = AgxStyleCollection::connectionStyle();
-                if (connectionStyle.useDataDefinedColors()) {
-                    QColor const c = connectionStyle.normalColor(dataType.id);
-                    painter->setPen(c);
-                    painter->setBrush(c);
-                }
-                else {
-                    painter->setPen(_nodeStyle.FilledConnectionPointColor);
-                    painter->setBrush(_nodeStyle.FilledConnectionPointColor);
-                }
+                painter->setPen(m_nodePalette->FilledConnectionPointColor);
+                painter->setBrush(m_nodePalette->FilledConnectionPointColor);
 
                 painter->drawEllipse(p, reducedDiameter, reducedDiameter);
             }
@@ -244,66 +240,58 @@ void AgxNodePainter::drawFilledConnectionPoints(QPainter* painter, AgxNodeGraphi
     }
 }
 
-void AgxNodePainter::drawNodeCaption(QPainter* painter, AgxNodeGraphicsObject& ngo) const
+void AgxNodePainter::drawNodeCaption(QPainter* painter, [[maybe_unused]] AgxNodeGraphicsObject& ngo) const
 {
-    //auto internalData = model.nodeData(nodeId, AgxNodeRole::InternalData).toJsonObject();
-    //auto collapsed = internalData["internal-data"].toObject()["collapsed"].toBool();
-
-    //auto pSheetData = internalData["internal-data"].toObject()["property-sheet"].toObject();
-
     QFont f = painter->font();
 
-    const QString title = _collapsed ? ShortenString(_model->nodeData(_nodeId, AgxNodeRole::Caption).toString()) : _model->nodeData(_nodeId, AgxNodeRole::Caption).toString();
-    const QString subtitle = ShortenString(_model->nodeData(_nodeId, AgxNodeRole::SubCaption).toString(),30);
-    auto Positions = _geometry->dualCaptionPosition(_nodeId, title, subtitle, _collapsed);
+    const QString title = m_collapsed ? ShortenString(m_model->nodeData(m_nodeId, AgxNodeRole::Caption).toString()) : m_model->nodeData(m_nodeId, AgxNodeRole::Caption).toString();
+    const QString subtitle = ShortenString(m_model->nodeData(m_nodeId, AgxNodeRole::SubCaption).toString(),30);
+    auto [capPos, subPos] = m_geometry->dualCaptionPosition(m_nodeId, title, subtitle, m_collapsed);
 
-    if (!subtitle.isEmpty() && !_collapsed && _lod < 1) {
-        //if (pSheetData["Name"].toObject().contains("value") && !collapsed) 
-
-
+    if (!subtitle.isEmpty() && !m_collapsed && m_lod < 1)
+    {
         painter->setFont(f);
-        painter->setPen(_nodeStyle.FontColorFaded);
-        painter->drawText(Positions.second, subtitle);
-        //painter->drawPoint(Positions.second);
+        painter->setPen(m_nodePalette->FadedFontColor);
+        painter->drawText(subPos, subtitle);
         
     }
 
     f.setBold(true);
     painter->setFont(f);
-    painter->setPen(_nodeStyle.FontColor);
-    //painter->drawPoint(Positions.first);
-    painter->drawText(Positions.first, title);
+    painter->setPen(m_nodePalette->NormalFontColor);
+    painter->drawText(capPos, title);
     f.setBold(false);
     
     painter->setFont(f);
-    painter->setPen(_nodeStyle.FontColor);
+    painter->setPen(m_nodePalette->NormalFontColor);
 }
 
-void AgxNodePainter::drawEntryLabels(QPainter* painter, AgxNodeGraphicsObject& ngo) const
+void AgxNodePainter::drawEntryLabels(QPainter* painter, [[maybe_unused]] AgxNodeGraphicsObject& ngo) const
 {
-    QJsonDocument json = QJsonDocument::fromVariant(_model->nodeData(_nodeId, AgxNodeRole::Style));
-    AgxNodeStyle _nodeStyle(json.object());
+    for (const AgxPortType portType : {AgxPortType::Out, AgxPortType::In})
+    {
+        const unsigned int n = m_model->nodeData(m_nodeId, portType == AgxPortType::Out ? AgxNodeRole::OutPortCount : AgxNodeRole::InPortCount).value<unsigned int>();
 
-    for (AgxPortType portType : {AgxPortType::Out, AgxPortType::In}) {
-        unsigned int n = _model->nodeData(_nodeId, (portType == AgxPortType::Out) ? AgxNodeRole::OutPortCount : AgxNodeRole::InPortCount).value<unsigned int>();
+        for (AgxPortIndex portIndex = 0; portIndex < n; ++portIndex)
+        {
+            const auto& connected = m_model->connections(m_nodeId, portType, portIndex);
 
-        for (AgxPortIndex portIndex = 0; portIndex < n; ++portIndex) {
-            auto const& connected = _model->connections(_nodeId, portType, portIndex);
-
-            QPointF p = _geometry->portTextPosition(_nodeId, portType, portIndex);
+            QPointF p = m_geometry->portTextPosition(m_nodeId, portType, portIndex);
 
             if (connected.empty())
-                painter->setPen(_nodeStyle.FontColorFaded);
+                painter->setPen(m_nodePalette->FadedFontColor);
             else
-                painter->setPen(_nodeStyle.FontColor);
+                painter->setPen(m_nodePalette->NormalFontColor);
 
             QString s;
 
-            if (_model->portData(_nodeId, portType, portIndex, AgxPortRole::CaptionVisible).value<bool>()) {
-                s = _model->portData(_nodeId, portType, portIndex, AgxPortRole::Caption).value<QString>();
+            if (m_model->portData(m_nodeId, portType, portIndex, AgxPortRole::CaptionVisible).value<bool>())
+            {
+                s = m_model->portData(m_nodeId, portType, portIndex, AgxPortRole::Caption).value<QString>();
             }
-            else {
-                auto portData = _model->portData(_nodeId, portType, portIndex, AgxPortRole::DataType);
+            else
+            {
+                auto portData = m_model->portData(m_nodeId, portType, portIndex, AgxPortRole::DataType);
 
                 s = portData.value<AgxNodeDataType>().name;
             }
@@ -313,28 +301,27 @@ void AgxNodePainter::drawEntryLabels(QPainter* painter, AgxNodeGraphicsObject& n
     }
 }
 
-void AgxNodePainter::drawResizeRect(QPainter* painter, AgxNodeGraphicsObject& ngo) const
+void AgxNodePainter::drawResizeRect(QPainter* painter, [[maybe_unused]] AgxNodeGraphicsObject& ngo) const
 {
-    if (_model->nodeFlags(_nodeId) & AgxNodeFlag::Resizable) {
+    if (m_model->nodeFlags(m_nodeId) & AgxNodeFlag::Resizable)
+    {
         painter->setBrush(Qt::gray);
-
-        painter->drawEllipse(_geometry->resizeHandleRect(_nodeId));
+        painter->drawEllipse(m_geometry->resizeHandleRect(m_nodeId));
     }
 }
 
-void AgxNodePainter::drawValidationIcon(QPainter* painter, AgxNodeGraphicsObject& ngo) const
+void AgxNodePainter::drawValidationIcon(QPainter* painter, [[maybe_unused]] AgxNodeGraphicsObject& ngo) const
 {
-    if (_vState.m_state == AgxNodeValidationState::State::Valid)
+    if (m_vState.m_state == AgxNodeValidationState::State::Valid)
         return;
 
-    QSize size = _geometry->size(_nodeId);
+    const QSize size = m_geometry->size(m_nodeId);
 
-    QIcon icon(":/CALUMIMotion/Resources/info-tooltip.svg");
-    QSize iconSize(8, 8);
+    const QIcon icon(":/CALUMIMotion/Resources/info-tooltip.svg");
+    constexpr QSize iconSize(8, 8);
     QPixmap pixmap = icon.pixmap(iconSize);
 
-    QColor color = (_vState.m_state == AgxNodeValidationState::State::Error) ? _nodeStyle.ErrorColor
-        : _nodeStyle.WarningColor;
+    const QColor color = m_vState.m_state == AgxNodeValidationState::State::Error ? m_nodePalette->ErrorColor : m_nodePalette->WarningColor;
 
     QPointF center(size.width(), 0.0);
     center += QPointF(iconSize.width() / 2.0, -iconSize.height() / 2.0);
@@ -349,7 +336,7 @@ void AgxNodePainter::drawValidationIcon(QPainter* painter, AgxNodeGraphicsObject
 
     QPainter imgPainter(&pixmap);
     imgPainter.setCompositionMode(QPainter::CompositionMode_SourceIn);
-    imgPainter.fillRect(pixmap.rect(), _nodeStyle.FontColor);
+    imgPainter.fillRect(pixmap.rect(), m_nodePalette->NormalFontColor);
     imgPainter.end();
 
 
@@ -359,11 +346,14 @@ void AgxNodePainter::drawValidationIcon(QPainter* painter, AgxNodeGraphicsObject
     painter->restore();
 }
 
-void AgxNodePainter::drawWrappedTextInWidgetBounds(QPainter* painter, AgxNodeGraphicsObject& ngo, const QString& string) const
+void AgxNodePainter::drawWrappedTextInWidgetBounds(QPainter* painter, const AgxNodeGraphicsObject& ngo, [[maybe_unused]] const QString& string) const
 {
-    if (!ngo._proxyWidget) return;
-    QString temp = "This is a very long string that will be too long for the comment widget and should overflow easily and certainly get past the barrier or whatever it's called. The bounds? Idk man";
-    auto bounds = ngo._proxyWidget->boundingRect();
-    bounds.moveTo(_geometry->widgetPosition(_nodeId));
+    if (!ngo.m_proxyWidget)
+        return;
+
+    const QString temp = "This is a very long string that will be too long for the comment widget and should overflow easily and certainly get past the barrier or whatever it's called. The bounds? Idk man";
+
+    auto bounds = ngo.m_proxyWidget->boundingRect();
+    bounds.moveTo(m_geometry->widgetPosition(m_nodeId));
     painter->drawText(bounds, Qt::TextWordWrap | Qt::AlignLeft, temp);
 }

@@ -125,7 +125,7 @@ class AgxFlagField : public QObject
 {
     Q_OBJECT
 public:
-    virtual ~AgxFlagField() = default;
+    ~AgxFlagField() override = default;
 
     virtual size_t GetValue() const = 0;
     virtual QString ToString() const = 0;
@@ -141,7 +141,7 @@ signals:
     void StateUpdated(bool enabled);
 };
 
-struct AgxAnimationFlags : public AgxFlagField
+struct AgxAnimationFlags : AgxFlagField
 {
     Q_OBJECT
 public:
@@ -198,8 +198,8 @@ public:
     void ToXML(pugi::xml_node& parent) override;
     void FromXML(pugi::xml_node& node) override;
 
-inline bool IsEnabledState() const override { return _propertyEnabled; }
-    inline void SetEnabledState(bool state) override {
+    bool IsEnabledState() const override { return _propertyEnabled; }
+    void SetEnabledState(const bool state) override {
         _propertyEnabled = state;
         Q_EMIT StateUpdated(_propertyEnabled);
     }
@@ -250,9 +250,10 @@ private:
     TermRef _tagReference = nullptr;
 
 public:
-    AgxPropertyEntryDefinition(TermRef ref, const QString& value, const AgxColumnTypes& columnType = AgxColumnTypes::BasicString, const QList<TermRef>& customDropDownList = {}, bool isPresent = true)
-        : _tagReference(ref), value(value), columnType(columnType), isPresent(isPresent) {
-        for (auto entry : customDropDownList) {
+    AgxPropertyEntryDefinition(const TermRef ref, const QString& value, const AgxColumnTypes& columnType = AgxColumnTypes::BasicString, const QList<TermRef>& customDropDownList = {}, const bool isPresent = true)
+        : value(value), columnType(columnType), isPresent(isPresent), _tagReference(ref) {
+        for (const auto entry : customDropDownList)
+        {
             if (entry)
                 this->customDropDownList.append(entry);
             else
@@ -269,7 +270,8 @@ public:
         isPresent = other.isPresent;
     }
 
-    inline AgxPropertyEntryDefinition& operator=(const AgxPropertyEntryDefinition& other) {
+    AgxPropertyEntryDefinition& operator=(const AgxPropertyEntryDefinition& other)
+    {
         _tagReference = other._tagReference;
         value = other.value;
         columnType = other.columnType;
@@ -279,33 +281,37 @@ public:
         return *this;
     }
 
-    inline QString Tag() const { 
+    QString Tag() const
+    {
         if (_tagReference) 
             return _tagReference().tag; 
 
         return AgxDictionary::ErrorTerm().tag;
     }
 
-    inline QString Label() const {
+    QString Label() const
+    {
         if (_tagReference)
             return _tagReference().translation;
 
         return AgxDictionary::ErrorTerm().translation;
     }
 
-    inline QList<TermRef> CustomDropDownList() const { return customDropDownList; }
+    QList<TermRef> CustomDropDownList() const { return customDropDownList; }
 
 signals:
     void StateUpdated(bool enabled);
     void PresentUpdated(bool enabled);
 
 public:
-    inline void SetEnabledState(bool state) {
+    void SetEnabledState(const bool state)
+    {
         propertyEnabled = state;
         Q_EMIT StateUpdated(propertyEnabled);
     }
 
-    inline void SetIsPresent(bool state) {
+    void SetIsPresent(const bool state)
+    {
         isPresent = state;
         Q_EMIT PresentUpdated(isPresent);
     }
@@ -324,7 +330,7 @@ public:
         AgxColumnTypes Type;
     };
 
-    AgxPropertyBlockData(const QList<AgxPropertyEntryDefinition>& types = QList<AgxPropertyEntryDefinition>({ AgxPropertyEntryDefinition(&AgxDictionary::ErrorTerm,"",AgxColumnTypes::Default) }), QObject* parent = nullptr);
+    explicit AgxPropertyBlockData(const QList<AgxPropertyEntryDefinition>& types = QList({ AgxPropertyEntryDefinition(&AgxDictionary::ErrorTerm,"",AgxColumnTypes::Default) }), QObject* parent = Q_NULLPTR);
     AgxPropertyBlockData(const AgxPropertyBlockData& other);
 
     AgxPropertyBlockData& operator=(const AgxPropertyBlockData& other);
@@ -347,7 +353,7 @@ public:
     QJsonObject getPropertyBlockData(bool cleared = false) const;
     virtual void loadDefault(const QJsonObject& blockData);
     void SetEnabledState(bool state);
-    inline bool IsEnabledState() const { return propertyEnabled; }
+    bool IsEnabledState() const { return propertyEnabled; }
 
     void load(pugi::xml_node& blockNode);
 
@@ -383,8 +389,7 @@ enum class AgxNodeRole {
     Position = 1,         ///< `QPointF` positon of the node on the scene.
     Size = 2,             ///< `QSize` for resizable nodes.
     CaptionVisible = 3,   ///< `bool` for caption visibility.
-    Caption = 4,          ///< `QString` for node caption.
-    Style = 5,            ///< Custom NodeStyle as QJsonDocument
+    Caption = 4,          ///< `QString` for node caption
     InternalData = 6,     ///< Node-stecific user data as QJsonObject
     InPortCount = 7,      ///< `unsigned int`
     OutPortCount = 9,     ///< `unsigned int`

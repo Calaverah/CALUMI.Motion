@@ -1,18 +1,12 @@
 target_sources(${PROJECT_NAME}
   PRIVATE
-  AgxNodeStyle.h
-  AgxStyle.h
-  AgxStyleCollection.h
   QColorHelper.h
   AgxConnectionPainter.cpp
   AgxConnectionPainter.h
-  AgxConnectionStyle.cpp
-  AgxConnectionStyle.h
-  AgxGraphicsViewStyle.cpp
-  AgxGraphicsViewStyle.h
   AgxNodeGeometry.cpp
   AgxNodeGeometry.h
   AgxNodePainter.cpp
   AgxNodePainter.h
-  AgxNodeStyle.cpp
+  AgxPalette.cpp
+  AgxPalette.h
 )

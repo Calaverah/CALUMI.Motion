@@ -1,43 +1,46 @@
 {
-  "GraphicsViewStyle": {
-    "BackgroundColor": [53, 53, 53],
-    "FineGridColor": [60, 60, 60],
-    "CoarseGridColor": [25, 25, 25]
+  "ui-palette": {
+    "sub-panel": {
+      "color":"#3C3C3C"
+    }
   },
-  "NodeStyle": {
-    "NormalBoundaryColor": [255, 255, 255],
-    "SelectedBoundaryColor": [255, 165, 0],
-    "GradientColor0": [70, 70, 70],
-    "GradientColor1": [70, 70, 70],
-    "GradientColor2": [70, 70, 70],
-    "GradientColor3": [ 70, 70, 70 ],
-    "AlternateStateColor": [70, 120, 120],
-    "FontColor" : "white",
-    "FontColorFaded" : "gray",
-    "ConnectionPointColor": [169, 169, 169],
-    "FilledConnectionPointColor": "cyan",
-    "ErrorColor": [211, 47, 47],
-    "WarningColor": [255, 179, 0],
-    "ToolTipIconColor": "white",
-
-    "PenWidth": 1.0,
-    "HoveredPenWidth": 1.5,
-
-    "ConnectionPointDiameter": 8.0,
-
-    "Opacity": 0.86
+  "graph-palette": {
+    "background-color": "#353535",
+    "fine-grid-color": "#3C3C3C",
+    "coarse-grid-color": "#252525"
   },
-  "ConnectionStyle": {
-    "ConstructionColor": "gray",
-    "NormalColor": "darkcyan",
-    "SelectedColor": [100, 100, 100],
-    "SelectedHaloColor": "orange",
-    "HoveredColor": "lightcyan",
+  "node-palette": {
+    "normal-boundary-color": "#FFFFFF",
+    "selected-boundary-color": "#FFA500",
+    "normal-state-color": "#464646",
+    "alternate-state-color": "#467878",
+    "normal-font-color" : "#FFFFFF",
+    "faded-font-color" : "#A0A0A4",
+    "connection-point-color": "#A9A9A9",
+    "filled-connection-point-color": "#00FFFF",
+    "error-color": "#D32F2F",
+    "warning-color": "#FFB300",
+    "tooltip-icon-color": "#FFFFFF",
 
-    "LineWidth": 3.0,
-    "ConstructionLineWidth": 2.0,
-    "PointDiameter": 10.0,
+    "pen-width": 1.0,
+    "hovered-pen-width": 1.5,
 
-    "UseDataDefinedColors": false
+    "connection-point-diameter": 8.0,
+
+    "opacity": 0.86
+  },
+  "connection-palette": {
+    "construction-color": "#A0A0A4",
+    "normal-color": "#008080",
+    "selected-color": "#646464",
+    "selected-halo-color": "#FFA500",
+    "hovered-color": "#E0FFFF",
+
+    "line-width": 3.0,
+    "construction-line-width": 2.0,
+    "point-diameter": 10.0
+  },
+  "icon-palette": {
+    "icon-color": "#FFFFFF"
   }
 }

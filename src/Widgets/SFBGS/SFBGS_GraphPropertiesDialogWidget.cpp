@@ -28,7 +28,7 @@ SFBGS_GraphPropertiesDialogWidget::SFBGS_GraphPropertiesDialogWidget(AgxGraphics
 	if(currentCategory.compare("NONE",Qt::CaseInsensitive) != 0 && currentCategory.compare("<none>",Qt::CaseInsensitive) != 0)
 	{
 		if (!catSet.contains(currentCategory)) {
-			SettingsRegistry::GetInstance().AddCustomCatgeory(currentCategory, AgxGameType::SFBGS);
+			SettingsRegistry::GetInstance().AddCustomCategory(currentCategory, AgxGameType::SFBGS);
 			catSet.insert(currentCategory);
 		}
 		comboBoxValue = currentCategory;

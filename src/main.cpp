@@ -15,19 +15,30 @@
 #include "Widgets/TextEditDialog.h"
 #include <Utilities/SettingsRegistry.h>
 
+#include "Painter/AgxPalette.h"
+#include <oclero/qlementine/icons/QlementineIcons.hpp>
 
 int main(int argc, char* argv[])
 {
     CALUMIMotionApplication app(argc, argv);
 
-    //app.setStyle("windows");
+    CALUMIMotionApplication::setStyle(QStyleFactory::create("Fusion"));
+    CALUMIMotionApplication::styleHints()->setColorScheme(Qt::ColorScheme::Dark);
+
 
     const QPixmap pixmap(":/Images/Resources/NASA_ISS_LongExposure.png");
     auto splash = QSplashScreen(pixmap);
     splash.showMessage("CALUMI Motion:\nLoading modules...", Qt::AlignBottom | Qt::AlignCenter, Qt::white);
     splash.show();
     
-    app.processEvents();
+    CALUMIMotionApplication::processEvents();
+
+    {
+        splash.showMessage("CALUMI Motion:\nLoading Icons...", Qt::AlignBottom | Qt::AlignCenter, Qt::white);
+        oclero::qlementine::icons::initializeIconTheme();
+        QIcon::setThemeName("qlementine");
+        //QThread::msleep(500);
+    }
 
     {
         splash.showMessage("CALUMI Motion:\nLoading Node Registry...", Qt::AlignBottom | Qt::AlignCenter, Qt::white);
@@ -57,15 +68,16 @@ int main(int argc, char* argv[])
         splash.showMessage("CALUMI Motion:\nLoading User Settings...", Qt::AlignBottom | Qt::AlignCenter, Qt::white);
         
         //manage app wide settings here
-        auto& setRef = SettingsRegistry::GetInstance();
-        if (!setRef.GetSavedVersion().isEmpty())
+        if (const auto& setRef = SettingsRegistry::GetInstance(); !setRef.GetSavedVersion().isEmpty())
         {
-            if(setRef.GetSavedVersion() != app.applicationVersion())
+            if(setRef.GetSavedVersion() != CALUMIMotionApplication::applicationVersion())
             {
 #ifdef RELEASE_BUILD
                 //what's new popup?
 #endif
             }
+
+            AgxPalette::GetInstance().loadUserSettings();
         }
     }
 
@@ -74,5 +86,5 @@ int main(int argc, char* argv[])
 
     splash.finish(&window);
 
-    return app.exec();
+    return CALUMIMotionApplication::exec();
 }

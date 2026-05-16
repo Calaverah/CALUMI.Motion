@@ -13,7 +13,6 @@
 #include "Utilities/guidUtil.h"
 #include "Models/AgxPort.h"
 #include "Utilities/AgxDictionary.h"
-#include "Painter/AgxStyleCollection.h"
 
 struct AgxNodeDataType
 {
@@ -131,8 +130,6 @@ struct AgxNodeValidationState
 	QString m_stateMessage{ "" };
 };
 
-class AgxStyleCollection;
-
 class AgxNode  : public QObject
 {
 	Q_OBJECT
@@ -172,9 +169,6 @@ public:
 	virtual void load(pugi::xml_node& xmlNode);
 
 	virtual AgxConnectionPolicy portConnectionPolicy(AgxPortType, AgxPortIndex) const;
-
-	virtual const AgxNodeStyle& nodeStyle() const;
-	virtual void setNodeStyle(const AgxNodeStyle& style);
 
 	virtual void AmendValidationState(const QString& messageToAdd, const AgxNodeValidationState::State& minState);
 	virtual void setValidationState(const AgxNodeValidationState& validationState);
@@ -285,7 +279,6 @@ protected:
 	AgxNodeId m_nodeIdRef = InvalidNodeId;
 
 private:
-	AgxNodeStyle m_nodeStyle;
 	AgxNodeValidationState m_nodeValidationState;
 };
 

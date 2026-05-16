@@ -2,6 +2,8 @@
 //License: https://www.gnu.org/licenses/lgpl-3.0.html
 //Contact: Calaverahmedia@gmail.com
 
+// ReSharper disable CppTooWideScope
+// ReSharper disable CppTooWideScopeInitStatement
 #include "stdafx.h"
 #include "AgxConnectionGraphicsObject.h"
 #pragma warning(push,0)
@@ -15,15 +17,18 @@
 #include "Models/AgxGraphicsScene.h"
 #include "Models/AgxGraphModel.h"
 #include <Utilities/AgxConnectionIdUtils.h>
-#include <Painter/AgxStyleCollection.h>
 
-AgxConnectionGraphicsObject::AgxConnectionGraphicsObject(AgxGraphicsScene& scene, AgxConnectionId const connectionId) : _connectionId(connectionId), _graphModel(scene.agxGraphModel()), _connectionState(*this), _out{ 0, 0 }, _in{ 0, 0 }
+AgxConnectionGraphicsObject::AgxConnectionGraphicsObject(AgxGraphicsScene& scene, const AgxConnectionId& connectionId) :
+                                                                                _connectionId(connectionId),
+                                                                                _graphModel(scene.agxGraphModel()),
+                                                                                _connectionState(*this),
+                                                                                _out{ 0, 0 }, _in{ 0, 0 }
 {
     scene.addItem(this);
 
-    setFlag(QGraphicsItem::ItemIsMovable, true);
-    setFlag(QGraphicsItem::ItemIsFocusable, true);
-    setFlag(QGraphicsItem::ItemIsSelectable, true);
+    setFlag(ItemIsMovable, true);
+    setFlag(ItemIsFocusable, true);
+    setFlag(ItemIsSelectable, true);
 
     setAcceptHoverEvents(true);
 
@@ -44,22 +49,22 @@ void AgxConnectionGraphicsObject::initializePosition()
     // we position both connection ends correctly.
 
     if (_connectionState.requiredPort() != AgxPortType::None) {
-        AgxPortType attachedPort = oppositePort(_connectionState.requiredPort());
+        const AgxPortType attachedPort = oppositePort(_connectionState.requiredPort());
 
-        AgxPortIndex portIndex = getPortIndex(attachedPort, _connectionId);
-        AgxNodeId nodeId = getNodeId(attachedPort, _connectionId);
+        const AgxPortIndex portIndex = getPortIndex(attachedPort, _connectionId);
+        const AgxNodeId nodeId = getNodeId(attachedPort, _connectionId);
 
-        AgxNodeGraphicsObject* ngo = agxNodeScene()->agxNodeGraphicsObject(nodeId);
+        const AgxNodeGraphicsObject* ngo = agxNodeScene()->agxNodeGraphicsObject(nodeId);
 
         if (ngo) {
-            QTransform nodeSceneTransform = ngo->sceneTransform();
+            const QTransform nodeSceneTransform = ngo->sceneTransform();
 
-            AgxNodeGeometry& geometry = agxNodeScene()->agxNodeGeometry();
+            const AgxNodeGeometry& geometry = agxNodeScene()->agxNodeGeometry();
 
-            QPointF pos = geometry.portScenePosition(nodeId,
-                attachedPort,
-                portIndex,
-                nodeSceneTransform);
+            const QPointF pos = geometry.portScenePosition(nodeId,
+                                                           attachedPort,
+                                                           portIndex,
+                                                           nodeSceneTransform);
 
             this->setPos(pos);
         }
@@ -70,7 +75,7 @@ void AgxConnectionGraphicsObject::initializePosition()
 
 void AgxConnectionGraphicsObject::addGraphicsEffect()
 {
-    auto effect = new QGraphicsBlurEffect;
+    const auto effect = new QGraphicsBlurEffect;
 
     effect->setBlurRadius(5);
     setGraphicsEffect(effect);
@@ -83,13 +88,13 @@ void AgxConnectionGraphicsObject::addGraphicsEffect()
 
 std::pair<QPointF, QPointF> AgxConnectionGraphicsObject::pointsC1C2Horizontal() const
 {
-    double defaultOffset = 300;
-    double const minOffset = 300;
+    constexpr double defaultOffset = 300;
+    constexpr double minOffset = 300;
 
-    double xDistance = qAbs(_in.x() - _out.x());
-    bool addNegativeMod = _in.x() <= _out.x();
+    const double xDistance = qAbs(_in.x() - _out.x());
+    const bool addNegativeMod = _in.x() <= _out.x();
 
-    double horizontalOffset = xDistance;
+    double horizontalOffset;
 
     if (addNegativeMod)
         horizontalOffset = qMin(defaultOffset, qAbs(xDistance));
@@ -97,29 +102,18 @@ std::pair<QPointF, QPointF> AgxConnectionGraphicsObject::pointsC1C2Horizontal() 
         horizontalOffset = qMin(defaultOffset, 1200.0);
 
     horizontalOffset = qMax(horizontalOffset, minOffset);
-    QPointF deltaVector = _in - _out;
+    const QPointF deltaVector = _in - _out;
 
-    double ratioY = qAbs((deltaVector.x() * deltaVector.x() + deltaVector.y() * deltaVector.y()) - 250 / 250);
+    double ratioY = qAbs(deltaVector.x() * deltaVector.x() + deltaVector.y() * deltaVector.y() - 1);
     ratioY = qMin(0.0, ratioY);
     ratioY = qMax(1.0, ratioY);
 
     double ratioX = xDistance / 200;
     ratioX = ratioX < 0.1 ? 0.1 : ratioX;
     ratioX = ratioX > 1.0 ? 1.0 : ratioX;
-
-    /*if (xDistance <= 0) {
-        double yDistance = _in.y() - _out.y() + 20;
-
-        double vector = yDistance < 0 ? -1.0 : 1.0;
-
-        verticalOffset = qMin(defaultOffset, std::abs(yDistance)) * vector;
-
-        ratioX = 1.0;
-    }*/
-
     
     horizontalOffset *= ratioX;
-    double verticalOffset = ratioY * 25;
+    const double verticalOffset = ratioY * 25;
 
     QPointF c1(_out.x() + horizontalOffset, _out.y() + verticalOffset);
 
@@ -130,9 +124,9 @@ std::pair<QPointF, QPointF> AgxConnectionGraphicsObject::pointsC1C2Horizontal() 
 
 std::pair<QPointF, QPointF> AgxConnectionGraphicsObject::pointsC1C2Vertical() const
 {
-    double const defaultOffset = 200;
+    constexpr double defaultOffset = 200;
 
-    double yDistance = _in.y() - _out.y();
+    const double yDistance = _in.y() - _out.y();
 
     double verticalOffset = qMin(defaultOffset, std::abs(yDistance));
 
@@ -141,9 +135,9 @@ std::pair<QPointF, QPointF> AgxConnectionGraphicsObject::pointsC1C2Vertical() co
     double ratioY = 0.5;
 
     if (yDistance <= 0) {
-        double xDistance = _in.x() - _out.x() + 20;
+        const double xDistance = _in.x() - _out.x() + 20;
 
-        double vector = xDistance < 0 ? -1.0 : 1.0;
+        const double vector = xDistance < 0 ? -1.0 : 1.0;
 
         horizontalOffset = qMin(defaultOffset, std::abs(xDistance)) * vector;
 
@@ -161,16 +155,16 @@ std::pair<QPointF, QPointF> AgxConnectionGraphicsObject::pointsC1C2Vertical() co
 
 QPointF AgxConnectionGraphicsObject::GetOutPosition() const
 {
-    bool collapsed = _graphModel.nodeData<bool>(_connectionId.outNodeId, AgxNodeRole::CollapseState);
-    auto ngeom = agxNodeScene()->agxNodeGeometry();
-    return collapsed ? ngeom.collapsedPortPosition(_connectionId.outNodeId, AgxPortType::Out) : _out;
+    const bool collapsed = _graphModel.nodeData<bool>(_connectionId.outNodeId, AgxNodeRole::CollapseState);
+    const auto nGeom = agxNodeScene()->agxNodeGeometry();
+    return collapsed ? nGeom.collapsedPortPosition(_connectionId.outNodeId, AgxPortType::Out) : _out;
 }
 
 QPointF AgxConnectionGraphicsObject::GetInPosition() const
 {
-    bool collapsed = _graphModel.nodeData<bool>(_connectionId.inNodeId, AgxNodeRole::CollapseState);
-    auto ngeom = agxNodeScene()->agxNodeGeometry();
-    return collapsed ? ngeom.collapsedPortPosition(_connectionId.inNodeId, AgxPortType::In) : _in;
+    const bool collapsed = _graphModel.nodeData<bool>(_connectionId.inNodeId, AgxNodeRole::CollapseState);
+    const auto nGeom = agxNodeScene()->agxNodeGeometry();
+    return collapsed ? nGeom.collapsedPortPosition(_connectionId.inNodeId, AgxPortType::In) : _in;
 }
 
 AgxGraphModel& AgxConnectionGraphicsObject::graphModel() const
@@ -190,17 +184,17 @@ AgxConnectionId const& AgxConnectionGraphicsObject::connectionId() const
 
 QRectF AgxConnectionGraphicsObject::boundingRect() const
 {
-    auto points = pointsC1C2();
+    auto [c1Point, c2Point] = pointsC1C2();
 
     // `normalized()` fixes inverted rects.
-    QRectF basicRect = QRectF(_out, _in).normalized();
+    const QRectF basicRect = QRectF(_out, _in).normalized();
 
-    QRectF c1c2Rect = QRectF(points.first, points.second).normalized();
+    const QRectF c1c2Rect = QRectF(c1Point, c2Point).normalized();
 
     QRectF commonRect = basicRect.united(c1c2Rect);
 
-    auto const& connectionStyle = AgxStyleCollection::connectionStyle();
-    float const diam = connectionStyle.pointDiameter();
+    auto const& connectionStyle = AgxPalette::GetInstance().connectionPalette();
+    float const diam = connectionStyle.PointDiameter;
     QPointF const cornerOffset(diam, diam);
 
     // Expand rect by port circle diameter
@@ -219,35 +213,23 @@ QPainterPath AgxConnectionGraphicsObject::shape() const
     //return path;
 
 #else
-    return agxNodeScene()->agxConnectionPainter().getPainterStroke(*this);
+    return AgxConnectionPainter::GetPainterStroke(*this);
 #endif
 }
 
-QPointF const& AgxConnectionGraphicsObject::endPoint(AgxPortType portType) const
+QPointF const& AgxConnectionGraphicsObject::endPoint(const AgxPortType portType) const
 {
     Q_ASSERT(portType != AgxPortType::None);
 
-    return (portType == AgxPortType::Out ? _out : _in);
+    return portType == AgxPortType::Out ? _out : _in;
 }
 
 std::pair<QPointF, QPointF> AgxConnectionGraphicsObject::pointsC1C2() const
 {
     return pointsC1C2Horizontal();
-
-    /*switch (agxNodeScene()->orientation()) {
-    case Qt::Horizontal:
-        return pointsC1C2Horizontal();
-        break;
-
-    case Qt::Vertical:
-        return pointsC1C2Vertical();
-        break;
-    }*/
-
-    throw std::logic_error("Unreachable code after switch statement");
 }
 
-void AgxConnectionGraphicsObject::setEndPoint(AgxPortType portType, QPointF const& point)
+void AgxConnectionGraphicsObject::setEndPoint(const AgxPortType portType, QPointF const& point) const
 {
     if (portType == AgxPortType::In)
         _in = point;
@@ -257,23 +239,24 @@ void AgxConnectionGraphicsObject::setEndPoint(AgxPortType portType, QPointF cons
 
 void AgxConnectionGraphicsObject::move()
 {
-    auto moveEnd = [this](AgxConnectionId cId, AgxPortType portType) {
-        AgxNodeId nodeId = getNodeId(portType, cId);
+    auto moveEnd = [this](const AgxConnectionId& cId, const AgxPortType portType) {
+        const AgxNodeId nodeId = getNodeId(portType, cId);
 
         if (nodeId == InvalidNodeId)
             return;
 
-        AgxNodeGraphicsObject* ngo = agxNodeScene()->agxNodeGraphicsObject(nodeId);
+        const AgxNodeGraphicsObject* ngo = agxNodeScene()->agxNodeGraphicsObject(nodeId);
 
-        if (ngo) {
-            AgxNodeGeometry& geometry = agxNodeScene()->agxNodeGeometry();
+        if (ngo)
+        {
+            const AgxNodeGeometry& geometry = agxNodeScene()->agxNodeGeometry();
 
-            QPointF scenePos = geometry.portScenePosition(nodeId,
+            const QPointF scenePos = geometry.portScenePosition(nodeId,
                 portType,
                 getPortIndex(portType, cId),
                 ngo->sceneTransform());
 
-            QPointF connectionPos = sceneTransform().inverted().map(scenePos);
+            const QPointF connectionPos = sceneTransform().inverted().map(scenePos);
 
             setEndPoint(portType, connectionPos);
         }
@@ -297,7 +280,7 @@ AgxConnectionState& AgxConnectionGraphicsObject::connectionState()
     return _connectionState;
 }
 
-void AgxConnectionGraphicsObject::setConnectionHidden(bool hidden)
+void AgxConnectionGraphicsObject::setConnectionHidden(const bool hidden)
 {
     _connectionId.isHidden = hidden;
 }
@@ -349,8 +332,9 @@ void AgxConnectionGraphicsObject::mouseMoveEvent(QGraphicsSceneMouseEvent* event
 {
     prepareGeometryChange();
 
-    auto view = static_cast<QGraphicsView*>(event->widget());
-    auto ngo = locateAgxNodeAt(event->scenePos(), *agxNodeScene(), view->transform());
+    //We use static cast due to RTTI rules on qt6 often returning a null pointer even when dynamic cast should succeed
+    const auto view = static_cast<QGraphicsView*>(event->widget()); // NOLINT(*-pro-type-static-cast-downcast)
+    const auto ngo = locateAgxNodeAt(event->scenePos(), *agxNodeScene(), view->transform());
     if (ngo) {
         ngo->reactToConnection(this);
 
@@ -362,9 +346,10 @@ void AgxConnectionGraphicsObject::mouseMoveEvent(QGraphicsSceneMouseEvent* event
 
     //-------------------
 
-    auto requiredPort = _connectionState.requiredPort();
+    const auto requiredPort = _connectionState.requiredPort();
 
-    if (requiredPort != AgxPortType::None) {
+    if (requiredPort != AgxPortType::None)
+    {
         setEndPoint(requiredPort, event->pos());
     }
 
@@ -382,15 +367,16 @@ void AgxConnectionGraphicsObject::mouseReleaseEvent(QGraphicsSceneMouseEvent* ev
     ungrabMouse();
     event->accept();
 
-    auto view = static_cast<QGraphicsView*>(event->widget());
+    //We use static cast due to RTTI rules on qt6 often returning a null pointer even when dynamic cast should succeed
+    const auto view = static_cast<QGraphicsView*>(event->widget()); // NOLINT(*-pro-type-static-cast-downcast)
 
     Q_ASSERT(view);
 
-    auto ngo = locateAgxNodeAt(event->scenePos(), *agxNodeScene(), view->transform());
+    const auto ngo = locateAgxNodeAt(event->scenePos(), *agxNodeScene(), view->transform());
     bool wasConnected = false;
 
     if (ngo) {
-        AgxNodeConnectionInteraction interaction(*ngo, *this, *agxNodeScene());
+        const AgxNodeConnectionInteraction interaction(*ngo, *this, *agxNodeScene());
 
         wasConnected = interaction.tryConnect();
     }

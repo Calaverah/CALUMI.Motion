@@ -1,12 +1,11 @@
 #pragma once
 
 #include "AgxDefinitions.h"
-
 #include <QJsonObject>
 
 
 
-inline AgxPortIndex getNodeId(AgxPortType portType, AgxConnectionId connectionId)
+inline AgxPortIndex getNodeId(const AgxPortType portType, const AgxConnectionId& connectionId)
 {
     AgxNodeId id = InvalidNodeId;
 
@@ -18,12 +17,14 @@ inline AgxPortIndex getNodeId(AgxPortType portType, AgxConnectionId connectionId
         case AgxPortType::Out:
             id = connectionId.outNodeId;
             break;
+        default:
+            break;
     }
 
     return id;
 }
 
-inline AgxPortIndex getPortIndex(AgxPortType portType, AgxConnectionId connectionId)
+inline AgxPortIndex getPortIndex(const AgxPortType portType, const AgxConnectionId& connectionId)
 {
     AgxPortIndex index = InvalidPortIndex;
 
@@ -35,16 +36,19 @@ inline AgxPortIndex getPortIndex(AgxPortType portType, AgxConnectionId connectio
         case AgxPortType::Out:
             index = connectionId.outPortIndex;
             break;
+        default:
+            break;
     }
 
     return index;
 }
 
-inline AgxPortType oppositePort(AgxPortType port)
+inline AgxPortType oppositePort(const AgxPortType port)
 {
-    AgxPortType result = AgxPortType::None;
+    auto result = AgxPortType::None;
 
-    switch (port) {
+    switch (port)
+    {
         case AgxPortType::In:
             result = AgxPortType::Out;
             break;
@@ -52,16 +56,18 @@ inline AgxPortType oppositePort(AgxPortType port)
         case AgxPortType::Out:
             result = AgxPortType::In;
             break;
+        default:
+            break;
     }
     return result;
 }
 
-inline bool isPortIndexValid(AgxPortIndex index)
+inline bool isPortIndexValid(const AgxPortIndex index)
 {
     return index != InvalidPortIndex;
 }
 
-inline bool isPortTypeValid(AgxPortType portType)
+inline bool isPortTypeValid(const AgxPortType portType)
 {
     return portType != AgxPortType::None;
 }
@@ -73,7 +79,7 @@ inline AgxConnectionId makeIncompleteConnectionId(AgxNodeId const connectedNodeI
                                                 AgxPortType const connectedPort,
                                                 AgxPortIndex const connectedPortIndex)
 {
-    return (connectedPort == AgxPortType::In)
+    return connectedPort == AgxPortType::In
         ? AgxConnectionId{ InvalidNodeId, InvalidPortIndex, connectedNodeId, connectedPortIndex }
     : AgxConnectionId{ connectedNodeId, connectedPortIndex, InvalidNodeId, InvalidPortIndex };
 }
@@ -85,10 +91,13 @@ inline AgxConnectionId makeIncompleteConnectionId(AgxNodeId const connectedNodeI
 inline AgxConnectionId makeIncompleteConnectionId(AgxConnectionId connectionId,
                                                 AgxPortType const portToDisconnect)
 {
-    if (portToDisconnect == AgxPortType::Out) {
+    if (portToDisconnect == AgxPortType::Out)
+    {
         connectionId.outNodeId = InvalidNodeId;
         connectionId.outPortIndex = InvalidPortIndex;
-    } else {
+    }
+    else
+    {
         connectionId.inNodeId = InvalidNodeId;
         connectionId.inPortIndex = InvalidPortIndex;
     }
@@ -111,7 +120,7 @@ inline AgxConnectionId makeCompleteConnectionId(AgxConnectionId incompleteConnec
     return incompleteConnectionId;
 }
 
-inline QDebug& operator<<(QDebug& ostr, AgxConnectionId const connectionId)
+inline QDebug& operator<<(QDebug& ostr, const AgxConnectionId& connectionId)
 {
     ostr << "(" << connectionId.outNodeId << ", "
         << (isPortIndexValid(connectionId.outPortIndex) ? QString("%1").arg(connectionId.outPortIndex)
@@ -119,7 +128,7 @@ inline QDebug& operator<<(QDebug& ostr, AgxConnectionId const connectionId)
         << ", " << connectionId.inNodeId << ", "
         << (isPortIndexValid(connectionId.inPortIndex) ? QString("%1").arg(connectionId.inPortIndex)
             : "INVALID")
-        << ")";// << std::endl;
+        << ")";
 
     return ostr;
 }
@@ -138,10 +147,10 @@ inline QJsonObject toJson(AgxConnectionId const& connId)
 
 inline AgxConnectionId fromJson(QJsonObject const& connJson)
 {
-    AgxConnectionId connId{ static_cast<AgxNodeId>(connJson["outNodeId"].toInt(InvalidNodeId)),
-                        static_cast<AgxPortIndex>(connJson["outPortIndex"].toInt(InvalidPortIndex)),
-                        static_cast<AgxNodeId>(connJson["intNodeId"].toInt(InvalidNodeId)),
-                        static_cast<AgxPortIndex>(connJson["inPortIndex"].toInt(InvalidPortIndex)) };
+    const AgxConnectionId connId{ static_cast<AgxNodeId>(connJson["outNodeId"].toInteger(InvalidNodeId)),
+                        static_cast<AgxPortIndex>(connJson["outPortIndex"].toInteger(InvalidPortIndex)),
+                        static_cast<AgxNodeId>(connJson["intNodeId"].toInteger(InvalidNodeId)),
+                        static_cast<AgxPortIndex>(connJson["inPortIndex"].toInteger(InvalidPortIndex)) };
 
     return connId;
 }

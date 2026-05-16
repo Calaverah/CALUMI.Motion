@@ -14,13 +14,10 @@ SettingsDialog::SettingsDialog(QWidget *parent)
 
 	ui.languageComboBox->insertItems(0, LanguageStrings);
 
-	ui.themeLineEdit->setValidator(new QRegularExpressionValidator(QRegularExpression("[^\\\\/:*?\"<>|]+$"),this));
+	ui.themeLineEdit->setValidator(new QRegularExpressionValidator(QRegularExpression(R"([^\\/:*?"<>|]+$)"),this));
 
 	RefreshUiValues();
 }
-
-SettingsDialog::~SettingsDialog()
-{}
 
 void SettingsDialog::changeEvent(QEvent * event)
 {
@@ -43,9 +40,9 @@ void SettingsDialog::RefreshUiValues() const
 
 	//Repopulate Localized Lists
 	ui.showConsoleLogComboBox_3->clear();
-	ui.showConsoleLogComboBox_3->insertItems(0, _StartupVisibilityStrings);
+	ui.showConsoleLogComboBox_3->insertItems(0, m_startupVisibilityStrings);
 	ui.showPropertiesSidebarComboBox->clear();
-	ui.showPropertiesSidebarComboBox->insertItems(0, _StartupVisibilityStrings);
+	ui.showPropertiesSidebarComboBox->insertItems(0, m_startupVisibilityStrings);
 	
 
 	//General
@@ -63,11 +60,11 @@ void SettingsDialog::RefreshUiValues() const
 	ui.languageComboBox->setCurrentText(LanguageCodeToString(ref.GetLanguage()));
 
 	//Visuals
-	ui.equationSymbolColorWidget->setColor(ref.GetInstance().GetSymbolColor());
+	ui.equationSymbolColorWidget->setColor(ref.GetSymbolColor());
 	ui.themeLineEdit->setText(ref.GetThemeFileName());
 }
 
-void SettingsDialog::ApplySettings()
+void SettingsDialog::ApplySettings() const
 {
 	auto& ref = SettingsRegistry::GetInstance();
 

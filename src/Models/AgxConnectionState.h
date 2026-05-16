@@ -4,7 +4,6 @@
 
 #pragma once
 #pragma warning(push,0)
-#include <QUuid>
 #include "Utilities/AgxDefinitions.h"
 
 #pragma warning(pop)
@@ -20,11 +19,8 @@ public:
     /// or it is already binding two nodes.
     enum LooseEnd { Pending = 0, Connected = 1 };
 
-AgxConnectionState(AgxConnectionGraphicsObject& cgo)
-        : _cgo(cgo)
-        , _hovered(false)
-    {
-    }
+    explicit AgxConnectionState(AgxConnectionGraphicsObject& cgo) : _cgo(cgo), _hovered(false)
+    {}
 
     AgxConnectionState(AgxConnectionState const&) = delete;
     AgxConnectionState(AgxConnectionState&&) = delete;
@@ -41,7 +37,7 @@ AgxPortType requiredPort() const;
     void setHovered(bool hovered);
 
 /// Caches NodeId for further interaction.
-    void setLastHoveredNode(AgxNodeId const nodeId);
+    void setLastHoveredNode(AgxNodeId nodeId);
 
     AgxNodeId lastHoveredNode() const;
 
