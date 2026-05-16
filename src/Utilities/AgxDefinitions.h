@@ -194,7 +194,7 @@ public:
 
     // Inherited via AgxFlagField
     QJsonValue ToJson() const override;
-    void FromJson(const QJsonValue& data) override;
+    void FromJson(const QJsonValue& jData) override;
     void ToXML(pugi::xml_node& parent) override;
     void FromXML(pugi::xml_node& node) override;
 

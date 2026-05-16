@@ -2,9 +2,10 @@
 #include "AgxFormat.h"
 #include "Models/Blend/AgxBlendInputModel.h"
 
-void FormatBlendInput(pugi::xml_node& parent, AgxBlendInputModel* blendData)
+void FormatBlendInput(pugi::xml_node& parent, const AgxBlendInputModel* blendData)
 {
-    if (!blendData) return;
+    if (!blendData)
+        return;
 
     auto bInput = AgxAppend(parent, "blendInput", { AgxFormat::NewLine, AgxFormat::Indent }, 1);
     for (int i = 0; i < blendData->getDataRowCount(); i++)

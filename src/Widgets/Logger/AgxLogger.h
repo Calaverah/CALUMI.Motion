@@ -17,6 +17,7 @@ public:
 
 public slots:
 		void appendMessage(const QString& text, const QtMsgType& type) const;
+		void saveExitState();
 
 protected:
 	void closeEvent(QCloseEvent* event) override;
@@ -25,6 +26,7 @@ protected:
 private:
 	void writeFormatted(const QString& text, const QColor& color, bool bold = false) const;
 
-QPlainTextEdit* m_logTE = nullptr;
+	QPlainTextEdit* m_logTE = nullptr;
+	bool m_stateSaved = false;
 };
 

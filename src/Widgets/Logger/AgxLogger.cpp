@@ -2,12 +2,15 @@
 //License: https://www.gnu.org/licenses/lgpl-3.0.html
 //Contact: Calaverahmedia@gmail.com
 
+// ReSharper disable CppDFAMemoryLeak
 #include "stdafx.h"
 #include "AgxLogger.h"
 #include "Utilities/SettingsRegistry.h"
 
 AgxLogger::AgxLogger(QWidget* parent) : QWidget(parent), m_logTE(new QPlainTextEdit(this))
 {
+	setObjectName("CALUMIMotionLogger");
+
 	const auto layout = new QVBoxLayout(this);
 	layout->addWidget(m_logTE);
 	setLayout(layout);
@@ -54,8 +57,8 @@ void AgxLogger::closeEvent(QCloseEvent * event)
 
 void AgxLogger::hideEvent(QHideEvent* event)
 {
-	auto& settingIns = SettingsRegistry::GetInstance();
-	//settingIns.beginGroup("Log");
+	const auto& settingIns = SettingsRegistry::GetInstance();
+
 	settingIns.SaveWindowGeometry("Log/Geometry", saveGeometry());
 }
 
@@ -103,4 +106,15 @@ void AgxLogger::appendMessage(const QString& text, const QtMsgType& type) const
 	writeFormatted(text + "\n", Qt::white, false);
 	if (const auto scroller = m_logTE->verticalScrollBar())
 		scroller->setValue(scroller->maximum());
+}
+
+void AgxLogger::saveExitState()
+{
+	if (m_stateSaved)
+		return;
+
+	m_stateSaved = true;
+
+	const auto& settingIns = SettingsRegistry::GetInstance();
+	settingIns.SaveLastState("Log/State", isVisible());
 }

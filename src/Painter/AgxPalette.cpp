@@ -258,26 +258,16 @@ void AgxPalette::fromJson(const QJsonObject& input)
     m_nodePalette.fromJson(nodePalette);
     m_iconPalette.fromJson(iconPalette);
 
-    if (uiPalette.contains("panel"))
+    if (uiPalette.contains("panel-color"))
     {
-        // ReSharper disable once CppTooWideScopeInitStatement
-        const auto panelObj = uiPalette["panel"].toObject();
-        if (panelObj.contains("color"))
-        {
-            if (const auto panelColor = QColor::fromString(panelObj["color"].toString()); panelColor.isValid())
-                m_panelColor = panelColor;
-        }
+        if (const auto panelColor = QColor::fromString(uiPalette["panel-color"].toString()); panelColor.isValid())
+            m_panelColor = panelColor;
     }
 
     if (uiPalette.contains("sub-panel"))
     {
-        // ReSharper disable once CppTooWideScopeInitStatement
-        const auto subPanelObj = uiPalette["sub-panel"].toObject();
-        if (subPanelObj.contains("color"))
-        {
-            if (const auto subPanelColor = QColor::fromString(subPanelObj["color"].toString()); subPanelColor.isValid())
-                m_subPanelColor = subPanelColor;
-        }
+        if (const auto subPanelColor = QColor::fromString(uiPalette["sub-panel-color"].toString()); subPanelColor.isValid())
+            m_subPanelColor = subPanelColor;
     }
 }
 

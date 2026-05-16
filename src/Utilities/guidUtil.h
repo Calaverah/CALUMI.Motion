@@ -1,17 +1,12 @@
 #pragma once
 #pragma warning(push,0)
-#include <QObject>
 #include <QUuid>
 #include <QSet>
 #pragma warning(pop)
 
 class guidUtil
 {
-	guidUtil()
-	{
-
-	}
-
+	guidUtil() = default;
 	~guidUtil() = default;
 
 public:
@@ -33,7 +28,7 @@ public:
 	void releaseGuid(const QUuid& guid);
 
 private:
-	QSet<QUuid> _guids;
+	QSet<QUuid> m_guids{};
 };
 
 class guidObject
@@ -42,11 +37,11 @@ public:
 	guidObject();
 	virtual ~guidObject();
 
-	QUuid getGuid() const;
-	const QUuid* const getGuidRef() const;
-	QUuid setGuid(QUuid guid = QUuid().createUuid(), bool keepOldIfInvalid = true);
-	QUuid setGuid(QString guid, bool keepOldIfInvalid = true);
+	[[nodiscard]] QUuid getGuid() const;
+	[[nodiscard]] const QUuid* getGuidRef() const;
+	QUuid setGuid(QUuid guid = QUuid::createUuid(), bool keepOldIfInvalid = true);
+	QUuid setGuid(const QString& guid, bool keepOldIfInvalid = true);
 
 private:
-	QUuid _guid = QUuid::createUuid();
+	QUuid m_guid = QUuid::createUuid();
 };

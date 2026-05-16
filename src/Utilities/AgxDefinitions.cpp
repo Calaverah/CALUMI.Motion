@@ -2124,13 +2124,13 @@ size_t AgxAnimationFlags::GetValue() const {
 	return output;
 }
 
-void AgxAnimationFlags::SetValue(size_t input) { 
-	std::memcpy(&data, &input, sizeof(input)); 
+void AgxAnimationFlags::SetValue(const size_t input) {
+	std::memcpy(&data, &input, sizeof(input));
 }
 
-QStringList AgxAnimationFlags::GetStringList(bool spaces)
+QStringList AgxAnimationFlags::GetStringList(const bool spaces)
 {
-	QString spcr = spaces ? " " : "_";
+	const QString spcr = spaces ? " " : "_";
 	QStringList list = {
 		"Additive",
 		"Adjust"+spcr+"1st"+spcr+"Person"+spcr+"FOV",
@@ -2247,7 +2247,7 @@ QJsonValue AgxAnimationFlags::ToJson() const
 {
 	QJsonArray array;
 	size_t copy = GetValue();
-	QStringList list = GetStringList(false);
+	const QStringList list = GetStringList(false);
 	for (size_t i = 0; i < sizeof(copy)*8; i++)
 	{
 		if (copy & 0b1) {
@@ -2258,9 +2258,9 @@ QJsonValue AgxAnimationFlags::ToJson() const
 	return array;
 }
 
-void AgxAnimationFlags::FromJson(const QJsonValue& data)
+void AgxAnimationFlags::FromJson(const QJsonValue& jData)
 {
-	QJsonArray array = data.toArray();
+	const QJsonArray array = jData.toArray();
 		this->data.Additive = array.contains("Additive");
 		this->data.Adjust_1st_Person_FOV = array.contains("Adjust_1st_Person_FOV");
 		this->data.Allow_Rotation = array.contains("Allow_Rotation");
@@ -2299,7 +2299,7 @@ void AgxAnimationFlags::FromJson(const QJsonValue& data)
 void AgxAnimationFlags::ToXML(pugi::xml_node& parent)
 {
 	size_t copy = GetValue();
-	QStringList list = GetStringList(true);
+	const QStringList list = GetStringList(true);
 	for (size_t i = 0; i < sizeof(copy) * 8; i++)
 	{
 		if (copy & 0b1) {
@@ -2316,7 +2316,7 @@ void AgxAnimationFlags::FromXML(pugi::xml_node& node)
 	int8_t idx = -1;
 	for (pugi::xml_node flag = node.child("flag"); flag;)
 	{
-		pugi::xml_node next = flag.next_sibling("flag");
+		const pugi::xml_node next = flag.next_sibling("flag");
 		idx = list.indexOf(flag.child_value(), Qt::CaseInsensitive);
 		if (idx > -1 && idx < 64)
 			value |= (1ULL << idx);
@@ -2347,7 +2347,8 @@ AgxPropertyBlockData& AgxPropertyBlockData::operator=(const AgxPropertyBlockData
 }
 void AgxPropertyBlockData::AddRow(int index)
 {
-	if (index < 0) return;
+	if (index < 0)
+		return;
 
 	index = index >= _data.size() ? _data.size() : index;
 

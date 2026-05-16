@@ -4,6 +4,7 @@
 
 // ReSharper disable CppTooWideScopeInitStatement
 // ReSharper disable CppTooWideScope
+// ReSharper disable CppDFAMemoryLeak
 #include "stdafx.h"
 #include "CALUMIMotion.h"
 #include "Widgets/AgxGraphicsView.h"
@@ -29,6 +30,10 @@ CALUMIMotion::CALUMIMotion(QWidget *parent) : QMainWindow(parent)
     setObjectName("CALUMIMotionObject");
     ui.setupUi(this);
 
+#ifdef __APPLE__
+    ui.menuBar->setNativeMenuBar(false);
+#endif
+    
     setWindowTitle(windowTitle() + " [" + QCoreApplication::applicationVersion() + "]");
 
     connect(ui.actionOpen, &QAction::triggered, this, &CALUMIMotion::onOpen);
@@ -78,27 +83,21 @@ CALUMIMotion::~CALUMIMotion() {
 
 void CALUMIMotion::closeEvent(QCloseEvent* event)
 {
-    if (const auto calumiApp = dynamic_cast<CALUMIMotionApplication*>(QCoreApplication::instance()))
+    size_t topLevelCount = 0;
+
+    for (const auto window : CALUMIMotionApplication::topLevelWindows())
     {
-        size_t topLevelCount = 0;
-        
-        for (const auto window : calumiApp->topLevelWindows())
+        //TBD: there has to be a better solution for this but whatever.
+        if (window->objectName() != "CALUMIMotionObjectLogger" && window->isVisible())
         {
-            //TBD: there has to be a better solution for this but whatever.
-            if (window->objectName() == "CALUMIMotionObjectWindow" && window->isVisible())
-            {
-                topLevelCount++;
-            }
+            topLevelCount++;
         }
+    }
 
-        const auto& settingIns = SettingsRegistry::GetInstance();
-        
-        settingIns.SaveLastState("Log/State", calumiApp->LoggerVisible());
-
-        if(topLevelCount <= 1)
-        {
-            calumiApp->HideLogger();
-        }
+    if(topLevelCount <= 1)
+    {
+        CALUMIMotionApplication::SaveLoggerExitState();
+        CALUMIMotionApplication::HideLogger();
     }
 
     QMainWindow::closeEvent(event);
@@ -156,14 +155,6 @@ void CALUMIMotion::TogglePropertiesSidebar()
     SettingsRegistry::GetInstance().SaveLastState("Sidebar/State", _showPropertiesSidebar);
 }
 
-void CALUMIMotion::ToggleApplicationConsole()
-{
-    if (const auto calumiApp = dynamic_cast<CALUMIMotionApplication*>(QCoreApplication::instance()))
-    {
-        calumiApp->ToggleLogger();
-    }
-}
-
 void CALUMIMotion::CloseTab(const QWidget* widget) const
 {
     if (!widget) return;
@@ -182,7 +173,7 @@ void CALUMIMotion::CloseTab(const QWidget* widget) const
 
 bool CALUMIMotion::HasScene(const AgxGraphicsScene* scene) const
 {
-    for (auto& pair : tabMap | std::views::values)
+    for (auto& pair : tabMap | std::views::values) // NOLINT(*-use-anyofallof)
     {
         if (pair.m_AgxGraphicsScene.get() == scene)
             return true;
@@ -407,7 +398,7 @@ void CALUMIMotion::BuildCutCopyPasteMenu()
 
     if (!view) return;
 
-    if (tabMap.at(view).m_AgxGraphicsScene->selectedItems().size() != 0) {
+    if (!tabMap.at(view).m_AgxGraphicsScene->selectedItems().empty()) {
         ui.menuEdit->addAction(view->cutActionRef());
         ui.menuEdit->addAction(view->copyActionRef());
         auto removals = connect(ui.menuEdit, &QMenu::aboutToHide, this, [this, view] {
@@ -427,7 +418,7 @@ void CALUMIMotion::BuildCutCopyPasteMenu()
     auto removals = connect(ui.menuEdit, &QMenu::aboutToHide, this, [this, view] {
     ui.menuEdit->removeAction(view->pasteActionRef()); }, Qt::SingleShotConnection);
     
-    if (tabMap.at(view).m_AgxGraphicsScene->selectedItems().size() != 0) {
+    if (!tabMap.at(view).m_AgxGraphicsScene->selectedItems().empty()) {
         ui.menuEdit->addAction(view->duplicateActionRef());
         ui.menuEdit->addAction(view->deleteActionRef());
         auto dRemovals = connect(ui.menuEdit, &QMenu::aboutToHide, this, [this, view] {
@@ -701,8 +692,8 @@ void CALUMIMotion::ImportFile_Agx_SFBGS() {
         progBar->show();
 
         auto graphNode = doc.child("root");
-        agxGraphModel.get()->load(graphNode);
-        scene.get()->update();
+        agxGraphModel->load(graphNode);
+        scene->update();
 
         auto newTabView = new AgxGraphicsView(scene.get());
 
@@ -728,10 +719,8 @@ void CALUMIMotion::ImportFile_Agx_SFBGS() {
         ui.tabWidget->addTab(module, "");
 
         //scene->agxGraphModel().SetGraphTitle(pathInfo.baseName());
-        if (const auto cApp = dynamic_cast<CALUMIMotionApplication*>(QCoreApplication::instance()))
-        {
-            cApp->UpdateApplicationTabWidgets();
-        }
+        CALUMIMotionApplication::UpdateApplicationTabWidgets();
+
 
         Q_EMIT watcher->progressValueChanged(970);
 
@@ -842,7 +831,7 @@ void CALUMIMotion::ExportFile_Agx_SFBGS()
     doc.save(buffer, "\t", pugi::format_no_declaration | pugi::format_raw);
     buffer << static_cast<char>(0x0A);
     const std::string bufferData = buffer.str();
-    file.write(bufferData.c_str(), bufferData.size());
+    file.write(bufferData.c_str(), static_cast<qint64>(bufferData.size()));
 
     if (!file.commit())
     {
@@ -878,8 +867,8 @@ void CALUMIMotion::OpenFile_Behavior_SFBGS(const QJsonObject& object)
         progBar->show();
 
         
-        agxGraphModel.get()->load(object);
-        scene.get()->update();
+        agxGraphModel->load(object);
+        scene->update();
 
         auto newTabView = new AgxGraphicsView(scene.get());
 
@@ -950,9 +939,9 @@ void CALUMIMotion::OpenFile_Behavior_SFBGS(const QJsonObject& object)
 
 void CALUMIMotion::Create_SFBGSTab(std::shared_ptr<AgxGraphicsScene> scene, std::shared_ptr<AgxGraphModel> model)
 {
-    if(!model.get())
+    if(!model)
         model = std::make_shared<AgxGraphModel>(AgxGameType::SFBGS);
-    if(!scene.get())
+    if(!scene)
         scene = std::make_shared<AgxGraphicsScene>(*model);
 
     for (int i = 0; i < ui.tabWidget->count(); i++)
@@ -1050,4 +1039,4 @@ bool CALUMIMotion::HasTab(const QWidget* widget) const
     return false;
 }
 
-TabDataPair::TabDataPair(const std::shared_ptr<AgxGraphModel>& _AgxGraphModel, const std::shared_ptr<AgxGraphicsScene>& _AgxGraphicsScene) : m_AgxGraphModel(_AgxGraphModel), m_AgxGraphicsScene(_AgxGraphicsScene) {}
+TabDataPair::TabDataPair(const std::shared_ptr<AgxGraphModel>& agxGraphModel, const std::shared_ptr<AgxGraphicsScene>& agxGraphicsScene) : m_AgxGraphModel(agxGraphModel), m_AgxGraphicsScene(agxGraphicsScene) {}

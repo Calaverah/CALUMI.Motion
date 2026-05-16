@@ -3,61 +3,60 @@
 
 bool guidUtil::addGuid(const QString& guid)
 {
-    QUuid qguid;
+    constexpr QUuid qguid;
     qguid.fromString(guid);
     return addGuid(qguid);
 }
 
 bool guidUtil::addGuid(const QUuid& guid)
 {
-    size_t size = _guids.size();
+    const size_t size = m_guids.size();
 
-    if (_guids.contains(guid))
+    if (m_guids.contains(guid))
         return false;
 
-    _guids.insert(guid);
+    m_guids.insert(guid);
 
-    return size < _guids.size();
+    return size < m_guids.size();
 }
 
 void guidUtil::releaseGuid(const QString& guid)
 {
-    QUuid qguid;
-    qguid.fromString(guid);
-    releaseGuid(qguid);
+    constexpr QUuid qGuid;
+    qGuid.fromString(guid);
+    releaseGuid(qGuid);
 }
 
 void guidUtil::releaseGuid(const QUuid & guid)
 {
-    _guids.remove(guid);
+    m_guids.remove(guid);
 }
 
 guidObject::guidObject()
 {
-    setGuid(_guid, false);
+    setGuid(m_guid, false);
 }
 
 guidObject::~guidObject()
 {
-    guidUtil::GetInstance().releaseGuid(_guid);
+    guidUtil::GetInstance().releaseGuid(m_guid);
 }
 
 QUuid guidObject::getGuid() const
 {
-    return _guid;
+    return m_guid;
 }
 
-const QUuid* const guidObject::getGuidRef() const
+const QUuid* guidObject::getGuidRef() const
 {
-    return &_guid;
+    return &m_guid;
 }
 
-QUuid guidObject::setGuid(QUuid guid, bool keepOldIfInvalid)
+QUuid guidObject::setGuid(const QUuid guid, const bool keepOldIfInvalid)
 {
-    bool isUnique = guidUtil::GetInstance().addGuid(guid);
-    if (isUnique)
+    if (bool isUnique = guidUtil::GetInstance().addGuid(guid))
     {
-        _guid = guid;
+        m_guid = guid;
     }
     else if(!keepOldIfInvalid)
     {
@@ -67,15 +66,15 @@ QUuid guidObject::setGuid(QUuid guid, bool keepOldIfInvalid)
             isUnique = guidUtil::GetInstance().addGuid(newGuid);
             if (isUnique)
             {
-                _guid = newGuid;
+                m_guid = newGuid;
             }
         }
     }
 
-    return _guid;
+    return m_guid;
 }
 
-QUuid guidObject::setGuid(QString guid, bool keepOldIfInvalid)
+QUuid guidObject::setGuid(const QString& guid, const bool keepOldIfInvalid)
 {
     return setGuid(QUuid::fromString(guid),keepOldIfInvalid);
 }

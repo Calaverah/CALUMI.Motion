@@ -7,6 +7,8 @@
 #include "version.h"
 #include <CALUMIMotion.h>
 
+#include "Utilities/SettingsRegistry.h"
+
 CALUMIMotionApplication::CALUMIMotionApplication(int& argc, char** argv) : QApplication(argc, argv) 
 {
 	setApplicationVersion(VER_FILEVERSION_STR);
@@ -54,6 +56,22 @@ bool CALUMIMotionApplication::LoggerVisible()
 		return g_log->isVisible();
 
 	return false;
+}
+
+bool CALUMIMotionApplication::event(QEvent* event)
+{
+	if (event->type() == QEvent::Type::Quit)
+	{
+		SaveLoggerExitState();
+		HideLogger();
+	}
+
+	return QApplication::event(event);
+}
+
+void CALUMIMotionApplication::SaveLoggerExitState()
+{
+	g_log->saveExitState();
 }
 
 void CALUMIMotionApplication::UpdateApplicationTabWidgets()

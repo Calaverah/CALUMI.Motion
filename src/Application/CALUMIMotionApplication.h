@@ -48,6 +48,10 @@ public:
     static bool LoggerVisible();
 
     static void UpdateApplicationTabWidgets();
+    static void SaveLoggerExitState();
+
+protected:
+    bool event(QEvent* event) override;
 
 private:
 	QHash<QString, unsigned int> m_list;

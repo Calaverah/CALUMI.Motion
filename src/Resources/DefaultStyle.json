@@ -1,8 +1,7 @@
 {
   "ui-palette": {
-    "sub-panel": {
-      "color":"#3C3C3C"
-    }
+    "sub-panel-color":"#3C3C3C"
+
   },
   "graph-palette": {
     "background-color": "#353535",

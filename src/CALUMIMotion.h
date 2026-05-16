@@ -46,7 +46,6 @@ private slots:
     void CloseTab(int i) const;
 
     void TogglePropertiesSidebar();
-    static void ToggleApplicationConsole();
     
     void ShowNodeGroupMenu() const;
     void HandleNodeGroupMenuVisibility() const;

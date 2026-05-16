@@ -25,13 +25,18 @@ int main(int argc, char* argv[])
     CALUMIMotionApplication::setStyle(QStyleFactory::create("Fusion"));
     CALUMIMotionApplication::styleHints()->setColorScheme(Qt::ColorScheme::Dark);
 
-
     const QPixmap pixmap(":/Images/Resources/NASA_ISS_LongExposure.png");
     auto splash = QSplashScreen(pixmap);
     splash.showMessage("CALUMI Motion:\nLoading modules...", Qt::AlignBottom | Qt::AlignCenter, Qt::white);
     splash.show();
     
     CALUMIMotionApplication::processEvents();
+
+#ifdef __APPLE__
+
+
+
+#endif
 
     {
         splash.showMessage("CALUMI Motion:\nLoading Icons...", Qt::AlignBottom | Qt::AlignCenter, Qt::white);

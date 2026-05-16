@@ -14,9 +14,9 @@ class AgxBlendInputModel;
 constexpr double SFBGSxScalar = 2.0;
 constexpr double SFBGSyScalar = 1.0;
 
-inline QString cleanFileName(QString name, bool toLowerCase = false, bool replaceSpaces = true) {
-    
-    QRegularExpression illegalChars("[\\\\/:*?\"<>|]");
+inline QString cleanFileName(QString name, const bool toLowerCase = false, const bool replaceSpaces = true) {
+
+    const QRegularExpression illegalChars("[\\\\/:*?\"<>|]");
     
     if(replaceSpaces)
         name.replace(" ", "_");
@@ -59,7 +59,7 @@ enum class AgxFormat {
 
 using AgxFormatSet = QFlags<AgxFormat>;
 
-inline QString CleanUpDecimals(const QString& number, int maxTrailing = -1)
+inline QString CleanUpDecimals(const QString& number, const int maxTrailing = -1)
 {
     QString output;
 
@@ -93,7 +93,7 @@ inline QString CleanUpDecimals(const QString& number, int maxTrailing = -1)
     return output;
 }
 
-inline QString FormatVector(QString x, QString y, QString z)
+inline QString FormatVector(const QString& x, const QString& y, const QString& z)
 {
     QString output;
     QStringList vals = { "0","0","0" };
@@ -127,7 +127,7 @@ inline QString FormatVector(QString x, QString y, QString z)
     return vals.at(0) + ";" + vals.at(1) + ";" + vals.at(2);
 }
 
-inline size_t GetParentCount(pugi::xml_node& node) 
+inline size_t GetParentCount(const pugi::xml_node& node)
 {
     size_t count = 0;
     auto parent = node.parent();
@@ -140,13 +140,13 @@ inline size_t GetParentCount(pugi::xml_node& node)
     return count;
 }
 
-inline void AgxCloseNode(pugi::xml_node& node, bool toParent = true, bool indent = true, unsigned int indentOverride = 1)
+inline void AgxCloseNode(pugi::xml_node& node, const bool toParent = true, const bool indent = true, const unsigned int indentOverride = 1)
 {
     node.append_child(pugi::node_pcdata).set_value("\n");
     
     if(indent)
     {
-        QString pId(indentOverride, '\t');
+        const QString pId(indentOverride, '\t');
         node.append_child(pugi::node_pcdata).set_value(pId.toStdString());
     }
     
@@ -161,27 +161,27 @@ inline void AgxCloseNode(pugi::xml_node& node, bool toParent = true, bool indent
     node.append_child(pugi::node_pcdata).set_value(indentation.toStdString());
 }
 
-inline pugi::xml_node AgxAppend(pugi::xml_node& node, const QString& tag, AgxFormatSet format = AgxFormat::Default, unsigned int indentOverride = 1)
+inline pugi::xml_node AgxAppend(pugi::xml_node& node, const QString& tag, const AgxFormatSet format = AgxFormat::Default, const unsigned int indentOverride = 1)
 {
     if (format & AgxFormat::NewLine)
         node.append_child(pugi::node_pcdata).set_value("\n");
 
     if (format & AgxFormat::IndentToParent)
     {
-        QString pId(GetParentCount(node),'\t');
+        const QString pId(GetParentCount(node),'\t');
         node.append_child(pugi::node_pcdata).set_value(pId.toStdString());
     }
 
     if(format & AgxFormat::Indent)
     {
-        QString pId(indentOverride, '\t');
+        const QString pId(indentOverride, '\t');
         node.append_child(pugi::node_pcdata).set_value(pId.toStdString());
     }
 
     if (format & AgxFormat::SpaceBefore)
         node.append_child(pugi::node_pcdata).set_value(" ");
 
-    auto output = node.append_child(tag.toStdString());
+    const auto output = node.append_child(tag.toStdString());
 
     if (format & AgxFormat::SpaceAfter)
         node.append_child(pugi::node_pcdata).set_value(" ");
@@ -189,7 +189,7 @@ inline pugi::xml_node AgxAppend(pugi::xml_node& node, const QString& tag, AgxFor
     return output;
 }
 
-inline pugi::xml_node AgxAppendValue(pugi::xml_node& node, const QString& tag, const QString& value, AgxFormatSet format = AgxFormat::Default, unsigned int indentOverride = 1)
+inline pugi::xml_node AgxAppendValue(pugi::xml_node& node, const QString& tag, const QString& value, const AgxFormatSet format = AgxFormat::Default, const unsigned int indentOverride = 1)
 {
     auto output = AgxAppend(node, tag, format, indentOverride);
 
@@ -244,12 +244,12 @@ inline void FormatBasicPropertySheet(pugi::xml_node& parent, const QVector<AgxPr
 }
 
 static void AgxStringFilter_1(QString& text) {
-    QRegularExpression regex("\\_.*\\_");
+    const QRegularExpression regex("\\_.*\\_");
     text.replace(regex, "");
 }
 
 static void AgxStringFilter_2(QString& text) {
-    QRegularExpression regex("\\~.*\\~");
+    const QRegularExpression regex("\\~.*\\~");
     text.replace(regex, "");
 }
 
@@ -270,8 +270,8 @@ inline void FormatPropertyBlock(pugi::xml_node& parent, const AgxPropertyBlockDa
     }
 
     for (unsigned int rowIdx = 0; rowIdx < blockData.GetRowCount(); rowIdx++)
-    {   
-        auto rowData = blockData.GetRow(rowIdx);
+    {
+        const auto rowData = blockData.GetRow(rowIdx);
         auto row = AgxAppend(propSheet, "row", { AgxFormat::NewLine, AgxFormat::Indent }, 2);
 
         for (unsigned int colIdx = 0; colIdx < blockData.GetColumnCount(); colIdx++)
@@ -297,4 +297,4 @@ inline void FormatPropertyBlock(pugi::xml_node& parent, const AgxPropertyBlockDa
     AgxCloseNode(propSheet, false, true);
 }
 
-void FormatBlendInput(pugi::xml_node& parent, AgxBlendInputModel* blendData);
+void FormatBlendInput(pugi::xml_node& parent, const AgxBlendInputModel* blendData);
