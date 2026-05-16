@@ -1,8 +1,6 @@
 #pragma once
 
 #pragma warning(push,0)
-#include <QDialog>
-#include <QInputDialog>
 #include <QObject>
 #include <QSortFilterProxyModel>
 #pragma warning(pop)
@@ -16,10 +14,12 @@ class AgxEventFilterProxyModel : public QSortFilterProxyModel
 {
 	Q_OBJECT
 public:
-	AgxEventFilterProxyModel(QObject* parent = nullptr);
+	explicit AgxEventFilterProxyModel(QObject* parent = nullptr);
 
 	//void setFilter(const AgxEventType& type);
-	void setFilterSource(FilteredDropDownDialog& dialog);
+
+	//Cannot be const method
+	void setFilterSource(const FilteredDropDownDialog& dialog);
 
 public Q_SLOTS:
 	void FilterChange(const QString& str);
@@ -53,17 +53,17 @@ public:
 		return instance;
 	}
 
-	FilteredDropDownDialog* GetEventEntryDialog(QString str = "", AgxEventType iType = AgxEventType::UNDEFINED);
-	MultiVariableDialog* GetFloatVariableEntryDialog(QString str = "");
-	MultiVariableDialog* GetIntegerVariableEntryDialog(QString str = "");
-	MultiVariableDialog* GetBooleanVariableEntryDialog(QString str = "");
-	MultiVariableDialog* GetVectorVariableEntryDialog(QString str = "");
-	MultiVariableDialog* GetPrefixDialog(QString str = "");
-	MultiVariableDialog* GetSuffixDialog(QString str = "");
-	MultiVariableDialog* GetActionVariableDialog(QString str = "");
-	MultiVariableDialog* GetStateVariableDialog(QString str = "");
-	MultiVariableDialog* GetSyncVariableDialog(QString str = "");
-	BitfieldWidgetDialog* GetAnimationFlagDialog(size_t initialValue = 0);
+	FilteredDropDownDialog* GetEventEntryDialog(const QString &str = "", AgxEventType iType = AgxEventType::UNDEFINED) const;
+	MultiVariableDialog* GetFloatVariableEntryDialog(const QString &str = "") const;
+	MultiVariableDialog* GetIntegerVariableEntryDialog(const QString &str = "") const;
+	MultiVariableDialog* GetBooleanVariableEntryDialog(const QString &str = "") const;
+	MultiVariableDialog* GetVectorVariableEntryDialog(const QString& str = "") const;
+	MultiVariableDialog* GetPrefixDialog(const QString& str = "") const;
+	MultiVariableDialog* GetSuffixDialog(const QString& str = "") const;
+	MultiVariableDialog* GetActionVariableDialog(const QString& str = "") const;
+	MultiVariableDialog* GetStateVariableDialog(const QString& str = "") const;
+	MultiVariableDialog* GetSyncVariableDialog(const QString& str = "") const;
+	BitfieldWidgetDialog* GetAnimationFlagDialog(size_t initialValue = 0) const;
 	//MultiVariableDialog* GetAnimationTriggersDialog(QString str = "");
 
 private:

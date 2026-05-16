@@ -6,6 +6,7 @@
 #pragma warning(push,0)
 #include <QWidget>
 #include <QCheckBox>
+#include <QDialog>
 #pragma warning(pop)
 
 
@@ -13,13 +14,13 @@ class BitfieldWidgetDialog : public QDialog
 {
 	Q_OBJECT
 public:
-	BitfieldWidgetDialog(QWidget* parent = nullptr);
-	~BitfieldWidgetDialog() = default;
+	explicit BitfieldWidgetDialog(QWidget* parent = nullptr);
+	~BitfieldWidgetDialog() override = default;
 
 	QCheckBox* AddCheckBox(const QString& title);
 	QList<QCheckBox*> AddCheckBoxes(const QStringList& list);
 
-	void SetInitialValues(size_t value = 0);
+	void SetInitialValues(size_t value = 0) const;
 
 	QList<bool> GetValuesAsList() const;
 	size_t GetValues() const;

@@ -1,6 +1,6 @@
+// ReSharper disable CppTooWideScopeInitStatement
 #include "stdafx.h"
 #include "DialogPool.h"
-#include <memory>
 #include <QObject>
 #include "Utilities/AgxDefinitions.h"
 #include "Widgets/FilteredDropDownDialog.h"
@@ -8,354 +8,358 @@
 
 AgxEventFilterProxyModel::AgxEventFilterProxyModel(QObject* parent) : QSortFilterProxyModel(parent)
 {
-	setDynamicSortFilter(true);
-	setSortCaseSensitivity(Qt::CaseInsensitive);
-	sort(0);
+    setDynamicSortFilter(true);
+    setSortCaseSensitivity(Qt::CaseInsensitive);
+    QSortFilterProxyModel::sort(0);
 }
 
-void AgxEventFilterProxyModel::setFilterSource(FilteredDropDownDialog& dialog)
+//Cannot be const method!!
+void AgxEventFilterProxyModel::setFilterSource(const FilteredDropDownDialog& dialog)
 {
-	_type = _type; //using as a way to prevent accidentally making this const as it messes up the connection for some reason.
-	dialog.GetFilterBox()->connect(dialog.GetFilterBox(), &QComboBox::currentTextChanged, this, &AgxEventFilterProxyModel::FilterChange);
+    dialog.GetFilterBox()->connect(dialog.GetFilterBox(), &QComboBox::currentTextChanged, this,
+                                   &AgxEventFilterProxyModel::FilterChange);
 }
 
 void AgxEventFilterProxyModel::FilterChange(const QString& str)
 {
-	beginFilterChange();
-	auto resp = AgxEventTypeMap.contains(str) ? AgxEventTypeMap[str] : AgxEventType::UNDEFINED;
-	_type = resp;
-	endFilterChange();
+    beginFilterChange();
+    const auto resp = AgxEventTypeMap.contains(str) ? AgxEventTypeMap[str] : AgxEventType::UNDEFINED;
+    _type = resp;
+    endFilterChange();
 }
 
-bool AgxEventFilterProxyModel::filterAcceptsRow(int sourceRow, const QModelIndex& sourceParent) const
+bool AgxEventFilterProxyModel::filterAcceptsRow(const int sourceRow, const QModelIndex& sourceParent) const
 {
-	
-	QModelIndex index = sourceModel()->index(sourceRow, 0, sourceParent);
-	AgxEventType checkType = sourceModel()->data(index, Qt::UserRole + 1).value<AgxEventInfo>().eventType;
-	
-	if (_type == checkType) return true;
-	switch (_type)
-	{
-	case AgxEventType::Graph_Event:
-	case AgxEventType::Game_Event:
-		return checkType == AgxEventType::Both;
-	case AgxEventType::Both:
-		return checkType == AgxEventType::Graph_Event || checkType == AgxEventType::Game_Event;
-	case AgxEventType::UNDEFINED:
-		return true;
-	default:
-		return false;
-	}
+    const QModelIndex index = sourceModel()->index(sourceRow, 0, sourceParent);
+    const AgxEventType checkType = sourceModel()->data(index, Qt::UserRole + 1).value<AgxEventInfo>().eventType;
+
+    if (_type == checkType)
+        return true;
+
+    switch (_type)
+    {
+        case AgxEventType::Graph_Event:
+        case AgxEventType::Game_Event:
+            return checkType == AgxEventType::Both;
+        case AgxEventType::Both:
+            return checkType == AgxEventType::Graph_Event || checkType == AgxEventType::Game_Event;
+        case AgxEventType::UNDEFINED:
+            return true;
+        default:
+            return false;
+    }
 }
 
 bool AgxEventFilterProxyModel::lessThan(const QModelIndex& left, const QModelIndex& right) const
 {
-	QVariant leftData = sourceModel()->data(left, sortRole());
-	QVariant rightData = sourceModel()->data(right, sortRole());
+    const QVariant leftData = sourceModel()->data(left, sortRole());
+    const QVariant rightData = sourceModel()->data(right, sortRole());
 
-	if (leftData.userType() == QMetaType::QString && rightData.userType() == QMetaType::QString) {
+    if (leftData.userType() == QMetaType::QString && rightData.userType() == QMetaType::QString)
+    {
+        if (leftData.toString() == "<none>" || leftData.toString() == tr("<none>"))
+            return true;
 
-		if (leftData.toString() == "<none>" || leftData.toString() == tr("<none>"))
-			return true;
+        if (leftData.toString() == "<custom>" || leftData.toString() == tr("<custom>"))
+        {
+            if (rightData.toString() == "<none>" || rightData.toString() == tr("<none>"))
+                return false;
 
-		if (leftData.toString() == "<custom>" || leftData.toString() == tr("<custom>"))
-		{
-			if (rightData.toString() == "<none>" || rightData.toString() == tr("<none>"))
-				return false;
+            return true;
+        }
 
-			return true;
-		}
+        return leftData.toString().compare(rightData.toString(), Qt::CaseInsensitive) < 0;
+    }
 
-		return leftData.toString().compare(rightData.toString(), Qt::CaseInsensitive) < 0;
-	}
-
-	return QSortFilterProxyModel::lessThan(left, right);
+    return QSortFilterProxyModel::lessThan(left, right);
 }
 
 DialogPool_SFBGS::DialogPool_SFBGS()
 {
-	qInfo() << "SFBGS Dialog Pool Created";
+    qInfo() << "SFBGS Dialog Pool Created";
 
-	{
-		_eventModel = new QStandardItemModel();
+    {
+        _eventModel = new QStandardItemModel();
 
-		for (auto entry = AgxEventVars->cbegin(); entry != AgxEventVars->cend(); entry++)
-		{
-			QStandardItem* item = new QStandardItem(entry.key());
-			QVariant var;
-			var.setValue(entry.value());
-			item->setData(var, Qt::UserRole + 1);
-			_eventModel->appendRow(item);
-		}
+        for (auto entry = AgxEventVars->cbegin(); entry != AgxEventVars->cend(); ++entry)
+        {
+            // ReSharper disable once CppDFAMemoryLeak
+            const auto item = new QStandardItem(entry.key());
+            QVariant var;
+            var.setValue(entry.value());
+            item->setData(var, Qt::UserRole + 1);
+            _eventModel->appendRow(item);
+        }
 
-		_EventEntryDialog = new FilteredDropDownDialog();
-
-
-		AgxEventFilterProxyModel* _eventModelFilter = new AgxEventFilterProxyModel(_EventEntryDialog);
-		_eventModelFilter->setSourceModel(_eventModel);
-
-		
-		_eventModelFilter->setFilterSource(*_EventEntryDialog);
-		_EventEntryDialog->GetMainComboBox()->setModel(_eventModelFilter);
+        _EventEntryDialog = new FilteredDropDownDialog();
 
 
-		_EventEntryDialog->setWindowTitle("Select Event");
+        // ReSharper disable once CppDFAMemoryLeak
+        const auto _eventModelFilter = new AgxEventFilterProxyModel(_EventEntryDialog);
+        _eventModelFilter->setSourceModel(_eventModel);
 
-		_EventEntryDialog->GetFilterBox()->addItem("All");
-		_EventEntryDialog->GetFilterBox()->addItem(AgxEventTypeMap.key(AgxEventType::Graph_Event));
-		_EventEntryDialog->GetFilterBox()->addItem(AgxEventTypeMap.key(AgxEventType::Game_Event));
-		_EventEntryDialog->GetFilterBox()->addItem(AgxEventTypeMap.key(AgxEventType::Both));
-		_EventEntryDialog->GetFilterBox()->addItem(AgxEventTypeMap.key(AgxEventType::Special));
-	}
 
-	{
-		_FloatEntryDialog = new MultiVariableDialog();
-		_FloatEntryDialog->setWindowTitle("Select Float Type Variable");
-		_FloatEntryDialog->SetCustomFloat();
-		_FloatEntryDialog->GetComboBox()->addItems(AgxFloatVars);
-	}
+        _eventModelFilter->setFilterSource(*_EventEntryDialog);
+        _EventEntryDialog->GetMainComboBox()->setModel(_eventModelFilter);
 
-	{
-		_IntegerEntryDialog = new MultiVariableDialog();
-		_IntegerEntryDialog->setWindowTitle("Select Integer Type Variable");
-		_IntegerEntryDialog->SetCustomInteger();
-		_IntegerEntryDialog->GetComboBox()->addItems(AgxIntegerVars);
-	}
 
-	{
-		_BooleanEntryDialog = new MultiVariableDialog();
-		_BooleanEntryDialog->setWindowTitle("Select Boolean Type Variable");
-		_BooleanEntryDialog->SetCustomBoolean();
-		_BooleanEntryDialog->GetComboBox()->addItems(AgxBooleanVars);
-	}
+        _EventEntryDialog->setWindowTitle("Select Event");
 
-	{
-		_VectorEntryDialog = new MultiVariableDialog();
-		_VectorEntryDialog->setWindowTitle("Select Vector Type Variable");
-		_VectorEntryDialog->SetCustomVector();
-		_VectorEntryDialog->GetComboBox()->addItems(AgxVectorVars);
-	}
+        _EventEntryDialog->GetFilterBox()->addItem("All");
+        _EventEntryDialog->GetFilterBox()->addItem(AgxEventTypeMap.key(AgxEventType::Graph_Event));
+        _EventEntryDialog->GetFilterBox()->addItem(AgxEventTypeMap.key(AgxEventType::Game_Event));
+        _EventEntryDialog->GetFilterBox()->addItem(AgxEventTypeMap.key(AgxEventType::Both));
+        _EventEntryDialog->GetFilterBox()->addItem(AgxEventTypeMap.key(AgxEventType::Special));
+    }
 
-	{
-		_PrefixDialog = new MultiVariableDialog();
-		_PrefixDialog->setWindowTitle("Select Prefix");
-		_PrefixDialog->SetCustomString();
-		_PrefixDialog->GetComboBox()->addItems(AgxAnimPrefixes);
-	}
+    {
+        _FloatEntryDialog = new MultiVariableDialog();
+        _FloatEntryDialog->setWindowTitle("Select Float Type Variable");
+        _FloatEntryDialog->SetCustomFloat();
+        _FloatEntryDialog->GetComboBox()->addItems(AgxFloatVars);
+    }
 
-	{
-		_SuffixDialog = new MultiVariableDialog();
-		_SuffixDialog->setWindowTitle("Select Suffix");
-		_SuffixDialog->SetCustomString();
-		_SuffixDialog->GetComboBox()->addItems(AgxAnimSuffixes);
-	}
-	{
-		_ActionVarDialog = new MultiVariableDialog();
-		_ActionVarDialog->setWindowTitle("Select Action");
-		_ActionVarDialog->SetCustomString();
-		_ActionVarDialog->GetComboBox()->addItems(AgxActionVars);
-	}
-	{
-		_StateVarDialog = new MultiVariableDialog();
-		_StateVarDialog->setWindowTitle("Select State");
-		_StateVarDialog->SetCustomString();
-		_StateVarDialog->GetComboBox()->addItems(AgxStateVars);
-	}
-	{
-		_SyncDialog = new MultiVariableDialog();
-		_SyncDialog->setWindowTitle("Select Sync System");
-		_SyncDialog->SetCustomString();
-		_SyncDialog->GetComboBox()->addItems(AgxSyncs);
-	}
+    {
+        _IntegerEntryDialog = new MultiVariableDialog();
+        _IntegerEntryDialog->setWindowTitle("Select Integer Type Variable");
+        _IntegerEntryDialog->SetCustomInteger();
+        _IntegerEntryDialog->GetComboBox()->addItems(AgxIntegerVars);
+    }
 
-	{
-		_AnimationFlagsDialog = new BitfieldWidgetDialog();
-		_AnimationFlagsDialog->setWindowTitle("Select Animation Flags");
-		_AnimationFlagsDialog->AddCheckBoxes(AgxAnimationFlags::GetStringList());
-	}
+    {
+        _BooleanEntryDialog = new MultiVariableDialog();
+        _BooleanEntryDialog->setWindowTitle("Select Boolean Type Variable");
+        _BooleanEntryDialog->SetCustomBoolean();
+        _BooleanEntryDialog->GetComboBox()->addItems(AgxBooleanVars);
+    }
+
+    {
+        _VectorEntryDialog = new MultiVariableDialog();
+        _VectorEntryDialog->setWindowTitle("Select Vector Type Variable");
+        _VectorEntryDialog->SetCustomVector();
+        _VectorEntryDialog->GetComboBox()->addItems(AgxVectorVars);
+    }
+
+    {
+        _PrefixDialog = new MultiVariableDialog();
+        _PrefixDialog->setWindowTitle("Select Prefix");
+        _PrefixDialog->SetCustomString();
+        _PrefixDialog->GetComboBox()->addItems(AgxAnimPrefixes);
+    }
+
+    {
+        _SuffixDialog = new MultiVariableDialog();
+        _SuffixDialog->setWindowTitle("Select Suffix");
+        _SuffixDialog->SetCustomString();
+        _SuffixDialog->GetComboBox()->addItems(AgxAnimSuffixes);
+    }
+    {
+        _ActionVarDialog = new MultiVariableDialog();
+        _ActionVarDialog->setWindowTitle("Select Action");
+        _ActionVarDialog->SetCustomString();
+        _ActionVarDialog->GetComboBox()->addItems(AgxActionVars);
+    }
+    {
+        _StateVarDialog = new MultiVariableDialog();
+        _StateVarDialog->setWindowTitle("Select State");
+        _StateVarDialog->SetCustomString();
+        _StateVarDialog->GetComboBox()->addItems(AgxStateVars);
+    }
+    {
+        _SyncDialog = new MultiVariableDialog();
+        _SyncDialog->setWindowTitle("Select Sync System");
+        _SyncDialog->SetCustomString();
+        _SyncDialog->GetComboBox()->addItems(AgxSyncs);
+    }
+
+    {
+        _AnimationFlagsDialog = new BitfieldWidgetDialog();
+        _AnimationFlagsDialog->setWindowTitle("Select Animation Flags");
+        _AnimationFlagsDialog->AddCheckBoxes(AgxAnimationFlags::GetStringList());
+    }
 }
 
 DialogPool_SFBGS::~DialogPool_SFBGS()
 {
-	//deletion will be handled for us either by QT or windows releasing memory
+    //deletion will be handled for us either by QT or windows releasing memory
 
-	qDebug() << "SFBGS Dialog Pool Destroyed\n";
-	if (_EventEntryDialog)
-	{
-		qDebug() << "_EventEntryDialog Attempt\n";
-		//delete _EventEntryDialog;
-		_EventEntryDialog = nullptr;
-		qDebug() << "_EventEntryDialog Destroyed\n";
-	}
-	if (_FloatEntryDialog)
-	{
-		qDebug() << "_FloatEntryDialog Attempt\n";
-		//delete _FloatEntryDialog;
-		_FloatEntryDialog = nullptr;
-		qDebug() << "_FloatEntryDialog Destroyed\n";
-	}
-	if (_IntegerEntryDialog)
-	{
-		qDebug() << "_IntegerEntryDialog Attempt\n";
-		//delete _IntegerEntryDialog;
-		_IntegerEntryDialog = nullptr;
-		qDebug() << "_IntegerEntryDialog Destroyed\n";
-	}
-	if (_BooleanEntryDialog)
-	{
-		qDebug() << "_BooleanEntryDialog Attempt\n";
-		//delete _BooleanEntryDialog;
-		_BooleanEntryDialog = nullptr;
-		qDebug() << "_BooleanEntryDialog Destroyed\n";
-	}
-	if (_VectorEntryDialog)
-	{
-		qDebug() << "_VectorEntryDialog Attempt\n";
-		//delete _VectorEntryDialog;
-		_VectorEntryDialog = nullptr;
-		qDebug() << "_VectorEntryDialog Destroyed\n";
-	}
-	if (_PrefixDialog)
-	{
-		qDebug() << "_PrefixDialog Attempt\n";
-		//delete _PrefixDialog;
-		_PrefixDialog = nullptr;
-		qDebug() << "_PrefixDialog Destroyed\n";
-	}
-	if (_SuffixDialog)
-	{
-		qDebug() << "_SuffixDialog Attempt\n";
-		//delete _SuffixDialog;
-		_SuffixDialog = nullptr;
-		qDebug() << "_SuffixDialog Destroyed\n";
-	}
-	if (_ActionVarDialog)
-	{
-		qDebug() << "_ActionVarDialog Attempt\n";
-		//delete _ActionVarDialog;
-		_ActionVarDialog = nullptr;
-		qDebug() << "_ActionVarDialog Destroyed\n";
-	}
-	if (_StateVarDialog)
-	{
-		qDebug() << "_StateVarDialog Attempt\n";
-		//delete _StateVarDialog;
-		_StateVarDialog = nullptr;
-		qDebug() << "_StateVarDialog Destroyed\n";
-	}
-	if (_SyncDialog)
-	{
-		qDebug() << "_SyncDialog Attempt\n";
-		//delete _SyncDialog;
-		_SyncDialog = nullptr;
-		qDebug() << "_SyncDialog Destroyed\n";
-	}
-	if (_AnimationFlagsDialog)
-	{
-		qDebug() << "_AnimationFlagsDialog Attempt\n";
-		//delete _AnimationFlagsDialog;
-		_AnimationFlagsDialog = nullptr;
-		qDebug() << "_AnimationFlagsDialog Destroyed\n";
-	}
+    qDebug() << "SFBGS Dialog Pool Destroyed\n";
+    if (_EventEntryDialog)
+    {
+        qDebug() << "_EventEntryDialog Attempt\n";
+        //delete _EventEntryDialog;
+        _EventEntryDialog = nullptr;
+        qDebug() << "_EventEntryDialog Destroyed\n";
+    }
+    if (_FloatEntryDialog)
+    {
+        qDebug() << "_FloatEntryDialog Attempt\n";
+        //delete _FloatEntryDialog;
+        _FloatEntryDialog = nullptr;
+        qDebug() << "_FloatEntryDialog Destroyed\n";
+    }
+    if (_IntegerEntryDialog)
+    {
+        qDebug() << "_IntegerEntryDialog Attempt\n";
+        //delete _IntegerEntryDialog;
+        _IntegerEntryDialog = nullptr;
+        qDebug() << "_IntegerEntryDialog Destroyed\n";
+    }
+    if (_BooleanEntryDialog)
+    {
+        qDebug() << "_BooleanEntryDialog Attempt\n";
+        //delete _BooleanEntryDialog;
+        _BooleanEntryDialog = nullptr;
+        qDebug() << "_BooleanEntryDialog Destroyed\n";
+    }
+    if (_VectorEntryDialog)
+    {
+        qDebug() << "_VectorEntryDialog Attempt\n";
+        //delete _VectorEntryDialog;
+        _VectorEntryDialog = nullptr;
+        qDebug() << "_VectorEntryDialog Destroyed\n";
+    }
+    if (_PrefixDialog)
+    {
+        qDebug() << "_PrefixDialog Attempt\n";
+        //delete _PrefixDialog;
+        _PrefixDialog = nullptr;
+        qDebug() << "_PrefixDialog Destroyed\n";
+    }
+    if (_SuffixDialog)
+    {
+        qDebug() << "_SuffixDialog Attempt\n";
+        //delete _SuffixDialog;
+        _SuffixDialog = nullptr;
+        qDebug() << "_SuffixDialog Destroyed\n";
+    }
+    if (_ActionVarDialog)
+    {
+        qDebug() << "_ActionVarDialog Attempt\n";
+        //delete _ActionVarDialog;
+        _ActionVarDialog = nullptr;
+        qDebug() << "_ActionVarDialog Destroyed\n";
+    }
+    if (_StateVarDialog)
+    {
+        qDebug() << "_StateVarDialog Attempt\n";
+        //delete _StateVarDialog;
+        _StateVarDialog = nullptr;
+        qDebug() << "_StateVarDialog Destroyed\n";
+    }
+    if (_SyncDialog)
+    {
+        qDebug() << "_SyncDialog Attempt\n";
+        //delete _SyncDialog;
+        _SyncDialog = nullptr;
+        qDebug() << "_SyncDialog Destroyed\n";
+    }
+    if (_AnimationFlagsDialog)
+    {
+        qDebug() << "_AnimationFlagsDialog Attempt\n";
+        //delete _AnimationFlagsDialog;
+        _AnimationFlagsDialog = nullptr;
+        qDebug() << "_AnimationFlagsDialog Destroyed\n";
+    }
 }
 
-FilteredDropDownDialog* DialogPool_SFBGS::GetEventEntryDialog(QString str, AgxEventType iType)
+FilteredDropDownDialog* DialogPool_SFBGS::GetEventEntryDialog(const QString& str, AgxEventType iType) const
 {
-	int idx = static_cast<int>(iType);
+    const int idx = static_cast<int>(iType);
 
-	_EventEntryDialog->GetFilterBox()->setCurrentIndex(idx);
-	_EventEntryDialog->SetCustomHolder(str);
+    _EventEntryDialog->GetFilterBox()->setCurrentIndex(idx);
+    _EventEntryDialog->SetCustomHolder(str);
 
-	auto idxDrop = _EventEntryDialog->GetMainComboBox()->findText(str);
-	auto idxCustom = _EventEntryDialog->GetMainComboBox()->findText("<custom>");
+    const auto idxDrop = _EventEntryDialog->GetMainComboBox()->findText(str);
+    auto idxCustom = _EventEntryDialog->GetMainComboBox()->findText("<custom>");
 
-	//until we work out the translations during runtimes for events, this will have to be done to prevent any awkward bugs
-	if (idxCustom < 0)
-		idxCustom = _EventEntryDialog->GetMainComboBox()->findText(QObject::tr("<custom>"));
+    //until we work out the translations during runtimes for events, this will have to be done to prevent any awkward bugs
+    if (idxCustom < 0)
+        idxCustom = _EventEntryDialog->GetMainComboBox()->findText(QObject::tr("<custom>"));
 
-	_EventEntryDialog->GetMainComboBox()->setCurrentIndex(0);
-	
-	if (!str.isEmpty())
-	{
-		if (idxDrop >= 0)
-		{
-			_EventEntryDialog->GetMainComboBox()->setCurrentIndex(idxDrop);
-		}
-		else if (idxCustom >= 0)
-		{
-			_EventEntryDialog->GetMainComboBox()->setCurrentIndex(idxCustom);
-			//_EventEntryDialog->SetCustomHolder(str);
-		} 
-	}
+    _EventEntryDialog->GetMainComboBox()->setCurrentIndex(0);
 
-	return _EventEntryDialog;
+    if (!str.isEmpty())
+    {
+        if (idxDrop >= 0)
+        {
+            _EventEntryDialog->GetMainComboBox()->setCurrentIndex(idxDrop);
+        }
+        else if (idxCustom >= 0)
+        {
+            _EventEntryDialog->GetMainComboBox()->setCurrentIndex(idxCustom);
+            //_EventEntryDialog->SetCustomHolder(str);
+        }
+    }
+
+    return _EventEntryDialog;
 }
 
-MultiVariableDialog* DialogPool_SFBGS::GetFloatVariableEntryDialog(QString str)
+MultiVariableDialog* DialogPool_SFBGS::GetFloatVariableEntryDialog(const QString& str) const
 {
-	_FloatEntryDialog->SetInitialFloat(str);
+    _FloatEntryDialog->SetInitialFloat(str);
 
-	return _FloatEntryDialog;
+    return _FloatEntryDialog;
 }
 
-MultiVariableDialog* DialogPool_SFBGS::GetIntegerVariableEntryDialog(QString str)
+MultiVariableDialog* DialogPool_SFBGS::GetIntegerVariableEntryDialog(const QString& str) const
 {
-	_IntegerEntryDialog->SetInitialInteger(str);
+    _IntegerEntryDialog->SetInitialInteger(str);
 
-	return _IntegerEntryDialog;
+    return _IntegerEntryDialog;
 }
 
-MultiVariableDialog* DialogPool_SFBGS::GetBooleanVariableEntryDialog(QString str)
+MultiVariableDialog* DialogPool_SFBGS::GetBooleanVariableEntryDialog(const QString& str) const
 {
-	_BooleanEntryDialog->SetInitialBoolen(str);
+    _BooleanEntryDialog->SetInitialBoolen(str);
 
-	return _BooleanEntryDialog;
+    return _BooleanEntryDialog;
 }
 
-MultiVariableDialog* DialogPool_SFBGS::GetVectorVariableEntryDialog(QString str)
+MultiVariableDialog* DialogPool_SFBGS::GetVectorVariableEntryDialog(const QString& str) const
 {
-	_VectorEntryDialog->SetInitialVector(str);
+    _VectorEntryDialog->SetInitialVector(str);
 
-	return _VectorEntryDialog;
+    return _VectorEntryDialog;
 }
 
-MultiVariableDialog* DialogPool_SFBGS::GetPrefixDialog(QString str)
+MultiVariableDialog* DialogPool_SFBGS::GetPrefixDialog(const QString& str) const
 {
-	_PrefixDialog->SetInitialString(str);
+    _PrefixDialog->SetInitialString(str);
 
-	return _PrefixDialog;
+    return _PrefixDialog;
 }
 
-MultiVariableDialog* DialogPool_SFBGS::GetSuffixDialog(QString str)
+MultiVariableDialog* DialogPool_SFBGS::GetSuffixDialog(const QString& str) const
 {
-	_SuffixDialog->SetInitialString(str);
+    _SuffixDialog->SetInitialString(str);
 
-	return _SuffixDialog;
+    return _SuffixDialog;
 }
 
-MultiVariableDialog* DialogPool_SFBGS::GetActionVariableDialog(QString str)
+MultiVariableDialog* DialogPool_SFBGS::GetActionVariableDialog(const QString& str) const
 {
-	_ActionVarDialog->SetInitialString(str);
+    _ActionVarDialog->SetInitialString(str);
 
-	return _ActionVarDialog;
+    return _ActionVarDialog;
 }
 
-MultiVariableDialog* DialogPool_SFBGS::GetStateVariableDialog(QString str)
+MultiVariableDialog* DialogPool_SFBGS::GetStateVariableDialog(const QString& str) const
 {
-	_StateVarDialog->SetInitialString(str);
+    _StateVarDialog->SetInitialString(str);
 
-	return _StateVarDialog;
+    return _StateVarDialog;
 }
 
-MultiVariableDialog* DialogPool_SFBGS::GetSyncVariableDialog(QString str)
+MultiVariableDialog* DialogPool_SFBGS::GetSyncVariableDialog(const QString& str) const
 {
-	_SyncDialog->SetInitialString(str);
+    _SyncDialog->SetInitialString(str);
 
-	return _SyncDialog;
+    return _SyncDialog;
 }
 
-BitfieldWidgetDialog* DialogPool_SFBGS::GetAnimationFlagDialog(size_t initialValue)
+BitfieldWidgetDialog* DialogPool_SFBGS::GetAnimationFlagDialog(const size_t initialValue) const
 {
-	_AnimationFlagsDialog->SetInitialValues(initialValue);
-	return _AnimationFlagsDialog;
+    _AnimationFlagsDialog->SetInitialValues(initialValue);
+    return _AnimationFlagsDialog;
 }

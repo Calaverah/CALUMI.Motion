@@ -228,3 +228,5 @@ ipch/
 .vs/
 editor.xml
 QtSettings.xml
+.idea/editor.xml
+.idea/QtSettings.xml

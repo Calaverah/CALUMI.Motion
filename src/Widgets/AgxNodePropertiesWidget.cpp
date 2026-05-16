@@ -467,7 +467,7 @@ ModifiedPushButton* AgxNodePropertiesWidget::CreateFlagEntry(TermRef title, AgxN
 	connect(button, &ModifiedPushButton::CustomPressSignal, this, [this, dataRef]() 
 	{
 		auto dialog = DialogPool_SFBGS::GetInstance().GetAnimationFlagDialog(dataRef->GetValue());
-		
+
 		if(dialog->exec() == QDialog::Accepted)
 		{
 			QJsonObject obj;
