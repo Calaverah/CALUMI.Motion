@@ -1,7 +1,6 @@
 #pragma once
 
 #pragma warning(push,0)
-
 #include "3rdPartyDirect/pugiXML/pugixml.hpp"
 #include "AgxDictionary.h"
 #include <qobject.h>
@@ -68,9 +67,9 @@ enum class AgxColumnTypes
 };
 
 QString GetAgxColumnTypeAsString(AgxColumnTypes type);
-AgxColumnTypes GetAgxColumnTypeFromString(QString string);
-AgxColumnTypes GetAgxCustomVarType(QString value);
-AgxColumnTypes GetAgxBasicVarType(QString value);
+AgxColumnTypes GetAgxColumnTypeFromString(const QString& string);
+AgxColumnTypes GetAgxCustomVarType(const QString& value);
+AgxColumnTypes GetAgxBasicVarType(const QString& value);
 
 
 enum class AgxPortType : uint8_t {
@@ -91,7 +90,7 @@ enum class AgxVarType : uint8_t {
 };
 
 QPair<QString, AgxVarType> GetSFBGSVarTypeFromColumnType(AgxColumnTypes type);
-AgxVarType GetAgxVarTypeFromSFBGS(QString value);
+AgxVarType GetAgxVarTypeFromSFBGS(const QString& value);
 AgxVarType GetAgxVarTypeFromSFBGS(int value);
 
 
@@ -355,7 +354,7 @@ public:
     void SetEnabledState(bool state);
     bool IsEnabledState() const { return propertyEnabled; }
 
-    void load(pugi::xml_node& blockNode);
+    void load(const pugi::xml_node& blockNode);
 
 signals:
     void RowAdded(int index);

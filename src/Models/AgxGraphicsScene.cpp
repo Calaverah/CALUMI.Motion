@@ -2,6 +2,7 @@
 //License: https://www.gnu.org/licenses/lgpl-3.0.html
 //Contact: Calaverahmedia@gmail.com
 
+// ReSharper disable CppDFAMemoryLeak
 #include "stdafx.h"
 #include "AgxGraphicsScene.h"
 #pragma warning(push,0)

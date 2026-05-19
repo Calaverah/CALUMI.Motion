@@ -12,7 +12,7 @@ class AgxProgressDialog  : public QProgressDialog
 
 public:
 	AgxProgressDialog(const QString& labelText, const QString& cancelButtonText, int minimum, int maximum, QWidget* parent = nullptr, Qt::WindowFlags flags = Qt::WindowFlags());
-	~AgxProgressDialog();
+	~AgxProgressDialog() override;
 
 protected:
 	void keyPressEvent(QKeyEvent* event) override;

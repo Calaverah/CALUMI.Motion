@@ -1,10 +1,10 @@
+// ReSharper disable CppDFAMemoryLeak
+// ReSharper disable CppTooWideScopeInitStatement
 #include "stdafx.h"
 #include "UndoRedoCommands.h"
 
 #pragma warning(push,0)
-
 #include "Utilities/AgxConnectionIdUtils.h"
-
 #include <QJsonArray>
 #include <QJsonDocument>
 #include <QMimeData>
@@ -13,11 +13,10 @@
 #include <QGraphicsObject>
 #pragma warning(pop)
 #include "Utilities/AgxJsonHelper.h"
-#include "Models/Blend/AgxBlendInputModel.h"
 #include <Widgets/Dialog/AgxProgressDialog.h>
 #include "Widgets/AgxGraphicsView.h"
 
-#pragma region MyRegion
+
 static QJsonObject serializeSelectedItems(AgxGraphicsScene* scene)
 {
     QJsonObject serializedScene;
@@ -39,10 +38,11 @@ static QJsonObject serializeSelectedItems(AgxGraphicsScene* scene)
     QJsonArray connJsonArray;
 
     for (QGraphicsItem* item : scene->selectedItems()) {
-        if (auto c = qgraphicsitem_cast<AgxConnectionGraphicsObject*>(item)) {
+        if (auto c = qgraphicsitem_cast<AgxConnectionGraphicsObject*>(item))
+        {
             auto const& cid = c->connectionId();
 
-            if (selectedNodes.count(cid.outNodeId) > 0 && selectedNodes.count(cid.inNodeId) > 0) {
+            if (selectedNodes.contains(cid.outNodeId) && selectedNodes.contains(cid.inNodeId)) {
                 connJsonArray.append(toJson(cid));
             }
         }
@@ -55,11 +55,12 @@ static QJsonObject serializeSelectedItems(AgxGraphicsScene* scene)
     {
         QString groupId = scene->agxGraphModel().GetNodeGroup(entry);
         QColor groupColor = scene->agxGraphModel().GetGroupColor(groupId);
-        if (processedGroups.count(groupId) <= 0)
+
+        if (!processedGroups.contains(groupId))
         {
             QJsonObject groupObj;
             groupObj.insert("groupId", groupId);
-            groupObj.insert("groupColor", colorToJsonObject(scene->agxGraphModel().GetGroupColor(groupId)));
+            groupObj.insert("groupColor", colorToJsonObject(groupColor));
             groupJsonArray.append(groupObj);
             processedGroups.insert(groupId);
         }
@@ -75,13 +76,14 @@ static QJsonObject serializeSelectedItems(AgxGraphicsScene* scene)
 static void insertSerializedItems(QJsonObject const& json, AgxGraphicsScene* scene)
 {
     AgxGraphicsView* agxView = nullptr;
-    for (auto view : scene->views())
+    for (const auto view : scene->views())
     {
-        if (agxView = dynamic_cast<AgxGraphicsView*>(view)) break;
+        if ((agxView = dynamic_cast<AgxGraphicsView*>(view)))
+            break;
     }
 
-    AgxProgressDialog* progBar = new AgxProgressDialog("Inserting Items...", "", 0, 1000, agxView);
-    QFutureWatcher<void>* watcher = new QFutureWatcher<void>(agxView);
+    const auto progBar = new AgxProgressDialog("Inserting Items...", "", 0, 1000, agxView);
+    const auto watcher = new QFutureWatcher<void>(agxView);
     QObject::connect(watcher, &QFutureWatcher<void>::progressValueChanged, progBar, &QProgressDialog::setValue);
     QObject::connect(watcher, &QFutureWatcher<void>::progressTextChanged, progBar, &QProgressDialog::setLabelText);
     QObject::connect(watcher, &QFutureWatcher<void>::finished, progBar, &QProgressDialog::deleteLater);
@@ -89,7 +91,7 @@ static void insertSerializedItems(QJsonObject const& json, AgxGraphicsScene* sce
     
     progBar->show();
 
-    Q_EMIT watcher->progressValueChanged(static_cast<int>(0 * 1000));
+    Q_EMIT watcher->progressValueChanged(0 * 1000);
 
     AgxGraphModel& graphModel = scene->agxGraphModel();
 
@@ -136,7 +138,7 @@ static void insertSerializedItems(QJsonObject const& json, AgxGraphicsScene* sce
         QCoreApplication::processEvents();
     }
 
-    Q_EMIT watcher->progressValueChanged(static_cast<int>(1000));
+    Q_EMIT watcher->progressValueChanged(1000);
 }
 
 static std::set<QString> intertSerializedItemGroups(QJsonObject const& json, AgxGraphModel& graphModel)
@@ -165,7 +167,7 @@ static void deleteSerializedItems(QJsonObject& sceneJson, AgxGraphModel& graphMo
     for (QJsonValueRef connection : connectionJsonArray) {
         QJsonObject connJson = connection.toObject();
 
-        AgxConnectionId connId = fromJson(connJson);
+        const AgxConnectionId connId = fromJson(connJson);
 
         graphModel.deleteConnection(connId);
     }
@@ -178,7 +180,7 @@ static void deleteSerializedItems(QJsonObject& sceneJson, AgxGraphModel& graphMo
     }
 }
 
-static void deleteSerializedItemGroups(std::set<QString>& groups, AgxGraphModel& model)
+static void deleteSerializedItemGroups(const std::set<QString>& groups, AgxGraphModel& model)
 {
     for (auto& group : groups)
     {
@@ -207,8 +209,8 @@ static QPointF computeAverageNodePosition(QJsonObject const& sceneJson)
 //-------------------------------------
 
 CreateCommand::CreateCommand(AgxGraphicsScene* scene,
-    QString const name,
-    QPointF const& mouseScenePos)
+    const QString& name,
+    const QPointF& mouseScenePos)
     : _scene(scene)
     , _sceneJson(QJsonObject())
 {
@@ -219,7 +221,7 @@ CreateCommand::CreateCommand(AgxGraphicsScene* scene,
     else {
         setObsolete(true);
     }
-    QString text = "Create " + name;
+    const QString text = "Create " + name;
     setText(text);
 }
 
@@ -245,7 +247,7 @@ void CreateCommand::redo()
 DeleteCommand::DeleteCommand(AgxGraphicsScene* scene, const QString& overrideString)
     : _scene(scene)
 {
-    auto& graphModel = _scene->agxGraphModel();
+    const auto& graphModel = _scene->agxGraphModel();
     
     enum ItemType {Unknown, Node, Connection};
     ItemType selectedItemType = Unknown;
@@ -255,7 +257,7 @@ DeleteCommand::DeleteCommand(AgxGraphicsScene* scene, const QString& overrideStr
     // automatically deleted when selected nodes are deleted (deleting a
     // node deletes some connections as well)
     for (QGraphicsItem* item : _scene->selectedItems()) {
-        if (auto c = qgraphicsitem_cast<AgxConnectionGraphicsObject*>(item)) {
+        if (const auto c = qgraphicsitem_cast<AgxConnectionGraphicsObject*>(item)) {
             auto const& cid = c->connectionId();
 
             connJsonArray.append(toJson(cid));
@@ -268,7 +270,7 @@ DeleteCommand::DeleteCommand(AgxGraphicsScene* scene, const QString& overrideStr
     // Delete the nodes; this will delete many of the connections.
     // Selected connections were already deleted prior to this loop,
     for (QGraphicsItem* item : _scene->selectedItems()) {
-        if (auto n = qgraphicsitem_cast<AgxNodeGraphicsObject*>(item)) {
+        if (const auto n = qgraphicsitem_cast<AgxNodeGraphicsObject*>(item)) {
             // saving connections attached to the selected nodes
             for (auto const& cid : graphModel.allConnectionIds(n->nodeId())) {
                 connJsonArray.append(toJson(cid));
@@ -296,6 +298,8 @@ DeleteCommand::DeleteCommand(AgxGraphicsScene* scene, const QString& overrideStr
             break;
         case Connection: text = graphModel.GetNodeNameProperty(qgraphicsitem_cast<AgxConnectionGraphicsObject*>(_scene->selectedItems().at(0))->connectionId().outNodeId) + "'s Connection To " + graphModel.GetNodeNameProperty(qgraphicsitem_cast<AgxConnectionGraphicsObject*>(_scene->selectedItems().at(0))->connectionId().inNodeId);
             break;
+        default:
+            break;
         }
     }
     setText(overrideString + " " + text);
@@ -308,12 +312,11 @@ void DeleteCommand::undo()
 
 void DeleteCommand::redo()
 {
-    //deleteSerializedItems(_sceneJson, _scene->agxGraphModel()); //disabling QtNodes method since it has to json parse and I'd rather bloat up memory than the cpu tbh
-    for (auto& connId : _conns) {
+    for (const auto& connId : _conns) {
         _scene->agxGraphModel().deleteConnection(connId);
     }
 
-    for (auto& nodeId : _nodes) {
+    for (const auto& nodeId : _nodes) {
         _scene->agxGraphModel().deleteNode(nodeId);
     }
 }
@@ -359,7 +362,7 @@ CopyCommand::CopyCommand(AgxGraphicsScene* scene)
 
     QByteArray const data = QJsonDocument(sceneJson).toJson();
 
-    QMimeData* mimeData = new QMimeData();
+    const auto mimeData = new QMimeData();
     mimeData->setData("application/qt-nodes-graph", data);
     mimeData->setText(data);
 
@@ -388,7 +391,7 @@ PasteCommand::PasteCommand(AgxGraphicsScene* scene, QPointF const& mouseScenePos
 
     _newSceneJson = makeNewNodeIdsInScene(_newSceneJson);
 
-    QPointF averagePos = computeAverageNodePosition(_newSceneJson);
+    const QPointF averagePos = computeAverageNodePosition(_newSceneJson);
 
     offsetNodeGroup(_newSceneJson, _mouseScenePos - averagePos);
     setText("Paste");
@@ -416,7 +419,7 @@ void PasteCommand::redo()
 
         QJsonArray nodesJsonArray;
         for (QGraphicsItem* item : _scene->selectedItems()) {
-            if (auto n = qgraphicsitem_cast<AgxNodeGraphicsObject*>(item)) {
+            if (const auto n = qgraphicsitem_cast<AgxNodeGraphicsObject*>(item)) {
                 graphModel.deleteNode(n->nodeId());
             }
         }
@@ -441,7 +444,7 @@ QJsonObject PasteCommand::takeSceneJsonFromClipboard()
     return json.object();
 }
 
-QJsonObject PasteCommand::makeNewNodeIdsInScene(QJsonObject const& sceneJson)
+QJsonObject PasteCommand::makeNewNodeIdsInScene(QJsonObject const& sceneJson) const
 {
     AgxGraphModel& graphModel = _scene->agxGraphModel();
 
@@ -455,11 +458,11 @@ QJsonObject PasteCommand::makeNewNodeIdsInScene(QJsonObject const& sceneJson)
 
         AgxNodeId oldNodeId = nodeJson["id"].toVariant().toUInt();
 
-        AgxNodeId newNodeId = graphModel.newNodeId();
+        const AgxNodeId newNodeId = graphModel.newNodeId();
 
         mapNodeIds[oldNodeId] = newNodeId;
 
-        // Replace NodeId in json
+        // Replace NodeId in JSON
         nodeJson["id"] = static_cast<qint64>(newNodeId);
 
         newNodesJsonArray.append(nodeJson);
@@ -492,7 +495,7 @@ QJsonObject PasteCommand::makeNewNodeIdsInScene(QJsonObject const& sceneJson)
 
 //-------------------------------------
 
-DisconnectCommand::DisconnectCommand(AgxGraphicsScene* scene, AgxConnectionId const connId)
+DisconnectCommand::DisconnectCommand(AgxGraphicsScene* scene, const AgxConnectionId& connId)
     : _scene(scene)
     , _connId(connId)
 {
@@ -512,7 +515,7 @@ void DisconnectCommand::redo()
 
 //------
 
-ConnectCommand::ConnectCommand(AgxGraphicsScene* scene, AgxConnectionId const connId)
+ConnectCommand::ConnectCommand(AgxGraphicsScene* scene, const AgxConnectionId& connId)
     : _scene(scene)
     , _connId(connId)
 {
@@ -538,18 +541,18 @@ MoveNodeCommand::MoveNodeCommand(AgxGraphicsScene* scene, QPointF const& diff)
 {
     _selectedNodes.clear();
     for (QGraphicsItem* item : _scene->selectedItems()) {
-        if (auto n = qgraphicsitem_cast<AgxNodeGraphicsObject*>(item)) {
+        if (const auto n = qgraphicsitem_cast<AgxNodeGraphicsObject*>(item)) {
             _selectedNodes.insert(n->nodeId());
         }
     }
     QString text = "Items";
-    if (_scene->selectedItems().count() == 1) { auto item = qgraphicsitem_cast<AgxNodeGraphicsObject*>(_scene->selectedItems().at(0)); text = item ? _scene->agxGraphModel().GetNodeNameProperty(item->nodeId()) : ""; }
+    if (_scene->selectedItems().count() == 1) { const auto item = qgraphicsitem_cast<AgxNodeGraphicsObject*>(_scene->selectedItems().at(0)); text = item ? _scene->agxGraphModel().GetNodeNameProperty(item->nodeId()) : ""; }
     setText("Move " + text);
 }
 
 void MoveNodeCommand::undo()
 {
-    for (auto nodeId : _selectedNodes) {
+    for (const auto nodeId : _selectedNodes) {
         auto oldPos = _scene->agxGraphModel().nodeData(nodeId, AgxNodeRole::Position).value<QPointF>();
 
         oldPos -= _diff;
@@ -560,7 +563,7 @@ void MoveNodeCommand::undo()
 
 void MoveNodeCommand::redo()
 {
-    for (auto nodeId : _selectedNodes) {
+    for (const auto nodeId : _selectedNodes) {
         auto oldPos = _scene->agxGraphModel().nodeData(nodeId, AgxNodeRole::Position).value<QPointF>();
 
         oldPos += _diff;
@@ -576,7 +579,7 @@ int MoveNodeCommand::id() const
 
 bool MoveNodeCommand::mergeWith(QUndoCommand const* c)
 {
-    auto mc = static_cast<MoveNodeCommand const*>(c);
+    const auto mc = static_cast<MoveNodeCommand const*>(c);
 
     if (_selectedNodes == mc->_selectedNodes) {
         _diff += mc->_diff;
@@ -584,10 +587,7 @@ bool MoveNodeCommand::mergeWith(QUndoCommand const* c)
     }
     return false;
 }
-#pragma endregion
 
-
-#pragma region CALUMI_MOTION_COMMANDS
 CreateGroupCommand::CreateGroupCommand(AgxGraphicsScene* scene, const QString& groupId) : _scene(scene), _groupId(groupId) { _color = generateRandomQColor(); setText("Create Group: " + _groupId); }
 
 void CreateGroupCommand::undo()
@@ -605,7 +605,7 @@ EraseGroupCommand::EraseGroupCommand(AgxGraphicsScene* scene, const QString& gro
 void EraseGroupCommand::undo()
 {
     _scene->agxGraphModel().CreateNodeGroup(_groupId, _color);
-    for (auto node : _assignedNodes)
+    for (const auto node : _assignedNodes)
     {
         _scene->agxGraphModel().AddToNodeGroup(node, _groupId);
     }
@@ -619,9 +619,9 @@ void EraseGroupCommand::redo()
     _scene->agxGraphModel().EraseNodeGroup(_groupId);
 }
 
-AddNodeToGroupCommand::AddNodeToGroupCommand(AgxGraphicsScene* scene, const QString& groupId, AgxNodeId nodeId) : _scene(scene), _nextGroupId(groupId), _node(nodeId) { 
+AddNodeToGroupCommand::AddNodeToGroupCommand(AgxGraphicsScene* scene, const QString& groupId, const AgxNodeId nodeId) : _scene(scene), _node(nodeId), _nextGroupId(groupId) {
     _prevGroupId = _scene->agxGraphModel().GetNodeGroup(_node);
-    QString name = _scene->agxGraphModel().GetNodeNameProperty(_node);
+    const QString name = _scene->agxGraphModel().GetNodeNameProperty(_node);
     QString text = _prevGroupId == "" ? "Add " + name + " To " + _nextGroupId : "Move " + name + " From " + _prevGroupId + " To " + _nextGroupId;
 
     setText("Add " + _scene->agxGraphModel().GetNodeNameProperty(_node) + " To " + _nextGroupId); 
@@ -638,37 +638,35 @@ void AddNodeToGroupCommand::redo()
     _scene->agxGraphModel().AddToNodeGroup(_node, _nextGroupId);
 }
 
-AddSelectedToGroupCommand::AddSelectedToGroupCommand(AgxGraphicsScene* scene, const QString& groupId, const std::unordered_map<AgxNodeId, QString>& prevAssignments) : _scene(scene), _nextGroupId(groupId), _previousAssignments(prevAssignments)
+AddSelectedToGroupCommand::AddSelectedToGroupCommand(AgxGraphicsScene* scene, const QString& groupId, const std::unordered_map<AgxNodeId, QString>& prevAssignments) :
+_scene(scene), _previousAssignments(prevAssignments), _nextGroupId(groupId)
 {
-    //QString text = prevAssignments.size() == 1 ? scene->agxGraphModel().GetNodeNameProperty(prevAssignments.begin()->first) : "Items";
-
-
     setText("Add Items To " + groupId);
 }
 
 void AddSelectedToGroupCommand::undo()
 {
-    for (auto& entry : _previousAssignments)
+    for (auto& [nodeId, groupName] : _previousAssignments)
     {
-        if (entry.second != "" && entry.second != "NONE")
-            _scene->agxGraphModel().AddToNodeGroup(entry.first, entry.second);
+        if (groupName != "" && groupName != "NONE")
+            _scene->agxGraphModel().AddToNodeGroup(nodeId, groupName);
         else
-            _scene->agxGraphModel().RemoveFromNodeGroup(entry.first);
+            _scene->agxGraphModel().RemoveFromNodeGroup(nodeId);
     }
 }
 
 void AddSelectedToGroupCommand::redo()
 {
-    for (auto& entry : _previousAssignments)
+    for (const auto& nodeId : _previousAssignments | std::views::keys)
     {
-        _scene->agxGraphModel().AddToNodeGroup(entry.first, _nextGroupId);
+        _scene->agxGraphModel().AddToNodeGroup(nodeId, _nextGroupId);
     }
 }
 
-RemoveNodeFromGroupCommand::RemoveNodeFromGroupCommand(AgxGraphicsScene* scene, AgxNodeId node) : _scene(scene), _node(node) { 
+RemoveNodeFromGroupCommand::RemoveNodeFromGroupCommand(AgxGraphicsScene* scene, const AgxNodeId node) : _scene(scene), _node(node) {
     _prevGroupId = _scene->agxGraphModel().GetNodeGroup(_node);
-    QString groupName = _prevGroupId == "" ? "Group" : _prevGroupId;
-    QString text = "Remove " + _scene->agxGraphModel().GetNodeNameProperty(_node) + " From " + groupName;
+    const QString groupName = _prevGroupId == "" ? "Group" : _prevGroupId;
+    const QString text = "Remove " + _scene->agxGraphModel().GetNodeNameProperty(_node) + " From " + groupName;
     setText(text); 
 }
 
@@ -680,9 +678,11 @@ void RemoveNodeFromGroupCommand::redo() {
     _scene->agxGraphModel().RemoveFromNodeGroup(_node);
 }
 
-RenameNodeCommand::RenameNodeCommand(AgxGraphicsScene* scene, AgxNodeId node, const QString& newName) : _scene(scene), _node(node), _newName(newName) { 
+RenameNodeCommand::RenameNodeCommand(AgxGraphicsScene* scene, const AgxNodeId node, const QString& newName) :
+_scene(scene), _node(node), _newName(newName)
+{
     _prevName = _scene->agxGraphModel().GetNodeNameProperty(_node);
-    setText("Rename " + _prevName + " To " + _newName); 
+    setText("Rename " + _prevName + " To " + _newName);
 }
 
 void RenameNodeCommand::undo()
@@ -691,11 +691,13 @@ void RenameNodeCommand::undo()
 }
 
 void RenameNodeCommand::redo()
-{   
+{
     _scene->agxGraphModel().SetNodeNameProperty(_node, _newName);
 }
 
-AddPortCommand::AddPortCommand(AgxGraphicsScene* scene, AgxNodeId node, AgxPortType type, AgxPortIndex index) : _scene(scene), _node(node), _type(type), _port(index) { 
+AddPortCommand::AddPortCommand(AgxGraphicsScene* scene, const AgxNodeId node, const AgxPortType type, const AgxPortIndex index) :
+_scene(scene), _node(node), _port(index), _type(type)
+{
     QString dir;
     switch (_type)
     {
@@ -709,11 +711,13 @@ AddPortCommand::AddPortCommand(AgxGraphicsScene* scene, AgxNodeId node, AgxPortT
         dir = "Unknown";
         break;
     }
-    
-    setText("Add " + dir + " Port To " + _scene->agxGraphModel().GetNodeNameProperty(_node)); 
+
+    setText("Add " + dir + " Port To " + _scene->agxGraphModel().GetNodeNameProperty(_node));
 }
 
-AddPortCommand::AddPortCommand(AgxGraphicsScene* scene, AgxNodeId node, AgxPortType type) : AddPortCommand(scene, node, type, 0) {
+AddPortCommand::AddPortCommand(AgxGraphicsScene* scene, const AgxNodeId node, const AgxPortType type) :
+AddPortCommand(scene, node, type, 0)
+{
     unsigned int portcount = 0;
     switch (_type)
     {
@@ -723,8 +727,10 @@ AddPortCommand::AddPortCommand(AgxGraphicsScene* scene, AgxNodeId node, AgxPortT
     case AgxPortType::Out:
         portcount = _scene->agxGraphModel().nodeData(_node, AgxNodeRole::OutPortCount).toUInt();
         break;
+    default:
+        break;
     }
-    _port = portcount; 
+    _port = portcount;
 }
 
 void AddPortCommand::undo()
@@ -737,7 +743,9 @@ void AddPortCommand::redo()
     _scene->agxGraphModel().addPort(_node, _type, _port, _portData);
 }
 
-RemovePortCommand::RemovePortCommand(AgxGraphicsScene* scene, AgxNodeId node, AgxPortType type, AgxPortIndex port) : _scene(scene), _node(node), _type(type), _port(port) {
+RemovePortCommand::RemovePortCommand(AgxGraphicsScene* scene, const AgxNodeId node, const AgxPortType type, const AgxPortIndex port) :
+_scene(scene), _node(node), _port(port), _type(type)
+{
     QString dir;
     switch (_type)
     {
@@ -766,7 +774,7 @@ void RemovePortCommand::undo()
             _scene->agxGraphModel().addConnection(conn);
         }
     }
-    
+
 }
 void RemovePortCommand::redo()
 {
@@ -804,9 +812,9 @@ void ChangeGroupColorCommand::redo()
 
 
 InsertPropertySheetDataCommand::InsertPropertySheetDataCommand(AgxGraphicsScene* scene, const AgxNodeId& node, const QJsonObject& newIData)
-    : _scene(scene), _nodeId(node), _newIData(newIData), _model(nullptr)
+    : _scene(scene), _nodeId(node), _newIData(newIData)
 {
-    auto sourceObj = _scene->agxGraphModel().getPropertySheetData(_nodeId, false);
+    const auto sourceObj = _scene->agxGraphModel().getPropertySheetData(_nodeId, false);
 
     _oldIData = FindJsonOverlaps(sourceObj, _newIData);
 
@@ -819,9 +827,9 @@ InsertPropertySheetDataCommand::InsertPropertySheetDataCommand(AgxGraphicsScene*
     qDebug() << "new " << _newIData;
 }
 InsertPropertySheetDataCommand::InsertPropertySheetDataCommand(AgxGraphicsScene* scene, AgxGraphModel* model, const QJsonObject& newIData)
-    : _scene(scene), _model(model), _newIData(newIData), _nodeId(InvalidNodeId)
+    : _scene(scene), _model(model), _newIData(newIData)
 {
-    auto sourceObj = _scene->agxGraphModel().getPropertySheetData(false);
+    const auto sourceObj = _scene->agxGraphModel().getPropertySheetData(false);
 
     _oldIData = FindJsonOverlaps(sourceObj, _newIData);
 
@@ -855,14 +863,13 @@ void InsertPropertySheetDataCommand::redo()
     if (_model)
         _scene->agxGraphModel().insertPropertySheetData(_newIData);
 }
-#pragma endregion
 
-AddRowToPropertyBlockDataCommand::AddRowToPropertyBlockDataCommand(AgxGraphicsScene* scene, const AgxNodeId& nodeId, const QString& block, int index) : _scene(scene), _model(nullptr), _nodeId(nodeId), _block(block), _index(index)
+AddRowToPropertyBlockDataCommand::AddRowToPropertyBlockDataCommand(AgxGraphicsScene* scene, const AgxNodeId& nodeId, const QString& block, const int index) : _scene(scene), _nodeId(nodeId), _block(block), _index(index)
 {
     setText("Add Entry To " + _scene->agxGraphModel().GetNodeNameProperty(_nodeId));
 }
 
-AddRowToPropertyBlockDataCommand::AddRowToPropertyBlockDataCommand(AgxGraphicsScene* scene, AgxGraphModel* model, const QString& block, int index) : _scene(scene), _model(model), _nodeId(InvalidNodeId), _block(block), _index(index)
+AddRowToPropertyBlockDataCommand::AddRowToPropertyBlockDataCommand(AgxGraphicsScene* scene, AgxGraphModel* model, const QString& block, const int index) : _scene(scene), _model(model), _block(block), _index(index)
 {
     setText("Add Entry To Graph");
 }
@@ -887,12 +894,12 @@ void AddRowToPropertyBlockDataCommand::redo()
     qDebug() << "Scene: " << _scene<< " Add Row Command-> id: " << _nodeId << " block: " << _block << " index: " << _index;
 }
 
-RemoveRowFromPropertyBlockDataCommand::RemoveRowFromPropertyBlockDataCommand(AgxGraphicsScene* scene, const AgxNodeId& nodeId, const QString& block, int index) : _scene(scene), _model(nullptr), _nodeId(nodeId), _block(block), _index(index)
+RemoveRowFromPropertyBlockDataCommand::RemoveRowFromPropertyBlockDataCommand(AgxGraphicsScene* scene, const AgxNodeId& nodeId, const QString& block, const int index) : _scene(scene), _nodeId(nodeId), _block(block), _index(index)
 {
     setText("Remove Entry From " + _scene->agxGraphModel().GetNodeNameProperty(_nodeId));
 }
 
-RemoveRowFromPropertyBlockDataCommand::RemoveRowFromPropertyBlockDataCommand(AgxGraphicsScene* scene, AgxGraphModel* model, const QString& block, int index) : _scene(scene), _model(model), _nodeId(InvalidNodeId), _block(block), _index(index)
+RemoveRowFromPropertyBlockDataCommand::RemoveRowFromPropertyBlockDataCommand(AgxGraphicsScene* scene, AgxGraphModel* model, const QString& block, const int index) : _scene(scene), _model(model), _block(block), _index(index)
 {
     setText("Remove Entry From Graph");
 }
@@ -917,12 +924,12 @@ void RemoveRowFromPropertyBlockDataCommand::redo()
 
 ToggleNodeHiddenStateCommand::ToggleNodeHiddenStateCommand(AgxGraphicsScene* scene, const AgxNodeId& nodeId) : _scene(scene), _nodeId(nodeId)
 {
-    auto sourceObj = _scene->agxGraphModel().getPropertySheetData(_nodeId, false);
+    const auto sourceObj = _scene->agxGraphModel().getPropertySheetData(_nodeId, false);
     QJsonObject send;
     send["hiddenState"] = "True"; //dummy value
     auto oldData = FindJsonOverlaps(sourceObj, send);
     _previousValue = oldData;
-    bool newBool = !oldData["hiddenState"].toBool();
+    const bool newBool = !oldData["hiddenState"].toBool();
     _newValue["hiddenState"] = QJsonValue(newBool);
     setText("Toggle " + _scene->agxGraphModel().GetNodeNameProperty(_nodeId)+" Hidden Entries");
 }
@@ -961,7 +968,7 @@ void AgxPortCommandPayloadCommand::undo()
 {
     if (_data.contains("command-undo"))
     {
-        QString payload = _data.contains("command-payload") ? _data["command-payload"].toString() : "";
+        const QString payload = _data.contains("command-payload") ? _data["command-payload"].toString() : "";
         _scene->agxGraphModel().sendPortCommand(_nodeId, _type, _index, _data["command-undo"].toString(), payload);
     }
 }
@@ -970,14 +977,14 @@ void AgxPortCommandPayloadCommand::redo()
 {
     if(_data.contains("command-redo")) 
     {
-        QString payload = _data.contains("command-payload") ? _data["command-payload"].toString() : "";
+        const QString payload = _data.contains("command-payload") ? _data["command-payload"].toString() : "";
         _scene->agxGraphModel().sendPortCommand(_nodeId, _type, _index, _data["command-redo"].toString(), payload);
     }
 }
 
-AgxNodeAltStateCommand::AgxNodeAltStateCommand(AgxGraphicsScene* scene, const AgxNodeId& nodeId, bool unset) : _scene(scene), _nodeId(nodeId), _prevNode(InvalidNodeId), _unset(unset)
+AgxNodeAltStateCommand::AgxNodeAltStateCommand(AgxGraphicsScene* scene, const AgxNodeId& nodeId, const bool unset) : _scene(scene), _nodeId(nodeId), _prevNode(InvalidNodeId), _unset(unset)
 {
-    QString text = _unset ? "Unset Default Node" : "Set Default Node";
+    const QString text = _unset ? "Unset Default Node" : "Set Default Node";
     setText(text);
 
     if(!unset)
@@ -1055,19 +1062,18 @@ void AgxSetGraphCategory::redo()
     Q_EMIT _model->PropertySheetUpdated();
 }
 
-AgxHideCommand::AgxHideCommand(AgxGraphicsScene* scene, bool hide) : _scene(scene), _toHide(hide)
+AgxHideCommand::AgxHideCommand(AgxGraphicsScene* scene, const bool hide) : _scene(scene), _toHide(hide)
 {
     if (_toHide)
         setText("Hide Selected Objects");
     else
         setText("Unhide Selected Objects");
 
-    auto& graphModel = _scene->agxGraphModel();
-
     bool isObsolete = true;
 
-    for (QGraphicsItem* item : _scene->selectedItems()) {
-        if (auto n = qgraphicsitem_cast<AgxNodeGraphicsObject*>(item)) {
+    for (QGraphicsItem* item : _scene->selectedItems())
+    {
+        if (const auto n = qgraphicsitem_cast<AgxNodeGraphicsObject*>(item)) {
 
             if (_scene->agxGraphModel().nodeData(n->nodeId(), AgxNodeRole::CollapseState).toBool() != _toHide)
             {
@@ -1078,7 +1084,8 @@ AgxHideCommand::AgxHideCommand(AgxGraphicsScene* scene, bool hide) : _scene(scen
     }
 
     for (QGraphicsItem* item : _scene->selectedItems()) {
-        if (auto c = qgraphicsitem_cast<AgxConnectionGraphicsObject*>(item)) {
+        if (const auto c = qgraphicsitem_cast<AgxConnectionGraphicsObject*>(item))
+        {
 
             if (c->connectionId().isHidden != _toHide)
             {

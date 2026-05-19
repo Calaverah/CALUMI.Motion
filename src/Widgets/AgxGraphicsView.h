@@ -60,15 +60,15 @@ public Q_SLOTS:
 	virtual void onPasteObjects();
 
 public Q_SLOTS:
-	void hideSelectedObjects();
-	void unhideSelectedObjects();
+	void hideSelectedObjects() const;
+	void unhideSelectedObjects() const;
 
 Q_SIGNALS:
 	void scaleChanged(double scale);
 	void broadcastSidebarItem(QWidget* input);
 
 protected:
-	void rubberBandAgxItemsSelection(AgxGraphicsItemsFlags flags = AgxGraphicsItemsFlag::All);
+	void rubberBandAgxItemsSelection(AgxGraphicsItemsFlags flags = AgxGraphicsItemsFlag::All) const;
 
 	void contextMenuEvent(QContextMenuEvent* event) override;
 
@@ -87,40 +87,40 @@ protected:
 
 public Q_SLOTS:
 	void ShowContextMenu(AgxNodeId nodeId, QPointF pos);
-	void ToggleNodeCollapse(AgxNodeId nodeId);
-	void SelectNodeGroup(AgxNodeId nodeId, bool additive = false);
-	void SelectNodeGroup(const QString& nodeGroup, const AgxGraphModel* agxModel = nullptr, bool additive = false);
+	void ToggleNodeCollapse(AgxNodeId nodeId) const;
+	void SelectNodeGroup(AgxNodeId nodeId, bool additive = false) const;
+	void SelectNodeGroup(const QString& nodeGroup, const AgxGraphModel* agxModel = nullptr, bool additive = false) const;
 	void ShowNodeGroupMenu(const std::vector<AgxNodeId>& nodeIds);
-	void OnNodePreClicked(AgxNodeId nodeId, bool additive);
-	void FilterSelection_Nodes();
-	void FilterSelection_Connections();
+	void OnNodePreClicked(AgxNodeId nodeId, bool additive) const;
+	void FilterSelection_Nodes() const;
+	void FilterSelection_Connections() const;
 
 protected:
-	AgxGraphicsScene* agxNodeScene();
-	QPointF scenePastePosition();
+	//AgxGraphicsScene* agxNodeScene() const;
+	QPointF scenePastePosition() const;
 
 public:
-	AgxGraphicsScene* pagxNodeScene();
+	AgxGraphicsScene* agxNodeScene() const;
 
-	QUndoStack& undoStackRef();
-	QAction* undoActionRef();
-	QAction* redoActionRef();
-	QAction* cutActionRef();
-	QAction* copyActionRef();
-	QAction* pasteActionRef();
-	QAction* duplicateActionRef();
-	QAction* deleteActionRef();
+	QUndoStack& undoStackRef() const;
+	QAction* undoActionRef() const;
+	QAction* redoActionRef() const;
+	QAction* cutActionRef() const;
+	QAction* copyActionRef() const;
+	QAction* pasteActionRef() const;
+	QAction* duplicateActionRef() const;
+	QAction* deleteActionRef() const;
 
-	QAction* selectAllActionRef();
-	QAction* selectAllNodesActionRef();
-	QAction* selectAllConnectionsActionRef();
-	QMenu* selectionFilterMenu();
+	QAction* selectAllActionRef() const;
+	QAction* selectAllNodesActionRef() const;
+	QAction* selectAllConnectionsActionRef() const;
+	QMenu* selectionFilterMenu() const;
 
-	QAction* centerActionRef();
-	QAction* hideActionRef();
-	QAction* unhideActionRef();
+	QAction* centerActionRef() const;
+	QAction* hideActionRef() const;
+	QAction* unhideActionRef() const;
 
-	QHBoxLayout* getToolBarLayout();
+	QHBoxLayout* getToolBarLayout() const;
 
 private:
 	QAction* _clearSelectionAction = Q_NULLPTR;

@@ -73,7 +73,7 @@ inline bool isPortTypeValid(const AgxPortType portType)
 }
 
 /**
-    * Creates a connection Id instance filled just on one side.
+    * Creates a connection ID instance filled just on one side.
     */
 inline AgxConnectionId makeIncompleteConnectionId(AgxNodeId const connectedNodeId,
                                                 AgxPortType const connectedPort,
@@ -85,7 +85,7 @@ inline AgxConnectionId makeIncompleteConnectionId(AgxNodeId const connectedNodeI
 }
 
 /**
-    * Turns a full connection Id into an incomplete one by removing the
+    * Turns a full connection ID into an incomplete one by removing the
     * data on the given side
     */
 inline AgxConnectionId makeIncompleteConnectionId(AgxConnectionId connectionId,

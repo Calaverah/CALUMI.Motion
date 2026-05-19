@@ -15,8 +15,8 @@ class AgxBlendInputView  : public QTableView, public IAgxEmbedSceneData
 	Q_OBJECT
 
 public:
-	AgxBlendInputView(QWidget* parent = nullptr);
-	AgxBlendInputView(AgxBlendInputModel* model, QWidget* parent = nullptr);
+	explicit AgxBlendInputView(QWidget* parent = nullptr);
+	explicit AgxBlendInputView(AgxBlendInputModel* model, QWidget* parent = nullptr);
 
 	void SetBasePath(const QStringList& path);
 

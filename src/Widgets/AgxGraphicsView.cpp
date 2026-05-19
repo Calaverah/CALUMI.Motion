@@ -3,6 +3,8 @@
 //Contact: Calaverahmedia@gmail.com
 
 // ReSharper disable CppTooWideScope
+// ReSharper disable CppTooWideScopeInitStatement
+// ReSharper disable CppDFAMemoryLeak
 #include "stdafx.h"
 #pragma warning(push,0)
 
@@ -23,16 +25,17 @@
 #include "Utilities/UndoRedoCommands.h"
 #include <algorithm>
 #include <Utilities/AgxGraphRegistry.h>
+// ReSharper disable once CppUnusedIncludeDirective
 #include "Utilities/Hash/AgxConnectionIdHash.h"
 
-void AgxGraphicsView::ToggleNodeCollapse(const AgxNodeId nodeId)
+void AgxGraphicsView::ToggleNodeCollapse(const AgxNodeId nodeId) const
 {
 	if(const auto agxModel = &agxNodeScene()->agxGraphModel())
 		agxModel->ToggleNodeCollapse(nodeId);
 
 }
 
-void AgxGraphicsView::SelectNodeGroup(const AgxNodeId nodeId, const bool additive)
+void AgxGraphicsView::SelectNodeGroup(const AgxNodeId nodeId, const bool additive) const
 {
 	if (const auto agxModel = &agxNodeScene()->agxGraphModel())
 	{
@@ -53,7 +56,7 @@ void AgxGraphicsView::SelectNodeGroup(const AgxNodeId nodeId, const bool additiv
 	
 }
 
-void AgxGraphicsView::SelectNodeGroup(const QString& nodeGroup, const AgxGraphModel* agxModel, const bool additive)
+void AgxGraphicsView::SelectNodeGroup(const QString& nodeGroup, const AgxGraphModel* agxModel, const bool additive) const
 {
 	if (nodeGroup == "")
 		return;
@@ -631,11 +634,11 @@ void AgxGraphicsView::onPasteObjects()
 	agxNodeScene()->undoStack().push(new PasteCommand(agxNodeScene(), pastePosition));
 }
 
-void AgxGraphicsView::hideSelectedObjects()
+void AgxGraphicsView::hideSelectedObjects() const
 {
 	agxNodeScene()->undoStack().push(new AgxHideCommand(agxNodeScene(), true));
 }
-void AgxGraphicsView::unhideSelectedObjects()
+void AgxGraphicsView::unhideSelectedObjects() const
 {
 	agxNodeScene()->undoStack().push(new AgxHideCommand(agxNodeScene(), false));
 }
@@ -785,7 +788,7 @@ void AgxGraphicsView::mousePressEvent(QMouseEvent* event)
 	
 }
 
-void AgxGraphicsView::rubberBandAgxItemsSelection(const AgxGraphicsItemsFlags flags)
+void AgxGraphicsView::rubberBandAgxItemsSelection(const AgxGraphicsItemsFlags flags) const
 {
 	const QRect rect = _rubberband->geometry();
 
@@ -833,7 +836,8 @@ void AgxGraphicsView::mouseMoveEvent(QMouseEvent* event)
 {
 	if (!scene()) return;
 
-	if (viewport()->cursor() == Qt::CrossCursor && event->buttons() == Qt::LeftButton) {
+	if (viewport()->cursor() == Qt::CrossCursor && event->buttons() == Qt::LeftButton)
+	{
 		_rubberband->setGeometry(QRect(mapFromScene(_clickPos.toPoint()), event->pos()).normalized());
 		event->accept();
 		return;
@@ -841,10 +845,12 @@ void AgxGraphicsView::mouseMoveEvent(QMouseEvent* event)
 
 	QGraphicsView::mouseMoveEvent(event);
 
-	if (scene()->mouseGrabberItem() == nullptr && (event->buttons() == Qt::LeftButton )) {
+	if (scene()->mouseGrabberItem() == nullptr && event->buttons() == Qt::LeftButton)
+	{
 		// Make sure control and shift are not pressed
-		if (viewport()->cursor() != Qt::CrossCursor && viewport()->cursor() != Qt::PointingHandCursor) {
-			QPointF difference = _clickPos - mapToScene(event->pos());
+		if (viewport()->cursor() != Qt::CrossCursor && viewport()->cursor() != Qt::PointingHandCursor)
+		{
+			const QPointF difference = _clickPos - mapToScene(event->pos());
 			setSceneRect(sceneRect().translated(difference.x(), difference.y()));
 		}
 	}
@@ -854,8 +860,9 @@ void AgxGraphicsView::drawBackground(QPainter* painter, const QRectF& r)
 {
 	QGraphicsView::drawBackground(painter, r);
 
-	int lod = 0; 
-	auto scale = getScale();
+	int lod = 0;
+	const auto scale = getScale();
+
 	if (scale > 1.0)
 		lod = 0;
 	else if (scale > 0.5)
@@ -865,47 +872,52 @@ void AgxGraphicsView::drawBackground(QPainter* painter, const QRectF& r)
 	else
 		lod = 3;
 
-	auto drawGrid = [&](double gridStep) {
-		QRect windowRect = rect();
-		QPointF tl = mapToScene(windowRect.topLeft());
-		QPointF br = mapToScene(windowRect.bottomRight());
+	auto drawGrid = [&](const double gridStep)
+	{
+		const QRect windowRect = rect();
+		const QPointF tl = mapToScene(windowRect.topLeft());
+		const QPointF br = mapToScene(windowRect.bottomRight());
 
-		double left = std::floor(tl.x() / gridStep - 0.5);
-		double right = std::floor(br.x() / gridStep + 1.0);
-		double bottom = std::floor(tl.y() / gridStep - 0.5);
-		double top = std::floor(br.y() / gridStep + 1.0);
+		const double left = std::floor(tl.x() / gridStep - 0.5);
+		const double right = std::floor(br.x() / gridStep + 1.0);
+		const double bottom = std::floor(tl.y() / gridStep - 0.5);
+		const double top = std::floor(br.y() / gridStep + 1.0);
 
 		// vertical lines
-		for (int xi = int(left); xi <= int(right); ++xi) {
+		for (int xi = static_cast<int>(left); xi <= static_cast<int>(right); ++xi)
+		{
 			QLineF line(xi * gridStep, bottom * gridStep, xi * gridStep, top * gridStep);
 
 			painter->drawLine(line);
 		}
 
 		// horizontal lines
-		for (int yi = int(bottom); yi <= int(top); ++yi) {
+		for (int yi = static_cast<int>(bottom); yi <= static_cast<int>(top); ++yi)
+		{
 			QLineF line(left * gridStep, yi * gridStep, right * gridStep, yi * gridStep);
 			painter->drawLine(line);
 		}
-		};
+	};
 
 	auto const& flowViewStyle = AgxPalette::GetInstance().graphPalette();
 
-	if(lod < 2){
-		QPen pfine(flowViewStyle.FineGridColor, 1.0);
+	if(lod < 2)
+	{
+		const QPen pfine(flowViewStyle.FineGridColor, 1.0);
 
 		painter->setPen(pfine);
 		drawGrid(15);
 	}
 
-	if(lod < 3){
-		QPen p(flowViewStyle.CoarseGridColor, 1.0);
+	if(lod < 3)
+	{
+		const QPen p(flowViewStyle.CoarseGridColor, 1.0);
 
 		painter->setPen(p);
 		drawGrid(150);
 	}
 
-	QPen pRed(Qt::darkGray, 1.5);
+	const QPen pRed(Qt::darkGray, 1.5);
 	painter->setPen(pRed);
 	drawGrid(100000);
 }
@@ -925,11 +937,11 @@ void AgxGraphicsView::showEvent(QShowEvent* event)
 
 void AgxGraphicsView::ShowNodeGroupMenu(const std::vector<AgxNodeId>& nodeIds)
 {
-	QDialog* gWindow = new QDialog();
-	QGridLayout* pgrid = new QGridLayout();
-	NodeGroupMenuPopup* menu = new NodeGroupMenuPopup(nullptr, *agxNodeScene(), false);
+	const auto gWindow = new QDialog();
+	const auto pgrid = new QGridLayout();
+	const auto menu = new NodeGroupMenuPopup(nullptr, *agxNodeScene(), false);
 	pgrid->addWidget(menu);
-	QDialogButtonBox* buttonBox = new QDialogButtonBox(QDialogButtonBox::Ok | QDialogButtonBox::Cancel);
+	const auto buttonBox = new QDialogButtonBox(QDialogButtonBox::Ok | QDialogButtonBox::Cancel);
 	pgrid->addWidget(buttonBox);
 	gWindow->setLayout(pgrid);
 	gWindow->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
@@ -938,10 +950,11 @@ void AgxGraphicsView::ShowNodeGroupMenu(const std::vector<AgxNodeId>& nodeIds)
 	connect(buttonBox, &QDialogButtonBox::accepted, gWindow, &QDialog::accept);
 	connect(buttonBox, &QDialogButtonBox::rejected, gWindow, &QDialog::close);
 
-	int result = gWindow->exec();
+	const int result = gWindow->exec();
+
 	if (result == QDialog::Accepted)
 	{
-		QString group = menu->GetSelectedGroup();
+		const QString group = menu->GetSelectedGroup();
 		//if (group != "")
 			//agxScene->agxGraphModel().AddToNodeGroup(nodeId, group);
 		//agxNodeScene()->undoStack().push(new AddNodeToGroupCommand(agxNodeScene(), group, nodeId));
@@ -953,48 +966,43 @@ void AgxGraphicsView::ShowNodeGroupMenu(const std::vector<AgxNodeId>& nodeIds)
 		agxNodeScene()->undoStack().push(new AddSelectedToGroupCommand(agxNodeScene(), group, output));
 	}
 
-	if (gWindow)
-		gWindow->deleteLater();
-	//gWindow->setAttribute(Qt::WA_DeleteOnClose);
+	gWindow->deleteLater();
 }
 
-void AgxGraphicsView::OnNodePreClicked(const AgxNodeId nodeId, bool additive)
+void AgxGraphicsView::OnNodePreClicked(const AgxNodeId nodeId, const bool additive) const
 {
 	SelectNodeGroup(nodeId, additive);
 }
 
-void AgxGraphicsView::FilterSelection_Nodes()
+void AgxGraphicsView::FilterSelection_Nodes() const
 {
 	scene()->blockSignals(true);
-	for (auto item : scene()->selectedItems()) {
-		if (auto node = dynamic_cast<AgxNodeGraphicsObject*>(item)) {
-
-		} 
-		else item->setSelected(false);
+	for (const auto item : scene()->selectedItems())
+	{
+		if (dynamic_cast<AgxNodeGraphicsObject*>(item))
+		{}
+		else
+			item->setSelected(false);
 	}
 	agxNodeScene()->onRightRefreshSideBarVisibility();
 	scene()->blockSignals(false);	
 }
 
-void AgxGraphicsView::FilterSelection_Connections()
+void AgxGraphicsView::FilterSelection_Connections() const
 {
 	scene()->blockSignals(true);
-	for (auto item : scene()->selectedItems()) {
-		if (auto node = dynamic_cast<AgxConnectionGraphicsObject*>(item)) {
-		
-		} 
-		else item->setSelected(false);
+	for (const auto item : scene()->selectedItems())
+	{
+		if (dynamic_cast<AgxConnectionGraphicsObject*>(item))
+		{}
+		else
+			item->setSelected(false);
 	}
 	agxNodeScene()->onRightRefreshSideBarVisibility();
 	scene()->blockSignals(false);
 }
 
-AgxGraphicsScene* AgxGraphicsView::agxNodeScene()
-{
-	return dynamic_cast<AgxGraphicsScene*>(scene());
-}
-
-QPointF AgxGraphicsView::scenePastePosition()
+QPointF AgxGraphicsView::scenePastePosition() const
 {
 	QPoint origin = mapFromGlobal(QCursor::pos());
 
@@ -1002,95 +1010,95 @@ QPointF AgxGraphicsView::scenePastePosition()
 	if (!viewRect.contains(origin))
 		origin = viewRect.center();
 
-	return mapToScene(origin);;
+	return mapToScene(origin);
 }
 
-AgxGraphicsScene* AgxGraphicsView::pagxNodeScene()
+AgxGraphicsScene* AgxGraphicsView::agxNodeScene() const
 {
-	return agxNodeScene();
+	return dynamic_cast<AgxGraphicsScene*>(scene());
 }
 
-QUndoStack& AgxGraphicsView::undoStackRef()
+QUndoStack& AgxGraphicsView::undoStackRef() const
 {
 	return agxNodeScene()->undoStack();
 }
 
-QAction* AgxGraphicsView::undoActionRef()
+QAction* AgxGraphicsView::undoActionRef() const
 {
 	return _undoAction;
 }
 
-QAction* AgxGraphicsView::redoActionRef()
+QAction* AgxGraphicsView::redoActionRef() const
 {
 	return _redoAction;
 }
 
-QAction* AgxGraphicsView::cutActionRef()
+QAction* AgxGraphicsView::cutActionRef() const
 {
 	return _cutSelectionAction;
 }
 
-QAction* AgxGraphicsView::copyActionRef()
+QAction* AgxGraphicsView::copyActionRef() const
 {
 	return _copySelectionAction;
 }
 
-QAction* AgxGraphicsView::pasteActionRef()
+QAction* AgxGraphicsView::pasteActionRef() const
 {
 	return _pasteAction;
 }
 
-QAction* AgxGraphicsView::duplicateActionRef()
+QAction* AgxGraphicsView::duplicateActionRef() const
 {
 	return _duplicateSelectionAction;
 }
 
-QAction* AgxGraphicsView::deleteActionRef()
+QAction* AgxGraphicsView::deleteActionRef() const
 {
 	return _deleteSelectionAction;
 }
 
-QAction* AgxGraphicsView::selectAllNodesActionRef()
+QAction* AgxGraphicsView::selectAllNodesActionRef() const
 {
 	_selectAllNodesAction->setEnabled(agxNodeScene()->nodeGraphicItemCount() != 0);
 
 	return _selectAllNodesAction;
 }
-QAction* AgxGraphicsView::selectAllConnectionsActionRef()
+QAction* AgxGraphicsView::selectAllConnectionsActionRef() const
 {
 	_selectAllConnectionsAction->setEnabled(agxNodeScene()->connectionGraphicItemCount() != 0);
 
 	return _selectAllConnectionsAction;
 }
-QMenu* AgxGraphicsView::selectionFilterMenu()
+QMenu* AgxGraphicsView::selectionFilterMenu() const
 {
 	_selectionFilterMenu->setEnabled(agxNodeScene()->selectedItems().count() != 0);
 
 	return _selectionFilterMenu;
 }
-QAction* AgxGraphicsView::selectAllActionRef()
+QAction* AgxGraphicsView::selectAllActionRef() const
 {
 	_selectAllAction->setEnabled(agxNodeScene()->nodeGraphicItemCount() != 0 || agxNodeScene()->connectionGraphicItemCount() != 0);
 
 	return _selectAllAction;
 }
 
-QAction* AgxGraphicsView::centerActionRef()
+QAction* AgxGraphicsView::centerActionRef() const
 {
 	return _centerAction;
 }
 
-QAction* AgxGraphicsView::hideActionRef()
+QAction* AgxGraphicsView::hideActionRef() const
 {
 	return _hideAction;
 }
 
-QAction* AgxGraphicsView::unhideActionRef()
+QAction* AgxGraphicsView::unhideActionRef() const
 {
 	return _unhideAction;
 }
 
-QHBoxLayout* AgxGraphicsView::getToolBarLayout()
+QHBoxLayout* AgxGraphicsView::getToolBarLayout() const
 {
 	return _toolbarLayout;
 }

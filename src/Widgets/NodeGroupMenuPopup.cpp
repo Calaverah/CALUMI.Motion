@@ -2,24 +2,26 @@
 //License: https://www.gnu.org/licenses/lgpl-3.0.html
 //Contact: Calaverahmedia@gmail.com
 
+// ReSharper disable CppDFAMemoryLeak
+// ReSharper disable CppTooWideScopeInitStatement
 #include "stdafx.h"
 #include "NodeGroupMenuPopup.h"
 #include "StringEntryPopup.h"
 #include "Utilities/UndoRedoCommands.h"
 
-void NodeGroupMenuPopup::BuildTreeView()
+void NodeGroupMenuPopup::BuildTreeView() const
 {
-	if (!&_scene) return;
 	ui.NodeGroupTree->clear();
 
-	if (!_showNodeTree) {
-		QTreeWidgetItem* noneItem = new QTreeWidgetItem(ui.NodeGroupTree);
+	if (!_showNodeTree)
+	{
+		const auto noneItem = new QTreeWidgetItem(ui.NodeGroupTree);
 		noneItem->setText(0, tr("NONE"));
 	}
 
 	for (auto& entry : _scene.agxGraphModel().GetNodeGroupList())
 	{
-		QTreeWidgetItem* item = new QTreeWidgetItem(ui.NodeGroupTree);
+		const auto item = new QTreeWidgetItem(ui.NodeGroupTree);
 		item->setText(0, entry);
 		item->setBackground(1, QBrush(_scene.agxGraphModel().GetGroupColor(entry)));
 	}
@@ -35,23 +37,23 @@ void NodeGroupMenuPopup::BuildTreeView()
 		ui.NodeTree->hide();
 		return;
 	}
-	for (auto& entry : _scene.agxGraphModel().GetNodeGroupAssignmentList())
+	for (auto& [groupName, nodeList] : _scene.agxGraphModel().GetNodeGroupAssignmentList())
 	{
-		QTreeWidgetItem* parent = new QTreeWidgetItem(ui.NodeTree);
-		parent->setText(0, entry.first);
-		for (auto& subentry : entry.second)
+		const auto parent = new QTreeWidgetItem(ui.NodeTree);
+		parent->setText(0, groupName);
+		for (const auto& nodeId : nodeList)
 		{
-			QTreeWidgetItem* child = new QTreeWidgetItem(parent);
-			child->setText(0, QString(std::to_string(subentry).c_str()));
-			QString nodeName = _scene.agxGraphModel().nodeData(subentry, AgxNodeRole::Caption).toString();
+			const auto child = new QTreeWidgetItem(parent);
+			child->setText(0, QString(std::to_string(nodeId).c_str()));
+			QString nodeName = _scene.agxGraphModel().nodeData(nodeId, AgxNodeRole::Caption).toString();
 			child->setText(1, nodeName);
 		}
 	}
 }
 
-NodeGroupMenuPopup::NodeGroupMenuPopup(QWidget* parent, AgxGraphicsScene& scene, bool showNodeTree) : NodeGroupMenuPopup(parent, scene, nullptr, nullptr, showNodeTree) {}
-NodeGroupMenuPopup::NodeGroupMenuPopup(QWidget* parent, AgxGraphicsScene& scene, AgxGraphicsView* view, QTabWidget* tab, bool showNodeTree)
-	: QWidget(parent), _scene(scene), _showNodeTree(showNodeTree), _view(view), _tab(tab)
+NodeGroupMenuPopup::NodeGroupMenuPopup(QWidget* parent, AgxGraphicsScene& scene, const bool showNodeTree) : NodeGroupMenuPopup(parent, scene, nullptr, nullptr, showNodeTree) {}
+NodeGroupMenuPopup::NodeGroupMenuPopup(QWidget* parent, AgxGraphicsScene& scene, AgxGraphicsView* view, QTabWidget* tab, const bool showNodeTree)
+	: QWidget(parent), _showNodeTree(showNodeTree), _scene(scene), _view(view), _tab(tab)
 {
 	ui.setupUi(this);
 	BuildTreeView();
@@ -61,28 +63,30 @@ NodeGroupMenuPopup::NodeGroupMenuPopup(QWidget* parent, AgxGraphicsScene& scene,
 
 NodeGroupMenuPopup::~NodeGroupMenuPopup(){}
 
-QString NodeGroupMenuPopup::GetSelectedGroup()
+QString NodeGroupMenuPopup::GetSelectedGroup() const
 {
-	auto item = ui.NodeGroupTree->selectedItems();
+	const auto item = ui.NodeGroupTree->selectedItems();
+
 	if(item.size()>0 && item.at(0)->text(0) != tr("NONE"))
 		return item.at(0)->text(0);
 
 	return "";
 }
 
-void NodeGroupMenuPopup::SetActiveNodeGroupTreeItem(const QString& group)
+void NodeGroupMenuPopup::SetActiveNodeGroupTreeItem(const QString& group) const
 {
 	ui.NodeGroupTree->onDeselectCalled();
-	QTreeWidgetItem* item;
+
 	for (int i = 0; i < ui.NodeGroupTree->topLevelItemCount(); i++)
 	{
-		item = ui.NodeGroupTree->topLevelItem(i);
+		const auto item = ui.NodeGroupTree->topLevelItem(i);
+
 		if (group == item->text(0))
 			ui.NodeGroupTree->setCurrentItem(item);
 	}
 }
 
-QColor NodeGroupMenuPopup::GetNewColorDialog(QColor initial)
+QColor NodeGroupMenuPopup::GetNewColorDialog(const QColor initial)
 {
 	return QColorDialog::getColor(initial, this, tr("Select Color"));
 }
@@ -95,51 +99,49 @@ void NodeGroupMenuPopup::mousePressEvent(QMouseEvent* event)
 void NodeGroupMenuPopup::prepareNodeGroupTreeMenu(const QPoint &pos)
 {
 	QMenu cMenu(this);
-	QAction* addGroup = cMenu.addAction(tr("Add Group"));
+	const QAction* addGroup = cMenu.addAction(tr("Add Group"));
 	
 
-	connect(addGroup, &QAction::triggered, this, [this]() {
-		StringEntryPopup popup(this);
-		int result = popup.exec();
-		if (result == QDialog::Accepted)
+	connect(addGroup, &QAction::triggered, this, [this]
 		{
-			//this->_scene.agxGraphModel().CreateNodeGroup(popup.getInputText());
-			this->_scene.undoStack().push(new CreateGroupCommand(&(this->_scene), popup.getInputText()));
-			this->BuildTreeView();
-			SetActiveNodeGroupTreeItem(popup.getInputText());
-		}
-
+			StringEntryPopup popup(this);
+			const int result = popup.exec();
+			if (result == QDialog::Accepted)
+			{
+				//this->_scene.agxGraphModel().CreateNodeGroup(popup.getInputText());
+				this->_scene.undoStack().push(new CreateGroupCommand(&this->_scene, popup.getInputText()));
+				this->BuildTreeView();
+				SetActiveNodeGroupTreeItem(popup.getInputText());
+			}
 		});
 
-	QTreeWidgetItem* clickedItem = ui.NodeGroupTree->itemAt(pos);
-	if(clickedItem)
+	if(QTreeWidgetItem* clickedItem = ui.NodeGroupTree->itemAt(pos))
 	{
-		QAction* removeGroup = cMenu.addAction(tr("Remove Group"));
-		connect(removeGroup, &QAction::triggered, this, [this, clickedItem]()
+		const QAction* removeGroup = cMenu.addAction(tr("Remove Group"));
+		connect(removeGroup, &QAction::triggered, this, [this, clickedItem]
 			{
-				QString str = clickedItem->text(0);
+				const QString str = clickedItem->text(0);
 				_scene.undoStack().push(new EraseGroupCommand(&_scene, str));
 				this->BuildTreeView();
 			});
 
 		if(_view && _tab){
-			QAction* selectGroup = cMenu.addAction(tr("Select Group"));
-			connect(selectGroup, &QAction::triggered, this, [this, clickedItem]() {
+			const QAction* selectGroup = cMenu.addAction(tr("Select Group"));
+			connect(selectGroup, &QAction::triggered, this, [this, clickedItem]
+				{
 					this->_view->SelectNodeGroup(clickedItem->text(0));
 					this->_tab->setCurrentWidget(_view);
-					auto gWindow = dynamic_cast<QDialog*>(this->parent()->parent()->parent());
+					const auto gWindow = dynamic_cast<QDialog*>(this->parent()->parent()->parent());
 					gWindow->reject();
 				});
 		}
-		QAction* chooseColor = cMenu.addAction(tr("Change Color"));
-		connect(chooseColor, &QAction::triggered, this, [this, clickedItem]() {
-					QColor iniColor = this->_scene.agxGraphModel().GetGroupColor(clickedItem->text(0));
-					QColor newColor = this->GetNewColorDialog(iniColor);
+		const QAction* chooseColor = cMenu.addAction(tr("Change Color"));
+		connect(chooseColor, &QAction::triggered, this, [this, clickedItem]
+			{
+					const QColor iniColor = this->_scene.agxGraphModel().GetGroupColor(clickedItem->text(0));
+					const QColor newColor = this->GetNewColorDialog(iniColor);
 					_scene.undoStack().push(new ChangeGroupColorCommand(&_scene, clickedItem->text(0), newColor));
 					BuildTreeView();
-
-					
-
 			});
 	}
 

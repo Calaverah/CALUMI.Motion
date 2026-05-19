@@ -2303,7 +2303,7 @@ void AgxAnimationFlags::ToXML(pugi::xml_node& parent)
 	for (size_t i = 0; i < sizeof(copy) * 8; i++)
 	{
 		if (copy & 0b1) {
-			auto flag = AgxAppendValue(parent, "flag", list.at(i), AgxFormat::None, 0);
+			AgxAppendValue(parent, "flag", list.at(i), AgxFormat::None, 0);
 		}
 		copy >>= 1;
 	}
@@ -2312,14 +2312,12 @@ void AgxAnimationFlags::ToXML(pugi::xml_node& parent)
 void AgxAnimationFlags::FromXML(pugi::xml_node& node)
 {
 	size_t value = 0;
-	QStringList list = GetStringList(true);
-	int8_t idx = -1;
+	const QStringList list = GetStringList(true);
 	for (pugi::xml_node flag = node.child("flag"); flag;)
 	{
 		const pugi::xml_node next = flag.next_sibling("flag");
-		idx = list.indexOf(flag.child_value(), Qt::CaseInsensitive);
-		if (idx > -1 && idx < 64)
-			value |= (1ULL << idx);
+		if (const int8_t idx = list.indexOf(flag.child_value(), Qt::CaseInsensitive); idx > -1 && idx < 64)
+			value |= 1ULL << idx;
 
 		node.remove_child(flag);
 
@@ -2359,7 +2357,8 @@ void AgxPropertyBlockData::AddRow(int index)
 
 void AgxPropertyBlockData::RemoveRow(int index)
 {
-	if (index < 0) return;
+	if (index < 0)
+		return;
 
 	index = index >= _data.size() ? _data.size() : index;
 
@@ -2368,7 +2367,7 @@ void AgxPropertyBlockData::RemoveRow(int index)
 	Q_EMIT RowRemoved(index);
 }
 
-bool AgxPropertyBlockData::HasRow(int index) const
+bool AgxPropertyBlockData::HasRow(const int index) const
 {
 	if (index < _data.size()) return true;
 
@@ -2377,7 +2376,7 @@ bool AgxPropertyBlockData::HasRow(int index) const
 
 void AgxPropertyBlockData::Reset()
 {
-	int count = GetRowCount();
+	const int count = GetRowCount();
 	if (count <= 0) return;
 
 	_data.clear();
@@ -2397,7 +2396,7 @@ void AgxPropertyBlockData::insertPropertyBlockData(const QJsonObject& data)
 	for (int i = 0; i < data.size(); i++)
 	{
 		bool ok;
-		int num = data.keys().at(i).toInt(&ok);
+		const int num = data.keys().at(i).toInt(&ok);
 		if (ok) {
 			inputSize = num+1 > inputSize ? num+1 : inputSize;
 		}
@@ -2406,7 +2405,7 @@ void AgxPropertyBlockData::insertPropertyBlockData(const QJsonObject& data)
 	while (GetRowCount() < inputSize) AddRow(inputSize);
 
 	for (int i = 0; i < _data.size(); i++)
-	{	
+	{
 		for (int j = 0; j < _data.at(i).size(); j++)
 		{
 			if (data.contains(std::to_string(i).c_str()))
@@ -2414,7 +2413,7 @@ void AgxPropertyBlockData::insertPropertyBlockData(const QJsonObject& data)
 				if (data[std::to_string(i).c_str()].toObject().contains(std::to_string(j).c_str()))
 				{
 					QJsonObject entry = data[std::to_string(i).c_str()].toObject()[std::to_string(j).c_str()].toObject();
-					AgxPropertyBlockData::Entry output;
+					Entry output;
 					output.Type = GetAgxColumnTypeFromString(entry["type"].toString());
 					output.Value = entry["value"].toString();
 					_data[i][j] = output;
@@ -2425,9 +2424,9 @@ void AgxPropertyBlockData::insertPropertyBlockData(const QJsonObject& data)
 	Q_EMIT DataUpdated();
 }
 
-QJsonObject AgxPropertyBlockData::getPropertyBlockData(bool cleared) const
+QJsonObject AgxPropertyBlockData::getPropertyBlockData(const bool cleared) const
 {
-	const auto& data = cleared ? QList<QList<AgxPropertyBlockData::Entry>>(_data.size(), GetDefaultRow()) : _data;
+	const auto& data = cleared ? QList<QList<Entry>>(_data.size(), GetDefaultRow()) : _data;
 
 	QJsonObject output;
 	for (int i = 0; i < data.size(); i++)
@@ -2437,7 +2436,7 @@ QJsonObject AgxPropertyBlockData::getPropertyBlockData(bool cleared) const
 		{
 			QJsonObject entry;
 			entry["value"] = data.at(i).at(j).Value;
-			
+
 			if(GetColumnType(i) == AgxColumnTypes::BasicMultiVar || GetColumnType(i) == AgxColumnTypes::CustomMultiVar)
 			{
 				entry["type"] = GetAgxColumnTypeAsString(data.at(i).at(j).Type);
@@ -2458,7 +2457,7 @@ void AgxPropertyBlockData::loadDefault(const QJsonObject& blockData)
 		rowCount = rowCount > blockData.keys().at(i).toInt() ? rowCount : blockData.keys().at(i).toInt() + 1;
 	}
 
-	QList<QStringList> holder(rowCount, QStringList(_columnDefinitions.size()));
+	const QList<QStringList> holder(rowCount, QStringList(_columnDefinitions.size()));
 
 	for (int i = 0; i < holder.size(); i++)
 	{
@@ -2466,18 +2465,14 @@ void AgxPropertyBlockData::loadDefault(const QJsonObject& blockData)
 	}
 }
 
-void AgxPropertyBlockData::SetEnabledState(bool state)
+void AgxPropertyBlockData::SetEnabledState(const bool state)
 {
 	propertyEnabled = state;
 	Q_EMIT StateUpdated(propertyEnabled);
 }
 
-void AgxPropertyBlockData::load(pugi::xml_node& blockNode)
+void AgxPropertyBlockData::load(const pugi::xml_node& blockNode)
 {
-	/*for (int i = 0; i < GetRowCount(); i++) {
-		RemoveRow(0);
-	}*/
-
 	Reset();
 
 	for (auto& row : blockNode.children("row")) {
@@ -2485,25 +2480,27 @@ void AgxPropertyBlockData::load(pugi::xml_node& blockNode)
 		AddRow(GetRowCount());
 		auto rowDef = GetDefaultRow();
 		for (auto& prop : row.children("prop")) {
-			if (GetColumnType(column) == AgxColumnTypes::CustomMultiVar) {
+			if (GetColumnType(column) == AgxColumnTypes::CustomMultiVar)
+			{
 				rowDef[column].Type = GetAgxCustomVarType(prop.child_value("type"));
-			} else if (GetColumnType(column) == AgxColumnTypes::BasicMultiVar) {
+			}
+			else if (GetColumnType(column) == AgxColumnTypes::BasicMultiVar)
+			{
 				rowDef[column].Type = GetAgxBasicVarType(prop.child_value("type"));
 			}
 			rowDef[column].Value = prop.child_value("value");
 			column++;
 		}
 		SetRow(GetRowCount() - 1, rowDef);
-		//propertySheet.remove_child("row");
 	}
 }
 
 QList<AgxPropertyBlockData::Entry> AgxPropertyBlockData::GetDefaultRow() const
 {
-	QList<AgxPropertyBlockData::Entry> list;
+	QList<Entry> list;
 	for (auto& type : _columnDefinitions)
 	{
-		AgxPropertyBlockData::Entry entry;
+		Entry entry;
 		entry.Value = type.value;
 		if (type.columnType == AgxColumnTypes::CustomMultiVar) {
 			entry.Type = AgxColumnTypes::CustomInteger;
@@ -2517,7 +2514,7 @@ QList<AgxPropertyBlockData::Entry> AgxPropertyBlockData::GetDefaultRow() const
 	return list;
 }
 
-void AgxPropertyBlockData::SetRow(int index, const QList<Entry>& data)
+void AgxPropertyBlockData::SetRow(const int index, const QList<Entry>& data)
 {
 	if (index < 0 || index >= _data.size()) return;
 
@@ -2527,12 +2524,12 @@ void AgxPropertyBlockData::SetRow(int index, const QList<Entry>& data)
 		_data[index] = data;
 }
 
-void AgxPropertyBlockData::SetRow(int index, const QStringList& data)
+void AgxPropertyBlockData::SetRow(const int index, const QStringList& data)
 {
 	if (index < 0 || index >= _data.size()) return;
 
 	QList<Entry> input = GetDefaultRow();
-	auto count = data.size() > input.size() ? input.size() : data.size();
+	const auto count = data.size() > input.size() ? input.size() : data.size();
 
 	for (qsizetype i = 0; i < count; i++) {
 		input[i].Value = data.at(i);
@@ -2541,16 +2538,17 @@ void AgxPropertyBlockData::SetRow(int index, const QStringList& data)
 	_data[index] = input;
 }
 
-QList<AgxPropertyBlockData::Entry>* AgxPropertyBlockData::GetRow(int index)
+QList<AgxPropertyBlockData::Entry>* AgxPropertyBlockData::GetRow(const int index)
 {
 	if (index < 0 || index >= _data.size()) return nullptr;
 
 	return &_data[index];
 }
 
-const QList<AgxPropertyBlockData::Entry>* AgxPropertyBlockData::GetRow(int index) const
+const QList<AgxPropertyBlockData::Entry>* AgxPropertyBlockData::GetRow(const int index) const
 {
-	if (index < 0 || index >= _data.size()) return nullptr;
+	if (index < 0 || index >= _data.size())
+		return nullptr;
 
 	return &_data[index];
 }
@@ -2560,14 +2558,15 @@ unsigned int AgxPropertyBlockData::GetRowCount() const
 	return _data.size();
 }
 
-AgxColumnTypes AgxPropertyBlockData::GetColumnType(int column) const
+AgxColumnTypes AgxPropertyBlockData::GetColumnType(const int column) const
 {
-	if (column < 0 || column >= _columnDefinitions.size()) return AgxColumnTypes::Default;
+	if (column < 0 || column >= _columnDefinitions.size())
+		return AgxColumnTypes::Default;
 
 	return _columnDefinitions.at(column).columnType;
 }
 
-AgxPropertyEntryDefinition AgxPropertyBlockData::GetColumnDefinition(int column) const
+AgxPropertyEntryDefinition AgxPropertyBlockData::GetColumnDefinition(const int column) const
 {
 	if (column < 0 || column >= _columnDefinitions.size()) return AgxPropertyEntryDefinition(&AgxDictionary::ErrorTerm, "", AgxColumnTypes::Default);
 
@@ -2629,7 +2628,7 @@ AgxFileType AgxFileTypeFromString(const QString& str)
 	return AgxFileType::UNKNOWN;
 }
 
-QString GetAgxColumnTypeAsString(AgxColumnTypes type)
+QString GetAgxColumnTypeAsString(const AgxColumnTypes type)
 {
 	switch (type)
 	{
@@ -2656,56 +2655,55 @@ QString GetAgxColumnTypeAsString(AgxColumnTypes type)
 	}
 }
 
-AgxColumnTypes GetAgxColumnTypeFromString(QString string)
+AgxColumnTypes GetAgxColumnTypeFromString(const QString& string)
 {
 	if (string == "BasicString")
 		return AgxColumnTypes::BasicString;
-	else if (string == "BasicInteger" || string == "BasicInt")
+	if (string == "BasicInteger" || string == "BasicInt")
 		return AgxColumnTypes::BasicInteger;
-	else if (string == "BasicFloat")
+	if (string == "BasicFloat")
 		return AgxColumnTypes::BasicFloat;
-	else if (string == "BasicVector" || string == "BasicVec")
+	if (string == "BasicVector" || string == "BasicVec")
 		return AgxColumnTypes::BasicVector;
-	else if (string == "BasicBool" || string == "BasicBoolean")
+	if (string == "BasicBool" || string == "BasicBoolean")
 		return AgxColumnTypes::BasicBool;
-	else if (string == "BasicMultiVar")
+	if (string == "BasicMultiVar")
 		return AgxColumnTypes::BasicMultiVar;
-	else if (string == "CustomDropDown")
+	if (string == "CustomDropDown")
 		return AgxColumnTypes::CustomDropDown;
-	else if (string == "CustomInteger" || string == "CustomInt")
+	if (string == "CustomInteger" || string == "CustomInt")
 		return AgxColumnTypes::CustomInteger;
-	else if (string == "CustomFloat")
+	if (string == "CustomFloat")
 		return AgxColumnTypes::CustomFloat;
-	else if (string == "CustomVector" || string == "CustomVec")
+	if (string == "CustomVector" || string == "CustomVec")
 		return AgxColumnTypes::CustomVector;
-	else if (string == "CustomBool" || string == "CustomBoolean")
+	if (string == "CustomBool" || string == "CustomBoolean")
 		return AgxColumnTypes::CustomBool;
-	else if (string == "CustomMultiVar")
+	if (string == "CustomMultiVar")
 		return AgxColumnTypes::CustomMultiVar;
-	else if (string == "Event")
+	if (string == "Event")
 		return AgxColumnTypes::Event;
-	else if (string == "Prefix")
+	if (string == "Prefix")
 		return AgxColumnTypes::Prefix;
-	else if (string == "Suffix")
+	if (string == "Suffix")
 		return AgxColumnTypes::Suffix;
-	else if (string == "State")
+	if (string == "State")
 		return AgxColumnTypes::State;
-	else if (string == "Action")
+	if (string == "Action")
 		return AgxColumnTypes::Action;
-	else if (string == "SyncSystem")
+	if (string == "SyncSystem")
 		return AgxColumnTypes::SyncSystem;
-	//else if ("CommentBox")
-		//return AgxColumnTypes::CommentBox;
 
 	return AgxColumnTypes::Default;
 
 }
 
-AgxColumnTypes GetAgxCustomVarType(QString value)
+AgxColumnTypes GetAgxCustomVarType(const QString& value)
 {
 	bool ok = false;
 	int iVal = value.toInt(&ok);
-	if (!ok) iVal = -1;
+	if (!ok)
+		iVal = -1;
 
 	switch (iVal)
 	{
@@ -2718,7 +2716,7 @@ AgxColumnTypes GetAgxCustomVarType(QString value)
 	}
 }
 
-AgxColumnTypes GetAgxBasicVarType(QString value)
+AgxColumnTypes GetAgxBasicVarType(const QString& value)
 {
 	bool ok = false;
 	int iVal = value.toInt(&ok);
@@ -2735,7 +2733,7 @@ AgxColumnTypes GetAgxBasicVarType(QString value)
 	}
 }
 
-QPair<QString, AgxVarType> GetSFBGSVarTypeFromColumnType(AgxColumnTypes type)
+QPair<QString, AgxVarType> GetSFBGSVarTypeFromColumnType(const AgxColumnTypes type)
 {
 	switch (type)
 	{
@@ -2766,7 +2764,7 @@ QPair<QString, AgxVarType> GetSFBGSVarTypeFromColumnType(AgxColumnTypes type)
 	}
 }
 
-AgxVarType GetAgxVarTypeFromSFBGS(QString value)
+AgxVarType GetAgxVarTypeFromSFBGS(const QString& value)
 {
 	bool ok = false;
 	uint8_t iVal = value.toInt(&ok);
@@ -2775,7 +2773,7 @@ AgxVarType GetAgxVarTypeFromSFBGS(QString value)
 	return GetAgxVarTypeFromSFBGS(iVal);
 }
 
-AgxVarType GetAgxVarTypeFromSFBGS(int value)
+AgxVarType GetAgxVarTypeFromSFBGS(const int value)
 {
 	switch (value)
 	{
@@ -2838,7 +2836,7 @@ bool SetPropertyValue(QVector<AgxPropertyEntryDefinition>& list, const QString& 
 	return false;
 }
 
-QString ShortenString(const QString& string, int maxLength)
+QString ShortenString(const QString& string, const int maxLength)
 {
 	if (string.length() <= maxLength)
 	{

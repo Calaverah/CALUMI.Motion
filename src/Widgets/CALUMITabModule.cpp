@@ -81,17 +81,17 @@ void CALUMITabModule::CALUMITabModuleConstructorHelper(QWidget* content, QWidget
 	{
 		connect(agxView, &AgxGraphicsView::broadcastSidebarItem, this, &CALUMITabModule::AddSideBarItem_Right);
 
-		auto nodeIds = agxView->pagxNodeScene()->agxGraphModel().allNodeIds();
+		auto nodeIds = agxView->agxNodeScene()->agxGraphModel().allNodeIds();
 		size_t contentCount = nodeIds.size();
 		size_t progress = 0;
 
 		for (auto existingNodeId : nodeIds) 
 		{
-			auto sidebar = agxView->pagxNodeScene()->agxGraphModel().GetNodeSidebarContent(existingNodeId);
+			auto sidebar = agxView->agxNodeScene()->agxGraphModel().GetNodeSidebarContent(existingNodeId);
 			
 			if (auto iagx = dynamic_cast<AgxSidebarContent*>(sidebar)) 
 			{
-				iagx->SetRefData(existingNodeId, agxView->pagxNodeScene());
+				iagx->SetRefData(existingNodeId, agxView->agxNodeScene());
 			}
 			
 			if(sidebar)
@@ -108,7 +108,7 @@ void CALUMITabModule::CALUMITabModuleConstructorHelper(QWidget* content, QWidget
 
 }
 
-QWidget* CALUMITabModule::GetMainWidget() const
+QWidget* CALUMITabModule::mainWidget() const
 {
 	return _mainWidget;
 }

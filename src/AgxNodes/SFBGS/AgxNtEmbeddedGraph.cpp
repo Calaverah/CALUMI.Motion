@@ -6,7 +6,6 @@
 #include "AgxNtEmbeddedGraph.h"
 
 #include "Widgets/AgxPropertyBlockWidget.h"
-#include "Widgets/AgxLineEdit.h"
 #include "Widgets/MultiVariableDialog.h"
 #include <Utilities/AgxJsonHelper.h>
 #include <Models/AgxGraphModel.h>
@@ -33,11 +32,11 @@ namespace SFBGS {
         
     }
 
-    std::shared_ptr<AgxPort> AgxNtEmbeddedGraph::_AddPort(AgxPortType portType, AgxPortIndex index, QJsonObject data)
+    std::shared_ptr<AgxPort> AgxNtEmbeddedGraph::_AddPort(const AgxPortType portType, const AgxPortIndex index, const QJsonObject data)
     {
         auto port = SFBGSNode::_AddPort(portType, index, data);
 
-        if (auto sfbgsPort = dynamic_cast<AgxPort_SFBGS*>(port.get()))
+        if (const auto sfbgsPort = dynamic_cast<AgxPort_SFBGS*>(port.get()))
         {
             if(portType == AgxPortType::In)
                 sfbgsPort->setPropertySheetEnabled(true);
@@ -81,14 +80,15 @@ namespace SFBGS {
 
     QString AgxNtEmbeddedGraph::SubCaptionUnformatted() const
     {
-        if (m_embeddedGraphModel) {
+        if (m_embeddedGraphModel)
+        {
             switch (m_embeddedGraphModel->getGraphType())
             {
                 case AgxGraphType::SFBGS_StateMachine:
                     return m_propertyEntries.at(1).value;
-                    break;
                 case AgxGraphType::SFBGS_Default:
                     return m_propertyEntries.at(0).value;
+                default:
                     break;
             }
         }
@@ -129,14 +129,13 @@ namespace SFBGS {
 
             //_embGraphWidget->setStyleSheet("QWidget {background-color: transparent; border: 0px solid rgba(0,0,0,0);");
 
-            connect(_embGraphWidget, &MiniGraphicsView::clicked, this, [this]() {
+            connect(_embGraphWidget, &MiniGraphicsView::clicked, this, [this]
+                {
+                    const auto widget = QApplication::activeWindow();
 
-                auto widget = QApplication::activeWindow();
-
-                if (auto calumiWindow = dynamic_cast<CALUMIMotion*>(widget))
-                    calumiWindow->Create_SFBGSTab(m_embeddedGraphScene, m_embeddedGraphModel);
-
-                    });
+                    if (const auto calumiWindow = dynamic_cast<CALUMIMotion*>(widget))
+                        calumiWindow->Create_SFBGSTab(m_embeddedGraphScene, m_embeddedGraphModel);
+                });
         }
 
         if (!m_collapsed)
@@ -154,9 +153,9 @@ namespace SFBGS {
             {
                 case AgxGraphType::SFBGS_StateMachine:
                     return AgxNodeType::NT_STATE_MACHINE_EMBEDDED;
-                    break;
                 case AgxGraphType::SFBGS_Default:
                     return AgxNodeType::NT_BLEND_TREE_EMBEDDED;
+                default:
                     break;
             }
         }
@@ -169,7 +168,7 @@ namespace SFBGS {
         SetUpEmbeddedNodeGraph();
 
         if (m_embeddedGraphModel) {
-            connect(m_embeddedGraphModel.get(), &AgxGraphModel::GraphTypeUpdated, this, [this]() {
+            connect(m_embeddedGraphModel.get(), &AgxGraphModel::GraphTypeUpdated, this, [this] {
                 switch (m_embeddedGraphModel->getGraphType())
                 {
                     case AgxGraphType::SFBGS_StateMachine:
@@ -198,10 +197,11 @@ namespace SFBGS {
         }
         if (m_embeddedGraphScene)
         {
-            connect(this, &AgxNode::PropertySheetUpdated, m_embeddedGraphScene.get(), [this]() {
-                        QString tabTitle = SubCaptionUnformatted().isEmpty() ? "graph" : SubCaptionUnformatted();
-                        m_embeddedGraphScene->agxGraphModel().SetGraphTitle("embedded_" + tabTitle, false);
-                    });
+            connect(this, &AgxNode::PropertySheetUpdated, m_embeddedGraphScene.get(), [this]
+                {
+                    const QString tabTitle = SubCaptionUnformatted().isEmpty() ? "graph" : SubCaptionUnformatted();
+                    m_embeddedGraphScene->agxGraphModel().SetGraphTitle("embedded_" + tabTitle, false);
+                });
         }
     }
 }

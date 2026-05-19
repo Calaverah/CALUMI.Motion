@@ -2,6 +2,7 @@
 //License: https://www.gnu.org/licenses/lgpl-3.0.html
 //Contact: Calaverahmedia@gmail.com
 
+// ReSharper disable CppDFAMemoryLeak
 #include "stdafx.h"
 #include "AgxBlendInputView.h"
 #include "Utilities/UndoRedoCommands.h"
@@ -17,14 +18,14 @@ AgxBlendInputView::AgxBlendInputView(QWidget* parent) : QTableView(parent) {
 
 AgxBlendInputView::AgxBlendInputView(AgxBlendInputModel* model, QWidget* parent) : AgxBlendInputView(parent)
 {
-	setModel(model);
+	QTableView::setModel(model);
 	resizeRowsToContents();
-	setSizeAdjustPolicy(QAbstractItemView::AdjustToContents);
+	setSizeAdjustPolicy(AdjustToContents);
 	setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
-	//horizontalHeader()->setStretchLastSection(true);
+
 	horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
 	setMinimumWidth(200);
-	setSelectionMode(QAbstractItemView::NoSelection);
+	setSelectionMode(NoSelection);
 	horizontalHeader()->setVisible(true);
 
 	connect(model, &AgxBlendInputModel::DataChangeRequest, this, [this](const QString& row, const QString& type, const QString& value) {
@@ -42,24 +43,30 @@ void AgxBlendInputView::SetBasePath(const QStringList& path)
 
 void AgxBlendInputView::OnContextMenuRequested(const QPoint& pos) {
 
-	bool valid = indexAt(pos).isValid();
+	const bool valid = indexAt(pos).isValid();
 	size_t index;
 
 	if (!valid) {
-		if (auto modelRef = dynamic_cast<AgxBlendInputModel*>(model())) {
+		if (const auto modelRef = dynamic_cast<AgxBlendInputModel*>(model())) {
 			index = modelRef->getDataRowCount();
 		}
-	} else {
+		else
+			index = model()->rowCount();
+	}
+	else
+	{
 		index = indexAt(pos).row();
 	}
 
-	QMenu* menu = new QMenu(this);
+	const auto menu = new QMenu(this);
 
 	if(valid) {
-		QAction* removeRowAction = menu->addAction("Remove Row");
-		connect(removeRowAction, &QAction::triggered, this, [this, index]() {
-					if (auto modelRef = dynamic_cast<AgxBlendInputModel*>(model())) {
-						if (m_scene && modelRef->_port) {
+		const QAction* removeRowAction = menu->addAction("Remove Row");
+		connect(removeRowAction, &QAction::triggered, this, [this, index] {
+					if (const auto modelRef = dynamic_cast<AgxBlendInputModel*>(model()))
+					{
+						if (m_scene && modelRef->_port)
+						{
 							QJsonObject data;
 							data["command-text"] = "Remove Blend Point";
 							data["command-undo"] = "blend-input-insert";
@@ -71,10 +78,10 @@ void AgxBlendInputView::OnContextMenuRequested(const QPoint& pos) {
 				});
 	}
 
-	QString insertString = valid ? "Insert Row Above" : "Insert Row";
-	QAction* insertRowAboveAction = menu->addAction(insertString);
-	connect(insertRowAboveAction, &QAction::triggered, this, [this, index]() {
-				if (auto modelRef = dynamic_cast<AgxBlendInputModel*>(model())) {
+	const QString insertString = valid ? "Insert Row Above" : "Insert Row";
+	const QAction* insertRowAboveAction = menu->addAction(insertString);
+	connect(insertRowAboveAction, &QAction::triggered, this, [this, index] {
+				if (const auto modelRef = dynamic_cast<AgxBlendInputModel*>(model())) {
 					if (m_scene && modelRef->_port) {
 						QJsonObject data;
 						data["command-text"] = "Insert Blend Point";
@@ -87,10 +94,12 @@ void AgxBlendInputView::OnContextMenuRequested(const QPoint& pos) {
 			});
 
 	if(valid) {
-		QAction* insertRowBelowAction = menu->addAction("Insert Row Below");
-		connect(insertRowBelowAction, &QAction::triggered, this, [this, index]() {
-					if (auto modelRef = dynamic_cast<AgxBlendInputModel*>(model())) {
-						if (m_scene && modelRef->_port) {
+		const QAction* insertRowBelowAction = menu->addAction("Insert Row Below");
+		connect(insertRowBelowAction, &QAction::triggered, this, [this, index] {
+					if (const auto modelRef = dynamic_cast<AgxBlendInputModel*>(model()))
+					{
+						if (m_scene && modelRef->_port)
+						{
 							QJsonObject data;
 							data["command-text"] = "Remove Blend Point";
 							data["command-undo"] = "blend-input-remove";
@@ -104,9 +113,10 @@ void AgxBlendInputView::OnContextMenuRequested(const QPoint& pos) {
 
 	menu->popup(viewport()->mapToGlobal(pos));
 
-	connect(menu, &QMenu::aboutToHide, [this, menu]() {
-				clearSelection();
-			});
+	connect(menu, &QMenu::aboutToHide, [this]
+		{
+			clearSelection();
+		});
 
 	menu->setAttribute(Qt::WA_DeleteOnClose);
 

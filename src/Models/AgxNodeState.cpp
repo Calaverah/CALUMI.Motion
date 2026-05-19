@@ -4,7 +4,9 @@
 
 #include "stdafx.h"
 #include "AgxNodeState.h"
+// ReSharper disable once CppUnusedIncludeDirective
 #include "AgxConnectionGraphicsObject.h"
+// ReSharper disable once CppUnusedIncludeDirective
 #include "AgxNodeGraphicsObject.h"
 
 AgxNodeState::AgxNodeState(AgxNodeGraphicsObject& ngo) : _ngo(ngo), _hovered(false), _resizing(false), _connectionForReaction{nullptr}
@@ -12,7 +14,7 @@ AgxNodeState::AgxNodeState(AgxNodeGraphicsObject& ngo) : _ngo(ngo), _hovered(fal
     Q_UNUSED(_ngo);
 }
 
-void AgxNodeState::setResizing(bool resizing)
+void AgxNodeState::setResizing(const bool resizing)
 {
     _resizing = resizing;
 }

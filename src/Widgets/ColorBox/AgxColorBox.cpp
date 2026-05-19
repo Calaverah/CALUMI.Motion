@@ -2,6 +2,7 @@
 //License: https://www.gnu.org/licenses/lgpl-3.0.html
 //Contact: Calaverahmedia@gmail.com
 
+// ReSharper disable CppTooWideScopeInitStatement
 #include "stdafx.h"
 #include "AgxColorBox.h"
 
@@ -14,7 +15,7 @@ AgxColorBox::AgxColorBox(QWidget *parent)
 
 AgxColorBox::~AgxColorBox() = default;
 
-void AgxColorBox::setColor(QColor color)
+void AgxColorBox::setColor(const QColor color)
 {
 	auto pal = palette();
 	pal.setColor(QPalette::ColorRole::Window, color);
@@ -23,13 +24,14 @@ void AgxColorBox::setColor(QColor color)
 
 QColor AgxColorBox::getColor() const
 {
-	auto pal = palette();
+	const auto pal = palette();
 	return pal.color(QPalette::Window);
 }
 
 void AgxColorBox::mousePressEvent(QMouseEvent * event)
 {
-	auto result = QColorDialog::getColor(getColor(), this, "Select Color");
+	const auto result = QColorDialog::getColor(getColor(), this, "Select Color");
+
 	if (result.isValid())
 		setColor(result);
 }

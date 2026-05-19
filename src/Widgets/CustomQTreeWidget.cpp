@@ -10,9 +10,8 @@ CustomQTreeWidget::CustomQTreeWidget(QWidget* parent) : QTreeWidget(parent) {}
 void CustomQTreeWidget::mousePressEvent(QMouseEvent* event)
 {
 	Q_EMIT mousePressEventCalled();
-	QTreeWidgetItem* item = itemAt(event->pos());
 
-	if (!item)
+	if (const auto item = itemAt(event->pos()); !item)
 	{
 		clearSelection();
 		Q_EMIT deselectCalled();

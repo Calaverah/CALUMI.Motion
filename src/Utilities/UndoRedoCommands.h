@@ -14,7 +14,7 @@
 class CreateCommand : public QUndoCommand
 {
 public:
-    CreateCommand(AgxGraphicsScene* scene, QString const name, QPointF const& mouseScenePos);
+    explicit CreateCommand(AgxGraphicsScene* scene, const QString& name, const QPointF& mouseScenePos);
     
     void undo() override;
     void redo() override;
@@ -32,7 +32,7 @@ private:
 class DeleteCommand : public QUndoCommand
 {
 public:
-    DeleteCommand(AgxGraphicsScene* scene, const QString& overrideString = "Delete");
+    explicit DeleteCommand(AgxGraphicsScene* scene, const QString& overrideString = "Delete");
 
     void undo() override;
     void redo() override;
@@ -47,7 +47,7 @@ private:
 class CopyCommand : public QUndoCommand
 {
 public:
-    CopyCommand(AgxGraphicsScene* scene);
+    explicit CopyCommand(AgxGraphicsScene* scene);
 };
 
 class PasteCommand : public QUndoCommand
@@ -59,8 +59,8 @@ public:
     void redo() override;
 
 private:
-    QJsonObject takeSceneJsonFromClipboard();
-    QJsonObject makeNewNodeIdsInScene(QJsonObject const& sceneJson);
+    static QJsonObject takeSceneJsonFromClipboard();
+    QJsonObject makeNewNodeIdsInScene(QJsonObject const& sceneJson) const;
 
 AgxGraphicsScene* _scene;
     QPointF const& _mouseScenePos;
@@ -71,7 +71,7 @@ AgxGraphicsScene* _scene;
 class DisconnectCommand : public QUndoCommand
 {
 public:
-    DisconnectCommand(AgxGraphicsScene* scene, AgxConnectionId const);
+    DisconnectCommand(AgxGraphicsScene* scene, const AgxConnectionId&);
 
     void undo() override;
     void redo() override;
@@ -85,7 +85,7 @@ private:
 class ConnectCommand : public QUndoCommand
 {
 public:
-    ConnectCommand(AgxGraphicsScene* scene, AgxConnectionId const);
+    ConnectCommand(AgxGraphicsScene* scene, const AgxConnectionId&);
 
     void undo() override;
     void redo() override;
@@ -276,7 +276,7 @@ private:
 class InsertPropertySheetDataCommand : public QUndoCommand
 {
 public:
-    InsertPropertySheetDataCommand(AgxGraphicsScene* scene, const AgxNodeId& _node, const QJsonObject& newIData);
+    InsertPropertySheetDataCommand(AgxGraphicsScene* scene, const AgxNodeId& node, const QJsonObject& newIData);
     InsertPropertySheetDataCommand(AgxGraphicsScene* scene, AgxGraphModel* model, const QJsonObject& newIData);
 
     void undo() override;
@@ -345,7 +345,7 @@ private:
 class AgxPortCommandPayloadCommand : public QUndoCommand
 {
 public:
-    AgxPortCommandPayloadCommand(AgxGraphicsScene* scene, const AgxNodeId& nodeId, const AgxPortType type, const AgxPortIndex& index, const QJsonObject& commandData);
+    AgxPortCommandPayloadCommand(AgxGraphicsScene* scene, const AgxNodeId& nodeId, AgxPortType type, const AgxPortIndex& index, const QJsonObject& commandData);
 
     void undo() override;
     void redo() override;
@@ -390,7 +390,7 @@ private:
 class AgxHideCommand : public QUndoCommand
 {
 public:
-    AgxHideCommand(AgxGraphicsScene* scene, bool hide = true);
+    explicit AgxHideCommand(AgxGraphicsScene* scene, bool hide = true);
 
     void undo() override;
     void redo() override;

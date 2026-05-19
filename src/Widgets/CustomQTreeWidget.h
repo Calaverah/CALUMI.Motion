@@ -7,14 +7,10 @@
 #include <QTreeWidget>
 #pragma warning(pop)
 
-
-
-
 class CustomQTreeWidget : public QTreeWidget
 {
 	Q_OBJECT
 public:
-
 	explicit CustomQTreeWidget(QWidget* parent = nullptr);
 
 public Q_SLOTS:

@@ -2,6 +2,8 @@
 
 #pragma warning(push,0)
 #include <QWidget>
+// ReSharper disable once CppUnusedIncludeDirective
+#include <QPushButton>
 #pragma warning(pop)
 #include "Widgets/AgxNodePropertiesWidget.h"
 #include "Widgets/AgxSidebarContent.h"

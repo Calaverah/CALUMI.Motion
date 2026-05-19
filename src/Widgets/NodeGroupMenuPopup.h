@@ -18,10 +18,10 @@ class NodeGroupMenuPopup : public QWidget
 public:
 	NodeGroupMenuPopup(QWidget *parent, AgxGraphicsScene& scene, bool showNodeTree = true);
 	NodeGroupMenuPopup(QWidget *parent, AgxGraphicsScene& scene, AgxGraphicsView* view, QTabWidget* tab,  bool showNodeTree = true);
-	~NodeGroupMenuPopup();
+	~NodeGroupMenuPopup() override;
 
-	QString GetSelectedGroup();
-	void SetActiveNodeGroupTreeItem(const QString& group);
+	QString GetSelectedGroup() const;
+	void SetActiveNodeGroupTreeItem(const QString& group) const;
 
 	QColor GetNewColorDialog(QColor initial = generateRandomQColor());
 
@@ -33,7 +33,7 @@ public Q_SLOTS:
 	void prepareNodeGroupTreeMenu(const QPoint& pos);
 
 private:
-	void BuildTreeView();
+	void BuildTreeView() const;
 
 	bool _showNodeTree : 1 = true;
 	Ui::NodeGroupMenuPopupClass ui;

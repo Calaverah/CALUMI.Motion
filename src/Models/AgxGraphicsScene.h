@@ -17,7 +17,6 @@
 #include <unordered_map>
 
 class QUndoStack;
-
 class AgxConnectionPainter;
 class AgxGraphModel;
 class AgxNodePainter;

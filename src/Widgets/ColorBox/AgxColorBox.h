@@ -11,8 +11,8 @@ class AgxColorBox  : public QWidget
 	Q_OBJECT
 
 public:
-	AgxColorBox(QWidget *parent = nullptr);
-	~AgxColorBox();
+	explicit AgxColorBox(QWidget *parent = nullptr);
+	~AgxColorBox() override;
 
 	void setColor(QColor color);
 	QColor getColor() const;

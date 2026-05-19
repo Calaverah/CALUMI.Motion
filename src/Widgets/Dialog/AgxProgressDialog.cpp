@@ -5,7 +5,8 @@
 #include "stdafx.h"
 #include "AgxProgressDialog.h"
 
-AgxProgressDialog::AgxProgressDialog(const QString& labelText, const QString& cancelButtonText, int minimum, int maximum, QWidget* parent, Qt::WindowFlags flags) : QProgressDialog(labelText, cancelButtonText, minimum, maximum, parent, flags)
+AgxProgressDialog::AgxProgressDialog(const QString& labelText, const QString& cancelButtonText, const int minimum, const int maximum, QWidget* parent, const Qt::WindowFlags flags) :
+QProgressDialog(labelText, cancelButtonText, minimum, maximum, parent, flags)
 {
 	setWindowModality(Qt::WindowModal);
 	setWindowFlags(Qt::Window | Qt::WindowTitleHint | Qt::CustomizeWindowHint);

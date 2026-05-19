@@ -5,24 +5,24 @@
 #include "stdafx.h"
 #include "AgxSimpleDialog.h"
 
-TermRef AgxSimpleDialog::GetDropDown(QWidget* parent, const QString& title, const QString& label, const QList<TermRef>& items, int current, bool editable, bool* ok, Qt::WindowFlags flags)
+TermRef AgxSimpleDialog::GetDropDown(QWidget* parent, const QString& title, const QString& label, const QList<TermRef>& items, const int current, const bool editable, bool* ok, const Qt::WindowFlags flags)
 {
-    QDialog* dialog = new QDialog(parent, flags);
+    const auto dialog = new QDialog(parent, flags);
     dialog->setWindowTitle(title);
     dialog->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
-    
 
-    QVBoxLayout* topLayout = new QVBoxLayout();
+
+    const auto topLayout = new QVBoxLayout();
     topLayout->setSizeConstraint(QLayout::SetFixedSize);
-    QFormLayout* frmLayout = new QFormLayout();
+    const auto frmLayout = new QFormLayout();
     frmLayout->setSizeConstraint(QLayout::SetFixedSize);
-    QHBoxLayout* buttonLayout = new QHBoxLayout();
+    const auto buttonLayout = new QHBoxLayout();
     buttonLayout->setSizeConstraint(QLayout::SetFixedSize);
 
-    QComboBox* comboBox = new QComboBox();
+    const auto comboBox = new QComboBox();
     {
         comboBox->setEditable(editable);
-        for (auto ref : items) {
+        for (const auto ref : items) {
             comboBox->addItem(ref().translation);
         }
         comboBox->setCurrentIndex(current);
@@ -31,8 +31,8 @@ TermRef AgxSimpleDialog::GetDropDown(QWidget* parent, const QString& title, cons
         topLayout->addLayout(frmLayout);
     }
 
-    QDialogButtonBox* buttonBox = new QDialogButtonBox(QDialogButtonBox::Ok | QDialogButtonBox::Cancel);
     {
+        const auto buttonBox = new QDialogButtonBox(QDialogButtonBox::Ok | QDialogButtonBox::Cancel);
         buttonBox->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
         connect(buttonBox, &QDialogButtonBox::accepted, dialog, &QDialog::accept);
         connect(buttonBox, &QDialogButtonBox::rejected, dialog, &QDialog::reject);
@@ -50,8 +50,8 @@ TermRef AgxSimpleDialog::GetDropDown(QWidget* parent, const QString& title, cons
 
     TermRef output = nullptr;
 
-    if (dialog->exec() == QDialog::Accepted) {
-        
+    if (dialog->exec() == Accepted)
+    {
         if(ok)
             *ok = true;
 

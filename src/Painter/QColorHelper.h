@@ -12,14 +12,14 @@ inline QColor generateRandomQColor() {
 
     QRandomGenerator* generator = QRandomGenerator::global();
 
-    int r = generator->bounded(256); 
-    int g = generator->bounded(256); 
-    int b = generator->bounded(256); 
+    const int r = generator->bounded(256);
+    const int g = generator->bounded(256);
+    const int b = generator->bounded(256);
 
     QColor output(r, g, b);
     //if (output == QColor(Qt::magenta))
     //    return generateRandomQColor();
-    qreal sat = output.hsvSaturation() + 150 > 255 ? 255 : output.hsvSaturation() + 150;
-    output.setHsv(output.hsvHue(), sat, 255);
+    const qreal sat = output.hsvSaturation() + 150 > 255 ? 255 : output.hsvSaturation() + 150;
+    output.setHsv(output.hsvHue(), static_cast<int>(sat), 255);
     return output;
 }

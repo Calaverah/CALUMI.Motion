@@ -51,6 +51,7 @@ CALUMIMotion::CALUMIMotion(QWidget *parent) : QMainWindow(parent)
     connect(ui.menuHelp, &QMenu::aboutToShow, this, &CALUMIMotion::GetHelpMenu);
 
     connect(ui.actionAbout, &QAction::triggered, this, &CALUMIMotion::ShowAboutDialog);
+    connect(ui.actionToggle_Log_Console, &QAction::triggered, this, &CALUMIMotionApplication::ToggleLogger);
 
     const auto& settings = SettingsRegistry::GetInstance();
 
@@ -121,9 +122,9 @@ void CALUMIMotion::CloseTab(const int i) const
         //ui.tabWidget->removeTab(i);
         if (const auto agxView = GetAgxViewFromTab(i))
         {
-            if (agxView->pagxNodeScene())
+            if (agxView->agxNodeScene())
             {
-                agxView->pagxNodeScene()->agxGraphModel().HandleEmbeddedClosures();
+                agxView->agxNodeScene()->agxGraphModel().HandleEmbeddedClosures();
             }
             if (tabMap.contains(agxView))
             {
@@ -194,7 +195,7 @@ AgxGraphicsView* CALUMIMotion::GetAgxViewFromTab(const int idx) const
 
     if (const auto module = dynamic_cast<CALUMITabModule*>(ui.tabWidget->widget(idx)))
     {
-        if (const auto agxView = dynamic_cast<AgxGraphicsView*>(module->GetMainWidget()))
+        if (const auto agxView = dynamic_cast<AgxGraphicsView*>(module->mainWidget()))
         {
             return agxView;
         }
@@ -211,10 +212,10 @@ void CALUMIMotion::UpdateTabTitles() const
         {
             if (const auto tab = dynamic_cast<CALUMITabModule*>(ui.tabWidget->widget(i)))
             {
-                if (const auto view = dynamic_cast<AgxGraphicsView*>(tab->GetMainWidget()))
+                if (const auto view = dynamic_cast<AgxGraphicsView*>(tab->mainWidget()))
                 {
-                    ui.tabWidget->setTabText(i, view->pagxNodeScene()->agxGraphModel().GetGraphTitle(false));
-                    if (view->pagxNodeScene()->agxGraphModel().rootGraphReference() != &view->pagxNodeScene()->agxGraphModel())
+                    ui.tabWidget->setTabText(i, view->agxNodeScene()->agxGraphModel().GetGraphTitle(false));
+                    if (view->agxNodeScene()->agxGraphModel().rootGraphReference() != &view->agxNodeScene()->agxGraphModel())
                         ui.tabWidget->tabBar()->setTabTextColor(i, QColor(Qt::gray));
                 }
             }
@@ -480,13 +481,13 @@ void CALUMIMotion::BuildGraphEditMenu()
             bool ok = false;
             QString result = QInputDialog::getText(this, tr("Input New Graph Title"),
                                   tr("Graph Title:"), QLineEdit::Normal,
-                                  view->pagxNodeScene()->agxGraphModel().GetGraphTitle(), &ok);
+                                  view->agxNodeScene()->agxGraphModel().GetGraphTitle(), &ok);
 
-            if (result.isEmpty() || !ok || view->pagxNodeScene()->agxGraphModel().GetGraphTitle().compare(result, Qt::CaseInsensitive) == 0) return;
+            if (result.isEmpty() || !ok || view->agxNodeScene()->agxGraphModel().GetGraphTitle().compare(result, Qt::CaseInsensitive) == 0) return;
 
             result = cleanFileName(result, false, true);
 
-            view->pagxNodeScene()->undoStack().push(new AgxSetGraphTitleCommand(&view->pagxNodeScene()->agxGraphModel(), result));
+            view->agxNodeScene()->undoStack().push(new AgxSetGraphTitleCommand(&view->agxNodeScene()->agxGraphModel(), result));
 
                 });
         const QAction* sep = ui.menuEdit->addSeparator();
@@ -545,10 +546,10 @@ void CALUMIMotion::onSave()
     if (!ui.tabWidget || ui.tabWidget->count() == 0) return;
 
     if (const auto view = GetAgxViewFromTab(ui.tabWidget->currentIndex())) {
-        const QString fileStr = view->pagxNodeScene()->agxGraphModel().GetModelFilePath();
+        const QString fileStr = view->agxNodeScene()->agxGraphModel().GetModelFilePath();
         QSaveFile sFile(fileStr);
         if (!fileStr.isEmpty() && QFileInfo(fileStr).exists() && sFile.open(QIODevice::WriteOnly)) {
-            const auto doc = view->pagxNodeScene()->agxGraphModel().rootGraphReference()->save();
+            const auto doc = view->agxNodeScene()->agxGraphModel().rootGraphReference()->save();
             const QJsonDocument document(doc);
 
             QTextStream out(&sFile);
@@ -570,10 +571,10 @@ void CALUMIMotion::onSaveAs()
     if (!ui.tabWidget || ui.tabWidget->count() == 0) return;
 
     if (const auto view = GetAgxViewFromTab(ui.tabWidget->currentIndex())) {
-        const QString initialFilePath = view->pagxNodeScene()->agxGraphModel().GetModelFilePath();
+        const QString initialFilePath = view->agxNodeScene()->agxGraphModel().GetModelFilePath();
         const QFileInfo initialFileName(initialFilePath);
 
-        const QString graphTitle = view->pagxNodeScene()->agxGraphModel().GetGraphTitle();
+        const QString graphTitle = view->agxNodeScene()->agxGraphModel().GetGraphTitle();
         const QString fileNameString = cleanFileName(graphTitle + ".jagx");
 
         //QString fileNameString = initialFileName.fileName().isEmpty() ? "untitled.jagx" : initialFileName.fileName();
@@ -584,13 +585,13 @@ void CALUMIMotion::onSaveAs()
         if (filePath.isEmpty()) return;
         QFile file(filePath);
         if (!file.open(QIODevice::WriteOnly | QIODevice::Text)) { QMessageBox::critical(this, tr("Error"), tr("Could not save to file")); return; }
-        const auto doc = view->pagxNodeScene()->agxGraphModel().rootGraphReference()->save();
+        const auto doc = view->agxNodeScene()->agxGraphModel().rootGraphReference()->save();
         const QJsonDocument document(doc);
         file.write(document.toJson());
         qInfo() << tr("Saved .jagx File As: ") << filePath;
-        view->pagxNodeScene()->agxGraphModel().SetModelFilePath(filePath);
-        view->pagxNodeScene()->agxGraphModel().SetGraphTitle(QFileInfo(filePath).baseName());
-        view->pagxNodeScene()->agxGraphModel().SetRelativeDataPath(QFileInfo(filePath).baseName());
+        view->agxNodeScene()->agxGraphModel().SetModelFilePath(filePath);
+        view->agxNodeScene()->agxGraphModel().SetGraphTitle(QFileInfo(filePath).baseName());
+        view->agxNodeScene()->agxGraphModel().SetRelativeDataPath(QFileInfo(filePath).baseName());
         SettingsRegistry::GetInstance().SetLastDirectory(filePath);
         file.close();
     }
@@ -787,7 +788,7 @@ void CALUMIMotion::ExportFile_Agx_SFBGS()
         return;
     }
 
-    const AgxGraphModel* agxModel = agxView->pagxNodeScene()->agxGraphModel().rootGraphReference();
+    const AgxGraphModel* agxModel = agxView->agxNodeScene()->agxGraphModel().rootGraphReference();
 
     if (!agxModel)
     {
@@ -948,7 +949,7 @@ void CALUMIMotion::Create_SFBGSTab(std::shared_ptr<AgxGraphicsScene> scene, std:
     {
         if (const auto view = GetAgxViewFromTab(i))
         {
-            if (view->pagxNodeScene() == scene.get())
+            if (view->agxNodeScene() == scene.get())
             {
                 ui.tabWidget->setCurrentIndex(i);
                 return;

@@ -19,7 +19,7 @@ class CALUMITabModule : public QWidget
 public:
 	CALUMITabModule(QWidget* content, QFutureWatcher<void>* watcher = nullptr, int current = 0, int progressShare = 1000, QWidget* parent = nullptr);
 
-	QWidget* GetMainWidget() const;
+	[[nodiscard]] QWidget* mainWidget() const;
 
 private:
 	void CALUMITabModuleConstructorHelper(QWidget* content, QWidget* parent);

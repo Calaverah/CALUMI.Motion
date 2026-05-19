@@ -264,11 +264,13 @@ void AgxPalette::fromJson(const QJsonObject& input)
             m_panelColor = panelColor;
     }
 
-    if (uiPalette.contains("sub-panel"))
+    if (uiPalette.contains("subpanel-color"))
     {
-        if (const auto subPanelColor = QColor::fromString(uiPalette["sub-panel-color"].toString()); subPanelColor.isValid())
+        if (const auto subPanelColor = QColor::fromString(uiPalette["subpanel-color"].toString()); subPanelColor.isValid())
             m_subPanelColor = subPanelColor;
     }
+
+    ///TODO QPalette parsing + Serialize dark values into DefaultStyle.json
 }
 
 void AgxPalette::loadUserSettings()
