@@ -44,8 +44,6 @@ signals:
 private slots:
     //void NewTab_SFBGS();
     void CloseTab(int i) const;
-
-    void TogglePropertiesSidebar();
     
     void ShowNodeGroupMenu() const;
     void HandleNodeGroupMenuVisibility() const;

@@ -19,7 +19,7 @@ public:
 	QString caption() const override;
 	unsigned int nPorts(AgxPortType portType) const override;
 	AgxNodeDataType dataType(AgxPortType portType, AgxPortIndex portIndex) const override;
-	void setInData(std::shared_ptr<AgxNodeData> nodeData, AgxPortIndex const portIndex) override;
+	void setInData(const std::shared_ptr<AgxNodeData>& nodeData, AgxPortIndex const portIndex) override;
 	std::shared_ptr<AgxNodeData> outData(AgxPortIndex const port) override;
 	QWidget* embeddedWidget() override;
 	AgxNodeType GetNodeType() const override;

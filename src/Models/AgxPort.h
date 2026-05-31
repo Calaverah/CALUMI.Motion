@@ -31,8 +31,8 @@ public:
 	virtual QJsonObject save() const { return QJsonObject(); }
 	virtual bool hasCaption() const { return false; }
 	virtual QString caption(bool formatted = true) const { return "Debug"; }
-	virtual QWidget* getEmbeddedWidget() { return nullptr; }
-	virtual bool hasPropertySheet() { return false; }
+	virtual QWidget* getEmbeddedWidget() const { return nullptr; }
+	virtual bool hasPropertySheet() const { return false; }
 	virtual void setId(const unsigned int id) { m_portId = id; }
 	virtual unsigned int getId() const { return m_portId; }
 
@@ -45,7 +45,7 @@ public:
 	virtual void savePropertySheet(pugi::xml_node& parent) {}
 
 Q_SIGNALS:
-	void propertySheetUpdated();
+	void propertySheetUpdated() const;
 
 protected:
 	AgxNode* m_parentNode;
@@ -60,7 +60,7 @@ class AgxPort_SFBGS : public AgxPort
 	Q_OBJECT
 public:
 	explicit AgxPort_SFBGS(AgxNode* parent);
-	~AgxPort_SFBGS() override;
+	~AgxPort_SFBGS() override = default;
 
 	void setName(const QString& str);
 	QString getName() const { return m_name; }
@@ -78,7 +78,7 @@ public:
 	bool getPropertySheetEnabled() const { return m_propertyEntriesEnabled; }
 	void setPropertySheetOptional(bool initiallyEnabled = true);
 
-	QWidget* getEmbeddedWidget() override;
+	QWidget* getEmbeddedWidget() const override;
 
 	AgxBlendInputModel* getBlendInput() const;
 	void addBlendInput();
@@ -86,7 +86,7 @@ public:
 	void setConnectionState(const bool state) override { m_isConnected = state; Q_EMIT propertySheetUpdated(); }
 	bool isConnected() const override { return m_isConnected; }
 
-	bool hasPropertySheet() override { return m_propertyEntries.count() != 0; }
+	bool hasPropertySheet() const override { return m_propertyEntries.count() != 0; }
 	void addStandardPropertySheet() {
 		m_propertyEntries.push_back(AgxPropertyEntryDefinition(&AgxDictionary::Event, "", AgxColumnTypes::Event));
 		m_propertyEntries.push_back(AgxPropertyEntryDefinition(&AgxDictionary::Comment, "", AgxColumnTypes::BasicString));
@@ -114,9 +114,6 @@ protected:
 	bool m_isConnected = false;
 
 	AgxBlendInputModel* m_blendInput = nullptr;
-
-	//Property Sheet Widget
-	QPointer<SFBGS_SidebarContentItem> m_contentWidget;
 
 };
 

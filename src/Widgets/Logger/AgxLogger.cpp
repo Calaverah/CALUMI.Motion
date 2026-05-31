@@ -5,7 +5,7 @@
 // ReSharper disable CppDFAMemoryLeak
 #include "stdafx.h"
 #include "AgxLogger.h"
-#include "Utilities/SettingsRegistry.h"
+#include "../../Utilities/Settings/SettingsRegistry.h"
 
 AgxLogger::AgxLogger(QWidget* parent) : QWidget(parent), m_logTE(new QPlainTextEdit(this))
 {

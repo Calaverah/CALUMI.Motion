@@ -24,7 +24,7 @@ namespace SFBGS {
 		
 		AgxNodeType GetNodeType() const override;
 
-		std::shared_ptr<AgxPort> _AddPort(AgxPortType portType, AgxPortIndex index, QJsonObject data) override;
+		std::shared_ptr<AgxPort> AddPort(AgxPortType portType, AgxPortIndex index, QJsonObject data) override;
 
 		//only seen on graph type 0
 	private:

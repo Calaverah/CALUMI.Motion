@@ -7,7 +7,7 @@
 #include "version.h"
 #include <CALUMIMotion.h>
 
-#include "Utilities/SettingsRegistry.h"
+#include "../Utilities/Settings/SettingsRegistry.h"
 
 CALUMIMotionApplication::CALUMIMotionApplication(int& argc, char** argv) : QApplication(argc, argv) 
 {

@@ -78,7 +78,7 @@ public:
 
     QMenu* createSceneMenu(QPointF scenePos);
 
-    std::vector<AgxNodeId> selectedNodes() const;
+    [[nodiscard]] QVector<AgxNodeId> selectedNodes() const;
     
     QString getLastHoveredGroup() const;
     bool setGroupHoverState(bool shouldHover, const QString& groupId);
@@ -88,12 +88,16 @@ public:
     size_t nodeGraphicItemCount() const;
     size_t connectionGraphicItemCount() const;
 
+    bool isNodeSelected(AgxNodeId nodeId) const;
+
 
 Q_SIGNALS:
     void modified(AgxGraphicsScene*agxScene);
     void nodeMoved(const AgxNodeId& nodeId, const QPointF& newLocation);
     void nodeClicked(const AgxNodeId& nodeId);
     void nodeSelected(const AgxNodeId& nodeId);
+    void nodeGODeselected(const AgxNodeId& nodeId);
+    void nodeGOSelected(const AgxNodeId& nodeId);
     void nodeDoubleClicked(const AgxNodeId& nodeId);
     void nodeHovered(const AgxNodeId& nodeId, QPoint screenPos);
     void nodeHoverLeft(const AgxNodeId& nodeId);
@@ -126,7 +130,6 @@ public Q_SLOTS:
     void onSelectAnyAndAllObjects();
     void onSelectAllNodes();
     void onSelectAllConnections();
-    void onRightRefreshSideBarVisibility();
 
 private:
     AgxGraphModel& m_agxGraphModel;

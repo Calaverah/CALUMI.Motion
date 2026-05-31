@@ -11,6 +11,7 @@
 #include <QClipboard>
 #include <QApplication>
 #include <QGraphicsObject>
+#include <utility>
 #pragma warning(pop)
 #include "Utilities/AgxJsonHelper.h"
 #include <Widgets/Dialog/AgxProgressDialog.h>
@@ -113,7 +114,7 @@ static void insertSerializedItems(QJsonObject const& json, AgxGraphicsScene* sce
         //scene->agxNodeGraphicsObject(id)->setSelected(true);
         nodesToSelect.insert(id);
         count++;
-        Q_EMIT watcher->progressValueChanged(static_cast<int>(static_cast<float>(count)/totalItems * 900));
+        Q_EMIT watcher->progressValueChanged(static_cast<int>(static_cast<float>(count)/static_cast<float>(totalItems) * 900));
     }
 
     scene->onSelectNodes(nodesToSelect.values());
@@ -579,7 +580,7 @@ int MoveNodeCommand::id() const
 
 bool MoveNodeCommand::mergeWith(QUndoCommand const* c)
 {
-    const auto mc = static_cast<MoveNodeCommand const*>(c);
+    const auto mc = static_cast<MoveNodeCommand const*>(c); // NOLINT(*-pro-type-static-cast-downcast)
 
     if (_selectedNodes == mc->_selectedNodes) {
         _diff += mc->_diff;
@@ -588,7 +589,7 @@ bool MoveNodeCommand::mergeWith(QUndoCommand const* c)
     return false;
 }
 
-CreateGroupCommand::CreateGroupCommand(AgxGraphicsScene* scene, const QString& groupId) : _scene(scene), _groupId(groupId) { _color = generateRandomQColor(); setText("Create Group: " + _groupId); }
+CreateGroupCommand::CreateGroupCommand(AgxGraphicsScene* scene, QString groupId) : _scene(scene), _groupId(std::move(groupId)) { _color = generateRandomQColor(); setText("Create Group: " + _groupId); }
 
 void CreateGroupCommand::undo()
 {
@@ -600,7 +601,7 @@ void CreateGroupCommand::redo()
     _scene->agxGraphModel().CreateNodeGroup(_groupId, _color);
 }
 
-EraseGroupCommand::EraseGroupCommand(AgxGraphicsScene* scene, const QString& groupId) : _scene(scene), _groupId(groupId) { setText("Erase Group: " + _groupId); }
+EraseGroupCommand::EraseGroupCommand(AgxGraphicsScene* scene, QString groupId) : _scene(scene), _groupId(std::move(groupId)) { setText("Erase Group: " + _groupId); }
 
 void EraseGroupCommand::undo()
 {
@@ -619,7 +620,7 @@ void EraseGroupCommand::redo()
     _scene->agxGraphModel().EraseNodeGroup(_groupId);
 }
 
-AddNodeToGroupCommand::AddNodeToGroupCommand(AgxGraphicsScene* scene, const QString& groupId, const AgxNodeId nodeId) : _scene(scene), _node(nodeId), _nextGroupId(groupId) {
+AddNodeToGroupCommand::AddNodeToGroupCommand(AgxGraphicsScene* scene, QString groupId, const AgxNodeId nodeId) : _scene(scene), _node(nodeId), _nextGroupId(std::move(groupId)) {
     _prevGroupId = _scene->agxGraphModel().GetNodeGroup(_node);
     const QString name = _scene->agxGraphModel().GetNodeNameProperty(_node);
     QString text = _prevGroupId == "" ? "Add " + name + " To " + _nextGroupId : "Move " + name + " From " + _prevGroupId + " To " + _nextGroupId;
@@ -678,8 +679,8 @@ void RemoveNodeFromGroupCommand::redo() {
     _scene->agxGraphModel().RemoveFromNodeGroup(_node);
 }
 
-RenameNodeCommand::RenameNodeCommand(AgxGraphicsScene* scene, const AgxNodeId node, const QString& newName) :
-_scene(scene), _node(node), _newName(newName)
+RenameNodeCommand::RenameNodeCommand(AgxGraphicsScene* scene, const AgxNodeId node, QString  newName) :
+_scene(scene), _node(node), _newName(std::move(newName))
 {
     _prevName = _scene->agxGraphModel().GetNodeNameProperty(_node);
     setText("Rename " + _prevName + " To " + _newName);
@@ -811,8 +812,8 @@ void ChangeGroupColorCommand::redo()
 }
 
 
-InsertPropertySheetDataCommand::InsertPropertySheetDataCommand(AgxGraphicsScene* scene, const AgxNodeId& node, const QJsonObject& newIData)
-    : _scene(scene), _nodeId(node), _newIData(newIData)
+InsertPropertySheetDataCommand::InsertPropertySheetDataCommand(AgxGraphicsScene* scene, const AgxNodeId& node, QJsonObject  newIData)
+    : _scene(scene), _nodeId(node), _newIData(std::move(newIData))
 {
     const auto sourceObj = _scene->agxGraphModel().getPropertySheetData(_nodeId, false);
 
@@ -826,8 +827,8 @@ InsertPropertySheetDataCommand::InsertPropertySheetDataCommand(AgxGraphicsScene*
     qDebug() << "old " << _oldIData;
     qDebug() << "new " << _newIData;
 }
-InsertPropertySheetDataCommand::InsertPropertySheetDataCommand(AgxGraphicsScene* scene, AgxGraphModel* model, const QJsonObject& newIData)
-    : _scene(scene), _model(model), _newIData(newIData)
+InsertPropertySheetDataCommand::InsertPropertySheetDataCommand(AgxGraphicsScene* scene, AgxGraphModel* model, QJsonObject  newIData)
+    : _scene(scene), _model(model), _newIData(std::move(newIData))
 {
     const auto sourceObj = _scene->agxGraphModel().getPropertySheetData(false);
 
@@ -864,12 +865,12 @@ void InsertPropertySheetDataCommand::redo()
         _scene->agxGraphModel().insertPropertySheetData(_newIData);
 }
 
-AddRowToPropertyBlockDataCommand::AddRowToPropertyBlockDataCommand(AgxGraphicsScene* scene, const AgxNodeId& nodeId, const QString& block, const int index) : _scene(scene), _nodeId(nodeId), _block(block), _index(index)
+AddRowToPropertyBlockDataCommand::AddRowToPropertyBlockDataCommand(AgxGraphicsScene* scene, const AgxNodeId& nodeId, QString block, const int index) : _scene(scene), _nodeId(nodeId), _block(std::move(block)), _index(index)
 {
     setText("Add Entry To " + _scene->agxGraphModel().GetNodeNameProperty(_nodeId));
 }
 
-AddRowToPropertyBlockDataCommand::AddRowToPropertyBlockDataCommand(AgxGraphicsScene* scene, AgxGraphModel* model, const QString& block, const int index) : _scene(scene), _model(model), _block(block), _index(index)
+AddRowToPropertyBlockDataCommand::AddRowToPropertyBlockDataCommand(AgxGraphicsScene* scene, AgxGraphModel* model, QString block, const int index) : _scene(scene), _model(model), _block(std::move(block)), _index(index)
 {
     setText("Add Entry To Graph");
 }
@@ -894,12 +895,12 @@ void AddRowToPropertyBlockDataCommand::redo()
     qDebug() << "Scene: " << _scene<< " Add Row Command-> id: " << _nodeId << " block: " << _block << " index: " << _index;
 }
 
-RemoveRowFromPropertyBlockDataCommand::RemoveRowFromPropertyBlockDataCommand(AgxGraphicsScene* scene, const AgxNodeId& nodeId, const QString& block, const int index) : _scene(scene), _nodeId(nodeId), _block(block), _index(index)
+RemoveRowFromPropertyBlockDataCommand::RemoveRowFromPropertyBlockDataCommand(AgxGraphicsScene* scene, const AgxNodeId& nodeId, QString block, const int index) : _scene(scene), _nodeId(nodeId), _block(std::move(block)), _index(index)
 {
     setText("Remove Entry From " + _scene->agxGraphModel().GetNodeNameProperty(_nodeId));
 }
 
-RemoveRowFromPropertyBlockDataCommand::RemoveRowFromPropertyBlockDataCommand(AgxGraphicsScene* scene, AgxGraphModel* model, const QString& block, const int index) : _scene(scene), _model(model), _block(block), _index(index)
+RemoveRowFromPropertyBlockDataCommand::RemoveRowFromPropertyBlockDataCommand(AgxGraphicsScene* scene, AgxGraphModel* model, QString block, const int index) : _scene(scene), _model(model), _block(std::move(block)), _index(index)
 {
     setText("Remove Entry From Graph");
 }

@@ -43,9 +43,9 @@ namespace SFBGS {
         return AgxNodeType::NT_COPY_BONE_WEIGHTS;
     }
 
-    std::shared_ptr<AgxPort> AgxNtCopyBoneWeights::_AddPort(AgxPortType portType, AgxPortIndex index, QJsonObject data)
+    std::shared_ptr<AgxPort> AgxNtCopyBoneWeights::AddPort(AgxPortType portType, AgxPortIndex index, QJsonObject data)
     {
-        auto port = SFBGSNode::_AddPort(portType, index, data);
+        auto port = SFBGSNode::AddPort(portType, index, data);
 
         if (auto sfbgsPort = dynamic_cast<AgxPort_SFBGS*>(port.get()))
         {

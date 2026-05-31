@@ -15,8 +15,8 @@ target_sources(${PROJECT_NAME}
   locateNode.h
   PropertySheetEntryUtil.cpp
   PropertySheetEntryUtil.h
-  SettingsRegistry.cpp
-  SettingsRegistry.h
+  Settings/SettingsRegistry.cpp
+  Settings/SettingsRegistry.h
   UndoRedoCommands.cpp
   UndoRedoCommands.h
   AgxConnectionIdUtils.h

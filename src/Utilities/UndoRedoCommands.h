@@ -60,7 +60,7 @@ public:
 
 private:
     static QJsonObject takeSceneJsonFromClipboard();
-    QJsonObject makeNewNodeIdsInScene(QJsonObject const& sceneJson) const;
+    [[nodiscard]] QJsonObject makeNewNodeIdsInScene(QJsonObject const& sceneJson) const;
 
 AgxGraphicsScene* _scene;
     QPointF const& _mouseScenePos;
@@ -108,7 +108,7 @@ public:
    * A command ID is used in command compression. It must be an integer unique to
    * this command's class, or -1 if the command doesn't support compression.
    */
-    int id() const override;
+    [[nodiscard]] int id() const override;
 
     /**
    * Several sequential movements could be merged into one command.
@@ -128,7 +128,7 @@ private:
 class CreateGroupCommand : public QUndoCommand
 {
 public:
-    CreateGroupCommand(AgxGraphicsScene* scene, const QString& groupId);
+    CreateGroupCommand(AgxGraphicsScene* scene, QString groupId);
 
     void undo() override;
     void redo() override;
@@ -142,7 +142,7 @@ private:
 class EraseGroupCommand : public QUndoCommand
 {
 public:
-    EraseGroupCommand(AgxGraphicsScene* scene, const QString& groupId);
+    EraseGroupCommand(AgxGraphicsScene* scene, QString  groupId);
 
     void undo() override;
     void redo() override;
@@ -157,7 +157,7 @@ private:
 class AddNodeToGroupCommand : public QUndoCommand
 {
 public:
-    AddNodeToGroupCommand(AgxGraphicsScene* scene, const QString& groupId, AgxNodeId nodeId);
+    AddNodeToGroupCommand(AgxGraphicsScene* scene, QString  groupId, AgxNodeId nodeId);
 
     void undo() override;
     void redo() override;
@@ -230,7 +230,7 @@ private:
 class RenameNodeCommand : public QUndoCommand
 {
 public:
-    RenameNodeCommand(AgxGraphicsScene* scene, AgxNodeId node, const QString& newName);
+    RenameNodeCommand(AgxGraphicsScene* scene, AgxNodeId node, QString  newName);
 
     void undo() override;
     void redo() override;
@@ -276,8 +276,8 @@ private:
 class InsertPropertySheetDataCommand : public QUndoCommand
 {
 public:
-    InsertPropertySheetDataCommand(AgxGraphicsScene* scene, const AgxNodeId& node, const QJsonObject& newIData);
-    InsertPropertySheetDataCommand(AgxGraphicsScene* scene, AgxGraphModel* model, const QJsonObject& newIData);
+    InsertPropertySheetDataCommand(AgxGraphicsScene* scene, const AgxNodeId& node, QJsonObject  newIData);
+    InsertPropertySheetDataCommand(AgxGraphicsScene* scene, AgxGraphModel* model, QJsonObject  newIData);
 
     void undo() override;
     void redo() override;
@@ -293,8 +293,8 @@ private:
 class AddRowToPropertyBlockDataCommand : public QUndoCommand
 {
 public:
-    AddRowToPropertyBlockDataCommand(AgxGraphicsScene* scene, const AgxNodeId& nodeId, const QString& block, int index);
-    AddRowToPropertyBlockDataCommand(AgxGraphicsScene* scene, AgxGraphModel* model, const QString& block, int index);
+    AddRowToPropertyBlockDataCommand(AgxGraphicsScene* scene, const AgxNodeId& nodeId, QString  block, int index);
+    AddRowToPropertyBlockDataCommand(AgxGraphicsScene* scene, AgxGraphModel* model, QString  block, int index);
 
     void undo() override;
     void redo() override;
@@ -311,8 +311,8 @@ private:
 class RemoveRowFromPropertyBlockDataCommand : public QUndoCommand
 {
 public:
-    RemoveRowFromPropertyBlockDataCommand(AgxGraphicsScene* scene, const AgxNodeId& nodeId, const QString& block, int index);
-    RemoveRowFromPropertyBlockDataCommand(AgxGraphicsScene* scene, AgxGraphModel* model, const QString& block, int index);
+    RemoveRowFromPropertyBlockDataCommand(AgxGraphicsScene* scene, const AgxNodeId& nodeId, QString  block, int index);
+    RemoveRowFromPropertyBlockDataCommand(AgxGraphicsScene* scene, AgxGraphModel* model, QString  block, int index);
 
     void undo() override;
     void redo() override;

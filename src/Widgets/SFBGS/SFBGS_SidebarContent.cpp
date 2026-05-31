@@ -28,8 +28,6 @@ SFBGS_SidebarContent::SFBGS_SidebarContent(QWidget* parent) : AgxSidebarContent(
 	setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::Fixed);
 	mainLayout->addWidget(_frame);
 
-	connect(this, &SFBGS_SidebarContent::StateChanged, this, &SFBGS_SidebarContent::OnStateChanged);
-
 	setLayout(mainLayout);
 }
 

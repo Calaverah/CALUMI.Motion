@@ -78,7 +78,7 @@ void AgxGraphicsView::SelectNodeGroup(const QString& nodeGroup, const AgxGraphMo
 	}
 	for (const auto id : agxModel->allNodeIds())
 	{
-		if (agxModel->GetNodeGroup(id) == nodeGroup)
+		if (agxModel->GetNodeGroup(id) == nodeGroup && agxNodeScene()->agxNodeGraphicsObject(id)->isSelected() != setting)
 			agxNodeScene()->agxNodeGraphicsObject(id)->setSelected(setting);
 	}
 }
@@ -115,11 +115,16 @@ void AgxGraphicsView::ShowContextMenu(AgxNodeId const nodeId, QPointF const pos)
 	const QAction* removePortAction = nullptr;
 	const QAction* addPortAction = nullptr;
 
-	if (agxNodeScene()->selectedNodes().size() > 0)
+	const auto selectedNodes = agxNodeScene()->selectedNodes();
+
+	if (selectedNodes.size() > 0)
 	{
-		const QString nodeGroupItem = agxNodeScene()->selectedNodes().size() > 1 ? "Selected Nodes" : gModel->GetNodeNameProperty(nodeId);
+		const QString nodeGroupItem = selectedNodes.size() > 1 ? "Selected Nodes" : gModel->GetNodeNameProperty(nodeId);
 		const QAction* addToNodeGroup = cMenu.addAction("Add " + nodeGroupItem + " To Node Group");
-		connect(addToNodeGroup, &QAction::triggered, this, [this] { this->ShowNodeGroupMenu(agxNodeScene()->selectedNodes()); });
+		connect(addToNodeGroup, &QAction::triggered, this, [this]
+		{
+			this->ShowNodeGroupMenu(agxNodeScene()->selectedNodes());
+		});
 	}
 
 	const QAction* selectNodeGroup = cMenu.addAction("Select Node Group");
@@ -227,7 +232,7 @@ AgxGraphicsView::AgxGraphicsView(QWidget* parent) : QGraphicsView(parent)
 
 	setScaleRange(0.05, 8);
 
-	// Sets the scene rect to its maximum possible ranges to avoid autu scene range
+	// Sets the scene rect to its maximum possible ranges to avoid auto scene range
 	// re-calculation when expanding the all QGraphicsItems common rect.
 	constexpr int maxSize = 32767;
 	setSceneRect(-maxSize, -maxSize, maxSize * 2, maxSize * 2);
@@ -249,25 +254,30 @@ AgxGraphicsView::AgxGraphicsView(QWidget* parent) : QGraphicsView(parent)
 
 AgxGraphicsView::AgxGraphicsView(AgxGraphicsScene* scene, QWidget* parent) : AgxGraphicsView(parent)
 {
-	setScene(scene);
+	if (scene)
+	{
+		setScene(scene);
 
-	connect(&scene->agxGraphModel(),&AgxGraphModel::nodeCreated, this, [this](const AgxNodeId nodeId) {
-			const auto sidebar = agxNodeScene()->agxGraphModel().GetNodeSidebarContent(nodeId);
-			if (const auto iAgx = dynamic_cast<AgxSidebarContent*>(sidebar))
-			{
-				iAgx->SetRefData(nodeId, agxNodeScene());
-			}
-
-			Q_EMIT broadcastSidebarItem(sidebar);
+		connect(scene, &AgxGraphicsScene::nodeContextMenu, this, &AgxGraphicsView::ShowContextMenu);
+		connect(scene, &AgxGraphicsScene::nodeDoubleClicked, this, &AgxGraphicsView::ToggleNodeCollapse);
+		connect(scene, &AgxGraphicsScene::nodePreClicked, this, [this](const AgxNodeId& nodeId, bool additive)
+		{
+			this->SelectNodeGroup(nodeId, additive);
 		});
+
+		connect(&scene->agxGraphModel(),&AgxGraphModel::nodeCreated, this, [this](const AgxNodeId nodeId) {
+				const auto sidebar = agxNodeScene()->agxGraphModel().GetNodeSidebarContent(nodeId);
+				if (const auto iAgx = dynamic_cast<AgxSidebarContent*>(sidebar))
+				{
+					iAgx->SetRefData(nodeId, agxNodeScene());
+				}
+
+				Q_EMIT broadcastSidebarItem(sidebar);
+			});
+	}
 
 	if (!_rubberband)
 		_rubberband = new QRubberBand(QRubberBand::Rectangle, this);
-}
-
-AgxGraphicsView::~AgxGraphicsView()
-{
-	
 }
 
 QAction* AgxGraphicsView::clearSelectionAction() const
@@ -685,7 +695,7 @@ void AgxGraphicsView::contextMenuEvent(QContextMenuEvent* event)
 		menu->exec(event->globalPos());
 	}
 
-	//changes cursor/drag mode if exiting right clicked context menu while rubberbanding
+	//changes cursor/drag mode if exiting right-clicked context menu while rubberbanding
 	if (dragMode() == NoDrag)
 		setDragMode(ScrollHandDrag);
 }
@@ -935,7 +945,7 @@ void AgxGraphicsView::showEvent(QShowEvent* event)
 
 
 
-void AgxGraphicsView::ShowNodeGroupMenu(const std::vector<AgxNodeId>& nodeIds)
+void AgxGraphicsView::ShowNodeGroupMenu(const QVector<AgxNodeId>& nodeIds)
 {
 	const auto gWindow = new QDialog();
 	const auto pgrid = new QGridLayout();
@@ -969,11 +979,6 @@ void AgxGraphicsView::ShowNodeGroupMenu(const std::vector<AgxNodeId>& nodeIds)
 	gWindow->deleteLater();
 }
 
-void AgxGraphicsView::OnNodePreClicked(const AgxNodeId nodeId, const bool additive) const
-{
-	SelectNodeGroup(nodeId, additive);
-}
-
 void AgxGraphicsView::FilterSelection_Nodes() const
 {
 	scene()->blockSignals(true);
@@ -984,7 +989,6 @@ void AgxGraphicsView::FilterSelection_Nodes() const
 		else
 			item->setSelected(false);
 	}
-	agxNodeScene()->onRightRefreshSideBarVisibility();
 	scene()->blockSignals(false);	
 }
 
@@ -998,7 +1002,6 @@ void AgxGraphicsView::FilterSelection_Connections() const
 		else
 			item->setSelected(false);
 	}
-	agxNodeScene()->onRightRefreshSideBarVisibility();
 	scene()->blockSignals(false);
 }
 

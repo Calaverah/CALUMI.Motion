@@ -5,7 +5,7 @@
 #include "stdafx.h"
 #include "AgxLineEdit.h"
 #include "Utilities/AgxFormat.h"
-#include <Utilities/SettingsRegistry.h>
+#include "Utilities/Settings/SettingsRegistry.h"
 
 AgxLineEdit::AgxLineEdit(QWidget* parent) : QPlainTextEdit(parent), _validator(nullptr)
 {

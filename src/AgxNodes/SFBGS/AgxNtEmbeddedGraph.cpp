@@ -32,9 +32,9 @@ namespace SFBGS {
         
     }
 
-    std::shared_ptr<AgxPort> AgxNtEmbeddedGraph::_AddPort(const AgxPortType portType, const AgxPortIndex index, const QJsonObject data)
+    std::shared_ptr<AgxPort> AgxNtEmbeddedGraph::AddPort(const AgxPortType portType, const AgxPortIndex index, const QJsonObject data)
     {
-        auto port = SFBGSNode::_AddPort(portType, index, data);
+        auto port = SFBGSNode::AddPort(portType, index, data);
 
         if (const auto sfbgsPort = dynamic_cast<AgxPort_SFBGS*>(port.get()))
         {

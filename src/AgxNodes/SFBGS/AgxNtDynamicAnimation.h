@@ -24,7 +24,7 @@ namespace SFBGS {
 
 		AgxNodeType GetNodeType() const override;
 
-		std::shared_ptr<AgxPort> _AddPort(AgxPortType portType, AgxPortIndex index, QJsonObject data) override;
+		std::shared_ptr<AgxPort> AddPort(AgxPortType portType, AgxPortIndex index, QJsonObject data) override;
 
 		//non instanced is true 4 times total but only on graph type 1 (state machine?)
 

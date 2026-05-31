@@ -1,4 +1,8 @@
-﻿#include "stdafx.h"
+﻿// Copyright © 2025-2026 Calaverah. All rights reserved.
+// License: https://www.gnu.org/licenses/lgpl-3.0.html
+// Contact: Calaverahmedia@gmail.com
+
+#include "stdafx.h"
 #include "SettingsRegistry.h"
 #include "Widgets/Settings/SettingsDialog.h"
 
@@ -23,8 +27,17 @@ SettingsRegistry::SettingsRegistry()
 	if (m_settings->contains("Language"))
 		SetLanguage(LanguageCodeFromString(m_settings->value("Language").toString()));
 
-	if (m_settings->contains("Sidebar"))
-		SetPropertySidebarVisibilityPreference(m_settings->value("Sidebar").toInt());
+	if (m_settings->contains("Graph/SidebarPref"))
+		SetGraphSidebarVisibilityPreference(m_settings->value("Graph/SidebarPref").toInt());
+
+	if (m_settings->contains("Graph/SidebarAutoHide"))
+		SetGraphSidebarAutoHide(m_settings->value("Graph/SidebarAutoHide").toBool());
+
+	if (m_settings->contains("Graph/SelectedToTop"))
+		SetGraphSelectedToTop(m_settings->value("Graph/SelectedToTop").toBool());
+
+	if (m_settings->contains("Graph/SidebarWidth"))
+		SetGraphSidebarWidth(m_settings->value("Graph/SidebarWidth").toInt());
 
 	if (m_settings->contains("Log/Startup"))
 		SetConsoleVisibilityPreference(m_settings->value("Log/Startup").toInt());
@@ -97,7 +110,11 @@ void SettingsRegistry::SyncSettings() const
 
 	m_settings->setValue("Language", LanguageCodeToString(m_language));
 
-	m_settings->setValue("Sidebar", static_cast<unsigned int>(m_sidebarVis));
+	m_settings->setValue("Graph/SidebarPref", static_cast<unsigned int>(m_graphSidebarEnabledPref));
+	m_settings->setValue("Graph/SidebarAutoHide", m_graphSidebarAutoHide);
+	m_settings->setValue("Graph/SidebarWidth", m_graphSidebarWidth);
+	m_settings->setValue("Graph/SelectedToTop", m_graphSelectedToTop);
+
 	m_settings->setValue("Log/Startup", static_cast<unsigned int>(m_consoleVis));
 		
 	m_settings->setValue("ConvertFunctions", m_convertFunctions);
@@ -395,9 +412,9 @@ static StartupVisibilityPreference Helper_GetVisibilitySafe(const int pref)
 	}
 }
 
-void SettingsRegistry::SetPropertySidebarVisibilityPreference(const int pref)
+void SettingsRegistry::SetGraphSidebarVisibilityPreference(const int pref)
 {
-	SetPropertySidebarVisibilityPreference(Helper_GetVisibilitySafe(pref));
+	SetGraphSidebarVisibilityPreference(Helper_GetVisibilitySafe(pref));
 }
 
 void SettingsRegistry::SetConsoleVisibilityPreference(const int pref)

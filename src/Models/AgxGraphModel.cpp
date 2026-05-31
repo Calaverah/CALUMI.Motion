@@ -15,7 +15,7 @@
 #include "Utilities/AgxDefinitions.h"
 #include "Utilities/AgxNodeRegistry.h"
 #include "Utilities/AgxGraphRegistry.h"
-#include "Utilities/SettingsRegistry.h"
+#include "../Utilities/Settings/SettingsRegistry.h"
 #include "version.h"
 #include <Application/CALUMIMotionApplication.h>
 
@@ -81,11 +81,11 @@ AgxNodeId AgxGraphModel::addNode(QString const nodeType)
         model->SetUpNode(m_gameType);
         for (unsigned int j = 0; j < model->nPorts(AgxPortType::In); j++)
         {
-            model->_AddPort(AgxPortType::In,j);
+            model->AddPort(AgxPortType::In,j, {});
         }
         for (unsigned int j = 0; j < model->nPorts(AgxPortType::Out); j++)
         {
-            model->_AddPort(AgxPortType::Out,j);
+            model->AddPort(AgxPortType::Out,j, {});
         }
         {
             Q_EMIT model->ParentGraphTypeUpdated(m_graphType);
@@ -170,14 +170,6 @@ QWidget* AgxGraphModel::GetNodeSidebarContent(const AgxNodeId& nodeId)
     }
 
     return nullptr;
-}
-
-void AgxGraphModel::SetNodeSidebarVisibility(const AgxNodeId& nodeId, bool state)
-{
-    if (auto agxNode = m_models.at(nodeId).get())
-    {
-        agxNode->SetSidebarVisibility(state);
-    }
 }
 
 bool AgxGraphModel::connectionPossible(AgxConnectionId const connectionId) const
@@ -704,7 +696,7 @@ void AgxGraphModel::sendPortCommand(AgxNodeId nodeId, AgxPortType portType, AgxP
     if (it == m_models.end()) return;
 
     auto& model = it->second;
-    model->_ExternalPortCommand(portType, portIndex, command, payload);
+    model->ExternalPortCommand(portType, portIndex, command, payload);
 }
 
 bool AgxGraphModel::deleteConnection(AgxConnectionId const connectionId)
@@ -1045,9 +1037,9 @@ void AgxGraphModel::addPort(AgxNodeId nodeId, AgxPortType portType, AgxPortIndex
 
     // STAGE 2. Change the number of connections in your model
     if (portType == AgxPortType::In && agxNode)
-        agxNode->_AddPort(AgxPortType::In, portIndex, data);
+        agxNode->AddPort(AgxPortType::In, portIndex, data);
     else if(agxNode)
-        agxNode->_AddPort(AgxPortType::Out, portIndex, data);
+        agxNode->AddPort(AgxPortType::Out, portIndex, data);
 
     // STAGE 3. Re-create previouly existed and now shifted connections
     portsInserted();
@@ -1074,7 +1066,7 @@ QJsonObject AgxGraphModel::removePort(AgxNodeId nodeId, AgxPortType portType, Ag
 
         // STAGE 2. Change the number of connections in your model
         if (agxNode)
-            agxNode->_RemovePort(portType, portIndex, preserve);
+            agxNode->RemovePort(portType, portIndex, preserve);
 
         portsDeleted();
 

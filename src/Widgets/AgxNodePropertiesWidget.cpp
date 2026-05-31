@@ -2,6 +2,7 @@
 //License: https://www.gnu.org/licenses/lgpl-3.0.html
 //Contact: Calaverahmedia@gmail.com
 
+// ReSharper disable CppDFAMemoryLeak
 #include "stdafx.h"
 #include "AgxNodePropertiesWidget.h"
 #include "Utilities/AgxDefinitions.h"
@@ -19,7 +20,7 @@
 #include "Utilities/QWidgetFactories.h"
 #include "Widgets/Dialog/AgxSimpleDialog.h"
 
-AgxNodePropertiesWidget::AgxNodePropertiesWidget(QWidget* parent, bool bblockSignals) : QWidget(parent), IAgxEmbedSceneData()
+AgxNodePropertiesWidget::AgxNodePropertiesWidget(QWidget* parent, const bool bblockSignals) : QWidget(parent)
 {
 	blockSignals(bblockSignals);
 
@@ -61,7 +62,7 @@ AgxNodePropertiesWidget::~AgxNodePropertiesWidget()
 
 void AgxNodePropertiesWidget::SetUpCustomDropDown(AgxLineEditContainer* line, const QList<TermRef>& list, const QStringList& keyPath)
 {
-	connect(line, &AgxLineEditContainer::ContentDoubleClicked, line, [this,line,list, keyPath]() 
+	connect(line, &AgxLineEditContainer::ContentDoubleClicked, line, [this,line,list, keyPath]
 	{
 						
 		QStringList stringList;
@@ -73,7 +74,7 @@ void AgxNodePropertiesWidget::SetUpCustomDropDown(AgxLineEditContainer* line, co
 				current = list.indexOf(term);
 		}
 
-		if (auto result = AgxSimpleDialog::GetDropDown(this, "Select Entry", "", list, current, false))
+		if (const auto result = AgxSimpleDialog::GetDropDown(this, "Select Entry", "", list, current, false))
 		{
 			QJsonObject input;
 			input["value"] = result().tag;
@@ -85,7 +86,7 @@ void AgxNodePropertiesWidget::SetUpCustomDropDown(AgxLineEditContainer* line, co
 	SendWidthAdjustment();
 }
 
-QList<AgxLineEditContainer*> AgxNodePropertiesWidget::CreatePropertyEntries(QVector<AgxPropertyEntryDefinition>* dataRef, AgxNode* signalSender, bool split)
+QList<AgxLineEditContainer*> AgxNodePropertiesWidget::CreatePropertyEntries(QVector<AgxPropertyEntryDefinition>* dataRef, const AgxNode* signalSender)
 {
 	QList<AgxLineEditContainer*> outputList;
 	for (int i = 0; i < dataRef->size(); i++)
@@ -93,7 +94,7 @@ QList<AgxLineEditContainer*> AgxNodePropertiesWidget::CreatePropertyEntries(QVec
 		auto& dataRefItem = (*dataRef)[i];
 		QString key = dataRefItem.Tag();
 
-		QLabel* entryLabel = new QLabel(dataRefItem.Label());
+		auto entryLabel = new QLabel(dataRefItem.Label());
 		entryLabel->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Preferred);
 		entryLabel->setWordWrap(true);
 		entryLabel->setFixedWidth(400);
@@ -108,14 +109,14 @@ QList<AgxLineEditContainer*> AgxNodePropertiesWidget::CreatePropertyEntries(QVec
 			SetUpCustomDropDown(output, dataRefItem.CustomDropDownList(), {key});
 		}
 
-		auto row = _mainFormLayout->rowCount();
+		const auto row = _mainFormLayout->rowCount();
 		_mainFormLayout->addWidget(entryLabel, row, 0);
 		_mainFormLayout->addWidget(output, row, 1);
 
 		output->setVisible(dataRefItem.propertyEnabled);
 		entryLabel->setVisible(dataRefItem.propertyEnabled);
 
-		connect(&dataRefItem, &AgxPropertyEntryDefinition::StateUpdated, output, [this, output, entryLabel](bool enabled)
+		connect(&dataRefItem, &AgxPropertyEntryDefinition::StateUpdated, output, [output, entryLabel](const bool enabled)
 		{
 			output->setVisible(enabled);
 			entryLabel->setVisible(enabled);
@@ -124,27 +125,27 @@ QList<AgxLineEditContainer*> AgxNodePropertiesWidget::CreatePropertyEntries(QVec
 		entryLabel->setEnabled(dataRefItem.isPresent);
 		output->setContentState(dataRefItem.isPresent);
 
-		connect(&dataRefItem, &AgxPropertyEntryDefinition::PresentUpdated, entryLabel, [this, entryLabel, output](bool enabled)
+		connect(&dataRefItem, &AgxPropertyEntryDefinition::PresentUpdated, entryLabel, [entryLabel, output](const bool enabled)
 		{
 			entryLabel->setEnabled(enabled);
 			output->setContentState(enabled);
 		});
 
-		connect(this, &AgxNodePropertiesWidget::LanguageChanged, entryLabel, [entryLabel, &dataRefItem]()
+		connect(this, &AgxNodePropertiesWidget::LanguageChanged, entryLabel, [entryLabel, &dataRefItem]
 		{
 			entryLabel->setText(dataRefItem.Label());
 		});
 				
 		output->setContentState(dataRefItem.isPresent);
 		
-		connect(output, &AgxLineEditContainer::ContentStateChanged, &dataRefItem, [this, &dataRefItem, key](bool enabled)
+		connect(output, &AgxLineEditContainer::ContentStateChanged, &dataRefItem, [this, key](const bool enabled)
 		{
 			QJsonObject input;
 			input["isPresent"] = enabled;
 			SendInsertPropertySheetDataCommand(QStringListToQJsonObject({ key }, input));
 		});
 
-		connect(signalSender, &AgxNode::PropertySheetUpdated, output, [output, &dataRefItem]()
+		connect(signalSender, &AgxNode::PropertySheetUpdated, output, [output, &dataRefItem]
 		{
 			output->setContentText(dataRefItem.value);
 			output->RefreshContentTooltip(dataRefItem.value);
@@ -158,7 +159,7 @@ QList<AgxLineEditContainer*> AgxNodePropertiesWidget::CreatePropertyEntries(QVec
 	return outputList;
 }
 
-QList<AgxLineEditContainer*> AgxNodePropertiesWidget::CreatePropertyEntries(QVector<AgxPropertyEntryDefinition>* dataRef, AgxGraphModel* signalSender, bool split)
+QList<AgxLineEditContainer*> AgxNodePropertiesWidget::CreatePropertyEntries(const QVector<AgxPropertyEntryDefinition>* dataRef, const AgxGraphModel* signalSender)
 {
 	QList<AgxLineEditContainer*> outputList;
 
@@ -177,19 +178,19 @@ QList<AgxLineEditContainer*> AgxNodePropertiesWidget::CreatePropertyEntries(QVec
 			SetUpCustomDropDown(output, dataRefItem.CustomDropDownList(), { key });
 		}
 
-		QLabel* entryLabel = new QLabel(dataRefItem.Label());
+		auto entryLabel = new QLabel(dataRefItem.Label());
 		entryLabel->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Preferred);
 		entryLabel->setWordWrap(true);
 		entryLabel->setFixedWidth(400);
 
-		auto row = _mainFormLayout->rowCount();
+		const auto row = _mainFormLayout->rowCount();
 		_mainFormLayout->addWidget(entryLabel, row, 0);
 		_mainFormLayout->addWidget(output, row, 1);
 
 		output->setVisible(dataRefItem.propertyEnabled);
 		entryLabel->setVisible(dataRefItem.propertyEnabled);
 
-		connect(&dataRefItem, &AgxPropertyEntryDefinition::StateUpdated, output, [this, output, entryLabel](bool enabled) 
+		connect(&dataRefItem, &AgxPropertyEntryDefinition::StateUpdated, output, [output, entryLabel](const bool enabled)
 		{
 			output->setVisible(enabled);
 			entryLabel->setVisible(enabled);
@@ -198,27 +199,27 @@ QList<AgxLineEditContainer*> AgxNodePropertiesWidget::CreatePropertyEntries(QVec
 		entryLabel->setEnabled(dataRefItem.isPresent);
 		output->setContentState(dataRefItem.isPresent);
 		
-		connect(&dataRefItem, &AgxPropertyEntryDefinition::PresentUpdated, entryLabel, [this, entryLabel, output](bool enabled) 
+		connect(&dataRefItem, &AgxPropertyEntryDefinition::PresentUpdated, entryLabel, [entryLabel, output](const bool enabled)
 		{
 			entryLabel->setEnabled(enabled);
 			output->setContentState(enabled);			
 		});
 
-		connect(this, &AgxNodePropertiesWidget::LanguageChanged, entryLabel, [entryLabel, &dataRefItem]() 
+		connect(this, &AgxNodePropertiesWidget::LanguageChanged, entryLabel, [entryLabel, &dataRefItem]
 		{
 			entryLabel->setText(dataRefItem.Label());
 		});
 
 		output->setContentState(dataRefItem.isPresent);
 
-		connect(output, &AgxLineEditContainer::ContentStateChanged, &dataRefItem, [this, &dataRefItem, key](bool enabled) 
+		connect(output, &AgxLineEditContainer::ContentStateChanged, &dataRefItem, [this, key](const bool enabled)
 		{
 			QJsonObject input;
 			input["isPresent"] = enabled;
 			SendInsertPropertySheetDataCommand(QStringListToQJsonObject({ key }, input));
 		});
 
-		connect(signalSender, &AgxGraphModel::PropertySheetUpdated, output, [output, dataRef, i]() 
+		connect(signalSender, &AgxGraphModel::PropertySheetUpdated, output, [output, dataRef, i]
 		{
 			if (dataRef->size() <= i) return;
 
@@ -233,7 +234,7 @@ QList<AgxLineEditContainer*> AgxNodePropertiesWidget::CreatePropertyEntries(QVec
 	return outputList;
 }
 
-QList<AgxLineEditContainer*> AgxNodePropertiesWidget::CreatePropertyEntries(QVector<AgxPropertyEntryDefinition>* dataRef, AgxPort* signalSender, bool split, QStringList path)
+QList<AgxLineEditContainer*> AgxNodePropertiesWidget::CreatePropertyEntries(const QVector<AgxPropertyEntryDefinition>* dataRef, const AgxPort* signalSender, QStringList path)
 {
 	path.append("temp");
 
@@ -243,8 +244,8 @@ QList<AgxLineEditContainer*> AgxNodePropertiesWidget::CreatePropertyEntries(QVec
 	{
 		auto& dataRefItem = (*dataRef)[i];
 
-		QString key = dataRefItem.Tag();
-		QLabel* entryLabel = new QLabel(dataRefItem.Label());
+		const QString key = dataRefItem.Tag();
+		auto entryLabel = new QLabel(dataRefItem.Label());
 		entryLabel->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Preferred);
 		entryLabel->setWordWrap(true);
 		entryLabel->setFixedWidth(400);
@@ -260,14 +261,14 @@ QList<AgxLineEditContainer*> AgxNodePropertiesWidget::CreatePropertyEntries(QVec
 			SetUpCustomDropDown(output, dataRefItem.CustomDropDownList(), path);
 		}
 
-		auto row = _mainFormLayout->rowCount();
+		const auto row = _mainFormLayout->rowCount();
 		_mainFormLayout->addWidget(entryLabel, row, 0);
 		_mainFormLayout->addWidget(output, row, 1);
 
 		output->setVisible(dataRefItem.propertyEnabled);
 		entryLabel->setVisible(dataRefItem.propertyEnabled);
 
-		connect(&dataRefItem, &AgxPropertyEntryDefinition::StateUpdated, output, [this, output, entryLabel](bool enabled) 
+		connect(&dataRefItem, &AgxPropertyEntryDefinition::StateUpdated, output, [output, entryLabel](const bool enabled)
 		{
 			output->setVisible(enabled);
 			entryLabel->setVisible(enabled);
@@ -276,27 +277,27 @@ QList<AgxLineEditContainer*> AgxNodePropertiesWidget::CreatePropertyEntries(QVec
 		entryLabel->setEnabled(dataRefItem.isPresent);
 		output->setContentState(dataRefItem.isPresent);
 		
-		connect(&dataRefItem, &AgxPropertyEntryDefinition::PresentUpdated, entryLabel, [this, entryLabel, output](bool enabled)
+		connect(&dataRefItem, &AgxPropertyEntryDefinition::PresentUpdated, entryLabel, [entryLabel, output](const bool enabled)
 		{
 			entryLabel->setEnabled(enabled);
 			output->setContentState(enabled);
 		});
 		
-		connect(this, &AgxNodePropertiesWidget::LanguageChanged, entryLabel, [entryLabel, &dataRefItem]()
+		connect(this, &AgxNodePropertiesWidget::LanguageChanged, entryLabel, [entryLabel, &dataRefItem]
 		{
 			entryLabel->setText(dataRefItem.Label());
 		});
 
 		output->setContentState(dataRefItem.isPresent);
 
-		connect(output, &AgxLineEditContainer::ContentStateChanged, &dataRefItem, [this, &dataRefItem, path](bool enabled)
+		connect(output, &AgxLineEditContainer::ContentStateChanged, &dataRefItem, [this, path](const bool enabled)
 		{
 			QJsonObject input;
 			input["isPresent"] = enabled;
 			SendInsertPropertySheetDataCommand(QStringListToQJsonObject(path, input));	
 		});
 
-		connect(signalSender, &AgxPort::propertySheetUpdated, output, [output, &dataRefItem]() 
+		connect(signalSender, &AgxPort::propertySheetUpdated, output, [output, &dataRefItem]
 		{
 			output->setContentText(dataRefItem.value);
 			output->RefreshContentTooltip(dataRefItem.value);
@@ -309,7 +310,7 @@ QList<AgxLineEditContainer*> AgxNodePropertiesWidget::CreatePropertyEntries(QVec
 	return outputList;
 }
 
-QList<QLabel*> AgxNodePropertiesWidget::CreateReadOnlyEntries(QMap<TermRef, QPair<AgxColumnTypes, QString>>* dataRef, AgxNode* signalSender, bool split, const QList<TermRef>& priorityOrder)
+QList<QLabel*> AgxNodePropertiesWidget::CreateReadOnlyEntries(QMap<TermRef, QPair<AgxColumnTypes, QString>>* dataRef, const AgxNode* signalSender, const bool split, const QList<TermRef>& priorityOrder)
 {
 	QList<QLabel*> outputList;
 
@@ -330,8 +331,8 @@ QList<QLabel*> AgxNodePropertiesWidget::CreateReadOnlyEntries(QMap<TermRef, QPai
 	for (int i = 0; i < keyOrder.size(); i++)
 	{
 		auto key = keyOrder.at(i);
-		QLabel* entry = new QLabel(dataRef->value(key).second);
-		QLabel* entryLabel = new QLabel(key().translation);
+		auto entry = new QLabel(dataRef->value(key).second);
+		auto entryLabel = new QLabel(key().translation);
 		entryLabel->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Preferred);
 				
 		if (split && !_nextEntryLeft)
@@ -345,14 +346,14 @@ QList<QLabel*> AgxNodePropertiesWidget::CreateReadOnlyEntries(QMap<TermRef, QPai
 			_nextEntryLeft = false;
 		}
 
-		connect(signalSender, &AgxNode::PropertySheetUpdated, entry, [entry, dataRef, key]() 
+		connect(signalSender, &AgxNode::PropertySheetUpdated, entry, [entry, dataRef, key]
 		{
 			entry->blockSignals(true);
 			entry->setText(dataRef->value(key).second);
 			entry->blockSignals(false);
 		});
 
-		connect(this, &AgxNodePropertiesWidget::LanguageChanged, entryLabel, [entryLabel, key]() 
+		connect(this, &AgxNodePropertiesWidget::LanguageChanged, entryLabel, [entryLabel, key]
 		{
 			entryLabel->setText(key().translation);
 		});
@@ -365,7 +366,7 @@ QList<QLabel*> AgxNodePropertiesWidget::CreateReadOnlyEntries(QMap<TermRef, QPai
 	return outputList;
 }
 
-QList<QLabel*> AgxNodePropertiesWidget::CreateReadOnlyEntries(QMap<TermRef, QPair<AgxColumnTypes, QString>>* dataRef, AgxGraphModel* signalSender, bool split, const QList<TermRef>& priorityOrder)
+QList<QLabel*> AgxNodePropertiesWidget::CreateReadOnlyEntries(QMap<TermRef, QPair<AgxColumnTypes, QString>>* dataRef, const AgxGraphModel* signalSender, const bool split, const QList<TermRef>& priorityOrder)
 {
 	QList<QLabel*> outputList;
 
@@ -386,26 +387,24 @@ QList<QLabel*> AgxNodePropertiesWidget::CreateReadOnlyEntries(QMap<TermRef, QPai
 	for (int i = 0; i < keyOrder.size(); i++)
 	{
 		auto& key = keyOrder.at(i);
-		QLabel* entry = new QLabel(dataRef->value(key).second);
-		QLabel* entryLabel = new QLabel(key().translation);
+		auto entry = new QLabel(dataRef->value(key).second);
+		auto entryLabel = new QLabel(key().translation);
 		entryLabel->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Preferred);
 
-		bool flip = _readonlyRightLayout->rowCount() < _readonlyLeftLayout->rowCount();
-
-		if (split && i % 2 != static_cast<int>(flip))
+		if (const bool flip = _readonlyRightLayout->rowCount() < _readonlyLeftLayout->rowCount(); split && i % 2 != static_cast<int>(flip))
 		{
 			_readonlyRightLayout->addRow(entryLabel, entry);
 		} else {
 			_readonlyLeftLayout->addRow(entryLabel, entry);
 		}
-		connect(signalSender, &AgxGraphModel::PropertySheetUpdated, entry, [entry, dataRef, key]() 
+		connect(signalSender, &AgxGraphModel::PropertySheetUpdated, entry, [entry, dataRef, key]
 		{
 			entry->blockSignals(true);
 			entry->setText(dataRef->value(key).second);
 			entry->blockSignals(false);
 		});
 
-		connect(this, &AgxNodePropertiesWidget::LanguageChanged, entryLabel, [entryLabel, key]() 
+		connect(this, &AgxNodePropertiesWidget::LanguageChanged, entryLabel, [entryLabel, key]
 		{
 			entryLabel->setText(key().translation);
 		});
@@ -418,10 +417,10 @@ QList<QLabel*> AgxNodePropertiesWidget::CreateReadOnlyEntries(QMap<TermRef, QPai
 	return outputList;
 }
 
-QLabel* AgxNodePropertiesWidget::CreateGuidLabel(const QUuid* value, AgxNode* signalSender, bool split)
+QLabel* AgxNodePropertiesWidget::CreateGuidLabel(const QUuid* value, const AgxNode* signalSender, const bool split)
 {
-	QLabel* output = new QLabel(value->toString(QUuid::StringFormat::WithoutBraces));
-	QLabel* entryLabel = new QLabel("Guid");
+	auto output = new QLabel(value->toString(QUuid::StringFormat::WithoutBraces));
+	const auto entryLabel = new QLabel("Guid");
 	entryLabel->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Preferred);
 
 	if (split && !_nextEntryLeft)
@@ -435,7 +434,7 @@ QLabel* AgxNodePropertiesWidget::CreateGuidLabel(const QUuid* value, AgxNode* si
 		_nextEntryLeft = false;
 	}
 
-	connect(signalSender, &AgxNode::PropertySheetUpdated, output, [output, value]() 
+	connect(signalSender, &AgxNode::PropertySheetUpdated, output, [output, value]
 	{
 		output->blockSignals(true);
 		output->setText(value->toString(QUuid::StringFormat::WithoutBraces));
@@ -448,13 +447,13 @@ QLabel* AgxNodePropertiesWidget::CreateGuidLabel(const QUuid* value, AgxNode* si
 	return output;
 }
 
-ModifiedPushButton* AgxNodePropertiesWidget::CreateFlagEntry(TermRef title, AgxNode* signalSender, AgxFlagField* dataRef)
+ModifiedPushButton* AgxNodePropertiesWidget::CreateFlagEntry(TermRef title, const AgxNode* signalSender, AgxFlagField* dataRef)
 {
-	ModifiedPushButton* button = new ModifiedPushButton("Edit");
+	auto button = new ModifiedPushButton("Edit");
 	button->setMinimumWidth(200);
 	button->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
 
-	QLabel* entryLabel = new QLabel(title().translation);
+	auto entryLabel = new QLabel(title().translation);
 	entryLabel->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::Fixed);
 	
 	QString toolTipColored = dataRef->ToString();
@@ -464,11 +463,9 @@ ModifiedPushButton* AgxNodePropertiesWidget::CreateFlagEntry(TermRef title, AgxN
 	button->setToolTipDuration(-1);
 	button->setToolTip(toolTipColored);
 	
-	connect(button, &ModifiedPushButton::CustomPressSignal, this, [this, dataRef]() 
+	connect(button, &ModifiedPushButton::CustomPressSignal, this, [this, dataRef]
 	{
-		auto dialog = DialogPool_SFBGS::GetInstance().GetAnimationFlagDialog(dataRef->GetValue());
-
-		if(dialog->exec() == QDialog::Accepted)
+		if(const auto dialog = DialogPool_SFBGS::GetInstance().GetAnimationFlagDialog(dataRef->GetValue()); dialog->exec() == QDialog::Accepted)
 		{
 			QJsonObject obj;
 			AgxAnimationFlags flags;
@@ -479,17 +476,17 @@ ModifiedPushButton* AgxNodePropertiesWidget::CreateFlagEntry(TermRef title, AgxN
 				
 	});
 
-	connect(signalSender, &AgxNode::PropertySheetUpdated, this, [this, dataRef, button]()
+	connect(signalSender, &AgxNode::PropertySheetUpdated, this, [dataRef, button]
 	{
-		QString toolTipColored = dataRef->ToString();
-		toolTipColored.replace("\n", "<br>");
-		toolTipColored.replace("False", "<font color='dimgrey'>False</font>", Qt::CaseInsensitive);
-		toolTipColored.replace("True", "<font color='plum'>True</font>", Qt::CaseInsensitive);
-		button->setToolTip(toolTipColored);
-		
-		auto value = dataRef->GetValue();
+		QString pToolTipColored = dataRef->ToString();
+		pToolTipColored.replace("\n", "<br>");
+		pToolTipColored.replace("False", "<font color='dimgrey'>False</font>", Qt::CaseInsensitive);
+		pToolTipColored.replace("True", "<font color='plum'>True</font>", Qt::CaseInsensitive);
+		button->setToolTip(pToolTipColored);
 
-		QString editString = tr("Edit");
+		const auto value = dataRef->GetValue();
+
+		const QString editString = tr("Edit");
 
 		if (value > 0)
 			button->setText(QString("(%1): (%2)").arg(editString).arg(value));
@@ -498,18 +495,18 @@ ModifiedPushButton* AgxNodePropertiesWidget::CreateFlagEntry(TermRef title, AgxN
 	});
 
 	//_mainFormLayout->addRow(entryLabel, button);
-	auto row = _mainFormLayout->rowCount();
+	const auto row = _mainFormLayout->rowCount();
 	_mainFormLayout->addWidget(entryLabel, row, 0);
 	_mainFormLayout->addWidget(button, row, 1);
 
 	button->setEnabled(dataRef->IsEnabledState());
 
-	connect(dataRef, &AgxFlagField::StateUpdated, button, [this, button](bool enabled)
+	connect(dataRef, &AgxFlagField::StateUpdated, button, [button](const bool enabled)
 	{
 		button->setEnabled(enabled);
 	});
 
-	connect(this, &AgxNodePropertiesWidget::LanguageChanged, entryLabel, [this, entryLabel, title]() 
+	connect(this, &AgxNodePropertiesWidget::LanguageChanged, entryLabel, [entryLabel, title]
 	{
 		entryLabel->setText(title().translation);
 	});
@@ -520,14 +517,14 @@ ModifiedPushButton* AgxNodePropertiesWidget::CreateFlagEntry(TermRef title, AgxN
 	return button;
 }
 
-AgxLineEditContainer* AgxNodePropertiesWidget::CreateSimpleLineEdit(QString* sourceData, AgxPort* signalSender, TermRef label, bool split, QStringList path)
+AgxLineEditContainer* AgxNodePropertiesWidget::CreateSimpleLineEdit(const QString* sourceData, const AgxPort* signalSender, TermRef label, const bool split, const QStringList& path)
 {
 	AgxLineEditContainer* output = AgxWidgetUtil::CreateEntry(AgxColumnTypes::BasicString, path, this);
 	output->blockSignals(true);
 	output->setContentText(*sourceData);
 	output->blockSignals(false);
-	
-	QLabel* labelObj = new QLabel(QString());
+
+	auto labelObj = new QLabel(QString());
 	labelObj->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Preferred);
 
 	if (label) 
@@ -546,14 +543,14 @@ AgxLineEditContainer* AgxNodePropertiesWidget::CreateSimpleLineEdit(QString* sou
 		_nextEntryLeft = false;
 	}
 
-	connect(signalSender, &AgxPort::propertySheetUpdated, output, [output, sourceData]()
+	connect(signalSender, &AgxPort::propertySheetUpdated, output, [output, sourceData]
 	{
 		output->blockSignals(true);
 		output->setContentText(*sourceData);
 		output->blockSignals(false);
 	});
 
-	connect(this, &AgxNodePropertiesWidget::LanguageChanged, labelObj, [labelObj, label]()
+	connect(this, &AgxNodePropertiesWidget::LanguageChanged, labelObj, [labelObj, label]
 	{ 
 		if (label)
 		{
@@ -565,16 +562,16 @@ AgxLineEditContainer* AgxNodePropertiesWidget::CreateSimpleLineEdit(QString* sou
 	return output;
 }
 
-AgxPropertyBlockWidget* AgxNodePropertiesWidget::CreatePropetryBlock(TermRef blockTitleRef, AgxPropertyBlockData& dataRef, uint8_t wrappedRowItemCount)
+AgxPropertyBlockWidget* AgxNodePropertiesWidget::CreatePropetryBlock(const TermRef blockTitleRef, AgxPropertyBlockData& dataRef, const uint8_t wrappedRowItemCount)
 {
-	AgxPropertyBlockWidget* block = new AgxPropertyBlockWidget(blockTitleRef, dataRef, wrappedRowItemCount, this);
+	auto block = new AgxPropertyBlockWidget(blockTitleRef, dataRef, wrappedRowItemCount, this);
 	_MainVBoxLayout->addWidget(block,1, Qt::AlignHCenter);
 	_PropertyBlocks.insert(blockTitleRef, block);
 	_MainVBoxLayout->addStretch(1);
 
 	block->setVisible(dataRef.IsEnabledState());
 	
-	connect(&dataRef, &AgxPropertyBlockData::StateUpdated, block, [this, block](bool enabled)
+	connect(&dataRef, &AgxPropertyBlockData::StateUpdated, block, [block](const bool enabled)
 	{
 		block->setVisible(enabled);
 	});
@@ -587,24 +584,23 @@ AgxPropertyBlockWidget* AgxNodePropertiesWidget::CreatePropetryBlock(TermRef blo
 
 void AgxNodePropertiesWidget::CreateEmbeddedNodeGraphButton(std::shared_ptr<AgxGraphicsScene> scene, std::shared_ptr<AgxGraphModel> model)
 {
-	
-	MiniGraphicsView* miniView = new MiniGraphicsView(scene.get());
+
+	const auto miniView = new MiniGraphicsView(scene.get());
 	_MainVBoxLayout->addWidget(miniView);
 	miniView->setMinimumHeight(200);
 	miniView->setMinimumWidth(200);
 	miniView->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
 
-	connect(miniView, &MiniGraphicsView::clicked, this, [this, scene, model]()
+	connect(miniView, &MiniGraphicsView::clicked, this, [scene, model]
 	{
-		auto widget = QApplication::activeWindow();
+		const auto widget = QApplication::activeWindow();
 
-		if (auto calumiWindow = dynamic_cast<CALUMIMotion*>(widget))
+		if (const auto calumiWindow = dynamic_cast<CALUMIMotion*>(widget))
 			calumiWindow->Create_SFBGSTab(scene, model); 
 		
 	});
 	
 	SendWidthAdjustment();
-	return;
 }
 
 void AgxNodePropertiesWidget::FinalizeWidget()
@@ -623,7 +619,7 @@ void AgxNodePropertiesWidget::mousePressEvent(QMouseEvent* event)
 void AgxNodePropertiesWidget::ForceRefresh()
 {
 	updateGeometry();
-	if (auto iagx = dynamic_cast<IAgxEmbedSceneData*>(this))
+	if (const auto iagx = dynamic_cast<IAgxEmbedSceneData*>(this))
 	{
 		iagx->RefreshNode();
 	}

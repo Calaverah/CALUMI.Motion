@@ -8,8 +8,6 @@ target_sources(${PROJECT_NAME}
   AgxSidebarContent.h
   BitfieldWidgetDialog.cpp
   BitfieldWidgetDialog.h
-  CALUMITabModule.cpp
-  CALUMITabModule.h
   CustomQTreeWidget.cpp
   CustomQTreeWidget.h
   FilteredDropDownDialog.cpp
@@ -56,3 +54,5 @@ target_sources(${PROJECT_NAME}
   SFBGS/SFBGS_SidebarContent.cpp
   SFBGS/SFBGS_SidebarContent.h
 )
+
+add_subdirectory(TabModule)

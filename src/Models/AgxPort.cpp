@@ -15,15 +15,9 @@ AgxPort_SFBGS::AgxPort_SFBGS(AgxNode* parent) : AgxPort(parent)
 {
 }
 
-AgxPort_SFBGS::~AgxPort_SFBGS()
-{
-	if (m_contentWidget) m_contentWidget->deleteLater();
-}
-
 void AgxPort_SFBGS::setName(const QString& str) {
 	m_name = str;
-	if(m_contentWidget)
-		m_contentWidget->SetTitle(QString("[Port] %1").arg(caption()));
+	Q_EMIT propertySheetUpdated();
 }
 
 void AgxPort_SFBGS::insertData(const QJsonObject& data)
@@ -229,59 +223,55 @@ void AgxPort_SFBGS::setPropertySheetOptional(const bool initiallyEnabled)
 
 	m_propertyEntriesEnabled = initiallyEnabled;
 
-	m_contentWidget->SetupOptionalPropertySheet(true, &m_propertyEntriesEnabled,
-		{	"in-ports" ,
-			QString("%1").arg(m_portId),
-			"property-entries-enabled" }
-	);
-
 	Q_EMIT propertySheetUpdated();
 }
 
-QWidget* AgxPort_SFBGS::getEmbeddedWidget()
+QWidget* AgxPort_SFBGS::getEmbeddedWidget() const
 {
-	if (!hasPropertySheet()) return nullptr;
+	if (!hasPropertySheet())
+		return nullptr;
 
-	if (!m_contentWidget)
+	auto contentWidget = new SFBGS_SidebarContentItem();
+
+	connect(this, &QObject::destroyed, contentWidget, &QObject::deleteLater);
+
+	const auto inputName = new AgxNodePropertiesWidget();
+
+	const auto nameLine = inputName->CreateSimpleLineEdit(&m_name, this, nullptr, false, { "in-ports" , QString("%1").arg(m_portId), "name"});
+	nameLine->setCheckbox(false);
+	const QCheckBox tempBox;
+	inputName->setContentsMargins(0, 0, tempBox.sizeHint().width() + 11, 0);
+	nameLine->setContentPlaceholderText("Name");
+	contentWidget->InsertAdditionalWidget(inputName, 1, Qt::AlignRight);
+
+	const auto propSheet = contentWidget->SetupPropertySheet();
+
+	propSheet->CreatePropertyEntries(&m_propertyEntries, this,
+		{	"in-ports" ,
+			QString("%1").arg(m_portId)}
+	);
+
+	connect(this, &AgxPort::propertySheetUpdated, contentWidget, [this, contentWidget]
 	{
-		m_contentWidget = new SFBGS_SidebarContentItem();
-		connect(this, &AgxPort::propertySheetUpdated, m_contentWidget, [this]
-		{
-			m_contentWidget->SetTitle(QString("[Port] %1").arg(caption()));
-		});
+		contentWidget->SetTitle(QString("[Port] %1").arg(caption()));
+		contentWidget->SetupOptionalPropertySheet(true, &m_propertyEntriesEnabled,
+		{	"in-ports" ,
+			QString("%1").arg(m_portId),
+			"property-entries-enabled" });
+		contentWidget->SetOptionalPropertySheetState(m_propertyEntriesEnabled && m_isConnected);
+	});
 
-		const auto inputName = new AgxNodePropertiesWidget();
-		const auto nameLine = inputName->CreateSimpleLineEdit(&m_name, this, nullptr, false, { "in-ports" , QString("%1").arg(m_portId), "name"});
-		nameLine->setCheckbox(false);
-		const QCheckBox tempBox;
-		inputName->setContentsMargins(0, 0, tempBox.sizeHint().width() + 11, 0);
-		nameLine->setContentPlaceholderText("Name");
-		m_contentWidget->InsertAdditionalWidget(inputName, 1, Qt::AlignRight);
-
-		const auto propSheet = m_contentWidget->SetupPropertySheet();
-		
-		propSheet->CreatePropertyEntries(&m_propertyEntries, this, false,
-			{	"in-ports" ,
-				QString("%1").arg(m_portId)}
-		);
-		
-		connect(this, &AgxPort::propertySheetUpdated, m_contentWidget, [this]
-		{
-			m_contentWidget->SetOptionalPropertySheetState(m_propertyEntriesEnabled && m_isConnected);
-		});
-
-		if (m_blendInput)
-		{
-			const auto tView = new AgxBlendInputView(m_blendInput);
-			tView->SetBasePath({ "in-ports" , std::to_string(m_portId).c_str(), "blend-input" });
-			m_contentWidget->InsertAdditionalWidget(tView, 1, Qt::AlignRight);
-		}
-
-		Q_EMIT m_parentNode->PropertySheetUpdated();
-		Q_EMIT propertySheetUpdated();
+	if (m_blendInput)
+	{
+		const auto tView = new AgxBlendInputView(m_blendInput);
+		tView->SetBasePath({ "in-ports" , std::to_string(m_portId).c_str(), "blend-input" });
+		contentWidget->InsertAdditionalWidget(tView, 1, Qt::AlignRight);
 	}
 
-	return m_contentWidget;
+	Q_EMIT m_parentNode->PropertySheetUpdated();
+	Q_EMIT propertySheetUpdated();
+
+	return contentWidget;
 }
 
 AgxBlendInputModel* AgxPort_SFBGS::getBlendInput() const

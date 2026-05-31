@@ -58,9 +58,9 @@ namespace SFBGS {
         return AgxNodeType::NT_MOMENTUM_ANIMATION;
     }
 
-    std::shared_ptr<AgxPort> AgxNtMomentumAnimation::_AddPort(AgxPortType portType, AgxPortIndex index, QJsonObject data)
+    std::shared_ptr<AgxPort> AgxNtMomentumAnimation::AddPort(AgxPortType portType, AgxPortIndex index, QJsonObject data)
     {
-        auto port = SFBGSNode::_AddPort(portType, index, data);
+        auto port = SFBGSNode::AddPort(portType, index, data);
 
         //if (auto sfbgsPort = dynamic_cast<AgxPort_SFBGS*>(port.get()))
         //{

@@ -7,7 +7,7 @@
 #include <qfileinfo.h>
 #include <QJsonObject>
 #include "Application/CALUMIMotionApplication.h"
-#include "Utilities/SettingsRegistry.h"
+#include "../Utilities/Settings/SettingsRegistry.h"
 
 void AgxGraphPalette::fromJson(const QJsonObject& input)
 {

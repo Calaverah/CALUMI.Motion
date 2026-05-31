@@ -51,9 +51,9 @@ namespace SFBGS {
         return AgxNodeType::NT_TWO_BONE_IK;
     }
 
-    std::shared_ptr<AgxPort> AgxNtTwoBoneIK::_AddPort(AgxPortType portType, AgxPortIndex index, QJsonObject data)
+    std::shared_ptr<AgxPort> AgxNtTwoBoneIK::AddPort(AgxPortType portType, AgxPortIndex index, QJsonObject data)
     {
-        auto port = SFBGSNode::_AddPort(portType, index, data);
+        auto port = SFBGSNode::AddPort(portType, index, data);
 
         if (auto sfbgsPort = dynamic_cast<AgxPort_SFBGS*>(port.get()))
         {

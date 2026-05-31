@@ -135,6 +135,7 @@ void AgxNodeGraphicsObject::mousePressEvent(QGraphicsSceneMouseEvent* event)
     {
         if ((event->modifiers() & Qt::ControlModifier) == 0)
             agxNodeScene()->clearSelection();
+
         Q_EMIT agxNodeScene()->nodePreClicked(m_nodeId, (event->modifiers() & Qt::ControlModifier) != 0);
     }
 
@@ -204,7 +205,9 @@ void AgxNodeGraphicsObject::mousePressEvent(QGraphicsSceneMouseEvent* event)
         }
     }
 
-    if (isSelected()) {
+    if (isSelected())
+    {
+        qDebug() << "AgxNodeGraphicsObject::mousePressEvent() SELECT EMIT";
         Q_EMIT agxNodeScene()->nodeSelected(m_nodeId);
     }
 
@@ -412,8 +415,21 @@ void AgxNodeGraphicsObject::paint(QPainter* painter, QStyleOptionGraphicsItem co
 
 QVariant AgxNodeGraphicsObject::itemChange(const GraphicsItemChange change, const QVariant& value)
 {
-    if (change == ItemScenePositionHasChanged && scene()) {
+    if (change == ItemScenePositionHasChanged && scene())
+    {
         moveConnections();
+    }
+
+    if (change == ItemSelectedHasChanged)
+    {
+        if (!value.toBool())
+        {
+            Q_EMIT Deselected();
+        }
+        else
+        {
+            Q_EMIT Selected();
+        }
     }
 
     return QGraphicsObject::itemChange(change, value);

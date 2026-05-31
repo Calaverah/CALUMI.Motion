@@ -85,9 +85,9 @@ namespace SFBGS {
         return validState;
     }
 
-    std::shared_ptr<AgxPort> AgxNtEffectSequence::_AddPort(AgxPortType portType, AgxPortIndex index, QJsonObject data)
+    std::shared_ptr<AgxPort> AgxNtEffectSequence::AddPort(AgxPortType portType, AgxPortIndex index, QJsonObject data)
     {
-        auto port = SFBGSNode::_AddPort(portType, index, data);
+        auto port = SFBGSNode::AddPort(portType, index, data);
 
         if (auto sfbgsPort = dynamic_cast<AgxPort_SFBGS*>(port.get()))
         {

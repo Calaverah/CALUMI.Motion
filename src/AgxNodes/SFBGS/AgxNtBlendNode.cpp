@@ -37,9 +37,9 @@ namespace SFBGS {
         m_blockOrder = { &AgxDictionary::Entries, &AgxDictionary::EnterEvents, &AgxDictionary::ExitEvents};
 	}
 
-    std::shared_ptr<AgxPort> AgxNtBlendNode::_AddPort(AgxPortType portType, AgxPortIndex index, QJsonObject data)
+    std::shared_ptr<AgxPort> AgxNtBlendNode::AddPort(AgxPortType portType, AgxPortIndex index, QJsonObject data)
     {
-        auto port = SFBGSNode::_AddPort(portType, index, data);
+        auto port = SFBGSNode::AddPort(portType, index, data);
 
         if (auto sfbgsPort = dynamic_cast<AgxPort_SFBGS*>(port.get()))
         {

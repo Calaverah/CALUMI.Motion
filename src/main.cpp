@@ -13,7 +13,7 @@
 #include "Utilities/AgxGraphRegistry.h"
 #include "Application/CALUMIMotionApplication.h"
 #include "Widgets/TextEditDialog.h"
-#include <Utilities/SettingsRegistry.h>
+#include <Utilities/Settings/SettingsRegistry.h>
 
 #include "Painter/AgxPalette.h"
 #include <oclero/qlementine/icons/QlementineIcons.hpp>

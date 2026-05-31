@@ -37,7 +37,7 @@ namespace SFBGS {
 
 		void SetUpNode(const AgxGameType& type) override;
 
-		std::shared_ptr<AgxPort> _AddPort(AgxPortType portType, AgxPortIndex index, QJsonObject data) override;
+		std::shared_ptr<AgxPort> AddPort(AgxPortType portType, AgxPortIndex index, QJsonObject data) override;
 	private:
 		QString SubCaptionUnformatted() const;
 

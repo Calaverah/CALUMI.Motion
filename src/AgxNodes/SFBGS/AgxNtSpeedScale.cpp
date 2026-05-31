@@ -42,9 +42,9 @@ namespace SFBGS {
         return AgxNodeType::NT_SPEED_SCALE;
     }
 
-    std::shared_ptr<AgxPort> AgxNtSpeedScale::_AddPort(AgxPortType portType, AgxPortIndex index, QJsonObject data)
+    std::shared_ptr<AgxPort> AgxNtSpeedScale::AddPort(AgxPortType portType, AgxPortIndex index, QJsonObject data)
     {
-        auto port = SFBGSNode::_AddPort(portType, index, data);
+        auto port = SFBGSNode::AddPort(portType, index, data);
 
         if (auto sfbgsPort = dynamic_cast<AgxPort_SFBGS*>(port.get()))
         {

@@ -4,7 +4,7 @@
 
 #include "stdafx.h"
 #include "SettingsDialog.h"
-#include "Utilities/SettingsRegistry.h"
+#include "../../Utilities/Settings/SettingsRegistry.h"
 
 SettingsDialog::SettingsDialog(QWidget *parent)
 	: QDialog(parent)
@@ -70,7 +70,7 @@ void SettingsDialog::ApplySettings() const
 
 	//General
 	ref.SetConvertFunctionsSetting(ui.convertFunctionsCheckBox->isChecked());
-	ref.SetPropertySidebarVisibilityPreference(ui.showPropertiesSidebarComboBox->currentIndex());
+	ref.SetGraphSidebarVisibilityPreference(ui.showPropertiesSidebarComboBox->currentIndex());
 
 	//Console Log
 	ref.SetConsoleVisibilityPreference(ui.showConsoleLogComboBox_3->currentIndex());

@@ -37,9 +37,9 @@ namespace SFBGS {
         return AgxNodeType::NT_POST_BONE_MODIFIER_CONTROL;
     }
 
-    std::shared_ptr<AgxPort> AgxNtPostBoneModifierControl::_AddPort(AgxPortType portType, AgxPortIndex index, QJsonObject data)
+    std::shared_ptr<AgxPort> AgxNtPostBoneModifierControl::AddPort(AgxPortType portType, AgxPortIndex index, QJsonObject data)
     {
-        auto port = SFBGSNode::_AddPort(portType, index, data);
+        auto port = SFBGSNode::AddPort(portType, index, data);
 
         if (auto sfbgsPort = dynamic_cast<AgxPort_SFBGS*>(port.get()))
         {

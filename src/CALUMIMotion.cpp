@@ -12,11 +12,11 @@
 #include <string>
 #include <Utilities/AgxDefinitions.h>
 #include "Utilities/DialogPool.h"
-#include "Widgets/CALUMITabModule.h"
+#include "Widgets/TabModule/GraphTabWidget.h"
 #include "Widgets/SFBGS/SFBGS_GraphPropertiesDialogWidget.h"
 
 #include <Widgets/Dialog/AgxProgressDialog.h>
-#include <Utilities/SettingsRegistry.h>
+#include <Utilities/Settings/SettingsRegistry.h>
 #include "Application/CALUMIMotionApplication.h"
 #include "oclero/qlementine/icons/Icons16.hpp"
 #include <QtSvg/QSvgRenderer>
@@ -138,24 +138,6 @@ void CALUMIMotion::CloseTab(const int i) const
     }
 }
 
-void CALUMIMotion::TogglePropertiesSidebar()
-{
-    _showPropertiesSidebar = !_showPropertiesSidebar;
-
-    if (ui.tabWidget)
-    {
-        for (int i = 0; i < ui.tabWidget->count(); i++)
-        {
-            if (const auto tab = dynamic_cast<CALUMITabModule*>(ui.tabWidget->widget(i)))
-            {
-                tab->SetSidebarVisibility_Right(_showPropertiesSidebar);
-            }
-        }
-    }
-
-    SettingsRegistry::GetInstance().SaveLastState("Sidebar/State", _showPropertiesSidebar);
-}
-
 void CALUMIMotion::CloseTab(const QWidget* widget) const
 {
     if (!widget) return;
@@ -193,9 +175,9 @@ AgxGraphicsView* CALUMIMotion::GetAgxViewFromTab(const int idx) const
         return agxView;
     }
 
-    if (const auto module = dynamic_cast<CALUMITabModule*>(ui.tabWidget->widget(idx)))
+    if (const auto module = dynamic_cast<GraphTabWidget*>(ui.tabWidget->widget(idx)))
     {
-        if (const auto agxView = dynamic_cast<AgxGraphicsView*>(module->mainWidget()))
+        if (const auto agxView = module->graph())
         {
             return agxView;
         }
@@ -210,9 +192,9 @@ void CALUMIMotion::UpdateTabTitles() const
     {
         for (int i = 0; i < ui.tabWidget->count(); i++)
         {
-            if (const auto tab = dynamic_cast<CALUMITabModule*>(ui.tabWidget->widget(i)))
+            if (const auto tab = dynamic_cast<GraphTabWidget*>(ui.tabWidget->widget(i)))
             {
-                if (const auto view = dynamic_cast<AgxGraphicsView*>(tab->mainWidget()))
+                if (const auto view = tab->graph())
                 {
                     ui.tabWidget->setTabText(i, view->agxNodeScene()->agxGraphModel().GetGraphTitle(false));
                     if (view->agxNodeScene()->agxGraphModel().rootGraphReference() != &view->agxNodeScene()->agxGraphModel())
@@ -711,7 +693,7 @@ void CALUMIMotion::ImportFile_Agx_SFBGS() {
         Q_EMIT watcher->progressValueChanged(500);
         Q_EMIT watcher->progressTextChanged(tr("Loading View"));
 
-        auto module = new CALUMITabModule(newTabView, watcher, 500, 450);
+        auto module = new GraphTabWidget(newTabView); //, watcher, 500, 450);
 
         QFileInfo pathInfo(filePath);
 
@@ -729,13 +711,9 @@ void CALUMIMotion::ImportFile_Agx_SFBGS() {
 
         Q_EMIT watcher->progressValueChanged(980);
 
-        module->SetSidebarVisibility_Right(_showPropertiesSidebar);
+        // module->onSetRightPanelVisible(_showPropertiesSidebar);
 
         Q_EMIT watcher->progressValueChanged(990);
-
-        connect(scene.get(), &AgxGraphicsScene::nodeContextMenu, newTabView, &AgxGraphicsView::ShowContextMenu);
-        connect(scene.get(), &AgxGraphicsScene::nodeDoubleClicked, newTabView, &AgxGraphicsView::ToggleNodeCollapse);
-        connect(scene.get(), &AgxGraphicsScene::nodePreClicked, newTabView, &AgxGraphicsView::OnNodePreClicked);
 
         HandleNodeGroupMenuVisibility();
 
@@ -749,20 +727,17 @@ void CALUMIMotion::ImportFile_Agx_SFBGS() {
             propButton->setFixedSize(QSize(48, 48));
             toolbar->addWidget(propButton);
 
+            connect(propButton, &QPushButton::pressed, this, [module]
+                {
+                    module->onSetLeftPanelVisible(!module->leftPanelVisible());
+                });
 
-            connect(propButton, &QPushButton::pressed, this, [scene, module] {
-                if (module->GetSideBarVisibility_Left())
-                    module->CloseSideBarItem_Left();
-                else {
-                    const auto rootProperties = new SFBGS_GraphPropertiesDialogWidget(*scene);
-                    module->SetSideBarItem_Left(rootProperties, true);
-                }
-                    });
+            connect(agxGraphModel.get(), &AgxGraphModel::GraphTypeUpdated, this, [scene, module]
+                {
+                    module->setLeftItem(new SFBGS_GraphPropertiesDialogWidget(*scene));
+                });
 
-            connect(agxGraphModel.get(), &AgxGraphModel::GraphTypeUpdated, this, [scene, module] {
-                const auto rootProperties = new SFBGS_GraphPropertiesDialogWidget(*scene);
-                module->SetSideBarItem_Left(rootProperties, module->GetSideBarVisibility_Left());
-                    });
+            module->setLeftItem(new SFBGS_GraphPropertiesDialogWidget(*scene));
 
         }
 
@@ -882,7 +857,7 @@ void CALUMIMotion::OpenFile_Behavior_SFBGS(const QJsonObject& object)
         Q_EMIT watcher->progressValueChanged(500);
         Q_EMIT watcher->progressTextChanged(tr("Loading View"));
 
-        auto module = new CALUMITabModule(newTabView, watcher, 500, 450);
+        auto module = new GraphTabWidget(newTabView); //, watcher, 500, 450);
 
         Q_EMIT watcher->progressValueChanged(960);
 
@@ -894,13 +869,9 @@ void CALUMIMotion::OpenFile_Behavior_SFBGS(const QJsonObject& object)
 
         Q_EMIT watcher->progressValueChanged(980);
 
-        module->SetSidebarVisibility_Right(_showPropertiesSidebar);
+        // module->onSetRightPanelVisible(_showPropertiesSidebar);
 
         Q_EMIT watcher->progressValueChanged(990);
-
-        connect(scene.get(), &AgxGraphicsScene::nodeContextMenu, newTabView, &AgxGraphicsView::ShowContextMenu);
-        connect(scene.get(), &AgxGraphicsScene::nodeDoubleClicked, newTabView, &AgxGraphicsView::ToggleNodeCollapse);
-        connect(scene.get(), &AgxGraphicsScene::nodePreClicked, newTabView, &AgxGraphicsView::OnNodePreClicked);
 
         HandleNodeGroupMenuVisibility();
 
@@ -914,20 +885,17 @@ void CALUMIMotion::OpenFile_Behavior_SFBGS(const QJsonObject& object)
             propButton->setFixedSize(QSize(48, 48));
             toolbar->addWidget(propButton);
 
-            connect(propButton, &QPushButton::pressed, this, [scene, module] {
-                    if (module->GetSideBarVisibility_Left())
-                        module->CloseSideBarItem_Left();
-                    else
-                    {
-                        const auto rootProperties = new SFBGS_GraphPropertiesDialogWidget(*scene);
-                        module->SetSideBarItem_Left(rootProperties, true);
-                    }
+            connect(propButton, &QPushButton::pressed, this, [module]
+                {
+                    module->onSetLeftPanelVisible(!module->leftPanelVisible());
                 });
 
-            connect(agxGraphModel.get(), &AgxGraphModel::GraphTypeUpdated, this, [scene, module] {
-                    const auto rootProperties = new SFBGS_GraphPropertiesDialogWidget(*scene);
-                    module->SetSideBarItem_Left(rootProperties, module->GetSideBarVisibility_Left());
+            connect(agxGraphModel.get(), &AgxGraphModel::GraphTypeUpdated, this, [scene, module]
+                {
+                    module->setLeftItem(new SFBGS_GraphPropertiesDialogWidget(*scene));
                 });
+
+            module->setLeftItem(new SFBGS_GraphPropertiesDialogWidget(*scene));
 
         }
 
@@ -961,18 +929,9 @@ void CALUMIMotion::Create_SFBGSTab(std::shared_ptr<AgxGraphicsScene> scene, std:
     TabDataPair pairCopy(model, scene);
     tabMap.insert({ newTabView,pairCopy });
 
-    auto module = new CALUMITabModule(newTabView);
+    auto module = new GraphTabWidget(newTabView);
     ui.tabWidget->addTab(module, scene->agxGraphModel().GetGraphTitle(false));
     ui.tabWidget->setCurrentWidget(module);
-
-    module->SetSidebarVisibility_Right(_showPropertiesSidebar);
-
-    //ui.tabWidget->addTab(newTabView, "EmbeddedUntitledAnimationGraph");
-    //ui.tabWidget->setCurrentWidget(newTabView);
-
-    connect(scene.get(), &AgxGraphicsScene::nodeContextMenu, newTabView, &AgxGraphicsView::ShowContextMenu);
-    connect(scene.get(), &AgxGraphicsScene::nodeDoubleClicked, newTabView, &AgxGraphicsView::ToggleNodeCollapse);
-    connect(scene.get(), &AgxGraphicsScene::nodePreClicked, newTabView, &AgxGraphicsView::OnNodePreClicked);
 
     if (const auto toolbar = newTabView->getToolBarLayout()) {
         
@@ -1001,20 +960,17 @@ void CALUMIMotion::Create_SFBGSTab(std::shared_ptr<AgxGraphicsScene> scene, std:
         propButton->setFixedSize(QSize(48, 48));
         toolbar->addWidget(propButton);
 
-        connect(propButton, &QPushButton::pressed, this, [scene, module] {
+        connect(propButton, &QPushButton::pressed, this, [module]
+            {
+                    module->onSetLeftPanelVisible(!module->leftPanelVisible());
+            });
 
-            if (module->GetSideBarVisibility_Left())
-                module->CloseSideBarItem_Left();
-            else {
-                const auto rootProperties = new SFBGS_GraphPropertiesDialogWidget(*scene);
-                module->SetSideBarItem_Left(rootProperties);
-            }
-                });
+        connect(model.get(), &AgxGraphModel::GraphTypeUpdated, this, [scene, module]
+            {
+                module->setLeftItem(new SFBGS_GraphPropertiesDialogWidget(*scene));
+            });
 
-        connect(model.get(), &AgxGraphModel::GraphTypeUpdated, this, [scene, module] {
-            const auto rootProperties = new SFBGS_GraphPropertiesDialogWidget(*scene);
-            module->SetSideBarItem_Left(rootProperties, module->GetSideBarVisibility_Left());
-                });
+        module->setLeftItem(new SFBGS_GraphPropertiesDialogWidget(*scene));
 
     }
 

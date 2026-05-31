@@ -23,7 +23,7 @@ namespace SFBGS {
 		unsigned int nPorts(AgxPortType portType) const override;
 		AgxNodeType GetNodeType() const override;
 
-		std::shared_ptr<AgxPort> _AddPort(AgxPortType portType, AgxPortIndex index, QJsonObject data) override;
+		std::shared_ptr<AgxPort> AddPort(AgxPortType portType, AgxPortIndex index, QJsonObject data) override;
 
 	};
 

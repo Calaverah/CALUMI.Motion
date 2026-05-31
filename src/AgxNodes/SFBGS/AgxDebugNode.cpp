@@ -68,9 +68,9 @@ namespace SFBGS {
         _BlockOrder = { "Basic Block", "Custom Values", "Misc Values", "Enter Events", "Exit Events" };*/
     }
 
-    std::shared_ptr<AgxPort> AgxNtDebugNode::_AddPort(AgxPortType portType, AgxPortIndex index, QJsonObject data)
+    std::shared_ptr<AgxPort> AgxNtDebugNode::AddPort(AgxPortType portType, AgxPortIndex index, QJsonObject data)
     {
-        auto port = SFBGSNode::_AddPort(portType, index, data);
+        auto port = SFBGSNode::AddPort(portType, index, data);
 
         if (auto sfbgsPort = dynamic_cast<AgxPort_SFBGS*>(port.get()))
         {

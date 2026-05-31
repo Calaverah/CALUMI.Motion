@@ -6,17 +6,15 @@
 #include "Widgets/IAgxEmbedSceneData.h"
 #include <QScrollArea>
 #pragma warning(pop)
-#include "Interfaces/IButtonBox.h"
 
-class SFBGS_GraphPropertiesDialogWidget : public QWidget, public IButtonBox
+class SFBGS_GraphPropertiesDialogWidget : public QWidget
 {
 	Q_OBJECT
 
 public:
-	SFBGS_GraphPropertiesDialogWidget(AgxGraphicsScene& scene, QWidget* parent = nullptr);
-	~SFBGS_GraphPropertiesDialogWidget() { qDebug() << "Destroyed Graph Properties Widget"; }
-
-	QDialogButtonBox* GetButtonBox() const override;
+	explicit SFBGS_GraphPropertiesDialogWidget(AgxGraphicsScene& scene, QWidget* parent = nullptr);
+	~SFBGS_GraphPropertiesDialogWidget() override
+	{ qDebug() << "Destroyed Graph Properties Widget"; }
 
 public slots:
 	void SetWidth(int width);
@@ -25,7 +23,6 @@ private:
 	QGridLayout* _mainLayout;
 	QScrollArea* _scrollArea;
 	AgxNodePropertiesWidget* _propertyWidgets;
-	QDialogButtonBox* _buttons;
 
 	QSet<QString> _categoryList = {
 			"1stPerson",

@@ -2,7 +2,7 @@
 #include "SFBGS_GraphPropertiesDialogWidget.h"
 #include "Utilities/UndoRedoCommands.h"
 #include "Widgets/Dialog/AgxSimpleDialog.h"
-#include "Utilities/SettingsRegistry.h"
+#include "../../Utilities/Settings/SettingsRegistry.h"
 
 SFBGS_GraphPropertiesDialogWidget::SFBGS_GraphPropertiesDialogWidget(AgxGraphicsScene& scene, QWidget* parent)
 {
@@ -135,16 +135,12 @@ SFBGS_GraphPropertiesDialogWidget::SFBGS_GraphPropertiesDialogWidget(AgxGraphics
 
 	_mainLayout->addWidget(_scrollArea, 3, 0);
 
-	_buttons = new QDialogButtonBox(QDialogButtonBox::Close);
-	_buttons->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::Fixed);
-	_mainLayout->addWidget(_buttons);
-
 	setLayout(_mainLayout);
 	setSizePolicy(QSizePolicy::Fixed, QSizePolicy::MinimumExpanding);
 
 	_propertyWidgets->SetRefData(&scene.agxGraphModel(),&scene);
 
-	_propertyWidgets->CreatePropertyEntries(scene.agxGraphModel().GetPropertyEntries(), &scene.agxGraphModel(), false);
+	_propertyWidgets->CreatePropertyEntries(scene.agxGraphModel().GetPropertyEntries(), &scene.agxGraphModel());
 	
 	auto blocks = scene.agxGraphModel().GetPropertyBlocks();
 	auto& keys = scene.agxGraphModel().m_blockOrder;
@@ -166,9 +162,4 @@ SFBGS_GraphPropertiesDialogWidget::SFBGS_GraphPropertiesDialogWidget(AgxGraphics
 void SFBGS_GraphPropertiesDialogWidget::SetWidth(int width)
 {
 	_scrollArea->setFixedWidth(width);
-}
-
-QDialogButtonBox* SFBGS_GraphPropertiesDialogWidget::GetButtonBox() const
-{
-	return _buttons;
 }

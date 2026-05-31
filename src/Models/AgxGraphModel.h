@@ -46,7 +46,6 @@ public:
 
     void HandleEmbeddedClosures();
     QWidget* GetNodeSidebarContent(const AgxNodeId& nodeId);
-    void SetNodeSidebarVisibility(const AgxNodeId& nodeId, bool state);
 
     virtual bool connectionPossible(AgxConnectionId connectionId) const;
 

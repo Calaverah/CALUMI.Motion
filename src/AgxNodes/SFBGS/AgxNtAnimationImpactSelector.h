@@ -31,7 +31,7 @@ namespace SFBGS {
 
 		AgxNodeType GetNodeType() const override;
 
-		std::shared_ptr<AgxPort> _AddPort(AgxPortType portType, AgxPortIndex index, QJsonObject data) override;
+		std::shared_ptr<AgxPort> AddPort(AgxPortType portType, AgxPortIndex index, QJsonObject data) override;
 
 	private:
 		inline static AgxTerm TORSO() {return					{"TORSO",				QObject::tr("Torso") };}				//0		

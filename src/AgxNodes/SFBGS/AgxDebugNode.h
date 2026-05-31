@@ -35,7 +35,7 @@ namespace SFBGS {
 
 		inline bool CanSetNameProperty() const override { return true; }
 
-		std::shared_ptr<AgxPort> _AddPort(AgxPortType portType, AgxPortIndex index, QJsonObject data) override;
+		std::shared_ptr<AgxPort> AddPort(AgxPortType portType, AgxPortIndex index, QJsonObject data) override;
 
 	private:
 

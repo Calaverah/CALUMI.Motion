@@ -201,11 +201,11 @@ void AgxGraphicsScene::onConnectionCreated(const AgxConnectionId& connectionId)
     Q_EMIT modified(this);
 }
 
-std::vector<AgxNodeId> AgxGraphicsScene::selectedNodes() const
+QVector<AgxNodeId> AgxGraphicsScene::selectedNodes() const
 {
     QList<QGraphicsItem*> graphicsItems = selectedItems();
 
-    std::vector<AgxNodeId> result;
+    QVector<AgxNodeId> result;
     result.reserve(graphicsItems.size());
 
     for (QGraphicsItem* item : graphicsItems) {
@@ -315,8 +315,18 @@ void AgxGraphicsScene::traverseGraphAndPopulateGraphicsObjects()
     auto allNodeIds = m_agxGraphModel.allNodeIds();
 
     // First create all the nodes.
-    for (AgxNodeId const nodeId : allNodeIds) {
+    for (AgxNodeId const nodeId : allNodeIds)
+    {
         m_agxNodeGraphicsObjects[nodeId] = std::make_unique<AgxNodeGraphicsObject>(*this, nodeId);
+        connect(m_agxNodeGraphicsObjects[nodeId].get(), &AgxNodeGraphicsObject::Deselected, [this, nodeId]
+        {
+            Q_EMIT nodeGODeselected(nodeId);
+        });
+        connect(m_agxNodeGraphicsObjects[nodeId].get(), &AgxNodeGraphicsObject::Selected, [this, nodeId]
+        {
+            Q_EMIT nodeGOSelected(nodeId);
+        });
+
     }
 
     // Then for each node check output connections and insert them.
@@ -380,18 +390,16 @@ void AgxGraphicsScene::onNodeCreated(const AgxNodeId& nodeId)
 
     } else {
         m_agxNodeGraphicsObjects[nodeId] = std::make_unique<AgxNodeGraphicsObject>(*this, nodeId);
+        connect(m_agxNodeGraphicsObjects[nodeId].get(), &AgxNodeGraphicsObject::Deselected, [this, nodeId]
+        {
+            Q_EMIT nodeGODeselected(nodeId);
+        });
+        connect(m_agxNodeGraphicsObjects[nodeId].get(), &AgxNodeGraphicsObject::Selected, [this, nodeId]
+        {
+            Q_EMIT nodeGOSelected(nodeId);
+        });
     }
 
-    connect(this, &QGraphicsScene::selectionChanged, &agxGraphModel(), [this, nodeId] {
-        if (agxGraphModel().nodeExists(nodeId))
-            //QTimer::singleShot(0, this, [this, nodeId]() {
-                agxGraphModel().SetNodeSidebarVisibility(nodeId, m_agxNodeGraphicsObjects[nodeId]->isSelected());
-                               //});
-            });
-    //Waiting a frame so that the command actually sets the state correctly
-    QTimer::singleShot(0, this, [this, nodeId] {
-                agxGraphModel().SetNodeSidebarVisibility(nodeId, m_agxNodeGraphicsObjects[nodeId]->isSelected());
-                               });
     Q_EMIT modified(this);
 }
 
@@ -446,27 +454,19 @@ void AgxGraphicsScene::onSelectAllObjectsOfType(const AgxGraphicsItemsFlags flag
     
     if(flags.testFlag(AgxGraphicsItemsFlag::Connection))
     {
-        blockSignals(true);
         for (auto& graphics_object : m_agxConnectionGraphicsObjects | std::views::values)
         {
             graphics_object.get()->setSelected(true);
         }
-        blockSignals(false);
     }
 }
 
 void AgxGraphicsScene::onSelectedConnections(const QList<AgxConnectionId>& connsToSelect)
 {
-    blockSignals(true);
-
     for (auto& cidRef : connsToSelect)
     {
-        agxConnectionGraphicsObject(cidRef)->blockSignals(true);
         agxConnectionGraphicsObject(cidRef)->setSelected(true);
-        agxConnectionGraphicsObject(cidRef)->blockSignals(false);
     }
-
-    blockSignals(false);
 
     QCoreApplication::processEvents();
 }
@@ -480,41 +480,12 @@ void AgxGraphicsScene::onSelectAllNodes()
 void AgxGraphicsScene::onSelectAllConnections()
 { onSelectAllObjectsOfType(AgxGraphicsItemsFlag::Connection); }
 
-void AgxGraphicsScene::onRightRefreshSideBarVisibility()
-{
-    QList<AgxNodeId> nodeIds = agxGraphModel().allNodeIds().values();
-
-    QTimer::singleShot(30, this, [this, nodeIds] {
-            size_t i = 0;
-            for (unsigned int nodeId : std::views::reverse(nodeIds))
-            {
-                const auto ngo = agxNodeGraphicsObject(nodeId);
-                ngo->blockSignals(true);
-                agxGraphModel().SetNodeSidebarVisibility(nodeId, ngo->isSelected());
-                ngo->blockSignals(false);
-                i++;
-                if (i % 5 == 0) QCoreApplication::processEvents();
-            }
-       });
-
-}
-
 void AgxGraphicsScene::onSelectNodes(const QList<AgxNodeId>& nodesToSelect)
 {
-    blockSignals(true);
-    
     for (auto& node : nodesToSelect)
     {
-        agxNodeGraphicsObject(node)->blockSignals(true);
         agxNodeGraphicsObject(node)->setSelected(true);
-        //node.second.get()->setSelected(true); //not needed as the visibility refresh helper function already does this
     }
-
-    //We manually set sidebar visibility as doing so via QT "selection" signal events is expensive and will lag the view
-    //In fact, even this method is slightly laggy hence the concurrent QTimer shot
-    onRightRefreshSideBarVisibility();
-
-    blockSignals(false);
 }
 
 QString AgxGraphicsScene::getLastHoveredGroup() const
@@ -569,4 +540,9 @@ size_t AgxGraphicsScene::nodeGraphicItemCount() const
 size_t AgxGraphicsScene::connectionGraphicItemCount() const
 {
     return m_agxConnectionGraphicsObjects.size();
+}
+
+bool AgxGraphicsScene::isNodeSelected(const AgxNodeId nodeId) const
+{
+    return m_agxNodeGraphicsObjects.at(nodeId)->isSelected();
 }

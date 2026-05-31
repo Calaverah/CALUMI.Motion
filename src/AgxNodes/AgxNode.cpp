@@ -16,11 +16,9 @@
 AgxNode::~AgxNode()
 {
     AgxNode::CloseEmbeddedView();
-    if (m_sidebarContent)
-        m_sidebarContent->deleteLater();
 }
 
-AgxNode::AgxNode(AgxGraphModel* rootGraphRef) : m_nextPortId{0}, m_nodePropertiesWidget(nullptr), m_rootGraphReference(rootGraphRef)
+AgxNode::AgxNode(AgxGraphModel* rootGraphRef) : m_nextPortId{0}, m_rootGraphReference(rootGraphRef)
 {
 
 }
@@ -45,12 +43,12 @@ QJsonObject AgxNode::save() const
 
     modelJson["groupId"] = m_groupName;
 
-    QJsonObject propSheet = getPropertySheetData();
+    QJsonObject propSheet = getPropertySheetData(false);
 
     modelJson["collapsed"] = m_collapsed;
 
 
-    if (m_embeddedGraphModel.get())
+    if (m_embeddedGraphModel)
     {
         modelJson["embedded-graph"] = m_embeddedGraphModel->save();
     }
@@ -93,12 +91,12 @@ void AgxNode::load(QJsonObject const& data)
     
     for (unsigned int i = 0; i < inPortData.count(); i++)
     {
-        const auto port = _AddPort(AgxPortType::In);
+        const auto port = AddPort(AgxPortType::In, 0xFFFFFFFF, {});
         port->setId(inPortData.keys().at(i).toUInt());
     }
     for (unsigned int i = 0; i < outPortData.count(); i++)
     {
-        const auto port = _AddPort(AgxPortType::Out);
+        const auto port = AddPort(AgxPortType::Out, 0xFFFFFFFF, {});
         port->setId(outPortData.keys().at(i).toUInt());
     }
 
@@ -212,16 +210,6 @@ void AgxNode::AmendValidationState(const QString& messageToAdd, const AgxNodeVal
 
 void AgxNode::setValidationState(const AgxNodeValidationState& validationState)
 {}
-
-void AgxNode::InitializeWidget()
-{
-    //called before any null embedded widget is summoned on child class
-    if (!m_nodePropertiesWidget)
-    {
-        m_nodePropertiesWidget = new AgxNodePropertiesWidget(nullptr, true);
-        //enter standard node widgets here
-    }
-}
 
 void AgxNode::ToggleCollapse()
 {
@@ -360,7 +348,7 @@ void AgxNode::CloseEmbeddedView()
         return;
 
     auto views = m_embeddedGraphScene->views();
-    AgxGraphicsView* agxView = nullptr;
+    const AgxGraphicsView* agxView = nullptr;
     for (const auto entry : views)
     {
         agxView = dynamic_cast<AgxGraphicsView*>(entry);
@@ -383,38 +371,6 @@ void AgxNode::CloseEmbeddedView()
 QWidget* AgxNode::GetSideBarContent()
 {
     return nullptr;
-
-    if (!m_sidebarContent)
-    {
-        
-        m_sidebarContent = new QWidget();
-        auto layout = new QVBoxLayout();
-        m_sidebarContent->setLayout(layout);
-        auto header = new QLabel(std::format("{} [Node Id: {}]", m_nameProperty.toStdString().c_str(),m_nodeIdRef).c_str());
-        connect(this, &AgxNode::PropertySheetUpdated, this, [this, header] {header->setText(std::format("{} [Node Id: {}]", m_nameProperty.toStdString().c_str(), m_nodeIdRef).c_str()); });
-
-        header->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
-        layout->addWidget(header);
-
-        auto hLine = new QFrame();
-        hLine->setFrameShape(QFrame::HLine);
-        hLine->setFrameShadow(QFrame::Sunken);
-        layout->addWidget(hLine);
-    }
-
-    return m_sidebarContent;
-}
-
-void AgxNode::SetSidebarVisibility(const bool state)
-{
-    if (m_sidebarContent)
-    {
-        m_sidebarContent->setVisible(state);
-        if (const auto sfbgsItem = dynamic_cast<AgxSidebarContent*>(m_sidebarContent.get()))
-        {
-            Q_EMIT sfbgsItem->StateChanged();
-        }
-    }
 }
 
 
@@ -439,7 +395,7 @@ void AgxNode::SetNodeIdRef(const AgxNodeId& nodeId)
     Q_EMIT PropertySheetUpdated();
 }
 
-std::shared_ptr<AgxPort> AgxNode::_AddPort(const AgxPortType portType, const AgxPortIndex index, const QJsonObject data)
+std::shared_ptr<AgxPort> AgxNode::AddPort(const AgxPortType portType, const AgxPortIndex index, const QJsonObject data)
 {
     const unsigned int idxI = index > m_inPorts.count() ? m_inPorts.count() : index;
     const unsigned int idxO = index > m_outPorts.count() ? m_outPorts.count() : index;
@@ -467,10 +423,12 @@ std::shared_ptr<AgxPort> AgxNode::_AddPort(const AgxPortType portType, const Agx
 
     m_nextPortId = agxPort->getId() >= m_nextPortId ? agxPort->getId() + 1 : m_nextPortId;
 
+    Q_EMIT portAdded(*agxPort, portType, portType == AgxPortType::Out ? idxO : idxI);
+
     return agxPort;
 }
 
-void AgxNode::_RemovePort(const AgxPortType portType, const AgxPortIndex index, const bool preserve)
+void AgxNode::RemovePort(const AgxPortType portType, const AgxPortIndex index, const bool preserve)
 {
     //choosing to leave the possibility of both incase we switch to AgxPortType
     const unsigned int idxI = index >= m_inPorts.count() ? m_inPorts.count() - 1 : index;
@@ -508,6 +466,8 @@ void AgxNode::_RemovePort(const AgxPortType portType, const AgxPortIndex index, 
         default:
             break;
     }
+
+    Q_EMIT portRemoved(portType, portType == AgxPortType::Out ? idxO : idxI);
 }
 
 QJsonObject AgxNode::PortData(const AgxPortType portType, const AgxPortIndex index)
@@ -578,7 +538,7 @@ void AgxNode::SetPortCount(const AgxPortType portType, const unsigned int count)
         const auto size = portCount - count;
         for (unsigned int i = 0; i < size; i++)
         {
-            _RemovePort(portType, portCount);
+            RemovePort(portType, portCount, false);
             portCount--;
         }
     } else if (portCount < count)
@@ -586,7 +546,7 @@ void AgxNode::SetPortCount(const AgxPortType portType, const unsigned int count)
         const auto size = portCount - count;
         for (unsigned int i = 0; i < size; i++)
         {
-            _AddPort(portType, portCount);
+            AddPort(portType, portCount, {});
             portCount++;
         }
     }
@@ -607,7 +567,7 @@ AgxPortType AgxNode::GetPortType(AgxPort* port) const
     return AgxPortType::None;
 }
 
-void AgxNode::_ExternalPortCommand(const AgxPortType portType, const AgxPortIndex index, const QString& command, const QString& payload)
+void AgxNode::ExternalPortCommand(const AgxPortType portType, const AgxPortIndex index, const QString& command, const QString& payload)
 {
     if (PortCount(portType) <= index) return;
 
@@ -671,7 +631,7 @@ void AgxNode::ResetPorts()
     m_nextPortId = 0;
 }
 
-void SFBGSNode::save(pugi::xml_node& parent, QVector<AgxConnectionId> connections, const QVector<AgxNodeId> sortedIds, const QPointF pos)
+void SFBGSNode::save(pugi::xml_node& parent, const QVector<AgxConnectionId>& connections, const QVector<AgxNodeId>& sortedIds, const QPointF pos)
 {
     auto nodeObject = AgxAppend(parent, "node", AgxFormat::NewLine, 0);
 
@@ -978,7 +938,7 @@ void SFBGSNode::load(pugi::xml_node& xmlNode)
 
         jPortData["agxPortId"] = inputNode.child_value("id");
 
-        auto port = _AddPort(AgxPortType::In, m_inPorts.size(), jPortData);
+        auto port = AddPort(AgxPortType::In, m_inPorts.size(), jPortData);
 
         port->blockSignals(true);
         {
@@ -1028,7 +988,7 @@ void SFBGSNode::load(pugi::xml_node& xmlNode)
 
     for (auto& outputNode : xmlNode.children("output"))
     {
-        auto port = _AddPort(AgxPortType::Out, m_outPorts.size());
+        auto port = AddPort(AgxPortType::Out, m_outPorts.size(), {});
         {
             bool ok = false;
             const auto id = QString(outputNode.child_value("id")).toUInt(&ok);
@@ -1227,7 +1187,7 @@ SFBGSNode::SFBGSNode(AgxGraphModel* rootGraphRef) : AgxNode(rootGraphRef)
 }
 
 
-std::shared_ptr<AgxPort> SFBGSNode::_AddPort(const AgxPortType portType, const AgxPortIndex index, const QJsonObject data)
+std::shared_ptr<AgxPort> SFBGSNode::AddPort(const AgxPortType portType, const AgxPortIndex index, const QJsonObject data)
 {
     const unsigned int idxI = index > m_inPorts.count() ? m_inPorts.count() : index;
     const unsigned int idxO = index > m_outPorts.count() ? m_outPorts.count() : index;
@@ -1259,25 +1219,9 @@ std::shared_ptr<AgxPort> SFBGSNode::_AddPort(const AgxPortType portType, const A
 
     m_nextPortId = sfbgsPort->getId() >= m_nextPortId ? sfbgsPort->getId() + 1 : m_nextPortId;
 
-    if(m_sidebarContent && portType == AgxPortType::In)
-    {
-        if (const auto sfbgsSidebar = dynamic_cast<SFBGS_SidebarContent*>(m_sidebarContent.get()))
-        {
-            const auto widget = sfbgsPort->getEmbeddedWidget();
-            sfbgsSidebar->AddContentItem(widget,idxI);
-        }
-    }
+    Q_EMIT portAdded(*sfbgsPort, portType, portType == AgxPortType::Out ? idxO : idxI);
 
     return sfbgsPort;
-}
-
-void SFBGSNode::_RemovePort(const AgxPortType portType, const AgxPortIndex index, const bool preserve)
-{
-    AgxNode::_RemovePort(portType, index, preserve);
-    if (auto sfbgsSidebar = dynamic_cast<SFBGS_SidebarContent*>(m_sidebarContent.get()))
-    {
-        QTimer::singleShot(1, sfbgsSidebar, [sfbgsSidebar] {Q_EMIT sfbgsSidebar->StateChanged(); });
-    }
 }
 
 void SFBGSNode::SetPortData(const AgxPortType portType, const AgxPortIndex index, const QJsonObject& dataSet)
@@ -1287,57 +1231,59 @@ void SFBGSNode::SetPortData(const AgxPortType portType, const AgxPortIndex index
         m_nextPortId = sfbgsPort->getId() >= m_nextPortId ? sfbgsPort->getId() + 1 : m_nextPortId;
 }
 
-void SFBGSNode::InitializeWidget(const bool split)
+QWidget* SFBGSNode::GetNodePropertyWidget()
 {
-    AgxNode::InitializeWidget();
+    const auto m_nodePropertiesWidget = new AgxNodePropertiesWidget(nullptr, true);
 
     m_nodePropertiesWidget->CreateFlagEntry(AgxDictionary::Flags, this, &m_flags);
 
     m_nodePropertiesWidget->CreateReadOnlyEntries(&m_sfbgsHidden, this, true, m_hiddenOrder);
-    for (auto sfbgsPropList = m_nodePropertiesWidget->CreatePropertyEntries(&m_sfbgsProperties, this, split); const auto sfbgsProp : sfbgsPropList)
+    for (auto sfbgsPropList = m_nodePropertiesWidget->CreatePropertyEntries(&m_sfbgsProperties, this); const auto sfbgsProp : sfbgsPropList)
     {
         sfbgsProp->setCheckbox(false);
     }
-    m_nodePropertiesWidget->CreatePropertyEntries(&m_propertyEntries, this, split);
-    m_nodePropertiesWidget->CreateGuidLabel(getGuidRef(), this, split);
-}
+    m_nodePropertiesWidget->CreatePropertyEntries(&m_propertyEntries, this);
+    m_nodePropertiesWidget->CreateGuidLabel(getGuidRef(), this, false);
 
-QWidget* SFBGSNode::GetNodePropertyWidget()
-{
-    if (!m_nodePropertiesWidget) {
-        InitializeWidget(false);
-
-        for (auto key : m_blockOrder)
-        {
-            if (m_PropertyBlocks.contains(key))
-                m_nodePropertiesWidget->CreatePropetryBlock(key, m_PropertyBlocks[key]);
-        }
-
-        //check for missing blocks
-        for (auto& key : m_PropertyBlocks.keys()) {
-            
-            if (!m_blockOrder.contains(key)) {
-                m_nodePropertiesWidget->CreatePropetryBlock(key, m_PropertyBlocks[key]);
-                QMessageBox message(QMessageBox::Critical, AgxDictionary::ErrorTerm().translation, QString(tr("Missing Block In Block Order For %1 On Node %2, Please Copy This Message And Make A Bug Report.")).arg(key().tag).arg(name()), QMessageBox::Ok);
-                message.exec();
-            }
-        }
-
-        m_nodePropertiesWidget->FinalizeWidget();
+    for (auto key : m_blockOrder)
+    {
+        if (m_PropertyBlocks.contains(key))
+            m_nodePropertiesWidget->CreatePropetryBlock(key, m_PropertyBlocks[key]);
     }
+
+    //check for missing blocks
+    for (auto& key : m_PropertyBlocks.keys()) {
+
+        if (!m_blockOrder.contains(key)) {
+            m_nodePropertiesWidget->CreatePropetryBlock(key, m_PropertyBlocks[key]);
+            QMessageBox message(QMessageBox::Critical, AgxDictionary::ErrorTerm().translation, QString(tr("Missing Block In Block Order For %1 On Node %2, Please Copy This Message And Make A Bug Report.")).arg(key().tag).arg(name()), QMessageBox::Ok);
+            message.exec();
+        }
+    }
+
+    m_nodePropertiesWidget->FinalizeWidget();
 
     return m_nodePropertiesWidget;
 }
 
 QWidget* SFBGSNode::GetSideBarContent()
 {
-    if (!m_sidebarContent)
-    {
         auto sidebar = new SFBGS_SidebarContent();
-        m_sidebarContent = sidebar;
+        connect(this, &QObject::destroyed, sidebar, &QObject::deleteLater);
         
-        sidebar->SetTitle(std::format("{} [Node Id: {}]", m_nameProperty.toStdString().c_str(), m_nodeIdRef).c_str());
-        connect(this, &AgxNode::PropertySheetUpdated, sidebar, [this, sidebar] {sidebar->SetTitle(std::format("{} [Node Id: {}]", m_nameProperty.toStdString().c_str(), m_nodeIdRef).c_str());});
+        sidebar->SetTitle(QString("%1 [Node Id: %2]").arg(m_nameProperty).arg(m_nodeIdRef));
+        connect(this, &AgxNode::PropertySheetUpdated, sidebar, [this, sidebar] {sidebar->SetTitle(QString("%1 [Node Id: %2]").arg(m_nameProperty).arg(m_nodeIdRef));});
+
+        connect(this, &AgxNode::portRemoved, sidebar, &SFBGS_SidebarContent::OnStateChanged);
+        connect(this, &AgxNode::portAdded, sidebar, [sidebar](const AgxPort& port, const AgxPortType& portType, const AgxPortIndex& portIndex)
+        {
+            if (portType == AgxPortType::In)
+            {
+                const auto widget = port.getEmbeddedWidget();
+                sidebar->AddContentItem(widget,portIndex);
+                sidebar->OnStateChanged();
+            }
+        });
 
         sidebar->AddMainItem(GetNodePropertyWidget(),0,0,Qt::AlignRight);
 
@@ -1346,7 +1292,8 @@ QWidget* SFBGSNode::GetSideBarContent()
             sidebar->AddContentItem(m_inPorts.at(i)->getEmbeddedWidget(),i+1);
         }
 
-        if (GetNodeType() == AgxNodeType::DEBUG || GetNodeType() == AgxNodeType::NT_BLEND_NODE) {
+        if (GetNodeType() == AgxNodeType::DEBUG || GetNodeType() == AgxNodeType::NT_BLEND_NODE)
+        {
             const auto hBox = new QHBoxLayout();
 
             hBox->addWidget(new QLabel("Divisions: "), 1, Qt::AlignLeft);
@@ -1357,18 +1304,21 @@ QWidget* SFBGSNode::GetSideBarContent()
             widget->setLayout(hBox);
             sidebar->AddContentItem(widget, 0, 0, Qt::AlignRight, true);
 
-            connect(box, &QSpinBox::editingFinished, sidebar, [this, sidebar, box] {
-                        if(box->value() != m_divisions)
-                            sidebar->SendInsertPropertySheetDataCommand(QStringListToQJsonObject({"divisions"}, box->value()));
-                    });
+            connect(box, &QSpinBox::editingFinished, sidebar, [this, sidebar, box]
+                {
+                    if(box->value() != m_divisions)
+                        sidebar->SendInsertPropertySheetDataCommand(QStringListToQJsonObject({"divisions"}, box->value()));
+                });
 
-            connect(this, &AgxNode::PropertySheetUpdated, box, [this,box] {
+            connect(this, &AgxNode::PropertySheetUpdated, box, [this,box]
+                {
                         box->blockSignals(true);
                         box->setValue(m_divisions);
                         box->blockSignals(false);
-                    });
-        }
-    }
+                });
 
-    return m_sidebarContent;
+
+        }
+
+    return sidebar;
 }

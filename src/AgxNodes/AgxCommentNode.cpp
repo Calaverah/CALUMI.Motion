@@ -93,7 +93,7 @@ AgxNodeDataType AgxCommentNode::dataType(AgxPortType portType, AgxPortIndex port
     return AgxNodeDataType{ "AgxPort", "Agx Port" };
 }
 
-void AgxCommentNode::setInData(std::shared_ptr<AgxNodeData> nodeData, AgxPortIndex const portIndex)
+void AgxCommentNode::setInData(const std::shared_ptr<AgxNodeData>& nodeData, AgxPortIndex const portIndex)
 {
     //
 }

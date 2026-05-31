@@ -32,19 +32,19 @@ class AgxNodePropertiesWidget : public QWidget, public IAgxEmbedSceneData
 Q_OBJECT
 
 public:
-	AgxNodePropertiesWidget(QWidget* parent = nullptr, bool bblockSignals = false);
-	~AgxNodePropertiesWidget();
+	explicit AgxNodePropertiesWidget(QWidget* parent = nullptr, bool bblockSignals = false);
+	~AgxNodePropertiesWidget() override;
 
-QList<AgxLineEditContainer*> CreatePropertyEntries(QVector<AgxPropertyEntryDefinition>* dataRef, AgxNode* signalSender, bool split = true);
-	QList<AgxLineEditContainer*> CreatePropertyEntries(QVector<AgxPropertyEntryDefinition>* dataRef, AgxGraphModel* signalSender, bool split = true);
-	QList<AgxLineEditContainer*> CreatePropertyEntries(QVector<AgxPropertyEntryDefinition>* dataRef, AgxPort* signalSender, bool split = true, QStringList path = {});
-	QList<QLabel*> CreateReadOnlyEntries(QMap<TermRef, QPair<AgxColumnTypes, QString>>* dataRef, AgxNode* signalSender, bool split = true, const QList<TermRef>& priorityOrder = {});
-	QList<QLabel*> CreateReadOnlyEntries(QMap<TermRef, QPair<AgxColumnTypes, QString>>* dataRef, AgxGraphModel* signalSender, bool split = true, const QList<TermRef>& priorityOrder = {});
-	QLabel* CreateGuidLabel(const QUuid* value, AgxNode* signalSender, bool split = true);
-	ModifiedPushButton* CreateFlagEntry(TermRef title, AgxNode* signalSender, AgxFlagField* dataRef);
-	AgxLineEditContainer* CreateSimpleLineEdit(QString* defaultText, AgxPort* signalSender, TermRef label = nullptr, bool split = true, QStringList path = {});
+	QList<AgxLineEditContainer*> CreatePropertyEntries(QVector<AgxPropertyEntryDefinition>* dataRef, const AgxNode* signalSender);
+	QList<AgxLineEditContainer*> CreatePropertyEntries(const QVector<AgxPropertyEntryDefinition>* dataRef, const AgxGraphModel* signalSender);
+	QList<AgxLineEditContainer*> CreatePropertyEntries(const QVector<AgxPropertyEntryDefinition>* dataRef, const AgxPort* signalSender, QStringList path = {});
+	QList<QLabel*> CreateReadOnlyEntries(QMap<TermRef, QPair<AgxColumnTypes, QString>>* dataRef, const AgxNode* signalSender, bool split = true, const QList<TermRef>& priorityOrder = {});
+	QList<QLabel*> CreateReadOnlyEntries(QMap<TermRef, QPair<AgxColumnTypes, QString>>* dataRef, const AgxGraphModel* signalSender, bool split = true, const QList<TermRef>& priorityOrder = {});
+	QLabel* CreateGuidLabel(const QUuid* value, const AgxNode* signalSender, bool split = true);
+	ModifiedPushButton* CreateFlagEntry(TermRef title, const AgxNode* signalSender, AgxFlagField* dataRef);
+	AgxLineEditContainer* CreateSimpleLineEdit(const QString* sourceData, const AgxPort* signalSender, TermRef label = nullptr, bool split = true, const QStringList& path = {});
 
-	AgxPropertyBlockWidget* CreatePropetryBlock(TermRef blockName, AgxPropertyBlockData& dataRef, uint8_t wrappedRowItemCount = 3);
+	AgxPropertyBlockWidget* CreatePropetryBlock(TermRef blockTitleRef, AgxPropertyBlockData& dataRef, uint8_t wrappedRowItemCount = 3);
 
 	void CreateEmbeddedNodeGraphButton(std::shared_ptr<AgxGraphicsScene> scene, std::shared_ptr<AgxGraphModel> model);
 

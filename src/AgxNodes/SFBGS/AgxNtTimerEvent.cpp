@@ -39,9 +39,9 @@ namespace SFBGS {
         return AgxNodeType::NT_TIMER_EVENT;
     }
 
-    std::shared_ptr<AgxPort> AgxNtTimerEvent::_AddPort(AgxPortType portType, AgxPortIndex index, QJsonObject data)
+    std::shared_ptr<AgxPort> AgxNtTimerEvent::AddPort(AgxPortType portType, AgxPortIndex index, QJsonObject data)
     {
-        auto port = SFBGSNode::_AddPort(portType, index, data);
+        auto port = SFBGSNode::AddPort(portType, index, data);
 
         if (auto sfbgsPort = dynamic_cast<AgxPort_SFBGS*>(port.get()))
         {

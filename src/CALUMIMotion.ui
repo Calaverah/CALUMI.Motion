@@ -251,26 +251,9 @@
     </hint>
    </hints>
   </connection>
-  <connection>
-   <sender>actionHide_Properties</sender>
-   <signal>triggered()</signal>
-   <receiver>CALUMIMotionClass</receiver>
-   <slot>TogglePropertiesSidebar()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>-1</x>
-     <y>-1</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>553</x>
-     <y>353</y>
-    </hint>
-   </hints>
-  </connection>
  </connections>
  <slots>
   <slot>CloseTab(int)</slot>
-  <slot>TogglePropertiesSidebar()</slot>
   <slot>Create_SFBGSTab()</slot>
  </slots>
 </ui>

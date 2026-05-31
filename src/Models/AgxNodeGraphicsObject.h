@@ -56,6 +56,10 @@ public:
         QStyleOptionGraphicsItem const* option,
         QWidget* widget) override;
 
+Q_SIGNALS:
+    void Deselected();
+    void Selected();
+
 protected:
     QVariant itemChange(GraphicsItemChange change, const QVariant& value) override;
 

@@ -61,9 +61,9 @@ namespace SFBGS {
         return AgxNodeType::NT_LOCOMOTION_BLEND;
     }
 
-    std::shared_ptr<AgxPort> AgxNtLocomotionBlend::_AddPort(AgxPortType portType, AgxPortIndex index, QJsonObject data)
+    std::shared_ptr<AgxPort> AgxNtLocomotionBlend::AddPort(AgxPortType portType, AgxPortIndex index, QJsonObject data)
     {
-        auto port = SFBGSNode::_AddPort(portType, index, data);
+        auto port = SFBGSNode::AddPort(portType, index, data);
 
         if (auto sfbgsPort = dynamic_cast<AgxPort_SFBGS*>(port.get()))
         {

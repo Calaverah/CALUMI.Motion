@@ -1,13 +1,17 @@
-﻿#pragma once
+﻿// Copyright © 2025-2026 Calaverah. All rights reserved.
+// License: https://www.gnu.org/licenses/lgpl-3.0.html
+// Contact: Calaverahmedia@gmail.com
 
-#pragma warning(push,0)
-
-#pragma warning(pop)
+#pragma once
 
 #include "Utilities/AgxDefinitions.h"
+#pragma warning(push,0)
 #include <QTranslator>
 #include <QSettings>
 #include <QPointer>
+#include <QTextCharFormat>
+#pragma warning(pop)
+
 
 #pragma region Definitions
 
@@ -71,9 +75,18 @@ public:
 	void SetLanguage(LanguageCode code);
 	[[nodiscard]] LanguageCode GetLanguage() const { return m_language; }
 
-	[[nodiscard]] StartupVisibilityPreference GetPropertySidebarVisibilityPreference() const { return m_sidebarVis; }
-	void SetPropertySidebarVisibilityPreference(const StartupVisibilityPreference pref) { m_sidebarVis = pref; }
-	void SetPropertySidebarVisibilityPreference(int pref);
+	[[nodiscard]] StartupVisibilityPreference GetPropertySidebarVisibilityPreference() const { return m_graphSidebarEnabledPref; }
+	void SetGraphSidebarVisibilityPreference(const StartupVisibilityPreference pref) { m_graphSidebarEnabledPref = pref; }
+	void SetGraphSidebarVisibilityPreference(int pref);
+
+	[[nodiscard]] int GetGraphSidebarWidth() const { return m_graphSidebarWidth; }
+	void SetGraphSidebarWidth(const int width) { m_graphSidebarWidth = qMax(width, 0); }
+
+	[[nodiscard]] bool GetGraphSidebarAutoHide() const { return m_graphSidebarAutoHide; }
+	void SetGraphSidebarAutoHide(const bool enable) { m_graphSidebarAutoHide = enable; }
+
+	[[nodiscard]] bool GetGraphSelectedToTop() const { return m_graphSelectedToTop; }
+	void SetGraphSelectedToTop(const bool setting) { m_graphSelectedToTop = setting; }
 
 	[[nodiscard]] StartupVisibilityPreference GetConsoleVisibilityPreference() const { return m_consoleVis; }
 	void SetConsoleVisibilityPreference(const StartupVisibilityPreference pref) { m_consoleVis = pref; }
@@ -126,9 +139,6 @@ private:
 	QPointer<QTranslator> m_translator = nullptr;
 	LanguageCode m_language = LanguageCode::English;
 
-	StartupVisibilityPreference m_sidebarVis = StartupVisibilityPreference::Remember;
-	bool m_sidebarLastState = true;
-
 	StartupVisibilityPreference m_consoleVis = StartupVisibilityPreference::Remember;
 	bool m_consoleLastState = true;
 
@@ -139,6 +149,13 @@ private:
 	QSet<QString> m_categories_Default;
 
 	QString m_themeFileName;
+
+	//Graph
+	StartupVisibilityPreference m_graphSidebarEnabledPref = StartupVisibilityPreference::Remember;
+	bool m_graphSidebarEnabled = true;
+	bool m_graphSidebarAutoHide = false;
+	int m_graphSidebarWidth = 0;
+	bool m_graphSelectedToTop = true;
 
 	//SFBGS
 	QString m_defaultRelDataPath_SFBGS = R"(Data\Meshes\AnimTextData\Tables\Graphs\)";
