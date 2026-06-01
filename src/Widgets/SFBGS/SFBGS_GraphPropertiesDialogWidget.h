@@ -1,6 +1,6 @@
 #pragma once
 #pragma warning(push,0)
-#include <QDialog>
+#include <QWidget>
 #include "Widgets/AgxNodePropertiesWidget.h"
 #include "Models/AgxGraphicsScene.h"
 #include "Widgets/IAgxEmbedSceneData.h"
@@ -17,7 +17,7 @@ public:
 	{ qDebug() << "Destroyed Graph Properties Widget"; }
 
 public slots:
-	void SetWidth(int width);
+	void SetWidth(int width) const;
 
 private:
 	QGridLayout* _mainLayout;

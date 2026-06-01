@@ -36,4 +36,9 @@ Q_SIGNALS:
 
 protected:
     QList<QAction*> m_actions;
+
+    static QMenu* ParentFile(const CALUMIMotion& parent) { return parent.ui.menuFile; }
+    static QMenu* ParentEdit(const CALUMIMotion& parent) { return parent.ui.menuEdit; }
+    static QMenu* ParentView(const CALUMIMotion& parent) { return parent.ui.menuView; }
+    static QMenu* ParentHelp(const CALUMIMotion& parent) { return parent.ui.menuHelp; }
 };

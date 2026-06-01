@@ -75,9 +75,8 @@ public:
 	void SetLanguage(LanguageCode code);
 	[[nodiscard]] LanguageCode GetLanguage() const { return m_language; }
 
-	[[nodiscard]] StartupVisibilityPreference GetPropertySidebarVisibilityPreference() const { return m_graphSidebarEnabledPref; }
-	void SetGraphSidebarVisibilityPreference(const StartupVisibilityPreference pref) { m_graphSidebarEnabledPref = pref; }
-	void SetGraphSidebarVisibilityPreference(int pref);
+	//[[nodiscard]] bool GetGraphSidebarEnabled() const { return m_graphSidebarEnabled; }
+	//void SetGraphSidebarEnabled(const bool setting) { m_graphSidebarEnabled = setting; }
 
 	[[nodiscard]] int GetGraphSidebarWidth() const { return m_graphSidebarWidth; }
 	void SetGraphSidebarWidth(const int width) { m_graphSidebarWidth = qMax(width, 0); }
@@ -151,8 +150,7 @@ private:
 	QString m_themeFileName;
 
 	//Graph
-	StartupVisibilityPreference m_graphSidebarEnabledPref = StartupVisibilityPreference::Remember;
-	bool m_graphSidebarEnabled = true;
+	//bool m_graphSidebarEnabled = true;
 	bool m_graphSidebarAutoHide = false;
 	int m_graphSidebarWidth = 0;
 	bool m_graphSelectedToTop = true;

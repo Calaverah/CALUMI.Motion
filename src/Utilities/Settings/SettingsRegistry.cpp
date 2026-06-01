@@ -27,8 +27,8 @@ SettingsRegistry::SettingsRegistry()
 	if (m_settings->contains("Language"))
 		SetLanguage(LanguageCodeFromString(m_settings->value("Language").toString()));
 
-	if (m_settings->contains("Graph/SidebarPref"))
-		SetGraphSidebarVisibilityPreference(m_settings->value("Graph/SidebarPref").toInt());
+	// if (m_settings->contains("Graph/SidebarPref"))
+	// 	SetGraphSidebarEnabled(m_settings->value("Graph/SidebarEnabled").toBool());
 
 	if (m_settings->contains("Graph/SidebarAutoHide"))
 		SetGraphSidebarAutoHide(m_settings->value("Graph/SidebarAutoHide").toBool());
@@ -110,7 +110,7 @@ void SettingsRegistry::SyncSettings() const
 
 	m_settings->setValue("Language", LanguageCodeToString(m_language));
 
-	m_settings->setValue("Graph/SidebarPref", static_cast<unsigned int>(m_graphSidebarEnabledPref));
+	//m_settings->setValue("Graph/SidebarEnabled", m_graphSidebarEnabled);
 	m_settings->setValue("Graph/SidebarAutoHide", m_graphSidebarAutoHide);
 	m_settings->setValue("Graph/SidebarWidth", m_graphSidebarWidth);
 	m_settings->setValue("Graph/SelectedToTop", m_graphSelectedToTop);
@@ -410,11 +410,6 @@ static StartupVisibilityPreference Helper_GetVisibilitySafe(const int pref)
 		default:
 			return StartupVisibilityPreference::Remember;
 	}
-}
-
-void SettingsRegistry::SetGraphSidebarVisibilityPreference(const int pref)
-{
-	SetGraphSidebarVisibilityPreference(Helper_GetVisibilitySafe(pref));
 }
 
 void SettingsRegistry::SetConsoleVisibilityPreference(const int pref)

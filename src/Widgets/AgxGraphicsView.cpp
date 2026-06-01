@@ -5,9 +5,9 @@
 // ReSharper disable CppTooWideScope
 // ReSharper disable CppTooWideScopeInitStatement
 // ReSharper disable CppDFAMemoryLeak
-#include "stdafx.h"
-#pragma warning(push,0)
 
+// ReSharper disable CppUnusedIncludeDirective
+#pragma warning(push,0)
 #include <QGraphicsScene>
 #include <QMenu>
 #include <QPointF>
@@ -17,7 +17,6 @@
 #include <QtWidgets>
 #pragma warning(pop)
 #include "AgxGraphicsView.h"
-#include <format>
 #include "Widgets/StringEntryPopup.h"
 #include "AgxNodes/AgxNode.h"
 #include "Widgets/NodeGroupMenuPopup.h"
@@ -131,7 +130,7 @@ void AgxGraphicsView::ShowContextMenu(AgxNodeId const nodeId, QPointF const pos)
 
 	if(gModel->GroupExists(gModel->GetNodeGroup(nodeId)))
 	{
-		const QString str = std::format("Remove From {}", gModel->GetNodeGroup(nodeId).toStdString()).c_str();
+		const QString str = QString("Remove From %1").arg(gModel->GetNodeGroup(nodeId));
 		const QAction* removeFromNodeGroup = cMenu.addAction(str);
 		connect(removeFromNodeGroup, &QAction::triggered, this, [this, nodeId] { agxNodeScene()->undoStack().push(new RemoveNodeFromGroupCommand(agxNodeScene(), nodeId)); });
 	}
@@ -260,7 +259,7 @@ AgxGraphicsView::AgxGraphicsView(AgxGraphicsScene* scene, QWidget* parent) : Agx
 
 		connect(scene, &AgxGraphicsScene::nodeContextMenu, this, &AgxGraphicsView::ShowContextMenu);
 		connect(scene, &AgxGraphicsScene::nodeDoubleClicked, this, &AgxGraphicsView::ToggleNodeCollapse);
-		connect(scene, &AgxGraphicsScene::nodePreClicked, this, [this](const AgxNodeId& nodeId, bool additive)
+		connect(scene, &AgxGraphicsScene::nodePreClicked, this, [this](const AgxNodeId& nodeId, const bool additive)
 		{
 			this->SelectNodeGroup(nodeId, additive);
 		});
@@ -947,7 +946,7 @@ void AgxGraphicsView::showEvent(QShowEvent* event)
 
 void AgxGraphicsView::ShowNodeGroupMenu(const QVector<AgxNodeId>& nodeIds)
 {
-	const auto gWindow = new QDialog();
+	const auto gWindow = new QDialog(this);
 	const auto pgrid = new QGridLayout();
 	const auto menu = new NodeGroupMenuPopup(nullptr, *agxNodeScene(), false);
 	pgrid->addWidget(menu);

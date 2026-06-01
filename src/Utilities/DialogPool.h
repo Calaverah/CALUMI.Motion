@@ -29,7 +29,7 @@ protected:
 	bool lessThan(const QModelIndex& left, const QModelIndex& right) const override;
 
 private:
-	AgxEventType _type = AgxEventType::UNDEFINED;
+	AgxEventType m_type = AgxEventType::UNDEFINED;
 };
 
 
@@ -63,27 +63,23 @@ public:
 	MultiVariableDialog* GetActionVariableDialog(const QString& str = "") const;
 	MultiVariableDialog* GetStateVariableDialog(const QString& str = "") const;
 	MultiVariableDialog* GetSyncVariableDialog(const QString& str = "") const;
-	BitfieldWidgetDialog* GetAnimationFlagDialog(size_t initialValue = 0) const;
-	//MultiVariableDialog* GetAnimationTriggersDialog(QString str = "");
+
+static BitfieldWidgetDialog* GetAnimationFlagDialog(size_t initialValue = 0, QWidget* parent = nullptr);
 
 private:
-	FilteredDropDownDialog* _EventEntryDialog;
-	MultiVariableDialog* _FloatEntryDialog;
-	MultiVariableDialog* _IntegerEntryDialog;
-	MultiVariableDialog* _BooleanEntryDialog;
-	MultiVariableDialog* _VectorEntryDialog;
+	FilteredDropDownDialog* m_EventEntryDialog;
+	MultiVariableDialog* m_FloatEntryDialog;
+	MultiVariableDialog* m_IntegerEntryDialog;
+	MultiVariableDialog* m_BooleanEntryDialog;
+	MultiVariableDialog* m_VectorEntryDialog;
 
-	MultiVariableDialog* _PrefixDialog;
-	MultiVariableDialog* _SuffixDialog;
-	MultiVariableDialog* _StateVarDialog;
-	MultiVariableDialog* _ActionVarDialog;
-	MultiVariableDialog* _SyncDialog;
+	MultiVariableDialog* m_PrefixDialog;
+	MultiVariableDialog* m_SuffixDialog;
+	MultiVariableDialog* m_StateVarDialog;
+	MultiVariableDialog* m_ActionVarDialog;
+	MultiVariableDialog* m_SyncDialog;
 
-	BitfieldWidgetDialog* _AnimationFlagsDialog;
-
-	//MultiVariableDialog* _AnimTriggersDialog;
-
-	QStandardItemModel* _eventModel;
+	QStandardItemModel* m_eventModel;
 	
 };
 

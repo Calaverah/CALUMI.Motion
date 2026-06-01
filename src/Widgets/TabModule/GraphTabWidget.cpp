@@ -6,9 +6,12 @@
 #include "GraphTabWidget.h"
 
 #include <QTimer>
+#include <QVBoxLayout>
 
 #include "Utilities/QWidgetFactories.h"
 #include "Utilities/Settings/SettingsRegistry.h"
+#include "CALUMIMotion.h"
+#include "Application/CALUMIMotionApplication.h"
 
 GraphTabWidget::GraphTabWidget(AgxGraphicsView* content, QWidget* parent) : ITabWidget(parent), m_graph(content)
 {
@@ -41,6 +44,8 @@ GraphTabWidget::GraphTabWidget(AgxGraphicsView* content, QWidget* parent) : ITab
 				onSetRightPanelVisible(false);
 		});
 
+
+	m_localRightWidth = SettingsRegistry::GetInstance().GetGraphSidebarWidth();
 
     m_topLayout = new QVBoxLayout();
 	m_centralLayout = new QSplitter(Qt::Horizontal);
@@ -120,6 +125,11 @@ GraphTabWidget::GraphTabWidget(AgxGraphicsView* content, QWidget* parent) : ITab
 		Q_EMIT statusUpdate(0.25 + 0.75 * progress / contentCount);
 		progress++;
 	}
+}
+
+GraphTabWidget::~GraphTabWidget()
+{
+	SettingsRegistry::GetInstance().SetGraphSidebarWidth(m_localRightWidth);
 }
 
 AgxGraphicsView* GraphTabWidget::graph() const
@@ -233,21 +243,22 @@ void GraphTabWidget::onNodeEstablished(AgxNodeId nodeId)
 
 }
 
-void GraphTabWidget::onSetRightPanelVisible(const bool setVisible) const
+void GraphTabWidget::onSetRightPanelVisible(bool setVisible)
 {
-	// ReSharper disable once CppTooWideScopeInitStatement
+	if (!m_allowRightPanelVisible)
+		setVisible = false;
+
 	auto sizes = m_centralLayout->sizes();
-	qDebug() << "onRightPanelVisible()->sizes:" << sizes;
 
 	if (setVisible && sizes.at(2) == 0)
 	{
-		auto rightSize = SettingsRegistry::GetInstance().GetGraphSidebarWidth();
+		auto rightSize = m_localRightWidth;
 		rightSize = rightSize == 0 ? qMax((m_centralLayout->width() - sizes.at(0)) / 3, 300) : rightSize;
 		sizes[2] = rightSize;
 	}
 	else if (sizes.at(2) > 0)
 	{
-		SettingsRegistry::GetInstance().SetGraphSidebarWidth(sizes.at(2));
+		m_localRightWidth = sizes.at(2);
 		sizes[2] = 0;
 	}
 
@@ -257,7 +268,6 @@ void GraphTabWidget::onSetRightPanelVisible(const bool setVisible) const
 
 void GraphTabWidget::onSetLeftPanelVisible(const bool setVisible) const
 {
-	// ReSharper disable once CppTooWideScopeInitStatement
 	auto sizes = m_centralLayout->sizes();
 	m_leftAreaParent->setVisible(setVisible);
 
@@ -277,7 +287,54 @@ void GraphTabWidget::onSetLeftPanelVisible(const bool setVisible) const
 
 void GraphTabWidget::buildMenus(CALUMIMotion* parent)
 {
+	if (!m_graph || !parent)
+		return;
 
+	const auto mView = ParentView(*parent);
+	// const auto mEdit = ParentEdit(*parent);
+	// const auto mFile = ParentFile(*parent);
+	// const auto mHelp = ParentHelp(*parent);
+
+	//Center Menu
+	{
+		mView->addAction(m_graph->centerActionRef());
+		m_actions.append(m_graph->centerActionRef());
+	}
+
+	//Sidebar Visibility
+	{
+		const auto sideVisAction = mView->addAction(tr("Disable Properties Panel"), QKeySequence(Qt::CTRL | Qt::Key_P));
+
+		connect(sideVisAction, &QAction::triggered, this, [this, sideVisAction]
+		{
+			m_allowRightPanelVisible = !m_allowRightPanelVisible;
+			if (m_allowRightPanelVisible)
+			{
+				sideVisAction->setText(tr("Disable Properties Panel"));
+				onSetRightPanelVisible(
+						!SettingsRegistry::GetInstance().GetGraphSidebarAutoHide() ||
+						!m_graph->agxNodeScene()->selectedNodes().empty()
+					);
+			}
+			else
+			{
+				sideVisAction->setText(tr("Enable Properties Panel"));
+				onSetRightPanelVisible(false);
+			}
+
+		});
+
+		connect(this, &QObject::destroyed, sideVisAction, &QAction::deleteLater);
+		m_actions.append(sideVisAction);
+	}
+
+	//Show Node Group
+	{
+		const auto showNodeGroup = mView->addAction("Show Node Groups", QKeySequence(Qt::CTRL | Qt::Key_G));
+		connect(showNodeGroup, &QAction::triggered, parent, &CALUMIMotion::ShowNodeGroupMenu);
+		connect(this, &QObject::destroyed, showNodeGroup, &QAction::deleteLater);
+		m_actions.append(showNodeGroup);
+	}
 }
 
 void GraphTabWidget::onShowMenus() const

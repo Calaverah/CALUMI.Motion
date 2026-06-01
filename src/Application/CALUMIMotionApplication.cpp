@@ -74,14 +74,6 @@ void CALUMIMotionApplication::SaveLoggerExitState()
 	g_log->saveExitState();
 }
 
-static bool s_widgetShouldRemove(const QPointer<QWidget>& widget)
-{
-	if (widget.isNull() || !widget)
-		return true;
-
-	return false;
-}
-
 void CALUMIMotionApplication::TrackWindow(QWidget* widget)
 {
 	calApp->m_mainWindows.append(widget);

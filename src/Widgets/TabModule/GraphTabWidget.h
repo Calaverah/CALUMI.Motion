@@ -5,7 +5,6 @@
 #pragma once
 
 #include <qsplitter.h>
-#include <QVBoxLayout>
 
 #include "ITabWidget.h"
 #include "Widgets/AgxGraphicsView.h"
@@ -17,6 +16,7 @@ public:
 
 public:
     explicit GraphTabWidget(AgxGraphicsView* content, QWidget* parent = nullptr);
+    ~GraphTabWidget() override;
 
     [[nodiscard]] AgxGraphicsView* graph() const;
 
@@ -30,7 +30,7 @@ public:
 
 public slots:
     void onNodeEstablished(AgxNodeId nodeId);
-    void onSetRightPanelVisible(bool setVisible) const;
+    void onSetRightPanelVisible(bool setVisible);
     void onSetLeftPanelVisible(bool setVisible) const;
 
 public:
@@ -48,6 +48,8 @@ private:
     QScrollArea* m_rightScrollArea;
     QWidget* m_rightWidget;
     QVBoxLayout* m_rightScrollLayout;
+    bool m_allowRightPanelVisible = true;
+    int m_localRightWidth = 0;
 
     QPushButton* m_leftCloseButton = Q_NULLPTR;
 

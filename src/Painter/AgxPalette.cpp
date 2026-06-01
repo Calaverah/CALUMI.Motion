@@ -235,8 +235,18 @@ QJsonObject AgxPalette::toJson() const
     panel["color"] = m_panelColor.name(QColor::HexArgb);
     subPanel["color"] = m_subPanelColor.name(QColor::HexArgb);
 
+    const auto palette = this->uiPalette();
+
     uiPalette["panel"] = panel;
     uiPalette["sub-panel"] = subPanel;
+    uiPalette["window"] = palette.color(QPalette::Window).name(QColor::HexArgb);
+    uiPalette["window-text"] = palette.color(QPalette::WindowText).name(QColor::HexArgb);
+    uiPalette["base"] = palette.color(QPalette::Base).name(QColor::HexArgb);
+    uiPalette["alt-base"] = palette.color(QPalette::AlternateBase).name(QColor::HexArgb);
+    uiPalette["highlight"] = palette.color(QPalette::Highlight).name(QColor::HexArgb);
+    uiPalette["highlight-text"] = palette.color(QPalette::HighlightedText).name(QColor::HexArgb);
+    uiPalette["button"] = palette.color(QPalette::Button).name(QColor::HexArgb);
+    uiPalette["button-text"] = palette.color(QPalette::ButtonText).name(QColor::HexArgb);
 
 
     const QJsonObject iconPalette = m_iconPalette.toJson();

@@ -41,24 +41,24 @@ void UpdateTabTitles() const;
 signals:
     void LanguageChanged();
 
+public slots:
+    void ShowNodeGroupMenu();
+
 private slots:
     //void NewTab_SFBGS();
     void CloseTab(int i) const;
-    
-    void ShowNodeGroupMenu() const;
-    void HandleNodeGroupMenuVisibility() const;
 
     void ShowAboutDialog();
 
     void GetEditMenu();
     void GetFileMenu() const;
-    void GetViewMenu();
     void GetHelpMenu();
+
+    void onTabChanged(int i) const;
 
 private:
     void BuildUndoViewMenu();
     void BuildCutCopyPasteMenu();
-    void BuildCenterViewMenu();
     void BuildItemSelectionMenu();
     void BuildFileInOutMenu() const;
     void BuildSettingsMenu();
@@ -82,5 +82,6 @@ protected:
 private:
     Ui::CALUMIMotionClass ui{};
     mutable std::map<AgxGraphicsView*, TabDataPair> tabMap;
-    bool _showPropertiesSidebar = true;
+
+    friend class ITabWidget;
 };

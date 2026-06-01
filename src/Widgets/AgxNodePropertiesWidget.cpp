@@ -465,13 +465,14 @@ ModifiedPushButton* AgxNodePropertiesWidget::CreateFlagEntry(TermRef title, cons
 	
 	connect(button, &ModifiedPushButton::CustomPressSignal, this, [this, dataRef]
 	{
-		if(const auto dialog = DialogPool_SFBGS::GetInstance().GetAnimationFlagDialog(dataRef->GetValue()); dialog->exec() == QDialog::Accepted)
+		if(const auto dialog = DialogPool_SFBGS::GetInstance().GetAnimationFlagDialog(dataRef->GetValue(), this); dialog->exec() == QDialog::Accepted)
 		{
 			QJsonObject obj;
 			AgxAnimationFlags flags;
 			flags.SetValue(dialog->GetValues());
 			obj["flags"] = flags.ToJson();
 			m_scene->undoStack().push(new InsertPropertySheetDataCommand(m_scene, m_nodeId, obj));
+			dialog->deleteLater();
 		}
 				
 	});

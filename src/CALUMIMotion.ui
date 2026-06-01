@@ -58,7 +58,7 @@
      <x>0</x>
      <y>0</y>
      <width>1108</width>
-     <height>21</height>
+     <height>24</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile">
@@ -97,8 +97,6 @@
     <property name="title">
      <string>View</string>
     </property>
-    <addaction name="actionNode_Groups"/>
-    <addaction name="actionHide_Properties"/>
     <addaction name="actionToggle_Log_Console"/>
    </widget>
    <widget class="QMenu" name="menuEdit">
@@ -127,14 +125,6 @@
     <string>Ctrl+Shift+1</string>
    </property>
   </action>
-  <action name="actionNode_Groups">
-   <property name="text">
-    <string>Node Groups</string>
-   </property>
-   <property name="shortcut">
-    <string>Ctrl+G</string>
-   </property>
-  </action>
   <action name="actionDebug_Animation_Graph_agx">
    <property name="enabled">
     <bool>false</bool>
@@ -144,20 +134,6 @@
    </property>
    <property name="visible">
     <bool>false</bool>
-   </property>
-  </action>
-  <action name="actionHide_Properties">
-   <property name="text">
-    <string>Hide Property Sidebar </string>
-   </property>
-   <property name="iconText">
-    <string>Hide Property Sidebar </string>
-   </property>
-   <property name="toolTip">
-    <string>Hide Property Sidebar </string>
-   </property>
-   <property name="shortcut">
-    <string>Ctrl+P</string>
    </property>
   </action>
   <action name="actionToggle_Log_Console">

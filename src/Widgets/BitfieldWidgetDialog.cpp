@@ -7,13 +7,15 @@
 
 #include "Utilities/QWidgetFactories.h"
 
-BitfieldWidgetDialog::BitfieldWidgetDialog(QWidget* parent) : QDialog(parent)
+BitfieldWidgetDialog::BitfieldWidgetDialog(QWidget* parent) : QDialog(parent, Qt::Dialog | Qt::WindowStaysOnTopHint)
 {
 	setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Maximum);
 
-	_vLayout = new QVBoxLayout();
-	_buttonBox = new QDialogButtonBox(QDialogButtonBox::Ok | QDialogButtonBox::Cancel);
-	_buttonBox->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::Fixed);
+	setModal(true);
+
+	m_vLayout = new QVBoxLayout();
+	m_buttonBox = new QDialogButtonBox(QDialogButtonBox::Ok | QDialogButtonBox::Cancel);
+	m_buttonBox->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::Fixed);
 
 	// ReSharper disable once CppDFAMemoryLeak
 	const auto scrollArea = new QScrollArea();
@@ -22,31 +24,31 @@ BitfieldWidgetDialog::BitfieldWidgetDialog(QWidget* parent) : QDialog(parent)
 	scrollArea->setVerticalScrollBarPolicy(Qt::ScrollBarAsNeeded);
 	scrollArea->setWidgetResizable(true);
 
-	_scrollAreaWidget = new QWidget();
-	_scrollAreaLayout = new QVBoxLayout();
+	m_scrollAreaWidget = new QWidget();
+	m_scrollAreaLayout = new QVBoxLayout();
 
-	_scrollAreaWidget->setLayout(_scrollAreaLayout);
-	SetTransparentBackground(_scrollAreaWidget);
-	_scrollAreaLayout->setSizeConstraint(QLayout::SetFixedSize);
+	m_scrollAreaWidget->setLayout(m_scrollAreaLayout);
+	SetTransparentBackground(m_scrollAreaWidget);
+	m_scrollAreaLayout->setSizeConstraint(QLayout::SetFixedSize);
 
-	scrollArea->setWidget(_scrollAreaWidget);
-	_vLayout->addWidget(scrollArea);
-	_vLayout->addWidget(_buttonBox);
+	scrollArea->setWidget(m_scrollAreaWidget);
+	m_vLayout->addWidget(scrollArea);
+	m_vLayout->addWidget(m_buttonBox);
 	//_vLayout->setVerticalSizeConstraint(QLayout::SetMaximumSize);
-	_vLayout->setHorizontalSizeConstraint(QLayout::SetMinimumSize);
+	m_vLayout->setHorizontalSizeConstraint(QLayout::SetMinimumSize);
 
-	setLayout(_vLayout);
+	setLayout(m_vLayout);
 
-	connect(_buttonBox, &QDialogButtonBox::accepted, this, &QDialog::accept);
-	connect(_buttonBox, &QDialogButtonBox::rejected, this, &QDialog::reject);
+	connect(m_buttonBox, &QDialogButtonBox::accepted, this, &QDialog::accept);
+	connect(m_buttonBox, &QDialogButtonBox::rejected, this, &QDialog::reject);
 }
 
 QCheckBox* BitfieldWidgetDialog::AddCheckBox(const QString& title)
 {
 	const auto box = new QCheckBox(title);
 	box->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
-	_checkBoxes.append(box);
-	_scrollAreaLayout->addWidget(box);
+	m_checkBoxes.append(box);
+	m_scrollAreaLayout->addWidget(box);
 	
 	return box;
 }
@@ -59,19 +61,19 @@ QList<QCheckBox*> BitfieldWidgetDialog::AddCheckBoxes(const QStringList& list)
 		const auto box = new QCheckBox(list.at(i));
 		box->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
 		
-		_scrollAreaLayout->addWidget(box);
+		m_scrollAreaLayout->addWidget(box);
 
-		_checkBoxes.append(box);
+		m_checkBoxes.append(box);
 	}
 
-	return _checkBoxes;
+	return m_checkBoxes;
 }
 
 void BitfieldWidgetDialog::SetInitialValues(const size_t value) const
 {
-	for (size_t i = 0; i < _checkBoxes.size(); i++)
+	for (size_t i = 0; i < m_checkBoxes.size(); i++)
 	{
-		_checkBoxes.at(i)->setChecked(value >> i & 1);
+		m_checkBoxes.at(i)->setChecked(value >> i & 1);
 	}
 }
 
@@ -79,7 +81,7 @@ QList<bool> BitfieldWidgetDialog::GetValuesAsList() const
 {
 	QList<bool> output;
 	
-	for (auto& box : _checkBoxes)
+	for (auto& box : m_checkBoxes)
 	{
 		output.append(box->isChecked());
 	}
@@ -91,9 +93,9 @@ size_t BitfieldWidgetDialog::GetValues() const
 {
 	size_t output = 0;
 
-	for (size_t i = 0; i < _checkBoxes.count() && i < sizeof(size_t)*8; i++)
+	for (size_t i = 0; i < m_checkBoxes.count() && i < sizeof(size_t)*8; i++)
 	{
-		if (_checkBoxes.at(i)->isChecked()) {
+		if (m_checkBoxes.at(i)->isChecked()) {
 			output |= 1ULL << i;
 		} else {
 			output &= ~(1ULL << i);

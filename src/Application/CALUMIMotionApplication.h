@@ -59,6 +59,9 @@ public:
     static void UntrackWindow(QWidget* widget);
     static void RequestShutdown();
 
+Q_SIGNALS:
+    void settingsUpdated();
+
 protected:
     bool event(QEvent* event) override;
 

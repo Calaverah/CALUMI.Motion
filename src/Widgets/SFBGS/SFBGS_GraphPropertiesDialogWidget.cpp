@@ -1,29 +1,30 @@
+// ReSharper disable CppDFAMemoryLeak
+// ReSharper disable CppTooWideScope
 #include "stdafx.h"
 #include "SFBGS_GraphPropertiesDialogWidget.h"
 #include "Utilities/UndoRedoCommands.h"
 #include "Widgets/Dialog/AgxSimpleDialog.h"
 #include "../../Utilities/Settings/SettingsRegistry.h"
 
-SFBGS_GraphPropertiesDialogWidget::SFBGS_GraphPropertiesDialogWidget(AgxGraphicsScene& scene, QWidget* parent)
+SFBGS_GraphPropertiesDialogWidget::SFBGS_GraphPropertiesDialogWidget(AgxGraphicsScene& scene, QWidget* parent) : QWidget(parent)
 {
 	_mainLayout = new QGridLayout();
 	_mainLayout->setContentsMargins(0, 0, 10, 0);
 
-	QHBoxLayout* titleLayout = new QHBoxLayout();
-	QLabel* titleLabel = new QLabel("Title: ");
-	QLabel* graphTitleLabel = new QLabel(scene.agxGraphModel().GetGraphTitle());
+	const auto titleLayout = new QHBoxLayout();
+	const auto titleLabel = new QLabel("Title: ");
+	auto graphTitleLabel = new QLabel(scene.agxGraphModel().GetGraphTitle());
 	titleLayout->addWidget(titleLabel, 1, Qt::AlignLeft | Qt::AlignBottom);
 	titleLayout->addWidget(graphTitleLabel, 0, Qt::AlignLeft | Qt::AlignBottom);
 
-	QHBoxLayout* graphCategoryLayout = new QHBoxLayout();
-	QLabel* graphCategoryLabel = new QLabel("Category: ");
-	QComboBox* graphCategoryCombo = new QComboBox();
+	const auto graphCategoryLayout = new QHBoxLayout();
+	const auto graphCategoryLabel = new QLabel("Category: ");
+	auto graphCategoryCombo = new QComboBox();
 	graphCategoryCombo->insertItems(0, { "<none>" });
-	QString comboBoxValue = graphCategoryCombo->currentText();
 
 	QSet<QString> catSet = _categoryList;
 	catSet.unite(SettingsRegistry::GetInstance().GetCustomCategories(AgxGameType::SFBGS, true));
-	QString currentCategory = scene.agxGraphModel().getGraphCategory();
+	const QString currentCategory = scene.agxGraphModel().getGraphCategory();
 
 	if(currentCategory.compare("NONE",Qt::CaseInsensitive) != 0 && currentCategory.compare("<none>",Qt::CaseInsensitive) != 0)
 	{
@@ -31,7 +32,6 @@ SFBGS_GraphPropertiesDialogWidget::SFBGS_GraphPropertiesDialogWidget(AgxGraphics
 			SettingsRegistry::GetInstance().AddCustomCategory(currentCategory, AgxGameType::SFBGS);
 			catSet.insert(currentCategory);
 		}
-		comboBoxValue = currentCategory;
 	}
 
 	QStringList comboList = catSet.values();
@@ -44,9 +44,9 @@ SFBGS_GraphPropertiesDialogWidget::SFBGS_GraphPropertiesDialogWidget(AgxGraphics
 	graphCategoryLayout->addWidget(graphCategoryLabel, 1, Qt::AlignLeft | Qt::AlignBottom);
 	graphCategoryLayout->addWidget(graphCategoryCombo, 0, Qt::AlignLeft | Qt::AlignBottom);
 
-	QHBoxLayout* graphTypeLayout = new QHBoxLayout();
-	QLabel* graphTypeLabel = new QLabel("Graph Type: ");
-	QLabel* graphTypeTitle = new QLabel(AgxGraphTypeAsString(scene.agxGraphModel().getGraphType()));
+	const auto graphTypeLayout = new QHBoxLayout();
+	const auto graphTypeLabel = new QLabel("Graph Type: ");
+	const auto graphTypeTitle = new QLabel(AgxGraphTypeAsString(scene.agxGraphModel().getGraphType()));
 	graphTypeTitle->setDisabled(true);
 	
 	auto aFont = graphTypeLabel->font();
@@ -62,18 +62,18 @@ SFBGS_GraphPropertiesDialogWidget::SFBGS_GraphPropertiesDialogWidget(AgxGraphics
 	graphTypeLayout->addWidget(graphTypeLabel, 0, Qt::AlignLeft | Qt::AlignBottom);
 	graphTypeLayout->addWidget(graphTypeTitle, 1, Qt::AlignLeft | Qt::AlignBottom);
 
-	QPushButton* graphTypeButton = new QPushButton("Change Type");
+	const auto graphTypeButton = new QPushButton("Change Type");
 	graphTypeLayout->addWidget(graphTypeButton);
 
 	auto scenePtr = &scene;
-	connect(graphTypeButton, &QPushButton::pressed, this, [this, scenePtr]() {
+	connect(graphTypeButton, &QPushButton::pressed, this, [this, scenePtr] {
 		if (scenePtr)
 		{
 			bool res = false;
-			int current = scenePtr->agxGraphModel().getGraphType() == AgxGraphType::SFBGS_Default ? 1 : 0;
+			const int current = scenePtr->agxGraphModel().getGraphType() == AgxGraphType::SFBGS_Default ? 1 : 0;
 			//QString result = QInputDialog::getItem(this, "Graph Types", "Select New Type", { "Default","State Machine" }, current, false, &res);
 
-			TermRef refResult = AgxSimpleDialog::GetDropDown(this, tr("Graph Types"), tr("Select New Graph Type"), {&AgxDictionary::Default, &AgxDictionary::StateMachine}, current, false, &res);
+			const TermRef refResult = AgxSimpleDialog::GetDropDown(this, tr("Graph Types"), tr("Select New Graph Type"), {&AgxDictionary::Default, &AgxDictionary::StateMachine}, current, false, &res);
 
 			if (res) {
 				if (refResult == &AgxDictionary::Default && scenePtr->agxGraphModel().getGraphType() != AgxGraphType::SFBGS_Default) { 
@@ -89,9 +89,10 @@ SFBGS_GraphPropertiesDialogWidget::SFBGS_GraphPropertiesDialogWidget(AgxGraphics
 
 	//AgxGraphModel* modelRef = &scene.agxGraphModel();
 	const AgxGraphModel* rootModelRef = scene.agxGraphModel().rootGraphReference();
+
 	if (rootModelRef)
 	{
-		connect(rootModelRef, &AgxGraphModel::PropertySheetUpdated, graphCategoryCombo, [this, rootModelRef, graphCategoryCombo]() {
+		connect(rootModelRef, &AgxGraphModel::PropertySheetUpdated, graphCategoryCombo, [rootModelRef, graphCategoryCombo] {
 			QString text = rootModelRef->getGraphCategory();
 			if (text == "NONE")
 				text = "<none>";
@@ -100,22 +101,22 @@ SFBGS_GraphPropertiesDialogWidget::SFBGS_GraphPropertiesDialogWidget(AgxGraphics
 			graphCategoryCombo->blockSignals(false);
 				});
 
-		connect(rootModelRef, &AgxGraphModel::PropertySheetUpdated, graphTitleLabel, [this, rootModelRef, graphTitleLabel]() {
+		connect(rootModelRef, &AgxGraphModel::PropertySheetUpdated, graphTitleLabel, [rootModelRef, graphTitleLabel] {
 			graphTitleLabel->blockSignals(true);
 			graphTitleLabel->setText(rootModelRef->GetGraphTitle());
 			graphTitleLabel->blockSignals(false);
 				});
 	}
-	connect(graphCategoryCombo, &QComboBox::currentTextChanged, this, [this, &scene, graphCategoryCombo](const QString& text) {
-										QString output = text;
+	connect(graphCategoryCombo, &QComboBox::currentTextChanged, this, [&scene](const QString& text) {
+				QString output = text;
 
-										if (output.compare("<none>", Qt::CaseInsensitive) == 0)
-										{
-											output = "NONE";
-										}
+				if (output.compare("<none>", Qt::CaseInsensitive) == 0)
+				{
+					output = "NONE";
+				}
 
-										scene.undoStack().push(new AgxSetGraphCategory(&scene.agxGraphModel(), output));
-																																});
+				scene.undoStack().push(new AgxSetGraphCategory(&scene.agxGraphModel(), output));
+		});
 	
 	_mainLayout->addLayout(titleLayout,0,0);
 	_mainLayout->addLayout(graphCategoryLayout,1,0);
@@ -140,12 +141,12 @@ SFBGS_GraphPropertiesDialogWidget::SFBGS_GraphPropertiesDialogWidget(AgxGraphics
 	_propertyWidgets->SetRefData(&scene.agxGraphModel(),&scene);
 
 	_propertyWidgets->CreatePropertyEntries(scene.agxGraphModel().GetPropertyEntries(), &scene.agxGraphModel());
-	
-	auto blocks = scene.agxGraphModel().GetPropertyBlocks();
-	auto& keys = scene.agxGraphModel().m_blockOrder;
+
+	const auto blocks = scene.agxGraphModel().GetPropertyBlocks();
+	const auto& keys = scene.agxGraphModel().m_blockOrder;
 	for (unsigned int i = 0; i < blocks->count() && i < keys.count(); i++)
 	{
-		auto key = keys.at(i);
+		const auto key = keys.at(i);
 		_propertyWidgets->CreatePropetryBlock(key,*scene.agxGraphModel().getPropertyBlock(key));
 	}
 
@@ -158,7 +159,7 @@ SFBGS_GraphPropertiesDialogWidget::SFBGS_GraphPropertiesDialogWidget(AgxGraphics
 	}
 }
 
-void SFBGS_GraphPropertiesDialogWidget::SetWidth(int width)
+void SFBGS_GraphPropertiesDialogWidget::SetWidth(const int width) const
 {
 	_scrollArea->setFixedWidth(width);
 }

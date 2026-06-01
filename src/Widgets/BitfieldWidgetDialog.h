@@ -26,12 +26,12 @@ public:
 	size_t GetValues() const;
 
 private:
-	QDialogButtonBox* _buttonBox;
+	QDialogButtonBox* m_buttonBox;
 
-	QVBoxLayout* _vLayout;
-	QWidget* _scrollAreaWidget;
-	QVBoxLayout* _scrollAreaLayout;
+	QVBoxLayout* m_vLayout;
+	QWidget* m_scrollAreaWidget;
+	QVBoxLayout* m_scrollAreaLayout;
 
-	QList<QCheckBox*> _checkBoxes;
+	QList<QCheckBox*> m_checkBoxes;
 };
 

@@ -5,6 +5,7 @@
 #include "stdafx.h"
 #include "SettingsDialog.h"
 #include "../../Utilities/Settings/SettingsRegistry.h"
+#include "Application/CALUMIMotionApplication.h"
 
 SettingsDialog::SettingsDialog(QWidget *parent)
 	: QDialog(parent)
@@ -47,7 +48,7 @@ void SettingsDialog::RefreshUiValues() const
 
 	//General
 	ui.convertFunctionsCheckBox->setChecked(ref.GetConvertFunctionsSetting());
-	ui.showPropertiesSidebarComboBox->setCurrentIndex(static_cast<int>(ref.GetPropertySidebarVisibilityPreference()));
+	//ui.showPropertiesSidebarComboBox->setCurrentIndex(static_cast<int>(ref.GetPropertySidebarVisibilityPreference()));
 
 	//Console Log
 	ui.showConsoleLogComboBox_3->setCurrentIndex(static_cast<int>(ref.GetConsoleVisibilityPreference()));
@@ -70,7 +71,7 @@ void SettingsDialog::ApplySettings() const
 
 	//General
 	ref.SetConvertFunctionsSetting(ui.convertFunctionsCheckBox->isChecked());
-	ref.SetGraphSidebarVisibilityPreference(ui.showPropertiesSidebarComboBox->currentIndex());
+	//ref.SetGraphSidebarVisibilityPreference(ui.showPropertiesSidebarComboBox->currentIndex());
 
 	//Console Log
 	ref.SetConsoleVisibilityPreference(ui.showConsoleLogComboBox_3->currentIndex());
@@ -91,5 +92,7 @@ void SettingsDialog::ApplySettings() const
 
 	//Refresh View
 	RefreshUiValues();
+
+	Q_EMIT calApp->settingsUpdated();
 }
 

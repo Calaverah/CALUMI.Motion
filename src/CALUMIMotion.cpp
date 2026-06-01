@@ -38,16 +38,15 @@ CALUMIMotion::CALUMIMotion(QWidget *parent) : QMainWindow(parent)
     
     setWindowTitle(windowTitle() + " [" + QCoreApplication::applicationVersion() + "]");
 
+    connect(ui.tabWidget, &QTabWidget::currentChanged, this, &CALUMIMotion::onTabChanged);
+
     connect(ui.actionOpen, &QAction::triggered, this, &CALUMIMotion::onOpen);
     connect(ui.actionSave, &QAction::triggered, this, &CALUMIMotion::onSave);
     connect(ui.actionSave_As, &QAction::triggered, this, &CALUMIMotion::onSaveAs);
 
     connect(ui.actionSFBGS_Behavior_Graph_import, &QAction::triggered, this, &CALUMIMotion::ImportFile_Agx_SFBGS);
     connect(ui.actionSFBGS_Behavior_Graph_export, &QAction::triggered, this, &CALUMIMotion::ExportFile_Agx_SFBGS);
-    
-    connect(ui.actionNode_Groups, &QAction::triggered, this, &CALUMIMotion::ShowNodeGroupMenu);
 
-    connect(ui.menuView, &QMenu::aboutToShow, this, &CALUMIMotion::GetViewMenu);
     connect(ui.menuEdit, &QMenu::aboutToShow, this, &CALUMIMotion::GetEditMenu);
     connect(ui.menuFile, &QMenu::aboutToShow, this, &CALUMIMotion::GetFileMenu);
     connect(ui.menuHelp, &QMenu::aboutToShow, this, &CALUMIMotion::GetHelpMenu);
@@ -63,19 +62,6 @@ CALUMIMotion::CALUMIMotion(QWidget *parent) : QMainWindow(parent)
         restoreGeometry(settings.GetSavedWindowGeometry("Geometry"));
     else
         resize(1280, 800);
-    const StartupVisibilityPreference propPref = settings.GetPropertySidebarVisibilityPreference();
-    switch (propPref)
-    {
-        case StartupVisibilityPreference::Never:
-            _showPropertiesSidebar = false;
-            break;
-        case StartupVisibilityPreference::Remember:
-            _showPropertiesSidebar = settings.GetLastState("Sidebar/State", _showPropertiesSidebar);
-            break;
-        case StartupVisibilityPreference::Always:
-            _showPropertiesSidebar = true;
-            break;
-    }
 
 }
 
@@ -85,8 +71,8 @@ CALUMIMotion::~CALUMIMotion() {
 
 void CALUMIMotion::closeEvent(QCloseEvent* event)
 {
-    QMainWindow::closeEvent(event);
     CALUMIMotionApplication::UntrackWindow(this);
+    QMainWindow::closeEvent(event);
     CALUMIMotionApplication::RequestShutdown();
 }
 
@@ -116,11 +102,9 @@ void CALUMIMotion::CloseTab(const int i) const
             {
                 tabMap.erase(agxView);
             }
-            
         }
         
         ui.tabWidget->widget(i)->deleteLater();
-        HandleNodeGroupMenuVisibility();
     }
 }
 
@@ -191,10 +175,10 @@ void CALUMIMotion::UpdateTabTitles() const
     }
 }
 
-void CALUMIMotion::ShowNodeGroupMenu() const
+void CALUMIMotion::ShowNodeGroupMenu()
 {
     if (ui.tabWidget->count() <= 0) return;
-    const auto gWindow = new QDialog();
+    const auto gWindow = new QDialog(this);
 
     const auto pgrid = new QGridLayout();
     const auto tabWidget = new QTabWidget(gWindow);
@@ -219,16 +203,14 @@ void CALUMIMotion::ShowNodeGroupMenu() const
                 tabWidget->setCurrentIndex(ui.tabWidget->currentIndex());
         }
     }
+
+    const auto buttonBox = new QDialogButtonBox();
+    buttonBox->addButton(QDialogButtonBox::Close);
+    pgrid->addWidget(buttonBox);
+    connect(buttonBox, &QDialogButtonBox::rejected, gWindow, &QDialog::reject);
+
     gWindow->exec();
     gWindow->deleteLater();
-}
-
-void CALUMIMotion::HandleNodeGroupMenuVisibility() const
-{
-    if (ui.tabWidget->count() <= 0)
-        ui.actionNode_Groups->setEnabled(false);
-    else
-        ui.actionNode_Groups->setEnabled(true);
 }
 
 void CALUMIMotion::ShowAboutDialog()
@@ -254,21 +236,24 @@ void CALUMIMotion::GetFileMenu() const
     BuildFileInOutMenu();
 }
 
-void CALUMIMotion::GetViewMenu()
-{
-    HandleNodeGroupMenuVisibility();
-    BuildCenterViewMenu();
-
-    if (_showPropertiesSidebar)
-        ui.actionHide_Properties->setText(tr("Hide Property Sidebar "));
-    else
-        ui.actionHide_Properties->setText(tr("Show Property Sidebar "));
-}
-
 // ReSharper disable once CppMemberFunctionMayBeStatic
 void CALUMIMotion::GetHelpMenu()
 {
 
+}
+
+void CALUMIMotion::onTabChanged(const int i) const
+{
+    for (int idx = 0; idx < ui.tabWidget->count(); idx++)
+    {
+        if (const auto item = static_cast<ITabWidget*>(ui.tabWidget->widget(idx)))
+        {
+            if (i == idx)
+                item->onShowMenus();
+            else
+                item->onHideMenus();
+        }
+    }
 }
 
 void CALUMIMotion::BuildUndoViewMenu()
@@ -406,41 +391,20 @@ void CALUMIMotion::BuildCutCopyPasteMenu()
     connect(ui.menuEdit, &QMenu::aboutToHide, sep, &QAction::deleteLater);
 }
 
-void CALUMIMotion::BuildCenterViewMenu()
-{
-    if (!ui.tabWidget)
-        return;
-
-    if(ui.tabWidget->count()==0){
-        QAction* centerView = ui.menuView->addAction(tr("Center View"));
-        centerView->setShortcut(QKeySequence(Qt::CTRL | Qt::Key_Space));
-        centerView->setEnabled(false);
-        connect(ui.menuView, &QMenu::aboutToHide, centerView, &QAction::deleteLater);
-    }
-    else if(const auto view = GetAgxViewFromTab(ui.tabWidget->currentIndex())) {        
-        QAction* actionRef = view->centerActionRef();
-        ui.menuView->addAction(actionRef);
-        connect(ui.menuView, &QMenu::aboutToHide, this, [this, view] {
-                ui.menuView->removeAction(view->centerActionRef());
-            }, Qt::SingleShotConnection);
-    }
-}
-
 void CALUMIMotion::BuildSettingsMenu()
 {
-
     const QAction* settingsA = ui.menuEdit->addAction(QIcon::fromTheme("document-properties"), tr("Settings"));
     connect(ui.menuEdit, &QMenu::aboutToHide, settingsA, &QAction::deleteLater);
-    connect(settingsA, &QAction::triggered, this, [] {
-            SettingsDialog dialog;
+    connect(settingsA, &QAction::triggered, this, [this] {
+            SettingsDialog dialog(this);
             dialog.exec();
         });
-
 }
 
 void CALUMIMotion::BuildGraphEditMenu()
 {
-    if (ui.tabWidget->count() <= 0) return;
+    if (ui.tabWidget->count() <= 0)
+        return;
 
     if (const auto view = GetAgxViewFromTab(ui.tabWidget->currentIndex())) {
         const QAction* newTitleAction = ui.menuEdit->addAction(tr("Edit Graph Title"));
@@ -687,6 +651,8 @@ void CALUMIMotion::ImportFile_Agx_SFBGS() {
 
         ui.tabWidget->addTab(module, "");
 
+        module->buildMenus(this);
+
         //scene->agxGraphModel().SetGraphTitle(pathInfo.baseName());
         CALUMIMotionApplication::UpdateApplicationTabWidgets();
 
@@ -700,10 +666,6 @@ void CALUMIMotion::ImportFile_Agx_SFBGS() {
         // module->onSetRightPanelVisible(_showPropertiesSidebar);
 
         Q_EMIT watcher->progressValueChanged(990);
-
-        HandleNodeGroupMenuVisibility();
-
-        Q_EMIT watcher->progressValueChanged(995);
         Q_EMIT watcher->progressTextChanged(tr("Finalizing View"));
 
         if (const auto toolbar = newTabView->getToolBarLayout())
@@ -741,7 +703,7 @@ void CALUMIMotion::ExportFile_Agx_SFBGS()
         return;
     }
 
-    AgxGraphicsView* agxView = GetAgxViewFromTab(ui.tabWidget->currentIndex());
+    const AgxGraphicsView* agxView = GetAgxViewFromTab(ui.tabWidget->currentIndex());
 
     if (!agxView) 
     {
@@ -849,6 +811,8 @@ void CALUMIMotion::OpenFile_Behavior_SFBGS(const QJsonObject& object)
 
         ui.tabWidget->addTab(module, "");
 
+        module->buildMenus(this);
+
         Q_EMIT watcher->progressValueChanged(970);
 
         ui.tabWidget->setCurrentWidget(module);
@@ -859,9 +823,6 @@ void CALUMIMotion::OpenFile_Behavior_SFBGS(const QJsonObject& object)
 
         Q_EMIT watcher->progressValueChanged(990);
 
-        HandleNodeGroupMenuVisibility();
-
-        Q_EMIT watcher->progressValueChanged(995);
         Q_EMIT watcher->progressTextChanged(tr("Finalizing View"));
 
         if (const auto toolbar = newTabView->getToolBarLayout())
@@ -918,6 +879,8 @@ void CALUMIMotion::Create_SFBGSTab(std::shared_ptr<AgxGraphicsScene> scene, std:
     auto module = new GraphTabWidget(newTabView);
     ui.tabWidget->addTab(module, scene->agxGraphModel().GetGraphTitle(false));
     ui.tabWidget->setCurrentWidget(module);
+
+    module->buildMenus(this);
 
     if (const auto toolbar = newTabView->getToolBarLayout()) {
         
