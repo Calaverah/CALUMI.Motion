@@ -74,6 +74,38 @@ void CALUMIMotionApplication::SaveLoggerExitState()
 	g_log->saveExitState();
 }
 
+static bool s_widgetShouldRemove(const QPointer<QWidget>& widget)
+{
+	if (widget.isNull() || !widget)
+		return true;
+
+	return false;
+}
+
+void CALUMIMotionApplication::TrackWindow(QWidget* widget)
+{
+	calApp->m_mainWindows.append(widget);
+}
+
+void CALUMIMotionApplication::UntrackWindow(QWidget* widget)
+{
+	auto& mainWindows = calApp->m_mainWindows;
+	mainWindows.erase(std::ranges::remove_if(mainWindows,[widget](const QPointer<QWidget>& m_widget) {
+		return widget == m_widget.get();
+	}).begin(), mainWindows.end());
+}
+
+void CALUMIMotionApplication::RequestShutdown()
+{
+	if (calApp->m_mainWindows.isEmpty())
+#ifndef __APPLE__
+		quit();
+#else
+		SaveLoggerExitState();
+		HideLogger();
+#endif
+}
+
 void CALUMIMotionApplication::UpdateApplicationTabWidgets()
 {
 	for (const auto window : topLevelWidgets())

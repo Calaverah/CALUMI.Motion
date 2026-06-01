@@ -237,7 +237,6 @@ QMenu* AgxGraphicsScene::createSceneMenu(QPointF const scenePos)
 
     // Add result treeview to the context menu
     auto treeView = new QTreeWidget(modelMenu);
-    //treeView->setStyleSheet("QTreeWidget{background-color: transparent; border-radius: 0px; }");
     SetTransparentBackground(treeView);
     treeView->header()->close();
 

@@ -105,20 +105,6 @@ std::shared_ptr<AgxNodeData> AgxCommentNode::outData(AgxPortIndex const port)
 
 QWidget* AgxCommentNode::embeddedWidget()
 {
-    //return nullptr;
-
-    /*if (!_dummyWidget)
-    {
-        _dummyWidget = new QWidget();
-        _dummyWidget->setMinimumSize(100, 50);
-        _dummyWidget->setSizePolicy(QSizePolicy::Ignored, QSizePolicy::Ignored);
-        _dummyWidget->setStyleSheet("QWidget{ background: transparent }");
-        _dummyWidget->resize(150, 100);
-        
-    }
-
-    return _dummyWidget;*/
-
     if (!_emb)
     {
         _emb = new AgxCommentWidget(nullptr, {"comment"});

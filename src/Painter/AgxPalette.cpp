@@ -270,7 +270,57 @@ void AgxPalette::fromJson(const QJsonObject& input)
             m_subPanelColor = subPanelColor;
     }
 
-    ///TODO QPalette parsing + Serialize dark values into DefaultStyle.json
+    auto newPalette = qApp->palette();
+
+    if (uiPalette.contains("window"))
+    {
+        if (const auto windowColor = QColor::fromString(uiPalette["window"].toString()); windowColor.isValid())
+            newPalette.setColor(QPalette::Window, windowColor);
+    }
+
+    if (uiPalette.contains("window-text"))
+    {
+        if (const auto windowTextColor = QColor::fromString(uiPalette["window-text"].toString()); windowTextColor.isValid())
+            newPalette.setColor(QPalette::WindowText, windowTextColor);
+    }
+
+    if (uiPalette.contains("base"))
+    {
+        if (const auto baseColor = QColor::fromString(uiPalette["base"].toString()); baseColor.isValid())
+            newPalette.setColor(QPalette::Base, baseColor);
+    }
+
+    if (uiPalette.contains("alt-base"))
+    {
+        if (const auto altBaseColor = QColor::fromString(uiPalette["alt-base"].toString()); altBaseColor.isValid())
+            newPalette.setColor(QPalette::AlternateBase, altBaseColor);
+    }
+
+    if (uiPalette.contains("highlight"))
+    {
+        if (const auto highlightColor = QColor::fromString(uiPalette["highlight"].toString()); highlightColor.isValid())
+            newPalette.setColor(QPalette::Highlight, highlightColor);
+    }
+
+    if (uiPalette.contains("highlight-text"))
+    {
+        if (const auto highlightTextColor = QColor::fromString(uiPalette["highlight-text"].toString()); highlightTextColor.isValid())
+            newPalette.setColor(QPalette::HighlightedText, highlightTextColor);
+    }
+
+    if (uiPalette.contains("button"))
+    {
+        if (const auto buttonColor = QColor::fromString(uiPalette["button"].toString()); buttonColor.isValid())
+            newPalette.setColor(QPalette::Button, buttonColor);
+    }
+
+    if (uiPalette.contains("button-text"))
+    {
+        if (const auto buttonTextColor = QColor::fromString(uiPalette["button-text"].toString()); buttonTextColor.isValid())
+            newPalette.setColor(QPalette::ButtonText, buttonTextColor);
+    }
+
+    qApp->setPalette(newPalette);
 }
 
 void AgxPalette::loadUserSettings()

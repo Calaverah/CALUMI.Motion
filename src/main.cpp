@@ -32,12 +32,6 @@ int main(int argc, char* argv[])
     
     CALUMIMotionApplication::processEvents();
 
-#ifdef __APPLE__
-
-
-
-#endif
-
     {
         splash.showMessage("CALUMI Motion:\nLoading Icons...", Qt::AlignBottom | Qt::AlignCenter, Qt::white);
         oclero::qlementine::icons::initializeIconTheme();

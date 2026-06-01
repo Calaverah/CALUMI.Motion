@@ -123,11 +123,9 @@ namespace SFBGS {
 
         if (!_embGraphWidget) {
             _embGraphWidget = new MiniGraphicsView(m_embeddedGraphScene.get());
-            //_MainVBoxLayout->addWidget(miniView);
+
             _embGraphWidget->setMinimumHeight(50);
             _embGraphWidget->setMinimumWidth(50);
-
-            //_embGraphWidget->setStyleSheet("QWidget {background-color: transparent; border: 0px solid rgba(0,0,0,0);");
 
             connect(_embGraphWidget, &MiniGraphicsView::clicked, this, [this]
                 {

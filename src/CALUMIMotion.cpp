@@ -30,6 +30,8 @@ CALUMIMotion::CALUMIMotion(QWidget *parent) : QMainWindow(parent)
     setObjectName("CALUMIMotionObject");
     ui.setupUi(this);
 
+    CALUMIMotionApplication::TrackWindow(this);
+
 #ifdef __APPLE__
     ui.menuBar->setNativeMenuBar(false);
 #endif
@@ -79,29 +81,13 @@ CALUMIMotion::CALUMIMotion(QWidget *parent) : QMainWindow(parent)
 
 CALUMIMotion::~CALUMIMotion() {
     SettingsRegistry::GetInstance().SaveWindowGeometry("Geometry", saveGeometry());
-    
 }
 
 void CALUMIMotion::closeEvent(QCloseEvent* event)
 {
-    size_t topLevelCount = 0;
-
-    for (const auto window : CALUMIMotionApplication::topLevelWindows())
-    {
-        //TBD: there has to be a better solution for this but whatever.
-        if (window->objectName() != "CALUMIMotionObjectLogger" && window->isVisible())
-        {
-            topLevelCount++;
-        }
-    }
-
-    if(topLevelCount <= 1)
-    {
-        CALUMIMotionApplication::SaveLoggerExitState();
-        CALUMIMotionApplication::HideLogger();
-    }
-
     QMainWindow::closeEvent(event);
+    CALUMIMotionApplication::UntrackWindow(this);
+    CALUMIMotionApplication::RequestShutdown();
 }
 
 void CALUMIMotion::changeEvent(QEvent* event)

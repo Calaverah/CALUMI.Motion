@@ -1,7 +1,14 @@
 {
   "ui-palette": {
-    "subpanel-color":"#2D2D2D"
-
+    "subpanel-color":"#2D2D2D",
+    "window" : "#1e1e1e",
+    "window-text": "#ffffff",
+    "base": "#171717",
+    "alt-base": "#8e8e8e",
+    "highlight": "#314f78",
+    "highlight-text": "#ffffff",
+    "button": "#1e1e1e",
+    "button-text": "#ffffff"
   },
   "graph-palette": {
     "background-color": "#353535",

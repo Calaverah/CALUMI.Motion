@@ -13,6 +13,11 @@ static AgxLogger* g_log = nullptr;
 static QMutex g_logMutex;
 static QtMessageHandler g_ogHandler = nullptr;
 
+#if defined(calApp)
+#undef calApp
+#endif
+#define calApp (static_cast<CALUMIMotionApplication*>(QCoreApplication::instance()))
+
 class MouseEventFilter : public QObject
 {
     Q_OBJECT
@@ -50,11 +55,15 @@ public:
     static void UpdateApplicationTabWidgets();
     static void SaveLoggerExitState();
 
+    static void TrackWindow(QWidget* widget);
+    static void UntrackWindow(QWidget* widget);
+    static void RequestShutdown();
+
 protected:
     bool event(QEvent* event) override;
 
 private:
-	QHash<QString, unsigned int> m_list;
+    QList<QPointer<QWidget>> m_mainWindows;
 };
 
 // ReSharper disable once CppParameterMayBeConst

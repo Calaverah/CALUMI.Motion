@@ -125,7 +125,6 @@ SFBGS_GraphPropertiesDialogWidget::SFBGS_GraphPropertiesDialogWidget(AgxGraphics
 	connect(_propertyWidgets, &AgxNodePropertiesWidget::BroadcastWidth, this, &SFBGS_GraphPropertiesDialogWidget::SetWidth);
 	
 	_scrollArea = new QScrollArea();
-	//_scrollArea->setStyleSheet(" QScrollArea { border: 1px solid lightgray; background-color: transparent; border-radius: 5px; } ");
 	_scrollArea->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
 	_scrollArea->setVerticalScrollBarPolicy(Qt::ScrollBarAsNeeded);
 	_scrollArea->setWidget(_propertyWidgets);

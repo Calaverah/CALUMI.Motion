@@ -26,19 +26,6 @@ BitfieldWidgetDialog::BitfieldWidgetDialog(QWidget* parent) : QDialog(parent)
 	_scrollAreaLayout = new QVBoxLayout();
 
 	_scrollAreaWidget->setLayout(_scrollAreaLayout);
-	//_scrollAreaWidget->setStyleSheet("QWidget{border-width: 0px}");
-	//scrollArea->setStyleSheet("QScrollArea{background-color:transparent;}");
-	// scrollArea->setStyleSheet(
-	// 	"QScrollArea {"
-	// 	"   border-width: 3px;"
-	// 	"   border-radius: 5px;"
-	// 	"   background-color:transparent;"
-	// 	"}"
-	// 	"QScrollBar:vertical {"
-	// 	"   width: 12px;"
-	// 	"   margin: 0px 0px 0px 0px;"
-	// 	"}"
-	// );
 	SetTransparentBackground(_scrollAreaWidget);
 	_scrollAreaLayout->setSizeConstraint(QLayout::SetFixedSize);
 
