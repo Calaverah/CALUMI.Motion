@@ -352,9 +352,20 @@ void AgxGraphicsScene::updateAttachedNodes(const AgxConnectionId& connectionId, 
 
 void AgxGraphicsScene::onNodeDeleted(const AgxNodeId& nodeId)
 {
-    if (const auto it = m_agxNodeGraphicsObjects.find(nodeId); it != m_agxNodeGraphicsObjects.end()) {
+    if (const auto it = m_agxNodeGraphicsObjects.find(nodeId); it != m_agxNodeGraphicsObjects.end())
+    {
+        //deleting graphics object
         m_agxNodeGraphicsObjects.erase(it);
         Q_EMIT modified(this);
+
+        //emitting "deselected GO" on a delay
+        QTimer::singleShot(1, this, [this, nodeId]
+        {
+            if (!m_agxNodeGraphicsObjects.contains(nodeId))
+            {
+                Q_EMIT nodeGODeselected(nodeId);
+            }
+        });
     }
 }
 

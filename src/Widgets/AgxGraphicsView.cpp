@@ -116,7 +116,7 @@ void AgxGraphicsView::ShowContextMenu(AgxNodeId const nodeId, QPointF const pos)
 
 	const auto selectedNodes = agxNodeScene()->selectedNodes();
 
-	if (selectedNodes.size() > 0)
+	if (!selectedNodes.empty())
 	{
 		const QString nodeGroupItem = selectedNodes.size() > 1 ? "Selected Nodes" : gModel->GetNodeNameProperty(nodeId);
 		const QAction* addToNodeGroup = cMenu.addAction("Add " + nodeGroupItem + " To Node Group");
@@ -154,7 +154,7 @@ void AgxGraphicsView::ShowContextMenu(AgxNodeId const nodeId, QPointF const pos)
 	cMenu.addSeparator();
 	if(const auto portAllowance = gModel->CanModifyPorts(nodeId); portAllowance != AgxPortType::None)
 	{
-		if (pos.x() < nodePos.x() + nodeSize.width() / 2.0f && (portAllowance == AgxPortType::Both || portAllowance == AgxPortType::In))
+		if (pos.x() < nodePos.x() + static_cast<float>(nodeSize.width()) / 2.0f && (portAllowance == AgxPortType::Both || portAllowance == AgxPortType::In))
 		{
 			addPortAction = cMenu.addAction("Add Input");
 
@@ -709,7 +709,7 @@ void AgxGraphicsView::wheelEvent(QWheelEvent* event)
 		return;
 	}
 
-	if (double const d = delta.y() / std::abs(delta.y()); d > 0.0)
+	if (const auto d = static_cast<double>(delta.y()) / std::abs(delta.y()); d > 0.0)
 		scaleUp();
 	else
 		scaleDown();

@@ -23,10 +23,10 @@ public:
     void addRightItem(QWidget* item) const;
     void showRightItem(QWidget* item, bool moveToEnd = true) const;
     void hideRightItem(QWidget* item) const;
-    bool rightPanelVisible() const;
+    [[nodiscard]] bool rightPanelVisible() const;
 
     void setLeftItem(QWidget* item);
-    bool leftPanelVisible() const;
+    [[nodiscard]] bool leftPanelVisible() const;
 
 public slots:
     void onNodeEstablished(AgxNodeId nodeId);

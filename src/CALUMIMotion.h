@@ -49,20 +49,13 @@ private slots:
     void CloseTab(int i) const;
 
     void ShowAboutDialog();
-
-    void GetEditMenu();
+    void BuildSettingsMenu();
     void GetFileMenu() const;
-    void GetHelpMenu();
 
     void onTabChanged(int i) const;
 
 private:
-    void BuildUndoViewMenu();
-    void BuildCutCopyPasteMenu();
-    void BuildItemSelectionMenu();
     void BuildFileInOutMenu() const;
-    void BuildSettingsMenu();
-    void BuildGraphEditMenu();
 
 public slots:
     void Create_SFBGSTab(std::shared_ptr<AgxGraphicsScene> scene = nullptr, std::shared_ptr<AgxGraphModel> model = nullptr);

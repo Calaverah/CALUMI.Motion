@@ -47,9 +47,8 @@ CALUMIMotion::CALUMIMotion(QWidget *parent) : QMainWindow(parent)
     connect(ui.actionSFBGS_Behavior_Graph_import, &QAction::triggered, this, &CALUMIMotion::ImportFile_Agx_SFBGS);
     connect(ui.actionSFBGS_Behavior_Graph_export, &QAction::triggered, this, &CALUMIMotion::ExportFile_Agx_SFBGS);
 
-    connect(ui.menuEdit, &QMenu::aboutToShow, this, &CALUMIMotion::GetEditMenu);
+    connect(ui.menuEdit, &QMenu::aboutToShow, this, &CALUMIMotion::BuildSettingsMenu);
     connect(ui.menuFile, &QMenu::aboutToShow, this, &CALUMIMotion::GetFileMenu);
-    connect(ui.menuHelp, &QMenu::aboutToShow, this, &CALUMIMotion::GetHelpMenu);
 
     connect(ui.actionAbout, &QAction::triggered, this, &CALUMIMotion::ShowAboutDialog);
     connect(ui.actionToggle_Log_Console, &QAction::triggered, this, &CALUMIMotionApplication::ToggleLogger);
@@ -222,256 +221,43 @@ void CALUMIMotion::ShowAboutDialog()
                        arg(QCoreApplication::organizationName()));
 }
 
-void CALUMIMotion::GetEditMenu()
-{
-    BuildUndoViewMenu();
-    BuildCutCopyPasteMenu();
-    BuildItemSelectionMenu();
-    BuildGraphEditMenu();
-    BuildSettingsMenu();
-}
-
 void CALUMIMotion::GetFileMenu() const
 {
     BuildFileInOutMenu();
-}
-
-// ReSharper disable once CppMemberFunctionMayBeStatic
-void CALUMIMotion::GetHelpMenu()
-{
-
 }
 
 void CALUMIMotion::onTabChanged(const int i) const
 {
     for (int idx = 0; idx < ui.tabWidget->count(); idx++)
     {
-        if (const auto item = static_cast<ITabWidget*>(ui.tabWidget->widget(idx)))
+        if (const auto item = static_cast<ITabWidget*>(ui.tabWidget->widget(idx))) // NOLINT(*-pro-type-static-cast-downcast)
         {
             if (i == idx)
                 item->onShowMenus();
             else
-                item->onHideMenus();
+                QTimer::singleShot(0, item, [item]
+                {
+                    item->onHideMenus();
+                });
         }
     }
-}
-
-void CALUMIMotion::BuildUndoViewMenu()
-{
-    if (ui.tabWidget->count() <= 0) { 
-        //set dummy actions. Probably a cleaner way to do this, but it's fine for now
-        QAction* undoAction = ui.menuEdit->addAction(tr("Undo"));
-        undoAction->setShortcut(QKeySequence::Undo); 
-        undoAction->setEnabled(false);
-
-        QAction* redoAction = ui.menuEdit->addAction(tr("Redo"));
-        redoAction->setShortcut(QKeySequence::Redo); 
-        redoAction->setEnabled(false);
-
-        QMenu* undoStackAction = ui.menuEdit->addMenu(tr("Undo History"));
-        undoStackAction->setEnabled(false);
-        QMenu* redoStackAction = ui.menuEdit->addMenu(tr("Redo History"));
-        redoStackAction->setEnabled(false);
-        const QAction* sep = ui.menuEdit->addSeparator();
-        
-        connect(ui.menuEdit, &QMenu::aboutToHide, undoStackAction, &QMenu::deleteLater);
-        connect(ui.menuEdit, &QMenu::aboutToHide, undoAction, &QAction::deleteLater);
-        connect(ui.menuEdit, &QMenu::aboutToHide, redoStackAction, &QMenu::deleteLater);
-        connect(ui.menuEdit, &QMenu::aboutToHide, redoAction, &QAction::deleteLater);
-        connect(ui.menuEdit, &QMenu::aboutToHide, sep, &QAction::deleteLater);
-        return; }
-
-    if(const auto view = GetAgxViewFromTab(ui.tabWidget->currentIndex()))
-    {
-        view->undoActionRef()->setText(tr("Undo"));
-        view->redoActionRef()->setText(tr("Redo"));
-        ui.menuEdit->addAction(view->undoActionRef());
-        ui.menuEdit->addAction(view->redoActionRef());
-
-        auto removals = connect(ui.menuEdit, &QMenu::aboutToHide, this, [this, view] {
-            ui.menuEdit->removeAction(view->undoActionRef());
-            ui.menuEdit->removeAction(view->redoActionRef()); }, Qt::SingleShotConnection);
-
-        QMenu* undoStackMenu = ui.menuEdit->addMenu(tr("Undo Stack"));
-
-        QMenu* redoStackMenu = ui.menuEdit->addMenu(tr("Redo Stack"));
-
-        QString text;
-        for (int i = 0; i < view->undoStackRef().index(); i++)
-        {
-            text = view->undoStackRef().command(i)->text();
-            QAction* menuItem = undoStackMenu->addAction(text);
-            connect(menuItem, &QAction::triggered, view, [view, i] {view->undoStackRef().setIndex(i); });
-            if (i == view->undoStackRef().index() - 1) menuItem->setIcon(QIcon::fromTheme("edit-undo"));
-        }
-        for (int i = view->undoStackRef().index(); i < view->undoStackRef().count(); i++)
-        {
-            text = view->undoStackRef().command(i)->text();
-            QAction* menuItem = redoStackMenu->addAction(text);
-            connect(menuItem, &QAction::triggered, view, [view, i] {view->undoStackRef().setIndex(i + 1); });
-            if (i == view->undoStackRef().index()) menuItem->setIcon(QIcon::fromTheme("edit-redo"));
-        }
-            
-        undoStackMenu->setEnabled(!undoStackMenu->actions().isEmpty());
-        connect(ui.menuEdit, &QMenu::aboutToHide, undoStackMenu, &QMenu::deleteLater);
-            
-        redoStackMenu->setEnabled(!redoStackMenu->actions().isEmpty());
-        connect(ui.menuEdit, &QMenu::aboutToHide, redoStackMenu, &QMenu::deleteLater);
-
-        const QAction* sep = ui.menuEdit->addSeparator();
-        connect(ui.menuEdit, &QMenu::aboutToHide, sep, &QAction::deleteLater);
-    }
-    
-}
-
-void CALUMIMotion::BuildCutCopyPasteMenu()
-{
-    if (ui.tabWidget->count() == 0)
-    {
-        QAction* dummyCut = ui.menuEdit->addAction(tr("Cut"),QKeySequence::Cut);
-        dummyCut->setEnabled(false);
-        connect(ui.menuEdit, &QMenu::aboutToHide, dummyCut, &QAction::deleteLater);
-        QAction* dummyCopy = ui.menuEdit->addAction(tr("Copy"), QKeySequence::Copy);
-        dummyCopy->setEnabled(false);
-        connect(ui.menuEdit, &QMenu::aboutToHide, dummyCopy, &QAction::deleteLater);
-        QAction* dummyPaste = ui.menuEdit->addAction(tr("Paste"), QKeySequence::Paste);
-        dummyPaste->setEnabled(false);
-        connect(ui.menuEdit, &QMenu::aboutToHide, dummyPaste, &QAction::deleteLater);
-        QAction* dummyDup = ui.menuEdit->addAction(tr("Duplicate"), QKeySequence(Qt::CTRL | Qt::Key_D));
-        dummyDup->setEnabled(false);
-        connect(ui.menuEdit, &QMenu::aboutToHide, dummyDup, &QAction::deleteLater);
-        QAction* dummyDel = ui.menuEdit->addAction(tr("Delete"), QKeySequence::Delete);
-        dummyDel->setEnabled(false);
-        connect(ui.menuEdit, &QMenu::aboutToHide, dummyDel, &QAction::deleteLater);
-        const QAction* sep = ui.menuEdit->addSeparator();
-        connect(ui.menuEdit, &QMenu::aboutToHide, sep, &QAction::deleteLater);
-        return;
-    }
-
-    const auto view = GetAgxViewFromTab(ui.tabWidget->currentIndex());
-
-    if (!view) return;
-
-    if (!tabMap.at(view).m_AgxGraphicsScene->selectedItems().empty()) {
-        ui.menuEdit->addAction(view->cutActionRef());
-        ui.menuEdit->addAction(view->copyActionRef());
-        auto removals = connect(ui.menuEdit, &QMenu::aboutToHide, this, [this, view] {
-            ui.menuEdit->removeAction(view->cutActionRef());
-            ui.menuEdit->removeAction(view->copyActionRef()); }, Qt::SingleShotConnection);
-    }
-    else {
-        QAction* dummyCut = ui.menuEdit->addAction(tr("Cut"), QKeySequence::Cut);
-        dummyCut->setEnabled(false);
-        connect(ui.menuEdit, &QMenu::aboutToHide, dummyCut, &QAction::deleteLater);
-        QAction* dummyCopy = ui.menuEdit->addAction(tr("Copy"), QKeySequence::Copy);
-        dummyCopy->setEnabled(false);
-        connect(ui.menuEdit, &QMenu::aboutToHide, dummyCopy, &QAction::deleteLater);
-    }
-    
-    ui.menuEdit->addAction(view->pasteActionRef());
-    auto removals = connect(ui.menuEdit, &QMenu::aboutToHide, this, [this, view] {
-    ui.menuEdit->removeAction(view->pasteActionRef()); }, Qt::SingleShotConnection);
-    
-    if (!tabMap.at(view).m_AgxGraphicsScene->selectedItems().empty()) {
-        ui.menuEdit->addAction(view->duplicateActionRef());
-        ui.menuEdit->addAction(view->deleteActionRef());
-        auto dRemovals = connect(ui.menuEdit, &QMenu::aboutToHide, this, [this, view] {
-            ui.menuEdit->removeAction(view->duplicateActionRef());
-            ui.menuEdit->removeAction(view->deleteActionRef()); }, Qt::SingleShotConnection);
-    }
-    else {
-        QAction* dummyDup = ui.menuEdit->addAction(tr("Duplicate"), QKeySequence(Qt::CTRL | Qt::Key_D));
-        dummyDup->setEnabled(false);
-        connect(ui.menuEdit, &QMenu::aboutToHide, dummyDup, &QAction::deleteLater);
-        QAction* dummyDel = ui.menuEdit->addAction(tr("Delete"), QKeySequence::Delete);
-        dummyDel->setEnabled(false);
-        connect(ui.menuEdit, &QMenu::aboutToHide, dummyDel, &QAction::deleteLater);
-    }
-    const QAction* sep = ui.menuEdit->addSeparator();
-    connect(ui.menuEdit, &QMenu::aboutToHide, sep, &QAction::deleteLater);
 }
 
 void CALUMIMotion::BuildSettingsMenu()
 {
-    const QAction* settingsA = ui.menuEdit->addAction(QIcon::fromTheme("document-properties"), tr("Settings"));
+    //For now, we build on show to keep this action at the bottom of the list. Will add seperator insert item later to optimize this procedure
+    const auto settingsA = ui.menuEdit->addAction(tr("Settings"));
+
+    const auto iconPath = oclero::qlementine::icons::iconPath(oclero::qlementine::icons::Icons16::Navigation_Settings);
+    const auto ico = GetColoredIconFromSVG(iconPath);
+    settingsA->setIcon(ico);
+
     connect(ui.menuEdit, &QMenu::aboutToHide, settingsA, &QAction::deleteLater);
     connect(settingsA, &QAction::triggered, this, [this] {
             SettingsDialog dialog(this);
             dialog.exec();
         });
 }
-
-void CALUMIMotion::BuildGraphEditMenu()
-{
-    if (ui.tabWidget->count() <= 0)
-        return;
-
-    if (const auto view = GetAgxViewFromTab(ui.tabWidget->currentIndex())) {
-        const QAction* newTitleAction = ui.menuEdit->addAction(tr("Edit Graph Title"));
-        connect(ui.menuEdit, &QMenu::aboutToHide, newTitleAction, &QAction::deleteLater);
-        connect(newTitleAction, &QAction::triggered, this, [this, view] {
-            bool ok = false;
-            QString result = QInputDialog::getText(this, tr("Input New Graph Title"),
-                                  tr("Graph Title:"), QLineEdit::Normal,
-                                  view->agxNodeScene()->agxGraphModel().GetGraphTitle(), &ok);
-
-            if (result.isEmpty() || !ok || view->agxNodeScene()->agxGraphModel().GetGraphTitle().compare(result, Qt::CaseInsensitive) == 0) return;
-
-            result = cleanFileName(result, false, true);
-
-            view->agxNodeScene()->undoStack().push(new AgxSetGraphTitleCommand(&view->agxNodeScene()->agxGraphModel(), result));
-
-                });
-        const QAction* sep = ui.menuEdit->addSeparator();
-        connect(ui.menuEdit, &QMenu::aboutToHide, sep, &QAction::deleteLater);
-    }
-}
-
-void CALUMIMotion::BuildItemSelectionMenu()
-{
-    if (ui.tabWidget->count() == 0)
-    {
-        QAction* dummySelectAll = ui.menuEdit->addAction(tr("Select All"), QKeySequence(Qt::CTRL | Qt::Key_A));
-        dummySelectAll->setEnabled(false);
-        connect(ui.menuEdit, &QMenu::aboutToHide, dummySelectAll, &QAction::deleteLater);
-
-        QAction* dummySelectAllN = ui.menuEdit->addAction(tr("Select All Nodes"), QKeySequence(Qt::CTRL | Qt::Key_N));
-        dummySelectAllN->setEnabled(false);
-        connect(ui.menuEdit, &QMenu::aboutToHide, dummySelectAllN, &QAction::deleteLater);
-
-        QAction* dummySelectAllL = ui.menuEdit->addAction(tr("Select All Connections"), QKeySequence(Qt::CTRL | Qt::Key_L));
-        dummySelectAllL->setEnabled(false);
-        connect(ui.menuEdit, &QMenu::aboutToHide, dummySelectAllL, &QAction::deleteLater);
-
-        QMenu* dummyMenu = ui.menuEdit->addMenu(tr("Selection Filter"));
-        dummyMenu->setEnabled(false);
-        connect(ui.menuEdit, &QMenu::aboutToHide, dummyMenu, &QMenu::deleteLater);
-
-        return;
-    }
-
-    const auto view = GetAgxViewFromTab(ui.tabWidget->currentIndex());
-
-    if (!view)
-        return;
-
-    ui.menuEdit->addAction(view->selectAllActionRef());
-    ui.menuEdit->addAction(view->selectAllNodesActionRef());
-    ui.menuEdit->addAction(view->selectAllConnectionsActionRef());
-    ui.menuEdit->addMenu(view->selectionFilterMenu());
-
-    auto removals = connect(ui.menuEdit, &QMenu::aboutToHide, this, [this, view] {
-        ui.menuEdit->removeAction(view->selectAllActionRef());
-        ui.menuEdit->removeAction(view->selectAllNodesActionRef());          
-        ui.menuEdit->removeAction(view->selectAllConnectionsActionRef());      
-        ui.menuEdit->removeAction(view->selectionFilterMenu()->menuAction());
-                                                                                   }, Qt::SingleShotConnection);
-
-
-    const QAction* sep = ui.menuEdit->addSeparator();
-    connect(ui.menuEdit, &QMenu::aboutToHide, sep, &QAction::deleteLater);
-}
-
 
 void CALUMIMotion::onSave()
 {
@@ -670,8 +456,13 @@ void CALUMIMotion::ImportFile_Agx_SFBGS() {
 
         if (const auto toolbar = newTabView->getToolBarLayout())
         {
-            const auto propIcon = QIcon::fromTheme("navigation/menu-burger");
-            const auto propButton = new QPushButton(propIcon, "Graph Properties");
+            const auto propButton = new QPushButton();
+            {
+                const auto iconPath = oclero::qlementine::icons::iconPath(oclero::qlementine::icons::Icons16::Navigation_MenuBurger);
+                const auto ico = GetColoredIconFromSVG(iconPath);
+                propButton->setIcon(ico);
+            }
+
             propButton->setFixedSize(QSize(48, 48));
             toolbar->addWidget(propButton);
 
@@ -827,8 +618,13 @@ void CALUMIMotion::OpenFile_Behavior_SFBGS(const QJsonObject& object)
 
         if (const auto toolbar = newTabView->getToolBarLayout())
         {
-            const auto propIcon = QIcon::fromTheme("navigation/menu-burger");
-            const auto propButton = new QPushButton(propIcon, "Graph Properties");
+            const auto propButton = new QPushButton();
+            {
+                const auto iconPath = oclero::qlementine::icons::iconPath(oclero::qlementine::icons::Icons16::Navigation_MenuBurger);
+                const auto ico = GetColoredIconFromSVG(iconPath);
+                propButton->setIcon(ico);
+            }
+
             propButton->setFixedSize(QSize(48, 48));
             toolbar->addWidget(propButton);
 
