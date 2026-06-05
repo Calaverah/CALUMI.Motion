@@ -25,6 +25,7 @@ enum class AgxGameType : uint8_t
 };
 
 QString AgxGameTypeToString(const AgxGameType& type);
+QStringList AgxGameTypeList();
 AgxGameType AgxGameTypeFromString(const QString& string);
 
 enum class AgxFileType : uint8_t

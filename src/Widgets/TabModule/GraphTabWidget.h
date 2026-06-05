@@ -5,7 +5,7 @@
 #pragma once
 
 #include <qsplitter.h>
-
+#include <QFileInfo>
 #include "ITabWidget.h"
 #include "Widgets/AgxGraphicsView.h"
 
@@ -15,10 +15,11 @@ public:
     Q_OBJECT
 
 public:
-    explicit GraphTabWidget(AgxGraphicsView* content, QWidget* parent = nullptr);
+    explicit GraphTabWidget(QWidget* parent = nullptr);
     ~GraphTabWidget() override;
 
     [[nodiscard]] AgxGraphicsView* graph() const;
+    void setGraph(AgxGraphicsView* content);
 
     void addRightItem(QWidget* item) const;
     void showRightItem(QWidget* item, bool moveToEnd = true) const;
@@ -35,19 +36,26 @@ public slots:
 
 public:
     void buildMenus(CALUMIMotion* parent) override;
+
+    [[nodiscard]] QString tabTitle() const override;
+    [[nodiscard]] QColor tabTitleColor() const override;
+
+public slots:
     void onShowMenus() const override;
     void onHideMenus() const override;
 
-private:
-    QVBoxLayout* m_topLayout;
-    QSplitter* m_centralLayout;
-    AgxGraphicsView* m_graph;
+    bool onLoadGraphFile(const QFileInfo& fileInfo);
 
-    QWidget* m_leftAreaParent;
-    QVBoxLayout* m_leftAreaParentLayout;
-    QScrollArea* m_rightScrollArea;
-    QWidget* m_rightWidget;
-    QVBoxLayout* m_rightScrollLayout;
+private:
+    QVBoxLayout* m_topLayout = Q_NULLPTR;
+    QSplitter* m_centralLayout = Q_NULLPTR;
+    AgxGraphicsView* m_graph = Q_NULLPTR;
+
+    QWidget* m_leftAreaParent = Q_NULLPTR;
+    QVBoxLayout* m_leftAreaParentLayout = Q_NULLPTR;
+    QScrollArea* m_rightScrollArea = Q_NULLPTR;
+    QWidget* m_rightWidget = Q_NULLPTR;
+    QVBoxLayout* m_rightScrollLayout = Q_NULLPTR;
     bool m_allowRightPanelVisible = true;
     int m_localRightWidth = 0;
 

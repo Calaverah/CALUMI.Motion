@@ -40,7 +40,10 @@ CALUMIMotion::CALUMIMotion(QWidget *parent) : QMainWindow(parent)
 
     connect(ui.tabWidget, &QTabWidget::currentChanged, this, &CALUMIMotion::onTabChanged);
 
-    connect(ui.actionOpen, &QAction::triggered, this, &CALUMIMotion::onOpen);
+    connect(ui.actionOpen, &QAction::triggered, this, [this]
+    {
+        this->onLoadFile("");
+    });
     connect(ui.actionSave, &QAction::triggered, this, &CALUMIMotion::onSave);
     connect(ui.actionSave_As, &QAction::triggered, this, &CALUMIMotion::onSaveAs);
 
@@ -127,7 +130,7 @@ bool CALUMIMotion::HasScene(const AgxGraphicsScene* scene) const
 {
     for (auto& pair : tabMap | std::views::values) // NOLINT(*-use-anyofallof)
     {
-        if (pair.m_AgxGraphicsScene.get() == scene)
+        if (&pair == scene)
             return true;
     }
 
@@ -161,14 +164,10 @@ void CALUMIMotion::UpdateTabTitles() const
     {
         for (int i = 0; i < ui.tabWidget->count(); i++)
         {
-            if (const auto tab = dynamic_cast<GraphTabWidget*>(ui.tabWidget->widget(i)))
+            if (const auto tab = dynamic_cast<ITabWidget*>(ui.tabWidget->widget(i)))
             {
-                if (const auto view = tab->graph())
-                {
-                    ui.tabWidget->setTabText(i, view->agxNodeScene()->agxGraphModel().GetGraphTitle(false));
-                    if (view->agxNodeScene()->agxGraphModel().rootGraphReference() != &view->agxNodeScene()->agxGraphModel())
-                        ui.tabWidget->tabBar()->setTabTextColor(i, QColor(Qt::gray));
-                }
+                ui.tabWidget->setTabText(i, tab->tabTitle());
+                ui.tabWidget->tabBar()->setTabTextColor(i, tab->tabTitleColor());
             }
         }
     }
@@ -176,7 +175,9 @@ void CALUMIMotion::UpdateTabTitles() const
 
 void CALUMIMotion::ShowNodeGroupMenu()
 {
-    if (ui.tabWidget->count() <= 0) return;
+    if (ui.tabWidget->count() <= 0)
+        return;
+
     const auto gWindow = new QDialog(this);
 
     const auto pgrid = new QGridLayout();
@@ -194,7 +195,7 @@ void CALUMIMotion::ShowNodeGroupMenu()
 
         if (agxView)
         {
-            const auto agxScene = tabMap.at(agxView).m_AgxGraphicsScene.get();
+            const auto agxScene = &tabMap.at(agxView);
             const auto newTabView = new NodeGroupMenuPopup(nullptr, *agxScene, agxView, ui.tabWidget);
             tabWidget->addTab(newTabView, ui.tabWidget->tabText(i));
 
@@ -395,7 +396,7 @@ void CALUMIMotion::ImportFile_Agx_SFBGS() {
     if (ui.tabWidget)
     {
         const auto agxGraphModel = std::make_shared<AgxGraphModel>(AgxGameType::SFBGS);
-        auto scene = std::make_shared<AgxGraphicsScene>(*agxGraphModel);
+        auto scene = std::make_shared<AgxGraphicsScene>(agxGraphModel);
 
         const auto progBar = new AgxProgressDialog(tr("Loading Agx File..."), "", 0, 1000, this);
         auto watcher = new QFutureWatcher<void>(this);
@@ -423,13 +424,14 @@ void CALUMIMotion::ImportFile_Agx_SFBGS() {
         //auto tempUpdateMode = newTabView->viewportUpdateMode();
         //newTabView->setViewportUpdateMode(QGraphicsView::NoViewportUpdate);
 
-        TabDataPair pairCopy(agxGraphModel, scene);
-        tabMap.insert({ newTabView,pairCopy });
+        tabMap.insert({ newTabView, *scene});
 
         Q_EMIT watcher->progressValueChanged(500);
         Q_EMIT watcher->progressTextChanged(tr("Loading View"));
 
-        auto module = new GraphTabWidget(newTabView); //, watcher, 500, 450);
+        auto module = new GraphTabWidget();
+        //TODO Set Watcher
+        module->setGraph(newTabView);
 
         QFileInfo pathInfo(filePath);
 
@@ -565,7 +567,7 @@ void CALUMIMotion::OpenFile_Behavior_SFBGS(const QJsonObject& object)
     if (ui.tabWidget)
     {
         const auto agxGraphModel = std::make_shared<AgxGraphModel>(AgxGameType::SFBGS);
-        auto scene = std::make_shared<AgxGraphicsScene>(*agxGraphModel);
+        auto scene = std::make_shared<AgxGraphicsScene>(agxGraphModel);
 
         const auto progBar = new AgxProgressDialog(tr("Loading jagx Behavior File..."), "", 0, 1000, this);
         auto watcher = new QFutureWatcher<void>(this);
@@ -590,13 +592,14 @@ void CALUMIMotion::OpenFile_Behavior_SFBGS(const QJsonObject& object)
         Q_EMIT watcher->progressValueChanged(495);
         Q_EMIT watcher->progressTextChanged(tr("Processing Scene"));
 
-        TabDataPair pairCopy(agxGraphModel, scene);
-        tabMap.insert({ newTabView,pairCopy });
+        tabMap.insert({ newTabView, *scene});
 
         Q_EMIT watcher->progressValueChanged(500);
         Q_EMIT watcher->progressTextChanged(tr("Loading View"));
 
-        auto module = new GraphTabWidget(newTabView); //, watcher, 500, 450);
+        auto module = new GraphTabWidget();
+        //TODO Set Watcher
+        module->setGraph(newTabView);
 
         Q_EMIT watcher->progressValueChanged(960);
 
@@ -649,12 +652,97 @@ void CALUMIMotion::OpenFile_Behavior_SFBGS(const QJsonObject& object)
     }
 }
 
+void CALUMIMotion::onLoadFile(QString filePath)
+{
+    if (filePath.isEmpty())
+    {
+        const QString dir = SettingsRegistry::GetInstance().LastDirectory();
+        filePath = QFileDialog::getOpenFileName(this, tr("Open File"), dir, tr("Agx Files (*.agx);;Motion Files (*.jagx);;All Files (*.*)"));
+    }
+
+    if (filePath.isEmpty())
+        return;
+
+    SettingsRegistry::GetInstance().SetLastDirectory(filePath);
+
+    const QFileInfo fileInfo(filePath);
+    auto fileType = AgxFileType::UNKNOWN;
+
+    if (!fileInfo.isFile())
+    {
+        QMessageBox::critical(this, tr("Path Error"), tr("Input Path Is Not A File Type!"));
+        return;
+    }
+
+    if (fileInfo.suffix().compare("jagx", Qt::CaseInsensitive) == 0)
+    {
+        QFile file(fileInfo.absoluteFilePath());
+        if (!file.open(QIODevice::ReadOnly | QIODevice::Text)) {
+            QMessageBox::critical(this, tr("Error"), tr("Could not open file: ") + fileInfo.fileName());
+            return;
+        }
+
+        const QByteArray byteArray = file.readAll();
+        file.close();
+
+        QJsonParseError parseError;
+        const QJsonDocument doc = QJsonDocument::fromJson(byteArray, &parseError);
+
+        if (parseError.error != QJsonParseError::NoError) {
+            QMessageBox::critical(this, tr("Error"), tr("Json Parsing Failed: ") + parseError.errorString());
+            return;
+        }
+
+        if (!doc.isObject())
+        {
+            return;
+        }
+
+        const QJsonObject obj = doc.object();
+        fileType = AgxFileTypeFromString(obj.value("file-type").toString());
+    }
+    else if (fileInfo.suffix().compare("agx", Qt::CaseInsensitive) == 0)
+    {
+        fileType = AgxFileType::BehaviorFile;
+    }
+
+    int idx = -1;
+
+    switch (fileType)
+    {
+        case AgxFileType::UNKNOWN:
+        {
+            QMessageBox::critical(this, tr("Unknown File Type"), tr("Unable to open and deserialize file type. Please try a different file!"));
+            return;
+        }
+        case AgxFileType::BehaviorFile:
+        {
+            const auto graphTab = new GraphTabWidget();
+            if (!graphTab->onLoadGraphFile(fileInfo))
+            {
+                return graphTab->deleteLater();
+            }
+            idx = ui.tabWidget->addTab(graphTab, graphTab->tabTitle());
+            ui.tabWidget->tabBar()->setTabTextColor(idx, graphTab->tabTitleColor());
+            tabMap.insert({graphTab->graph(), *graphTab->graph()->agxNodeScene()});
+            break;
+        }
+        case AgxFileType::AnimationFile:
+        case AgxFileType::AnimationComponent:
+        case AgxFileType::RigFile:
+            break;
+    }
+
+    if (idx >= 0)
+        ui.tabWidget->setCurrentIndex(idx);
+}
+
 void CALUMIMotion::Create_SFBGSTab(std::shared_ptr<AgxGraphicsScene> scene, std::shared_ptr<AgxGraphModel> model)
 {
     if(!model)
         model = std::make_shared<AgxGraphModel>(AgxGameType::SFBGS);
     if(!scene)
-        scene = std::make_shared<AgxGraphicsScene>(*model);
+        scene = std::make_shared<AgxGraphicsScene>(model);
 
     for (int i = 0; i < ui.tabWidget->count(); i++)
     {
@@ -669,11 +757,14 @@ void CALUMIMotion::Create_SFBGSTab(std::shared_ptr<AgxGraphicsScene> scene, std:
     }
 
     auto newTabView = new AgxGraphicsView(scene.get());
-    TabDataPair pairCopy(model, scene);
-    tabMap.insert({ newTabView,pairCopy });
 
-    auto module = new GraphTabWidget(newTabView);
-    ui.tabWidget->addTab(module, scene->agxGraphModel().GetGraphTitle(false));
+    tabMap.insert({ newTabView, *scene});
+
+    auto module = new GraphTabWidget();
+    module->setGraph(newTabView);
+
+    const auto tabIdx = ui.tabWidget->addTab(module, module->tabTitle());
+    ui.tabWidget->tabBar()->setTabTextColor(tabIdx, module->tabTitleColor());
     ui.tabWidget->setCurrentWidget(module);
 
     module->buildMenus(this);
@@ -740,5 +831,3 @@ bool CALUMIMotion::HasTab(const QWidget* widget) const
 
     return false;
 }
-
-TabDataPair::TabDataPair(const std::shared_ptr<AgxGraphModel>& agxGraphModel, const std::shared_ptr<AgxGraphicsScene>& agxGraphicsScene) : m_AgxGraphModel(agxGraphModel), m_AgxGraphicsScene(agxGraphicsScene) {}

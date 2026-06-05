@@ -10,6 +10,10 @@
 #include <QTimer>
 #include <QVBoxLayout>
 #include <QInputDialog>
+#include <QFileDialog>
+#include <QMessageBox>
+#include <Widgets/Dialog/AgxProgressDialog.h>
+#include <QFutureWatcher>
 
 #include "Utilities/QWidgetFactories.h"
 #include "Utilities/Settings/SettingsRegistry.h"
@@ -17,13 +21,30 @@
 #include "Application/CALUMIMotionApplication.h"
 #include "Utilities/UndoRedoCommands.h"
 #include "Utilities/AgxFormat.h"
+#include "Widgets/SFBGS/SFBGS_GraphPropertiesDialogWidget.h"
 
-GraphTabWidget::GraphTabWidget(AgxGraphicsView* content, QWidget* parent) : ITabWidget(parent), m_graph(content)
+#include <oclero/qlementine/icons/Icons16.hpp>
+
+GraphTabWidget::GraphTabWidget(QWidget* parent) : ITabWidget(parent) {}
+
+GraphTabWidget::~GraphTabWidget()
 {
-    if (!content)
+	SettingsRegistry::GetInstance().SetGraphSidebarWidth(m_localRightWidth);
+}
+
+AgxGraphicsView* GraphTabWidget::graph() const
+{
+    return m_graph;
+}
+
+void GraphTabWidget::setGraph(AgxGraphicsView* content)
+{
+	if (!content)
         return;
 
-    connect(&content->agxNodeScene()->agxGraphModel(), &AgxGraphModel::nodeCreated, this, &GraphTabWidget::onNodeEstablished);
+	m_graph = content;
+
+    connect(&m_graph->agxNodeScene()->agxGraphModel(), &AgxGraphModel::nodeCreated, this, &GraphTabWidget::onNodeEstablished);
 	connect(m_graph->agxNodeScene(), &AgxGraphicsScene::nodeGOSelected, this, [this](const AgxNodeId& id)
 		{
 			if (m_rightItems.contains(id))
@@ -103,7 +124,7 @@ GraphTabWidget::GraphTabWidget(AgxGraphicsView* content, QWidget* parent) : ITab
 	onSetLeftPanelVisible(false);
 	onSetRightPanelVisible(
 		!SettingsRegistry::GetInstance().GetGraphSidebarAutoHide() ||
-		!content->agxNodeScene()->selectedNodes().empty()
+		!m_graph->agxNodeScene()->selectedNodes().empty()
 		);
 
 	m_leftCloseButton = new QPushButton("Close");
@@ -130,16 +151,6 @@ GraphTabWidget::GraphTabWidget(AgxGraphicsView* content, QWidget* parent) : ITab
 		Q_EMIT statusUpdate(static_cast<float>(0.25 + 0.75 * static_cast<double>(progress) / static_cast<double>(contentCount)));
 		progress++;
 	}
-}
-
-GraphTabWidget::~GraphTabWidget()
-{
-	SettingsRegistry::GetInstance().SetGraphSidebarWidth(m_localRightWidth);
-}
-
-AgxGraphicsView* GraphTabWidget::graph() const
-{
-    return m_graph;
 }
 
 void GraphTabWidget::addRightItem(QWidget* item) const
@@ -524,4 +535,193 @@ void GraphTabWidget::onHideMenus() const
 		if (action)
 			action->setVisible(false);
 	}
+}
+
+bool GraphTabWidget::onLoadGraphFile(const QFileInfo& fileInfo)
+{
+	auto agxGraphModel = std::make_shared<AgxGraphModel>(AgxGameType::None);
+	auto scene = std::make_shared<AgxGraphicsScene>(agxGraphModel);
+
+	const auto progBar = new AgxProgressDialog(tr("Loading Graph File..."), "", 0, 1000, this);
+	auto watcher = new QFutureWatcher<void>(this);
+	connect(watcher, &QFutureWatcher<void>::progressValueChanged, progBar, &QProgressDialog::setValue);
+	connect(watcher, &QFutureWatcher<void>::progressTextChanged, progBar, &QProgressDialog::setLabelText);
+	connect(watcher, &QFutureWatcher<void>::finished, progBar, &QProgressDialog::deleteLater);
+	connect(watcher, &QFutureWatcher<void>::finished, watcher, &QFutureWatcher<void>::deleteLater);
+	connect(agxGraphModel.get(), &AgxGraphModel::statusUpdate, watcher, [watcher](const float loadPercentage, const QString& message) {
+			Q_EMIT watcher->progressValueChanged(static_cast<int>(0.49 * loadPercentage * 1000));
+
+			if (!message.isEmpty())
+				Q_EMIT watcher->progressTextChanged(message);
+	});
+	progBar->show();
+
+	QFile file(fileInfo.absoluteFilePath());
+	if (!file.open(QIODevice::ReadOnly | QIODevice::Text)) {
+		progBar->deleteLater();
+		QMessageBox::critical(this, tr("Error"), tr("Could not open file: ") + fileInfo.fileName());
+		return false;
+	}
+
+	const QByteArray byteArray = file.readAll();
+	file.close();
+
+	//Import as AGX "XML" Serialized File (Will need to check game type for future versions)
+	if (fileInfo.suffix().compare("agx", Qt::CaseInsensitive) == 0)
+	{
+		bool ok = false;
+		const auto result = QInputDialog::getItem(this, tr("Select Game Type"), tr("Game Type"), AgxGameTypeList(), 0, false, &ok);
+		if (ok)
+		{
+			if (const auto gameType = AgxGameTypeFromString(result); gameType != AgxGameType::None)
+			{
+				agxGraphModel = std::make_shared<AgxGraphModel>(gameType);
+				scene = std::make_shared<AgxGraphicsScene>(agxGraphModel);
+			}
+			else
+				ok = false;
+		}
+
+		if (!ok)
+		{
+			progBar->deleteLater();
+			return false;
+		}
+
+		pugi::xml_document doc;
+		doc.load_string(byteArray.toStdString().c_str());
+
+		if (!doc)
+		{
+			progBar->deleteLater();
+			QMessageBox::critical(this, tr("Error"), tr("XML Parsing Failed"));
+			return false;
+		}
+
+		if (!doc.child("root"))
+		{
+			if (const QMessageBox::StandardButton reply = QMessageBox::critical(nullptr, tr("File Content Warning"), tr("File is missing root and may not import properly..."), QMessageBox::Ok | QMessageBox::Abort); reply == QMessageBox::Abort)
+			{
+				progBar->deleteLater();
+				return false;
+			}
+		}
+
+		auto graphNode = doc.child("root");
+		agxGraphModel->load(graphNode);
+	}
+	//Import as JSON Serialized File
+	else if (fileInfo.suffix().compare("jagx", Qt::CaseInsensitive) == 0)
+	{
+		QJsonParseError parseError;
+		const QJsonDocument doc = QJsonDocument::fromJson(byteArray, &parseError);
+
+		if (parseError.error != QJsonParseError::NoError) {
+			progBar->deleteLater();
+			QMessageBox::critical(this, tr("Error"), tr("Json Parsing Failed: ") + parseError.errorString());
+			return false;
+		}
+
+		if (!doc.isObject())
+		{
+			progBar->deleteLater();
+			return false;
+		}
+
+		const QJsonObject obj = doc.object();
+
+		const auto gameTypeString = obj.value("game-type").toString();
+		const auto gameType = AgxGameTypeFromString(gameTypeString);
+
+		if (gameType == AgxGameType::None)
+		{
+			progBar->deleteLater();
+			return false;
+		}
+
+		agxGraphModel = std::make_shared<AgxGraphModel>(gameType);
+		scene = std::make_shared<AgxGraphicsScene>(agxGraphModel);
+		agxGraphModel->load(obj);
+	}
+	else
+	{
+		progBar->deleteLater();
+		return false;
+	}
+
+	Q_EMIT watcher->progressValueChanged(495);
+	Q_EMIT watcher->progressTextChanged(tr("Processing Scene"));
+	scene->update();
+
+	Q_EMIT watcher->progressValueChanged(500);
+	Q_EMIT watcher->progressTextChanged(tr("Loading View"));
+	const auto newTabView = new AgxGraphicsView(scene.get());
+
+	const auto connection = connect(this, &GraphTabWidget::statusUpdate, this, [watcher](const float loadPercentage, const QString& message)
+	{
+		Q_EMIT watcher->progressValueChanged(500 + static_cast<int>(loadPercentage * 475));
+
+		if (!message.isEmpty())
+			Q_EMIT watcher->progressTextChanged(message);
+	});
+	setGraph(newTabView);
+	disconnect(connection);
+
+	Q_EMIT watcher->progressValueChanged(975);
+	Q_EMIT watcher->progressTextChanged(tr("Finalizing View"));
+
+	if (const auto toolbar = newTabView->getToolBarLayout())
+	{
+		const auto propButton = new QPushButton();
+		{
+			const auto iconPath = oclero::qlementine::icons::iconPath(oclero::qlementine::icons::Icons16::Navigation_MenuBurger);
+			const auto ico = GetColoredIconFromSVG(iconPath);
+			propButton->setIcon(ico);
+		}
+
+		propButton->setFixedSize(QSize(48, 48));
+		toolbar->addWidget(propButton);
+
+		connect(propButton, &QPushButton::pressed, this, [this]
+			{
+				onSetLeftPanelVisible(!leftPanelVisible());
+			});
+
+		connect(agxGraphModel.get(), &AgxGraphModel::GraphTypeUpdated, this, [scene, this]
+			{
+				setLeftItem(new SFBGS_GraphPropertiesDialogWidget(*scene));
+			});
+
+		setLeftItem(new SFBGS_GraphPropertiesDialogWidget(*scene));
+
+	}
+
+	Q_EMIT watcher->progressValueChanged(1000);
+	Q_EMIT watcher->progressTextChanged(tr("Finished!"));
+
+	newTabView->setFocus();
+
+	return true;
+}
+
+QString GraphTabWidget::tabTitle() const
+{
+	if (m_graph)
+		return m_graph->agxNodeScene()->agxGraphModel().GetGraphTitle(false);
+
+	return "untitled graph tab";
+}
+
+QColor GraphTabWidget::tabTitleColor() const
+{
+	if (m_graph)
+	{
+		// ReSharper disable once CppTooWideScopeInitStatement
+		const auto root = m_graph->agxNodeScene()->agxGraphModel().rootGraphReference();
+
+		if (root != &m_graph->agxNodeScene()->agxGraphModel())
+			return qApp->palette().color(QPalette::PlaceholderText);
+	}
+
+	return qApp->palette().color(QPalette::Text);
 }

@@ -18,12 +18,13 @@
 #include <Utilities/AgxConnectionIdUtils.h>
 
 #include <ranges>
+#include <utility>
 
 #include "Utilities/QWidgetFactories.h"
 
-AgxGraphicsScene::AgxGraphicsScene(AgxGraphModel& graphModel, QObject* parent) : QGraphicsScene(parent)
-                                                                               , m_agxGraphModel(graphModel)
-                                                                               , m_agxNodeGeometry(std::make_unique<AgxNodeGeometry>(m_agxGraphModel))
+AgxGraphicsScene::AgxGraphicsScene(std::shared_ptr<AgxGraphModel> graphModel, QObject* parent) : QGraphicsScene(parent)
+                                                                               , m_agxGraphModel(std::move(graphModel))
+                                                                               , m_agxNodeGeometry(std::make_unique<AgxNodeGeometry>(*m_agxGraphModel))
                                                                                , m_agxNodePainter(std::make_unique<AgxNodePainter>())
                                                                                , m_agxConnectionPainter(std::make_unique<AgxConnectionPainter>())
                                                                                , m_nodeDrag(false)
@@ -31,43 +32,46 @@ AgxGraphicsScene::AgxGraphicsScene(AgxGraphModel& graphModel, QObject* parent) :
                                                                                , m_orientation(Qt::Horizontal)
 {
 
+    if (!m_agxGraphModel)
+        m_agxGraphModel = std::make_shared<AgxGraphModel>(AgxGameType::None);
+
     setItemIndexMethod(NoIndex);
 
-    connect(&m_agxGraphModel,
+    connect(m_agxGraphModel.get(),
         &AgxGraphModel::connectionCreated,
         this,
         &AgxGraphicsScene::onConnectionCreated);
 
-    connect(&m_agxGraphModel,
+    connect(m_agxGraphModel.get(),
         &AgxGraphModel::connectionDeleted,
         this,
         &AgxGraphicsScene::onConnectionDeleted);
 
-    connect(&m_agxGraphModel,
+    connect(m_agxGraphModel.get(),
         &AgxGraphModel::nodeCreated,
         this,
         &AgxGraphicsScene::onNodeCreated);
 
-    connect(&m_agxGraphModel,
+    connect(m_agxGraphModel.get(),
         &AgxGraphModel::nodeDeleted,
         this,
         &AgxGraphicsScene::onNodeDeleted);
 
-    connect(&m_agxGraphModel,
+    connect(m_agxGraphModel.get(),
         &AgxGraphModel::nodePositionUpdated,
         this,
         &AgxGraphicsScene::onNodePositionUpdated);
 
-    connect(&m_agxGraphModel,
+    connect(m_agxGraphModel.get(),
         &AgxGraphModel::nodeUpdated,
         this,
         &AgxGraphicsScene::onNodeUpdated);
 
     connect(this, &AgxGraphicsScene::nodeClicked, this, &AgxGraphicsScene::onNodeClicked);
 
-    connect(&m_agxGraphModel, &AgxGraphModel::modelReset, this, &AgxGraphicsScene::onModelReset);
+    connect(m_agxGraphModel.get(), &AgxGraphModel::modelReset, this, &AgxGraphicsScene::onModelReset);
 
-    connect(&graphModel,
+    connect(m_agxGraphModel.get(),
         &AgxGraphModel::inPortDataWasSet,
         [this](AgxNodeId const nodeId, AgxPortType const, AgxPortIndex const) { onNodeUpdated(nodeId); });
 
@@ -75,9 +79,9 @@ AgxGraphicsScene::AgxGraphicsScene(AgxGraphModel& graphModel, QObject* parent) :
 
 }
 
-AgxGraphModel const& AgxGraphicsScene::agxGraphModel() const { return m_agxGraphModel; }
+AgxGraphModel const& AgxGraphicsScene::agxGraphModel() const { return *m_agxGraphModel; }
 
-AgxGraphModel& AgxGraphicsScene::agxGraphModel() { return m_agxGraphModel; }
+AgxGraphModel& AgxGraphicsScene::agxGraphModel() { return *m_agxGraphModel; }
 
 AgxNodeGeometry const& AgxGraphicsScene::agxNodeGeometry() const
 {
@@ -168,7 +172,7 @@ void AgxGraphicsScene::setOrientation(Qt::Orientation const orientation)
     {
         m_orientation = orientation;
 
-        m_agxNodeGeometry = std::make_unique<AgxNodeGeometry>(m_agxGraphModel);
+        m_agxNodeGeometry = std::make_unique<AgxNodeGeometry>(*m_agxGraphModel);
 
         onModelReset();
     }
@@ -246,7 +250,7 @@ QMenu* AgxGraphicsScene::createSceneMenu(QPointF const scenePos)
     // 2.
     modelMenu->addAction(treeViewAction);
 
-    const auto registry = m_agxGraphModel.dataModelRegistry();
+    const auto registry = m_agxGraphModel->dataModelRegistry();
 
     for (auto const& cat : registry->categories()) {
         const auto item = new QTreeWidgetItem(treeView);
@@ -311,7 +315,7 @@ QMenu* AgxGraphicsScene::createSceneMenu(QPointF const scenePos)
 
 void AgxGraphicsScene::traverseGraphAndPopulateGraphicsObjects()
 {
-    auto allNodeIds = m_agxGraphModel.allNodeIds();
+    auto allNodeIds = m_agxGraphModel->allNodeIds();
 
     // First create all the nodes.
     for (AgxNodeId const nodeId : allNodeIds)
@@ -331,11 +335,11 @@ void AgxGraphicsScene::traverseGraphAndPopulateGraphicsObjects()
     // Then for each node check output connections and insert them.
     for (AgxNodeId const nodeId : allNodeIds)
     {
-        const auto nOutPorts = m_agxGraphModel.nodeData(nodeId, AgxNodeRole::OutPortCount).value<AgxPortCount>();
+        const auto nOutPorts = m_agxGraphModel->nodeData(nodeId, AgxNodeRole::OutPortCount).value<AgxPortCount>();
 
         for (AgxPortIndex index = 0; index < nOutPorts; ++index)
         {
-            for (auto const& outConnectionIds = m_agxGraphModel.connections(nodeId, AgxPortType::Out, index); auto& cid : outConnectionIds)
+            for (auto const& outConnectionIds = m_agxGraphModel->connections(nodeId, AgxPortType::Out, index); auto& cid : outConnectionIds)
             {
                 m_agxConnectionGraphicsObjects[cid] = std::make_unique<AgxConnectionGraphicsObject>(*this,cid);
             }
@@ -417,7 +421,7 @@ void AgxGraphicsScene::onNodePositionUpdated(const AgxNodeId& nodeId)
 {
     if (const auto node = agxNodeGraphicsObject(nodeId))
     {
-        node->setPos(m_agxGraphModel.nodeData(nodeId, AgxNodeRole::Position).value<QPointF>());
+        node->setPos(m_agxGraphModel->nodeData(nodeId, AgxNodeRole::Position).value<QPointF>());
         node->update();
         m_nodeDrag = true;
     }
@@ -440,7 +444,7 @@ void AgxGraphicsScene::onNodeUpdated(const AgxNodeId& nodeId)
 void AgxGraphicsScene::onNodeClicked(const AgxNodeId& nodeId)
 {
     if (m_nodeDrag) {
-        Q_EMIT nodeMoved(nodeId, m_agxGraphModel.nodeData(nodeId, AgxNodeRole::Position).value<QPointF>());
+        Q_EMIT nodeMoved(nodeId, m_agxGraphModel->nodeData(nodeId, AgxNodeRole::Position).value<QPointF>());
         Q_EMIT modified(this);
     }
     m_nodeDrag = false;
@@ -501,7 +505,7 @@ void AgxGraphicsScene::onSelectNodes(const QList<AgxNodeId>& nodesToSelect)
 QString AgxGraphicsScene::getLastHoveredGroup() const
 {
     if (m_lastHoveredNode)
-        return m_agxGraphModel.GetNodeGroup(m_lastHoveredNode->nodeId());
+        return m_agxGraphModel->GetNodeGroup(m_lastHoveredNode->nodeId());
 
     return "";
 }

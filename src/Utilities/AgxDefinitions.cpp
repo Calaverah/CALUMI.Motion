@@ -2584,6 +2584,11 @@ QString AgxGameTypeToString(const AgxGameType& type)
 	}
 }
 
+QStringList AgxGameTypeList()
+{
+	return {AgxGameTypeToString(AgxGameType::SFBGS), "NONE"};
+}
+
 AgxGameType AgxGameTypeFromString(const QString& string)
 {
 	if (	QString("STARFIELD").compare(string.toStdString().c_str(), 	Qt::CaseInsensitive) ==0

@@ -16,6 +16,9 @@ public:
 
     virtual void buildMenus(CALUMIMotion* parent) = 0;
 
+    [[nodiscard]] virtual QString tabTitle() const = 0;
+    [[nodiscard]] virtual QColor tabTitleColor() const = 0;
+
 public slots:
     virtual void onShowMenus() const = 0;
     virtual void onHideMenus() const = 0;

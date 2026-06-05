@@ -42,10 +42,10 @@ public:
 
     virtual bool connectionExists(AgxConnectionId connectionId) const;
 
-    virtual AgxNodeId addNode(QString nodeType);
+    virtual AgxNodeId addNode(const QString& nodeType);
 
     void HandleEmbeddedClosures();
-    QWidget* GetNodeSidebarContent(const AgxNodeId& nodeId);
+    QWidget* GetNodeSidebarContent(const AgxNodeId& nodeId) const;
 
     virtual bool connectionPossible(AgxConnectionId connectionId) const;
 
@@ -66,9 +66,9 @@ public:
 
     virtual AgxNodeFlags nodeFlags(AgxNodeId nodeId) const;
 
-    virtual bool setNodeData(AgxNodeId nodeId, AgxNodeRole role, QVariant value);
+    virtual bool setNodeData(AgxNodeId nodeId, AgxNodeRole role, const QVariant& value);
 
-    void insertPropertySheetData(AgxNodeId nodeId, QJsonObject data);
+    void insertPropertySheetData(AgxNodeId nodeId, const QJsonObject& data);
     void insertPropertySheetData(QJsonObject data);
     QJsonObject getPropertySheetData(AgxNodeId nodeId, bool cleared = false);
     QJsonObject getPropertySheetData(bool cleared = false);
@@ -76,10 +76,10 @@ public:
 
     AgxPropertyBlockData* getPropertyBlock(const QString& block);
     AgxPropertyBlockData* getPropertyBlock(TermRef ref);
-    void addPropertyBlockEntry(AgxNodeId nodeId, QString block, int index, const QList<AgxPropertyBlockData::Entry>& data = {});
-    void addPropertyBlockEntry(QString block, int index, const QList<AgxPropertyBlockData::Entry>& data = {});
-    QList<AgxPropertyBlockData::Entry> removePropertyBlockEntry(AgxNodeId nodeId, QString block, int index);
-    QList<AgxPropertyBlockData::Entry> removePropertyBlockEntry(QString block, int index);
+    void addPropertyBlockEntry(AgxNodeId nodeId, const QString& block, int index, const QList<AgxPropertyBlockData::Entry>& data = {});
+    void addPropertyBlockEntry(const QString& block, int index, const QList<AgxPropertyBlockData::Entry>& data = {});
+    QList<AgxPropertyBlockData::Entry> removePropertyBlockEntry(AgxNodeId nodeId, const QString& block, int index);
+    QList<AgxPropertyBlockData::Entry> removePropertyBlockEntry(const QString& block, int index);
     QVector<AgxPropertyEntryDefinition>* GetPropertyEntries() { return &m_propertyEntries; }
     QMap<TermRef, AgxPropertyBlockData>* GetPropertyBlocks() { return &m_propertyBlocks; }
     QJsonObject SetNewGraphProperties(const AgxGraphType& graphType);
@@ -149,16 +149,16 @@ public:
 
     QString GetNodeGroup(AgxNodeId nodeId) const;
     std::vector<QString> GetNodeGroupList() const;
-    QColor GetGroupColor(QString groupName) const;
+    QColor GetGroupColor(const QString& groupName) const;
     void SetGroupColor(const QString& groupName, const QColor& color);
     std::unordered_map<QString, QVector<AgxNodeId>> GetNodeGroupAssignmentList() const;
-    bool GroupExists(QString groupName) const;
+    bool GroupExists(const QString& groupName) const;
 
 
     
     virtual bool loopsEnabled() const { return true; }
 
-    virtual void addPort(AgxNodeId nodeId, AgxPortType portType, AgxPortIndex portIndex, QJsonObject data);
+    virtual void addPort(AgxNodeId nodeId, AgxPortType portType, AgxPortIndex portIndex, const QJsonObject& data);
     virtual QJsonObject removePort(AgxNodeId nodeId, AgxPortType portType, AgxPortIndex portIndex, bool preserve);
 
     virtual QJsonObject saveNode(AgxNodeId nodeId) const;
@@ -262,10 +262,10 @@ private Q_SLOTS:
     void propagateEmptyDataTo(AgxNodeId nodeId, AgxPortIndex portIndex);
 
 public Q_SLOTS:
-    bool AddToNodeGroup(AgxNodeId nodeId, QString nodeGroup);
+    bool AddToNodeGroup(AgxNodeId nodeId, const QString& nodeGroup);
     void RemoveFromNodeGroup(AgxNodeId nodeId);
-    bool CreateNodeGroup(QString nodeGroup, QColor groupColor = generateRandomQColor());
-    bool EraseNodeGroup(QString nodeGroup);
+    bool CreateNodeGroup(const QString& nodeGroup, QColor groupColor = generateRandomQColor());
+    bool EraseNodeGroup(const QString& nodeGroup);
 
 public:
     /// <summary>

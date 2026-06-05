@@ -339,7 +339,7 @@ AgxPropertyBlockData* AgxNode::getPropertyBlock(const QString& block)
 void AgxNode::SetUpEmbeddedNodeGraph()
 {
     m_embeddedGraphModel = std::make_shared<AgxGraphModel>(m_gameType, m_rootGraphReference);
-    m_embeddedGraphScene = std::make_shared<AgxGraphicsScene>(*m_embeddedGraphModel);
+    m_embeddedGraphScene = std::make_shared<AgxGraphicsScene>(m_embeddedGraphModel);
 }
 
 void AgxNode::CloseEmbeddedView()

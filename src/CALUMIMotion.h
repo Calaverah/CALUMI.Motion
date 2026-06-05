@@ -5,20 +5,14 @@
 #pragma once
 #pragma warning(push,0)
 #include <QtWidgets/QMainWindow>
+// ReSharper disable once CppUnusedIncludeDirective
+#include <QFileInfo>
 #include "ui_CALUMIMotion.h"
 #pragma warning(pop)
 
 #include "Models/AgxGraphModel.h"
 #include "Models/AgxGraphicsScene.h"
 #include "Widgets/AgxGraphicsView.h"
-
-struct TabDataPair
-{
-    std::shared_ptr<AgxGraphModel> m_AgxGraphModel;
-    std::shared_ptr<AgxGraphicsScene> m_AgxGraphicsScene;
-
-    TabDataPair(const std::shared_ptr<AgxGraphModel>& agxGraphModel, const std::shared_ptr<AgxGraphicsScene>& agxGraphicsScene);
-};
 
 class CALUMIMotion : public QMainWindow
 {
@@ -28,15 +22,12 @@ public:
     explicit CALUMIMotion(QWidget *parent = nullptr);
     ~CALUMIMotion() override;
 
-    friend TabDataPair;
-    //std::shared_ptr<QtNodes::NodeDelegateModelRegistry> GetRegistry() const;
-
     bool HasTab(const QWidget* widget) const;
     void CloseTab(const QWidget* widget) const;
     bool HasScene(const AgxGraphicsScene* scene) const;
-    AgxGraphicsView* GetAgxViewFromTab(int idx) const;
+    [[nodiscard]] AgxGraphicsView* GetAgxViewFromTab(int idx) const;
 
-void UpdateTabTitles() const;
+    void UpdateTabTitles() const;
 
 signals:
     void LanguageChanged();
@@ -63,6 +54,9 @@ public slots:
     void ExportFile_Agx_SFBGS();
     void OpenFile_Behavior_SFBGS(const QJsonObject& object);
 
+    void onLoadFile(QString filePath = {});
+    //void onSaveFile();
+
 public slots:
     void onSave();
     void onSaveAs();
@@ -74,7 +68,7 @@ protected:
 
 private:
     Ui::CALUMIMotionClass ui{};
-    mutable std::map<AgxGraphicsView*, TabDataPair> tabMap;
+    mutable std::map<AgxGraphicsView*, AgxGraphicsScene&> tabMap;
 
     friend class ITabWidget;
 };

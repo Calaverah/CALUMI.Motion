@@ -27,7 +27,7 @@ class AgxGraphicsScene : public QGraphicsScene
 {
     Q_OBJECT
 public:
-    explicit AgxGraphicsScene(AgxGraphModel& graphModel, QObject* parent = nullptr);
+    explicit AgxGraphicsScene(std::shared_ptr<AgxGraphModel> graphModel, QObject* parent = nullptr);
     AgxGraphicsScene() = delete;
 
     ~AgxGraphicsScene() override = default;
@@ -132,7 +132,7 @@ public Q_SLOTS:
     void onSelectAllConnections();
 
 private:
-    AgxGraphModel& m_agxGraphModel;
+    std::shared_ptr<AgxGraphModel> m_agxGraphModel;
     std::unique_ptr<AgxConnectionGraphicsObject> m_agxDraftConnection;
     std::unordered_map<AgxNodeId, std::unique_ptr<AgxNodeGraphicsObject>> m_agxNodeGraphicsObjects;
     std::unordered_map<AgxConnectionId, std::unique_ptr<AgxConnectionGraphicsObject>> m_agxConnectionGraphicsObjects;
