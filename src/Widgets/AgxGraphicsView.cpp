@@ -25,6 +25,7 @@
 #include <algorithm>
 #include <Utilities/AgxGraphRegistry.h>
 // ReSharper disable once CppUnusedIncludeDirective
+#include "CALUMIMotion.h"
 #include "Utilities/Hash/AgxConnectionIdHash.h"
 
 void AgxGraphicsView::ToggleNodeCollapse(const AgxNodeId nodeId) const
@@ -248,7 +249,7 @@ AgxGraphicsView::AgxGraphicsView(QWidget* parent) : QGraphicsView(parent)
 	_overlayLayout->addWidget(_toolbar, 0, 1);
 	setLayout(_overlayLayout);
 
-
+	setAcceptDrops(true);
 }
 
 AgxGraphicsView::AgxGraphicsView(AgxGraphicsScene* scene, QWidget* parent) : AgxGraphicsView(parent)
@@ -942,7 +943,14 @@ void AgxGraphicsView::showEvent(QShowEvent* event)
 	}
 }
 
-
+void AgxGraphicsView::dragEnterEvent(QDragEnterEvent* event)
+{
+	if (event->mimeData()->hasUrls())
+	{
+		event->acceptProposedAction();
+	}
+	QGraphicsView::dragEnterEvent(event);
+}
 
 void AgxGraphicsView::ShowNodeGroupMenu(const QVector<AgxNodeId>& nodeIds)
 {

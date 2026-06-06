@@ -56,9 +56,7 @@ AgxNodePropertiesWidget::AgxNodePropertiesWidget(QWidget* parent, const bool bbl
 	SendWidthAdjustment();
 }
 
-AgxNodePropertiesWidget::~AgxNodePropertiesWidget()
-{
-}
+AgxNodePropertiesWidget::~AgxNodePropertiesWidget() = default;
 
 void AgxNodePropertiesWidget::SetUpCustomDropDown(AgxLineEditContainer* line, const QList<TermRef>& list, const QStringList& keyPath)
 {
@@ -71,7 +69,9 @@ void AgxNodePropertiesWidget::SetUpCustomDropDown(AgxLineEditContainer* line, co
 		for (auto term : list) 
 		{
 			if (term && term().tag.compare(line->text(), Qt::CaseInsensitive) == 0)
-				current = list.indexOf(term);
+			{
+				current = static_cast<int>(list.indexOf(term));
+			}
 		}
 
 		if (const auto result = AgxSimpleDialog::GetDropDown(this, "Select Entry", "", list, current, false))
@@ -89,7 +89,7 @@ void AgxNodePropertiesWidget::SetUpCustomDropDown(AgxLineEditContainer* line, co
 QList<AgxLineEditContainer*> AgxNodePropertiesWidget::CreatePropertyEntries(QVector<AgxPropertyEntryDefinition>* dataRef, const AgxNode* signalSender)
 {
 	QList<AgxLineEditContainer*> outputList;
-	for (int i = 0; i < dataRef->size(); i++)
+	for (int i = 0; i < dataRef->size(); i++) // NOLINT(*-loop-convert)
 	{
 		auto& dataRefItem = (*dataRef)[i];
 		QString key = dataRefItem.Tag();
@@ -240,7 +240,7 @@ QList<AgxLineEditContainer*> AgxNodePropertiesWidget::CreatePropertyEntries(cons
 
 	QList<AgxLineEditContainer*> outputList;
 
-	for (int i = 0; i < dataRef->size(); i++)
+	for (int i = 0; i < dataRef->size(); i++) // NOLINT(*-loop-convert)
 	{
 		auto& dataRefItem = (*dataRef)[i];
 
@@ -328,7 +328,7 @@ QList<QLabel*> AgxNodePropertiesWidget::CreateReadOnlyEntries(QMap<TermRef, QPai
 			keyOrder.append(nonPrioKey);
 	}
 
-	for (int i = 0; i < keyOrder.size(); i++)
+	for (int i = 0; i < keyOrder.size(); i++) // NOLINT(*-loop-convert)
 	{
 		auto key = keyOrder.at(i);
 		auto entry = new QLabel(dataRef->value(key).second);
@@ -465,7 +465,7 @@ ModifiedPushButton* AgxNodePropertiesWidget::CreateFlagEntry(TermRef title, cons
 	
 	connect(button, &ModifiedPushButton::CustomPressSignal, this, [this, dataRef]
 	{
-		if(const auto dialog = DialogPool_SFBGS::GetInstance().GetAnimationFlagDialog(dataRef->GetValue(), this); dialog->exec() == QDialog::Accepted)
+		if(const auto dialog = DialogPool_SFBGS::GetAnimationFlagDialog(dataRef->GetValue(), this); dialog->exec() == QDialog::Accepted)
 		{
 			QJsonObject obj;
 			AgxAnimationFlags flags;
@@ -583,7 +583,7 @@ AgxPropertyBlockWidget* AgxNodePropertiesWidget::CreatePropetryBlock(const TermR
 	return block;
 }
 
-void AgxNodePropertiesWidget::CreateEmbeddedNodeGraphButton(std::shared_ptr<AgxGraphicsScene> scene, std::shared_ptr<AgxGraphModel> model)
+void AgxNodePropertiesWidget::CreateEmbeddedNodeGraphButton(const std::shared_ptr<AgxGraphicsScene>& scene, const std::shared_ptr<AgxGraphModel>& model)
 {
 
 	const auto miniView = new MiniGraphicsView(scene.get());

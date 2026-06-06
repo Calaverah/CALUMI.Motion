@@ -98,6 +98,32 @@ void CALUMIMotionApplication::RequestShutdown()
 #endif
 }
 
+void CALUMIMotionApplication::LoadFiles(const QStringList& filePaths)
+{
+	const auto app = calApp; // NOLINT(*-pro-type-static-cast-downcast)
+	const auto activeWindow = CALUMIMotionApplication::activeWindow();
+
+	if (const auto desired = static_cast<CALUMIMotion*>(activeWindow)) // NOLINT(*-pro-type-static-cast-downcast)
+	{
+		for (const auto& filePath : filePaths)
+			desired->onLoadFile(filePath);
+
+		return;
+	}
+
+	for (const auto& entry : app->m_mainWindows)
+	{
+		if (const auto desired = static_cast<CALUMIMotion*>(entry.get())) // NOLINT(*-pro-type-static-cast-downcast)
+		{
+			for (const auto& filePath : filePaths)
+				desired->onLoadFile(filePath);
+
+			return;
+		}
+	}
+
+}
+
 void CALUMIMotionApplication::UpdateApplicationTabWidgets()
 {
 	for (const auto window : topLevelWidgets())

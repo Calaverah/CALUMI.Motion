@@ -59,6 +59,8 @@ public:
     static void UntrackWindow(QWidget* widget);
     static void RequestShutdown();
 
+    static void LoadFiles(const QStringList& filePaths);
+
 Q_SIGNALS:
     void settingsUpdated();
 

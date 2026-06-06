@@ -109,9 +109,7 @@ Q_SIGNALS:
 
 protected:
     void traverseGraphAndPopulateGraphicsObjects();
-
     void updateAttachedNodes(const AgxConnectionId& connectionId, const AgxPortType& portType);
-
 
 public Q_SLOTS:
     void onConnectionDeleted(const AgxConnectionId& connectionId);

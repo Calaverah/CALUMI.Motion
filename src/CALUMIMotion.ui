@@ -70,19 +70,6 @@
       <string>New</string>
      </property>
      <addaction name="actionStarfield_Animation_Graph_agx"/>
-     <addaction name="actionDebug_Animation_Graph_agx"/>
-    </widget>
-    <widget class="QMenu" name="menuImport">
-     <property name="title">
-      <string>Import</string>
-     </property>
-     <addaction name="actionSFBGS_Behavior_Graph_import"/>
-    </widget>
-    <widget class="QMenu" name="menuExport">
-     <property name="title">
-      <string>Export</string>
-     </property>
-     <addaction name="actionSFBGS_Behavior_Graph_export"/>
     </widget>
     <addaction name="menuNew"/>
     <addaction name="separator"/>
@@ -90,8 +77,6 @@
     <addaction name="actionSave"/>
     <addaction name="actionSave_As"/>
     <addaction name="separator"/>
-    <addaction name="menuImport"/>
-    <addaction name="menuExport"/>
    </widget>
    <widget class="QMenu" name="menuView">
     <property name="title">
@@ -125,17 +110,6 @@
     <string>Ctrl+Shift+1</string>
    </property>
   </action>
-  <action name="actionDebug_Animation_Graph_agx">
-   <property name="enabled">
-    <bool>false</bool>
-   </property>
-   <property name="text">
-    <string>Debug Animation Graph (.agx)</string>
-   </property>
-   <property name="visible">
-    <bool>false</bool>
-   </property>
-  </action>
   <action name="actionToggle_Log_Console">
    <property name="text">
     <string>Toggle Console</string>
@@ -166,14 +140,6 @@
    </property>
    <property name="shortcut">
     <string>Ctrl+O</string>
-   </property>
-  </action>
-  <action name="actionSFBGS_Behavior_Graph_import">
-   <property name="text">
-    <string>SFBGS Behavior Graph</string>
-   </property>
-   <property name="shortcut">
-    <string>Ctrl+Alt+1</string>
    </property>
   </action>
   <action name="actionSFBGS_Behavior_Graph_export">

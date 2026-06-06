@@ -1226,7 +1226,7 @@ void AgxGraphModel::loadNode(QJsonObject const& nodeJson)
     // because all the new ids were created past the removed nodes.
     AgxNodeId restoredNodeId = nodeJson["id"].toVariant().toUInt();
 
-    //_nextNodeId = max(_nextNodeId, restoredNodeId + 1);
+    m_nextNodeId = qMax(m_nextNodeId, restoredNodeId + 1);
 
     QJsonObject const internalDataJson = nodeJson["internal-data"].toObject();
 

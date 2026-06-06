@@ -46,7 +46,7 @@ public:
 
 	AgxPropertyBlockWidget* CreatePropetryBlock(TermRef blockTitleRef, AgxPropertyBlockData& dataRef, uint8_t wrappedRowItemCount = 3);
 
-	void CreateEmbeddedNodeGraphButton(std::shared_ptr<AgxGraphicsScene> scene, std::shared_ptr<AgxGraphModel> model);
+	void CreateEmbeddedNodeGraphButton(const std::shared_ptr<AgxGraphicsScene>& scene, const std::shared_ptr<AgxGraphModel>& model);
 
 	void FinalizeWidget();
 

@@ -15,7 +15,6 @@
 #include "Widgets/TabModule/GraphTabWidget.h"
 #include "Widgets/SFBGS/SFBGS_GraphPropertiesDialogWidget.h"
 
-#include <Widgets/Dialog/AgxProgressDialog.h>
 #include <Utilities/Settings/SettingsRegistry.h>
 #include "Application/CALUMIMotionApplication.h"
 #include "oclero/qlementine/icons/Icons16.hpp"
@@ -47,7 +46,6 @@ CALUMIMotion::CALUMIMotion(QWidget *parent) : QMainWindow(parent)
     connect(ui.actionSave, &QAction::triggered, this, &CALUMIMotion::onSave);
     connect(ui.actionSave_As, &QAction::triggered, this, &CALUMIMotion::onSaveAs);
 
-    connect(ui.actionSFBGS_Behavior_Graph_import, &QAction::triggered, this, &CALUMIMotion::ImportFile_Agx_SFBGS);
     connect(ui.actionSFBGS_Behavior_Graph_export, &QAction::triggered, this, &CALUMIMotion::ExportFile_Agx_SFBGS);
 
     connect(ui.menuEdit, &QMenu::aboutToShow, this, &CALUMIMotion::BuildSettingsMenu);
@@ -65,6 +63,8 @@ CALUMIMotion::CALUMIMotion(QWidget *parent) : QMainWindow(parent)
     else
         resize(1280, 800);
 
+    //Drop behavior
+    setAcceptDrops(true);
 }
 
 CALUMIMotion::~CALUMIMotion() {
@@ -87,6 +87,53 @@ void CALUMIMotion::changeEvent(QEvent* event)
         Q_EMIT LanguageChanged();
     }
     QMainWindow::changeEvent(event);
+}
+
+void CALUMIMotion::dragEnterEvent(QDragEnterEvent* event)
+{
+    if (event->mimeData()->hasUrls())
+    {
+        event->acceptProposedAction();
+    }
+
+    QMainWindow::dragEnterEvent(event);
+}
+
+void CALUMIMotion::dragLeaveEvent(QDragLeaveEvent* event)
+{
+    QMainWindow::dragLeaveEvent(event);
+}
+
+void CALUMIMotion::dropEvent(QDropEvent* event)
+{
+    const auto mimeData = event->mimeData();
+    if (mimeData->hasUrls())
+    {
+        auto urlList = mimeData->urls();
+        for (const auto& url : urlList)
+        {
+            if (url.isLocalFile())
+            {
+                qDebug() << "Dropped file: " << url.toLocalFile();
+                onLoadFile(url.toLocalFile());
+            }
+        }
+        event->acceptProposedAction();
+    }
+
+    QMainWindow::dropEvent(event);
+}
+
+bool CALUMIMotion::eventFilter(QObject* object, QEvent* event)
+{
+    if (event->type() == QEvent::Drop)
+    {
+        // goal is to inform sub widgets that drop is already handled
+        qDebug() << "Intercepted Drop by MOTION";
+        return true;
+    }
+
+    return QMainWindow::eventFilter(object, event);
 }
 
 void CALUMIMotion::CloseTab(const int i) const
@@ -316,50 +363,6 @@ void CALUMIMotion::onSaveAs()
     }
 }
 
-void CALUMIMotion::onOpen()
-{
-    const QString fileString = QFileDialog::getOpenFileName(this, tr("Open File"), SettingsRegistry::GetInstance().LastDirectory(), tr("Motion Files (*.jagx);;All Files (*.*)"));
-
-    if (fileString.isEmpty())
-        return;
-
-    QFile file(fileString);
-    if (!file.open(QIODevice::ReadOnly | QIODevice::Text)) {
-        QMessageBox::critical(this, tr("Error"), tr("Could not open file: ") + QFileInfo(fileString).fileName());
-        return;
-    }
-
-    const QByteArray byteArray = file.readAll();
-    file.close();
-
-    QJsonParseError parseError;
-    const QJsonDocument doc = QJsonDocument::fromJson(byteArray, &parseError);
-
-    if (parseError.error != QJsonParseError::NoError) {
-        QMessageBox::critical(this, tr("Error"), tr("Json Parsing Failed: ") + parseError.errorString());
-        return;
-    }
-
-    if (doc.isObject()) {
-
-        const QJsonObject obj = doc.object();
-        const AgxFileType type = AgxFileTypeFromString(obj.value("file-type").toString());
-        switch (type)
-        {
-            case AgxFileType::BehaviorFile:
-                OpenFile_Behavior_SFBGS(obj);
-                break;
-            case AgxFileType::UNKNOWN:
-            case AgxFileType::AnimationFile:
-            case AgxFileType::AnimationComponent:
-            default:
-                QMessageBox::critical(this, tr("Error"), tr("Unable To Open File Type: ") + AgxFileTypeToString(type));
-                break;
-        }
-    }
-
-}
-
 void CALUMIMotion::BuildFileInOutMenu() const
 {
     const auto view = GetAgxViewFromTab(ui.tabWidget->currentIndex());
@@ -367,126 +370,6 @@ void CALUMIMotion::BuildFileInOutMenu() const
     ui.actionSave->setEnabled(view != nullptr);
     ui.actionSave_As->setEnabled(view != nullptr);
 
-}
-
-void CALUMIMotion::ImportFile_Agx_SFBGS() {
-
-    const QString dir = SettingsRegistry::GetInstance().LastDirectory(AgxGameType::SFBGS).isEmpty() ? SettingsRegistry::GetInstance().LastDirectory() : SettingsRegistry::GetInstance().LastDirectory(AgxGameType::SFBGS);
-    const QString filePath = QFileDialog::getOpenFileName(this, tr("Open Starfield Agx File"), dir, tr("Agx Files (*.agx);;All files (*.*)"));
-
-    if (filePath.isEmpty())
-        return;
-
-    SettingsRegistry::GetInstance().SetLastDirectory(filePath, AgxGameType::SFBGS);
-
-    pugi::xml_document doc;
-    doc.load_file(filePath.toStdString().c_str());
-
-    if (!doc)
-        return;
-
-    if (!doc.child("root"))
-    {
-        const QMessageBox::StandardButton reply = QMessageBox::critical(nullptr, tr("File Content Warning"), tr("File is missing root and may not import properly..."), QMessageBox::Ok | QMessageBox::Abort);
-
-        if (reply == QMessageBox::Abort)
-            return;
-    }
-
-    if (ui.tabWidget)
-    {
-        const auto agxGraphModel = std::make_shared<AgxGraphModel>(AgxGameType::SFBGS);
-        auto scene = std::make_shared<AgxGraphicsScene>(agxGraphModel);
-
-        const auto progBar = new AgxProgressDialog(tr("Loading Agx File..."), "", 0, 1000, this);
-        auto watcher = new QFutureWatcher<void>(this);
-        connect(watcher, &QFutureWatcher<void>::progressValueChanged, progBar, &QProgressDialog::setValue);
-        connect(watcher, &QFutureWatcher<void>::progressTextChanged, progBar, &QProgressDialog::setLabelText);
-        connect(watcher, &QFutureWatcher<void>::finished, progBar, &QProgressDialog::deleteLater);
-        connect(watcher, &QFutureWatcher<void>::finished, watcher, &QFutureWatcher<void>::deleteLater);
-        connect(agxGraphModel.get(), &AgxGraphModel::statusUpdate, watcher, [watcher](const float loadPercentage, const QString& message) {
-                Q_EMIT watcher->progressValueChanged(static_cast<int>(0.49 * loadPercentage * 1000));
-                if (!message.isEmpty())
-                    Q_EMIT watcher->progressTextChanged(message);
-            });
-        progBar->show();
-
-        auto graphNode = doc.child("root");
-        agxGraphModel->load(graphNode);
-        scene->update();
-
-        auto newTabView = new AgxGraphicsView(scene.get());
-
-        Q_EMIT watcher->progressValueChanged(495);
-        Q_EMIT watcher->progressTextChanged(tr("Processing Scene"));
-
-        //newTabView->setUpdatesEnabled(false);
-        //auto tempUpdateMode = newTabView->viewportUpdateMode();
-        //newTabView->setViewportUpdateMode(QGraphicsView::NoViewportUpdate);
-
-        tabMap.insert({ newTabView, *scene});
-
-        Q_EMIT watcher->progressValueChanged(500);
-        Q_EMIT watcher->progressTextChanged(tr("Loading View"));
-
-        auto module = new GraphTabWidget();
-        //TODO Set Watcher
-        module->setGraph(newTabView);
-
-        QFileInfo pathInfo(filePath);
-
-        Q_EMIT watcher->progressValueChanged(960);
-
-        ui.tabWidget->addTab(module, "");
-
-        module->buildMenus(this);
-
-        //scene->agxGraphModel().SetGraphTitle(pathInfo.baseName());
-        CALUMIMotionApplication::UpdateApplicationTabWidgets();
-
-
-        Q_EMIT watcher->progressValueChanged(970);
-
-        ui.tabWidget->setCurrentWidget(module);
-
-        Q_EMIT watcher->progressValueChanged(980);
-
-        // module->onSetRightPanelVisible(_showPropertiesSidebar);
-
-        Q_EMIT watcher->progressValueChanged(990);
-        Q_EMIT watcher->progressTextChanged(tr("Finalizing View"));
-
-        if (const auto toolbar = newTabView->getToolBarLayout())
-        {
-            const auto propButton = new QPushButton();
-            {
-                const auto iconPath = oclero::qlementine::icons::iconPath(oclero::qlementine::icons::Icons16::Navigation_MenuBurger);
-                const auto ico = GetColoredIconFromSVG(iconPath);
-                propButton->setIcon(ico);
-            }
-
-            propButton->setFixedSize(QSize(48, 48));
-            toolbar->addWidget(propButton);
-
-            connect(propButton, &QPushButton::pressed, this, [module]
-                {
-                    module->onSetLeftPanelVisible(!module->leftPanelVisible());
-                });
-
-            connect(agxGraphModel.get(), &AgxGraphModel::GraphTypeUpdated, this, [scene, module]
-                {
-                    module->setLeftItem(new SFBGS_GraphPropertiesDialogWidget(*scene));
-                });
-
-            module->setLeftItem(new SFBGS_GraphPropertiesDialogWidget(*scene));
-
-        }
-
-        Q_EMIT watcher->progressValueChanged(1000);
-        Q_EMIT watcher->progressTextChanged(tr("Finished!"));
-
-        newTabView->setFocus();
-    }
 }
 
 void CALUMIMotion::ExportFile_Agx_SFBGS()
@@ -559,96 +442,6 @@ void CALUMIMotion::ExportFile_Agx_SFBGS()
     else
     {
         qInfo() << "File Saved To: " << file.fileName();
-    }
-}
-
-void CALUMIMotion::OpenFile_Behavior_SFBGS(const QJsonObject& object)
-{
-    if (ui.tabWidget)
-    {
-        const auto agxGraphModel = std::make_shared<AgxGraphModel>(AgxGameType::SFBGS);
-        auto scene = std::make_shared<AgxGraphicsScene>(agxGraphModel);
-
-        const auto progBar = new AgxProgressDialog(tr("Loading jagx Behavior File..."), "", 0, 1000, this);
-        auto watcher = new QFutureWatcher<void>(this);
-        connect(watcher, &QFutureWatcher<void>::progressValueChanged, progBar, &QProgressDialog::setValue);
-        connect(watcher, &QFutureWatcher<void>::progressTextChanged, progBar, &QProgressDialog::setLabelText);
-        connect(watcher, &QFutureWatcher<void>::finished, progBar, &QProgressDialog::deleteLater);
-        connect(watcher, &QFutureWatcher<void>::finished, watcher, &QFutureWatcher<void>::deleteLater);
-        connect(agxGraphModel.get(), &AgxGraphModel::statusUpdate, watcher, [watcher](const float loadPercentage, const QString& message) {
-                Q_EMIT watcher->progressValueChanged(static_cast<int>(0.49 * loadPercentage * 1000));
-
-                if (!message.isEmpty())
-                        Q_EMIT watcher->progressTextChanged(message);
-            });
-        progBar->show();
-
-        
-        agxGraphModel->load(object);
-        scene->update();
-
-        auto newTabView = new AgxGraphicsView(scene.get());
-
-        Q_EMIT watcher->progressValueChanged(495);
-        Q_EMIT watcher->progressTextChanged(tr("Processing Scene"));
-
-        tabMap.insert({ newTabView, *scene});
-
-        Q_EMIT watcher->progressValueChanged(500);
-        Q_EMIT watcher->progressTextChanged(tr("Loading View"));
-
-        auto module = new GraphTabWidget();
-        //TODO Set Watcher
-        module->setGraph(newTabView);
-
-        Q_EMIT watcher->progressValueChanged(960);
-
-        ui.tabWidget->addTab(module, "");
-
-        module->buildMenus(this);
-
-        Q_EMIT watcher->progressValueChanged(970);
-
-        ui.tabWidget->setCurrentWidget(module);
-
-        Q_EMIT watcher->progressValueChanged(980);
-
-        // module->onSetRightPanelVisible(_showPropertiesSidebar);
-
-        Q_EMIT watcher->progressValueChanged(990);
-
-        Q_EMIT watcher->progressTextChanged(tr("Finalizing View"));
-
-        if (const auto toolbar = newTabView->getToolBarLayout())
-        {
-            const auto propButton = new QPushButton();
-            {
-                const auto iconPath = oclero::qlementine::icons::iconPath(oclero::qlementine::icons::Icons16::Navigation_MenuBurger);
-                const auto ico = GetColoredIconFromSVG(iconPath);
-                propButton->setIcon(ico);
-            }
-
-            propButton->setFixedSize(QSize(48, 48));
-            toolbar->addWidget(propButton);
-
-            connect(propButton, &QPushButton::pressed, this, [module]
-                {
-                    module->onSetLeftPanelVisible(!module->leftPanelVisible());
-                });
-
-            connect(agxGraphModel.get(), &AgxGraphModel::GraphTypeUpdated, this, [scene, module]
-                {
-                    module->setLeftItem(new SFBGS_GraphPropertiesDialogWidget(*scene));
-                });
-
-            module->setLeftItem(new SFBGS_GraphPropertiesDialogWidget(*scene));
-
-        }
-
-        Q_EMIT watcher->progressValueChanged(1000);
-        Q_EMIT watcher->progressTextChanged(tr("Finished!"));
-
-        newTabView->setFocus();
     }
 }
 

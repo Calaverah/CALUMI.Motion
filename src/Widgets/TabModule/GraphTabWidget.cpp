@@ -70,6 +70,15 @@ void GraphTabWidget::setGraph(AgxGraphicsView* content)
 				onSetRightPanelVisible(false);
 		});
 
+	connect(&m_graph->agxNodeScene()->agxGraphModel(), &AgxGraphModel::nodeDeleted, this, [this](const AgxNodeId id)
+		{
+			if (m_rightItems.contains(id))
+			{
+				const auto obj = m_rightItems.take(id);
+			   obj->deleteLater();
+			}
+		});
+
 
 	m_localRightWidth = SettingsRegistry::GetInstance().GetGraphSidebarWidth();
 
@@ -248,12 +257,6 @@ void GraphTabWidget::onNodeEstablished(AgxNodeId nodeId)
 		QTimer::singleShot(1, item, [this, nodeId, item]
 		{
 			item->setVisible(m_graph->agxNodeScene()->isNodeSelected(nodeId));
-		});
-
-		connect(&m_graph->agxNodeScene()->agxGraphModel(), &AgxGraphModel::nodeDeleted, item, [this, item](const AgxNodeId id)
-		{
-			this->m_rightItems.remove(id);
-			item->deleteLater();
 		});
 	}
 

@@ -119,7 +119,7 @@
           <item row="0" column="0">
            <layout class="QFormLayout" name="formLayout_2">
             <item row="0" column="0">
-             <widget class="QLabel" name="showPropertiesSidebarLabel">
+             <widget class="QLabel" name="autohideGraphSidebarLabel">
               <property name="sizePolicy">
                <sizepolicy hsizetype="MinimumExpanding" vsizetype="Preferred">
                 <horstretch>1</horstretch>
@@ -139,29 +139,7 @@
                </size>
               </property>
               <property name="text">
-               <string>Show Properties Sidebar</string>
-              </property>
-             </widget>
-            </item>
-            <item row="0" column="1">
-             <widget class="QComboBox" name="showPropertiesSidebarComboBox">
-              <property name="sizePolicy">
-               <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
-                <horstretch>0</horstretch>
-                <verstretch>0</verstretch>
-               </sizepolicy>
-              </property>
-              <property name="minimumSize">
-               <size>
-                <width>100</width>
-                <height>0</height>
-               </size>
-              </property>
-              <property name="maximumSize">
-               <size>
-                <width>16777215</width>
-                <height>16777215</height>
-               </size>
+               <string>Autohide Graph Sidebar</string>
               </property>
              </widget>
             </item>
@@ -173,7 +151,27 @@
              </widget>
             </item>
             <item row="1" column="1">
-             <widget class="QCheckBox" name="convertFunctionsCheckBox"/>
+             <widget class="QCheckBox" name="convertFunctionsCheckBox">
+              <property name="sizePolicy">
+               <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+                <horstretch>0</horstretch>
+                <verstretch>0</verstretch>
+               </sizepolicy>
+              </property>
+             </widget>
+            </item>
+            <item row="0" column="1">
+             <widget class="QCheckBox" name="autohideGraphSidebarCheckBox">
+              <property name="sizePolicy">
+               <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+                <horstretch>0</horstretch>
+                <verstretch>0</verstretch>
+               </sizepolicy>
+              </property>
+              <property name="text">
+               <string/>
+              </property>
+             </widget>
             </item>
            </layout>
           </item>
@@ -382,9 +380,9 @@
       </attribute>
       <layout class="QGridLayout" name="gridLayout_5">
        <item row="0" column="1">
-        <widget class="QGroupBox" name="visual_sfbgsGroupBox">
+        <widget class="QGroupBox" name="visual_genGroupBox">
          <property name="title">
-          <string>Starfield</string>
+          <string>General</string>
          </property>
          <layout class="QFormLayout" name="formLayout_5">
           <item row="0" column="0">

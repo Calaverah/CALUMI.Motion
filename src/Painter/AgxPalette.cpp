@@ -235,7 +235,7 @@ QJsonObject AgxPalette::toJson() const
     panel["color"] = m_panelColor.name(QColor::HexArgb);
     subPanel["color"] = m_subPanelColor.name(QColor::HexArgb);
 
-    const auto palette = this->uiPalette();
+    const auto palette = AgxPalette::uiPalette();
 
     uiPalette["panel"] = panel;
     uiPalette["sub-panel"] = subPanel;

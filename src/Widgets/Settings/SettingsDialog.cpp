@@ -93,6 +93,6 @@ void SettingsDialog::ApplySettings() const
 	//Refresh View
 	RefreshUiValues();
 
-	Q_EMIT calApp->settingsUpdated();
+	Q_EMIT calApp->settingsUpdated(); // NOLINT(*-pro-type-static-cast-downcast)
 }
 

@@ -85,6 +85,8 @@ protected:
 
 	void showEvent(QShowEvent* event) override;
 
+	void dragEnterEvent(QDragEnterEvent* event) override;
+
 public Q_SLOTS:
 	void ShowContextMenu(AgxNodeId nodeId, QPointF pos);
 	void ToggleNodeCollapse(AgxNodeId nodeId) const;

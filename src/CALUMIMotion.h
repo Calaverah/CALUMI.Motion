@@ -50,21 +50,21 @@ private:
 
 public slots:
     void Create_SFBGSTab(std::shared_ptr<AgxGraphicsScene> scene = nullptr, std::shared_ptr<AgxGraphModel> model = nullptr);
-    void ImportFile_Agx_SFBGS();
     void ExportFile_Agx_SFBGS();
-    void OpenFile_Behavior_SFBGS(const QJsonObject& object);
-
-    void onLoadFile(QString filePath = {});
-    //void onSaveFile();
 
 public slots:
     void onSave();
     void onSaveAs();
-    void onOpen();
+    void onLoadFile(QString filePath = {});
 
 protected:
     void closeEvent(QCloseEvent* event) override;
     void changeEvent(QEvent* event) override;
+    void dragEnterEvent(QDragEnterEvent* event) override;
+    void dragLeaveEvent(QDragLeaveEvent* event) override;
+    void dropEvent(QDropEvent* event) override;
+
+    bool eventFilter(QObject* object, QEvent* event) override;
 
 private:
     Ui::CALUMIMotionClass ui{};
