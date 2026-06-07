@@ -6,13 +6,6 @@ include(FetchContent)
 FetchContent_Declare(qlementine-icons GIT_REPOSITORY "https://github.com/oclero/qlementine-icons.git")
 FetchContent_MakeAvailable(qlementine-icons)
 
-FetchContent_Declare(
-        CALUMI.Animation
-        GIT_REPOSITORY "https://github.com/Calaverah/CALUMI.Animation.git"
-        GIT_TAG "origin/dev"
-)
-FetchContent_MakeAvailable(CALUMI.Animation)
-
 set(CMAKE_CXX_STANDARD 23)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
@@ -41,6 +34,8 @@ set(PROJECT_SOURCES
   ${CMAKE_CURRENT_SOURCE_DIR}/src/stdafx.h
   ${CMAKE_CURRENT_SOURCE_DIR}/src/version.h
 )
+
+add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/external/CALUMI.Animation)
 
 qt_add_executable(${PROJECT_NAME} ${PROJECT_SOURCES})
 

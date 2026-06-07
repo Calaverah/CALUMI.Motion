@@ -1,0 +1,3 @@
+[submodule "external/CALUMI.Animation"]
+	path = external/CALUMI.Animation
+	url = https://github.com/Calaverah/CALUMI.Animation.git
