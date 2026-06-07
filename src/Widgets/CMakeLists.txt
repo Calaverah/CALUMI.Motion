@@ -49,10 +49,7 @@ target_sources(${PROJECT_NAME}
   Settings/SettingsDialog.cpp
   Settings/SettingsDialog.h
   Settings/SettingsDialog.ui
-  SFBGS/SFBGS_GraphPropertiesDialogWidget.cpp
-  SFBGS/SFBGS_GraphPropertiesDialogWidget.h
-  SFBGS/SFBGS_SidebarContent.cpp
-  SFBGS/SFBGS_SidebarContent.h
 )
 
 add_subdirectory(TabModule)
+add_subdirectory(SFBGS)

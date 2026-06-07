@@ -1,0 +1,9 @@
+target_sources(${PROJECT_NAME}
+    PRIVATE
+        SFBGS_RigWidget.h
+        SFBGS_RigWidget.cpp
+        SFBGS_GraphPropertiesDialogWidget.h
+        SFBGS_GraphPropertiesDialogWidget.cpp
+        SFBGS_SidebarContent.h
+        SFBGS_SidebarContent.cpp
+)

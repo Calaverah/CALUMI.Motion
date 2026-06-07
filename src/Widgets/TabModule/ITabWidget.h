@@ -13,6 +13,7 @@ Q_OBJECT
 
 public:
     explicit ITabWidget(QWidget* parent = nullptr) : QWidget(parent) {}
+    ~ITabWidget() override = default;
 
     virtual void buildMenus(CALUMIMotion* parent) = 0;
 

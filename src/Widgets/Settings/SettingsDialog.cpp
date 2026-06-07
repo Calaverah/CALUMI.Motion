@@ -42,13 +42,10 @@ void SettingsDialog::RefreshUiValues() const
 	//Repopulate Localized Lists
 	ui.showConsoleLogComboBox_3->clear();
 	ui.showConsoleLogComboBox_3->insertItems(0, m_startupVisibilityStrings);
-	ui.showPropertiesSidebarComboBox->clear();
-	ui.showPropertiesSidebarComboBox->insertItems(0, m_startupVisibilityStrings);
-	
 
 	//General
 	ui.convertFunctionsCheckBox->setChecked(ref.GetConvertFunctionsSetting());
-	//ui.showPropertiesSidebarComboBox->setCurrentIndex(static_cast<int>(ref.GetPropertySidebarVisibilityPreference()));
+	ui.autohideGraphSidebarCheckBox->setChecked(ref.GetGraphSidebarAutoHide());
 
 	//Console Log
 	ui.showConsoleLogComboBox_3->setCurrentIndex(static_cast<int>(ref.GetConsoleVisibilityPreference()));
@@ -71,7 +68,7 @@ void SettingsDialog::ApplySettings() const
 
 	//General
 	ref.SetConvertFunctionsSetting(ui.convertFunctionsCheckBox->isChecked());
-	//ref.SetGraphSidebarVisibilityPreference(ui.showPropertiesSidebarComboBox->currentIndex());
+	ref.SetGraphSidebarAutoHide(ui.autohideGraphSidebarCheckBox->isChecked());
 
 	//Console Log
 	ref.SetConsoleVisibilityPreference(ui.showConsoleLogComboBox_3->currentIndex());

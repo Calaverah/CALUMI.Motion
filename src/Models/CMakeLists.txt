@@ -19,3 +19,5 @@ target_sources(${PROJECT_NAME}
   Blend/AgxBlendInputModel.cpp
   Blend/AgxBlendInputModel.h
 )
+
+add_subdirectory(Rigs)

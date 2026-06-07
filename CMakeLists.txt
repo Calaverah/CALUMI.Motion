@@ -6,6 +6,13 @@ include(FetchContent)
 FetchContent_Declare(qlementine-icons GIT_REPOSITORY "https://github.com/oclero/qlementine-icons.git")
 FetchContent_MakeAvailable(qlementine-icons)
 
+FetchContent_Declare(
+        CALUMI.Animation
+        GIT_REPOSITORY "https://github.com/Calaverah/CALUMI.Animation.git"
+        GIT_TAG "origin/dev"
+)
+FetchContent_MakeAvailable(CALUMI.Animation)
+
 set(CMAKE_CXX_STANDARD 23)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
@@ -53,6 +60,7 @@ target_link_libraries(${PROJECT_NAME}
         Qt6::Widgets
         Qt6::Gui
         qlementine-icons
+        CALUMI.Animation
 )
 
 target_include_directories(${PROJECT_NAME}

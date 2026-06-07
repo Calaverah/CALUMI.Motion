@@ -75,9 +75,6 @@ public:
 	void SetLanguage(LanguageCode code);
 	[[nodiscard]] LanguageCode GetLanguage() const { return m_language; }
 
-	//[[nodiscard]] bool GetGraphSidebarEnabled() const { return m_graphSidebarEnabled; }
-	//void SetGraphSidebarEnabled(const bool setting) { m_graphSidebarEnabled = setting; }
-
 	[[nodiscard]] int GetGraphSidebarWidth() const { return m_graphSidebarWidth; }
 	void SetGraphSidebarWidth(const int width) { m_graphSidebarWidth = qMax(width, 0); }
 
