@@ -69,6 +69,13 @@ if(WIN32 AND MSVC)
         ${CMAKE_CURRENT_SOURCE_DIR}/src/CALUMI.Motion.rc
         ${CMAKE_CURRENT_SOURCE_DIR}/src/resource.h
     )
+
+    add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
+            COMMAND ${CMAKE_COMMAND} -E copy_if_different
+            $<TARGET_FILE:CALUMI.Animation>
+            $<TARGET_FILE_DIR:CALUMI.Motion>
+            COMMENT "Getting Animation DLL..."
+    )
 elseif(APPLE)
 
 elseif(LINUX)
