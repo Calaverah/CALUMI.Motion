@@ -408,11 +408,13 @@ void AgxGraphicsView::setScene(AgxGraphicsScene* scene)
 
 	const auto undoAction = scene->undoStack().createUndoAction(this, tr("&Undo"));
 	undoAction->setShortcuts(QKeySequence::Undo);
+	undoAction->setIcon(QIcon::fromTheme("edit-undo"));
 	addAction(undoAction);
 	_undoAction = undoAction;
 
 	const auto redoAction = scene->undoStack().createRedoAction(this, tr("&Redo"));
 	redoAction->setShortcuts(QKeySequence::Redo);
+	redoAction->setIcon(QIcon::fromTheme("edit-redo"));
 	addAction(redoAction);
 	_redoAction = redoAction;
 
@@ -452,6 +454,7 @@ void AgxGraphicsView::setScene(AgxGraphicsScene* scene)
 		_selectAllAction->setShortcutContext(Qt::ShortcutContext::WidgetShortcut);
 		_selectAllAction->setShortcut(QKeySequence(Qt::CTRL | Qt::Key::Key_A));
 		_selectAllAction->setAutoRepeat(false);
+		_selectAllAction->setIcon(QIcon::fromTheme("edit-select-all"));
 		connect(_selectAllAction, &QAction::triggered, scene, &AgxGraphicsScene::onSelectAnyAndAllObjects);
 		addAction(_selectAllAction);
 	}
