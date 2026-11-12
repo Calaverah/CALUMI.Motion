@@ -1,0 +1,9 @@
+target_sources(${PROJECT_NAME}.Core
+    PUBLIC
+        INode.h
+        PortList.h
+        NodeType.h
+    PRIVATE
+        INode.cpp
+        PortList.cpp
+)

@@ -2,65 +2,56 @@ cmake_minimum_required(VERSION 3.26)
 
 project(CALUMI.Motion VERSION 0.2.0.0 LANGUAGES CXX)
 
-include(FetchContent)
-FetchContent_Declare(qlementine-icons GIT_REPOSITORY "https://github.com/oclero/qlementine-icons.git")
-FetchContent_MakeAvailable(qlementine-icons)
 
 set(CMAKE_CXX_STANDARD 23)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
+set(QT_QML_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/qml")
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin")
+set(CMAKE_LIBRARY_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin")
+set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/lib")
+
+# Informing Model where to look for syntax highlighting / autocomplete
+list(APPEND QML_IMPORT_PATH
+        "${QT_QML_OUTPUT_DIRECTORY}"
+        "${CMAKE_BINARY_DIR}/.qt"
+)
+list(REMOVE_DUPLICATES QML_IMPORT_PATH)
+set(QML_IMPORT_PATH "${QML_IMPORT_PATH}" CACHE STRING "QML Import Paths" FORCE)
+
 find_package(Qt6 REQUIRED COMPONENTS
         Core
-        Widgets
-        Gui
-        LinguistTools
-        Svg
+        Quick
+        QuickControls2
+        Test
 )
 
 set(CMAKE_AUTORCC ON)
 
-qt_standard_project_setup()
+qt_standard_project_setup(REQUIRES 6.10)
 
-set(PROJECT_SOURCES
-  ${CMAKE_CURRENT_SOURCE_DIR}/src/CALUMI.Motion.ico
-  ${CMAKE_CURRENT_SOURCE_DIR}/src/CALUMI.Motion.rc
-  ${CMAKE_CURRENT_SOURCE_DIR}/src/CALUMIMotion.cpp
-  ${CMAKE_CURRENT_SOURCE_DIR}/src/CALUMIMotion.h
-  ${CMAKE_CURRENT_SOURCE_DIR}/src/CALUMIMotion.qrc
-  ${CMAKE_CURRENT_SOURCE_DIR}/src/CALUMIMotion.ui
-  ${CMAKE_CURRENT_SOURCE_DIR}/src/main.cpp
-  ${CMAKE_CURRENT_SOURCE_DIR}/src/resource.h
-  ${CMAKE_CURRENT_SOURCE_DIR}/src/stdafx.cpp
-  ${CMAKE_CURRENT_SOURCE_DIR}/src/stdafx.h
-  ${CMAKE_CURRENT_SOURCE_DIR}/src/version.h
+qt_add_library(${PROJECT_NAME}.Core STATIC)
+
+target_include_directories(${PROJECT_NAME}.Core
+    PUBLIC
+        src
 )
 
-add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/external/CALUMI.Animation)
-
-qt_add_executable(${PROJECT_NAME} ${PROJECT_SOURCES})
-
-add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/src/3rdPartyDirect)
-add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/src/AgxNodes)
-add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/src/Application)
-add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/src/Interfaces)
-add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/src/Localization)
-add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/src/Models)
-add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/src/Painter)
-add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/src/Utilities)
-add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/src/Widgets)
-
-target_link_libraries(${PROJECT_NAME}
+target_link_libraries(${PROJECT_NAME}.Core
         PRIVATE
         Qt6::Core
-        Qt6::Widgets
-        Qt6::Gui
-        qlementine-icons
-        CALUMI.Animation
+        Qt6::Quick
+        Qt6::QuickControls2
 )
 
-target_include_directories(${PROJECT_NAME}
-    PRIVATE
-    ${CMAKE_CURRENT_SOURCE_DIR}/src
+add_subdirectory(src)
+add_subdirectory(ui)
+qt_add_qml_module(${PROJECT_NAME}.Core
+    URI "CALUMI.Motion.Core"
+)
+
+qt_add_executable(${PROJECT_NAME}
+    main.cpp
 )
 
 if(WIN32 AND MSVC)
@@ -70,12 +61,12 @@ if(WIN32 AND MSVC)
         ${CMAKE_CURRENT_SOURCE_DIR}/src/resource.h
     )
 
-    add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
-            COMMAND ${CMAKE_COMMAND} -E copy_if_different
-            $<TARGET_FILE:CALUMI.Animation>
-            $<TARGET_FILE_DIR:CALUMI.Motion>
-            COMMENT "Getting Animation DLL..."
-    )
+#    add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
+#            COMMAND ${CMAKE_COMMAND} -E copy_if_different
+#            $<TARGET_FILE:CALUMI.Animation>
+#            $<TARGET_FILE_DIR:CALUMI.Motion>
+#            COMMENT "Getting Animation DLL..."
+#    )
 elseif(APPLE)
 
 elseif(LINUX)
@@ -86,12 +77,5 @@ if(CMAKE_BUILD_TYPE STREQUAL "Debug")
     target_compile_definitions(${PROJECT_NAME} PRIVATE DEBUG_BUILD)
 elseif(CMAKE_BUILD_TYPE STREQUAL "Release")
     target_compile_definitions(${PROJECT_NAME} PRIVATE RELEASE_BUILD)
-
-    set_target_properties(${PROJECT_NAME} PROPERTIES
-            MACOSX_BUNDLE_BUNDLE_VERSION ${PROJECT_VERSION}
-            MACOSX_BUNDLE_SHORT_VERSION_STRING ${PROJECT_VERSION_MAJOR}.${PROJECT_VERSION_MINOR}
-            MACOSX_BUNDLE TRUE
-            WIN32_EXECUTABLE TRUE
-    )
 endif()
 
