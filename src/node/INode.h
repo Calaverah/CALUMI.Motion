@@ -29,7 +29,7 @@ namespace CALUMI::Motion
         using QObject::QObject;
         ~INode() override = default;
 
-///< @name State
+///< @name Node State
 ///< {
         [[nodiscard]] virtual bool hidden() const { return false; }
         [[nodiscard]] virtual bool collapsed() const { return false; }
@@ -45,7 +45,7 @@ namespace CALUMI::Motion
         void collapsedChanged(bool collapsed);
         void diagnosticsChanged();
 ///< }
-///< @name NodeType
+///< @name Node Type
 ///< {
     public:
         [[nodiscard]] virtual QString title() const = 0;
@@ -60,7 +60,7 @@ namespace CALUMI::Motion
         void subtitleChanged();
         void typeChanged();
 ///< }
-///< @name Transform
+///< @name Node Transform
 ///< {
     public:
         [[nodiscard]] virtual QPointF position() const { return collapsedPosition(); }
@@ -70,6 +70,11 @@ namespace CALUMI::Motion
         virtual void setPosition(const QPointF& position) = 0;
     signals:
         void positionChanged();
+///< }
+///< @name Node Data
+///< {
+    public:
+        virtual QStringList customDropdown(quint32 index) = 0;
 ///< }
     };
 }

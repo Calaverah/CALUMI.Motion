@@ -1,136 +1,142 @@
 // ReSharper disable CppNonExplicitConvertingConstructor
 #pragma once
+#include <QAbstractListModel>
 #include <qqmlintegration.h>
 #include <QString>
 #include <QVariant>
 #include <QVector3D>
-#include "Utilities/AgxDictionary.h"
+
+#include "INode.h"
+#include "TagDictionary.h"
 
 namespace CALUMI::Motion
 {
-    class IProperty
+    class EntryTypesEnum : public QObject
     {
+        Q_OBJECT
+        QML_ELEMENT
+        QML_SINGLETON
     public:
-        virtual ~IProperty() = default;
+        ~EntryTypesEnum() override = default;
+        static EntryTypesEnum& instance();
+        static EntryTypesEnum* create(const QQmlEngine* qmlEngine, const QJSEngine* jsEngine);
 
-        [[nodiscard]] virtual QString label() const = 0;
-        [[nodiscard]] virtual QString key() const = 0;
-        [[nodiscard]] virtual QVariant value() const = 0;
-
-        virtual bool setValue(QVariant value) = 0;
-    };
-
-    class BasicInt : public IProperty
-    {
-    public:
-        BasicInt(TermRef id, qint64 value = 0);
-
-        [[nodiscard]] QString label() const override;
-        [[nodiscard]] QString key() const override;
-        [[nodiscard]] QVariant value() const override;
-
-        bool setValue(QVariant value) override;
+        Q_STATIC_LOGGING_CATEGORY(lcEntryTypesEnum,"EntryTypesEnum")
 
     private:
-        qint64 m_value = 0;
-        TermRef m_id = nullptr;
-    };
+        using QObject::QObject;
 
-    class VariableInt : public IProperty
-    {
     public:
-        VariableInt(TermRef id, std::variant<qint64, QString> value = 0);
+        enum class EntryType : quint32
+        {
+            NONE        = 0x0,
 
-        [[nodiscard]] QString label() const override;
-        [[nodiscard]] QString key() const override;
-        [[nodiscard]] QVariant value() const override;
+            INT         = 0x01,
+            FLOAT       = 0x02,
+            STRING      = 0x04,
+            BOOL        = 0x08,
+            VECTOR      = 0x10,
+            ANYBASIC    = INT | FLOAT | STRING | BOOL | VECTOR,
 
-        bool setValue(QVariant value) override;
-    private:
-        std::variant<qint64, QString> m_value;
-        TermRef m_id = nullptr;
+            VAR_INT     = 0x020,
+            VAR_FLOAT   = 0x040,
+            VAR_STRING  = 0x080,
+            VAR_BOOL    = 0x100,
+            VAR_VECTOR  = 0x200,
+            ANYVAR      = VAR_INT | VAR_FLOAT | VAR_STRING | VAR_BOOL | VAR_VECTOR,
+            ANYBASICVAR = ANYVAR | ANYBASIC,
+
+            PREFIX      = 0x0400,
+            SUFFIX      = 0x0800,
+            STATE       = 0x1000,
+            ACTION      = 0x2000,
+            SYNCSYS     = 0x4000,
+
+            EVENT_GAME  = 0x08000,
+            EVENT_GRAPH = 0x10000,
+            EVENT_BOTH  = EVENT_GAME | EVENT_GRAPH,
+            EVENT_MISC  = 0x20000,
+            EVENT       = EVENT_BOTH | EVENT_MISC,
+
+            CUSTOM,
+            DEFAULT     = STRING,
+            ANY         = ANYBASICVAR | EVENT | PREFIX | SUFFIX | ACTION | SYNCSYS | STATE
+        };
+
+        Q_ENUM(EntryType);
+        Q_DECLARE_FLAGS(EntryTypes, EntryType);
+        Q_FLAG(EntryTypes)
     };
 
-    class BasicFloat : public IProperty
+    using EntryType  = EntryTypesEnum::EntryType;
+    using EntryTypes = EntryTypesEnum::EntryTypes;
+
+    class PropertyList : public QAbstractListModel
     {
+        Q_OBJECT
     public:
-        BasicFloat(TermRef id, double value = 0);
+        using QAbstractListModel::QAbstractListModel;
+        ~PropertyList() override = default;
 
-        [[nodiscard]] QString label() const override;
-        [[nodiscard]] QString key() const override;
-        [[nodiscard]] QVariant value() const override;
-
-        bool setValue(QVariant value) override;
+        enum class Role
+        {
+            Label = Qt::UserRole + 1,
+            Tag,
+            Value,
+            AllowedTypes,
+            Present,
+            CustomDropdown
+        };
 
     private:
-        double m_value = 0.0;
-        TermRef m_id = nullptr;
+        struct Entry
+        {
+            QVariant value;
+            TagId tagId = InvalidTagId;
+            EntryTypes allowedTypes = EntryType::DEFAULT;
+            quint16 customDropdown = 0xFFFF;
+            bool present = true;
+        };
+
+    public:
+        [[nodiscard]] QHash<int, QByteArray> roleNames() const override;
+        [[nodiscard]] int rowCount(const QModelIndex& parent) const override;
+        [[nodiscard]] Qt::ItemFlags flags(const QModelIndex& index) const override;
+
+        [[nodiscard]] QVariantList values(const QString& tag, bool caseSensitive = false) const;
+        [[nodiscard]] QVariant data(const QModelIndex& index, int role) const override;
+        bool setData(const QModelIndex& index, const QVariant& value, int role) override;
+
+        bool insertRow(int row, Entry entry);
+        bool insertRows(int row, int count, const QModelIndex& parent) override;
+        bool removeRows(int row, int count, const QModelIndex& parent) override;
+        bool moveRows(const QModelIndex& sourceParent, int sourceRow, int count, const QModelIndex& destinationParent, int destinationChild) override;
+
+    private:
+        [[nodiscard]] QStringList customDropdown(quint16 index) const;
+
+    signals:
+        void nonStandardRowInserted();
+
+    private:
+        std::vector<Entry> m_list;
+         QPointer<INode> m_parent;
     };
 
-    class VariableFloat : public IProperty
+    class PropertyTable : public QAbstractTableModel
     {
+        Q_OBJECT
     public:
-        VariableFloat(TermRef id, std::variant<double, QString> value = 0.0);
+        struct ColumnType
+        {
+            TagId tagId = InvalidTagId;
+            EntryTypes allowedTypes = EntryType::DEFAULT;
+            quint16 customDropdown = 0xFFFF;
+        };
 
-        [[nodiscard]] QString label() const override;
-        [[nodiscard]] QString key() const override;
-        [[nodiscard]] QVariant value() const override;
-
-        bool setValue(QVariant value) override;
-
-    private:
-        std::variant<double, QString> m_value;
-        TermRef m_id = nullptr;
     };
-
-    class BasicVector : public IProperty
-    {
-    public:
-        BasicVector(TermRef id, QVector3D value = QVector3D());
-
-        [[nodiscard]] QString label() const override;
-        [[nodiscard]] QString key() const override;
-        [[nodiscard]] QVariant value() const override;
-
-        bool setValue(QVariant value) override;
-
-    private:
-        QVector3D m_value;
-        TermRef m_id = nullptr;
-    };
-
-    class BasicString : public IProperty
-    {
-    public:
-        BasicString(TermRef id, QString value = QString());
-
-        [[nodiscard]] QString label() const override;
-        [[nodiscard]] QString key() const override;
-        [[nodiscard]] QVariant value() const override;
-
-        bool setValue(QVariant value) override;
-    private:
-        QString m_value;
-        TermRef m_id = nullptr;
-    };
-
-    class GameVariable : public IProperty
-    {
-    public:
-        GameVariable(TermRef id, QString value = QString());
-
-        [[nodiscard]] QString label() const override;
-        [[nodiscard]] QString key() const override;
-        [[nodiscard]] QVariant value() const override;
-
-        bool setValue(QVariant value) override;
-    private:
-        QString m_value;
-        TermRef m_id = nullptr;
-        quint32 m_type = 0;
-    };
-
-
-
 
 }
+
+Q_DECLARE_OPERATORS_FOR_FLAGS(CALUMI::Motion::EntryTypes);
+

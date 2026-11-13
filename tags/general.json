@@ -1,0 +1,4 @@
+[
+  {"id": "gen_pos_x", "tag": "pos_x", "label": "X Position"},
+  {"id": "gen_pos_y", "tag": "pos_y", "label": "Y Position"}
+]

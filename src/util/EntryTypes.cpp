@@ -1,182 +1,106 @@
 #include "EntryTypes.h"
 #include <QDebug>
 #include <QVariant>
-#include <utility>
 
 namespace CALUMI::Motion
 {
-
-
-    BasicInt::BasicInt(const TermRef id, const qint64 value) : m_value(value), m_id(id)
+    EntryTypesEnum& EntryTypesEnum::instance()
     {
-        if (!m_id)
-        {
-            qWarning() << Q_FUNC_INFO << " Basic Int is given nullptr term ref";
-            m_id = AgxDictionary::ErrorTerm;
-        }
+        static auto entryTypes = new EntryTypesEnum();
+        return *entryTypes;
     }
 
-    QString BasicInt::label() const { return m_id().translation; }
-    QString BasicInt::key() const { return m_id().tag; }
-    QVariant BasicInt::value() const { return m_value; }
-
-    bool BasicInt::setValue(const QVariant value)
+    EntryTypesEnum* EntryTypesEnum::create(const QQmlEngine* qmlEngine, const QJSEngine* jsEngine)
     {
-        if (value.canConvert(QMetaType::fromType<qint64>()))
-        {
-            m_value = value.value<qint64>();
-            return true;
-        }
-        return false;
+        Q_UNUSED(qmlEngine)
+        Q_UNUSED(jsEngine)
+
+        EntryTypesEnum* entryEnum = &instance();
+        QJSEngine::setObjectOwnership(entryEnum, QJSEngine::CppOwnership);
+
+        return entryEnum;
     }
 
-    VariableInt::VariableInt(const TermRef id, std::variant<qint64, QString> value) : m_value(std::move(value)), m_id(id)
+    QHash<int, QByteArray> PropertyList::roleNames() const
     {
-        if (!m_id)
-        {
-            qWarning() << Q_FUNC_INFO << " Variable Int is given nullptr term ref";
-            m_id = AgxDictionary::ErrorTerm;
-        }
+        static QHash<int, QByteArray> output = {
+            { static_cast<int>(Role::Present),          "present"},
+            { static_cast<int>(Role::AllowedTypes),     "allowedTypes" },
+            { static_cast<int>(Role::CustomDropdown),   "customDropdown" },
+            { static_cast<int>(Role::Label),            "label" },
+            { static_cast<int>(Role::Tag),              "tag" },
+            { static_cast<int>(Role::Value),            "value" }
+        };
+
+        return output;
     }
 
-    QString VariableInt::label() const { return m_id().translation; }
-    QString VariableInt::key() const { return m_id().tag; }
-    QVariant VariableInt::value() const { return QVariant::fromStdVariant(m_value); }
-
-    bool VariableInt::setValue(const QVariant value)
+    int PropertyList::rowCount(const QModelIndex& parent) const
     {
-        if (value.canConvert<qint64>())
-        {
-            m_value = value.value<qint64>();
-            return true;
-        }
-        if (value.canConvert<QString>())
-        {
-            m_value = value.value<QString>();
-            return true;
-        }
-        return false;
+        if (parent.isValid())
+            return 0;
+
+        return static_cast<int>(m_list.size());
     }
 
-    BasicFloat::BasicFloat(const TermRef id, const double value) : m_value(value), m_id(id)
+    QVariantList PropertyList::values(const QString& tag, const bool caseSensitive) const
     {
-        if (!m_id)
+        const auto cSense = caseSensitive ? Qt::CaseSensitive : Qt::CaseInsensitive;
+
+        QVariantList output;
+        output.reserve(static_cast<qsizetype>(m_list.size()));
+
+        auto tagsMatchCheck = [&tag, &cSense](const Entry& e)
         {
-            qWarning() << Q_FUNC_INFO << " Basic Float is given nullptr term ref";
-            m_id = AgxDictionary::ErrorTerm;
+            const auto t = TagDictionary::tag(e.tagId);
+            return tag.compare(t, cSense) == 0;
+        };
+
+        for (const auto& entry : m_list | std::views::filter(tagsMatchCheck))
+        {
+            output.append(entry.value);
         }
+
+        output.shrink_to_fit();
+        return output;
     }
 
-    QString BasicFloat::label() const { return m_id().translation; }
-    QString BasicFloat::key() const { return m_id().tag; }
-    QVariant BasicFloat::value() const { return m_value; }
-
-    bool BasicFloat::setValue(const QVariant value)
+    QVariant PropertyList::data(const QModelIndex& index, const int role) const
     {
-        if (value.canConvert<double>())
+        if (!index.isValid() || index.row() < 0 || index.row() >= m_list.size())
+            return {};
+
+        // ReSharper disable once CppUseStructuredBinding
+        const auto& entry = m_list.at(index.row());
+
+        switch (role)
         {
-            m_value = value.value<double>();
-            return true;
+        case Qt::DisplayRole:
+            return QString("%1 : %2").arg(TagDictionary::label(entry.tagId)).arg(entry.value.toString());
+        case static_cast<int>(Role::Value):
+            return entry.value;
+        case static_cast<int>(Role::AllowedTypes):
+            return QVariant::fromValue(entry.allowedTypes);
+        case static_cast<int>(Role::CustomDropdown):
+            return customDropdown(entry.customDropdown);
+        case static_cast<int>(Role::Tag):
+            return TagDictionary::tag(entry.tagId);
+        case static_cast<int>(Role::Label):
+            return TagDictionary::label(entry.tagId);
+        case static_cast<int>(Role::Present):
+            return entry.present;
+        default:
+            break;
         }
-        return false;
+
+        return {};
     }
 
-    VariableFloat::VariableFloat(const TermRef id, std::variant<double, QString> value) : m_value(std::move(value)), m_id(id)
+    QStringList PropertyList::customDropdown(const quint16 index) const
     {
-        if (!m_id)
-        {
-            qWarning() << Q_FUNC_INFO << " Variable Float is given nullptr term ref";
-            m_id = AgxDictionary::ErrorTerm;
-        }
+        if (m_parent)
+            return m_parent->customDropdown(index);
+
+        return {};
     }
-
-    QString VariableFloat::label() const { return m_id().translation; }
-    QString VariableFloat::key() const { return m_id().tag; }
-    QVariant VariableFloat::value() const { return QVariant::fromStdVariant(m_value); }
-
-    bool VariableFloat::setValue(const QVariant value)
-    {
-        if (value.canConvert<double>())
-        {
-            m_value = value.value<double>();
-            return true;
-        }
-        if (value.canConvert<QString>())
-        {
-            m_value = value.value<QString>();
-            return true;
-        }
-        return false;
-    }
-
-    BasicVector::BasicVector(const TermRef id, const QVector3D value) : m_value(value), m_id(id)
-    {
-        if (!m_id)
-        {
-            qWarning() << Q_FUNC_INFO << " Basic Vector is given nullptr term ref";
-            m_id = AgxDictionary::ErrorTerm;
-        }
-    }
-
-    QString BasicVector::label() const { return m_id().translation; }
-    QString BasicVector::key() const { return m_id().tag; }
-    QVariant BasicVector::value() const { return m_value; }
-
-    bool BasicVector::setValue(const QVariant value)
-    {
-        if (value.canConvert<QVector3D>())
-        {
-            m_value = value.value<QVector3D>();
-            return true;
-        }
-        return false;
-    }
-
-
-    BasicString::BasicString(const TermRef id, QString value) : m_value(std::move(value)), m_id(id)
-    {
-        if (!m_id)
-        {
-            qWarning() << Q_FUNC_INFO << " Basic String is given nullptr term ref";
-            m_id = AgxDictionary::ErrorTerm;
-        }
-    }
-
-    QString BasicString::label() const { return m_id().translation; }
-    QString BasicString::key() const { return m_id().tag; }
-    QVariant BasicString::value() const { return m_value; }
-
-    bool BasicString::setValue(const QVariant value)
-    {
-        if (value.canConvert<QString>())
-        {
-            m_value = value.value<QString>();
-            return true;
-        }
-        return false;
-    }
-
-    GameVariable::GameVariable(const TermRef id, QString value) : m_value(std::move(value)), m_id(id)
-    {
-        if (!m_id)
-        {
-            qWarning() << Q_FUNC_INFO << " Game Variable is given nullptr term ref";
-            m_id = AgxDictionary::ErrorTerm;
-        }
-    }
-
-    QString GameVariable::label() const { return m_id().translation; }
-    QString GameVariable::key() const { return m_id().tag; }
-    QVariant GameVariable::value() const { return m_value; }
-
-    bool GameVariable::setValue(const QVariant value)
-    {
-        if (value.canConvert<QString>())
-        {
-            m_value = value.value<QString>();
-            return true;
-        }
-        return false;
-    }
-
 }
