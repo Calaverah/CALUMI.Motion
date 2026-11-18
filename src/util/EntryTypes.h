@@ -6,6 +6,7 @@
 #include <QVariant>
 #include <QVector3D>
 
+#include "DropdownCollection.h"
 #include "INode.h"
 #include "TagDictionary.h"
 
@@ -58,7 +59,7 @@ namespace CALUMI::Motion
             EVENT_MISC  = 0x20000,
             EVENT       = EVENT_BOTH | EVENT_MISC,
 
-            CUSTOM,
+            DROPDOWNVALUE,
             DEFAULT     = STRING,
             ANY         = ANYBASICVAR | EVENT | PREFIX | SUFFIX | ACTION | SYNCSYS | STATE
         };
@@ -66,12 +67,28 @@ namespace CALUMI::Motion
         Q_ENUM(EntryType);
         Q_DECLARE_FLAGS(EntryTypes, EntryType);
         Q_FLAG(EntryTypes)
+
+        static bool CanConvert(const QVariant& value, EntryTypes types);
     };
 
     using EntryType  = EntryTypesEnum::EntryType;
     using EntryTypes = EntryTypesEnum::EntryTypes;
 
-    class PropertyList : public QAbstractListModel
+    class PropertyEntry
+    {
+        Q_GADGET
+        Q_PROPERTY(QVariant value MEMBER value);
+        Q_PROPERTY(TagId tagId MEMBER tagId);
+        Q_PROPERTY(EntryTypes allowedTypes MEMBER allowedTypes);
+        Q_PROPERTY(DropId uniqueDropdown MEMBER uniqueDropdown);
+    public:
+        QVariant value;
+        TagId tagId = InvalidTagId;
+        EntryTypes allowedTypes = EntryType::DEFAULT;
+        DropId uniqueDropdown = InvalidDropId;
+    };
+
+    class PropertyList final : public QAbstractListModel
     {
         Q_OBJECT
     public:
@@ -81,24 +98,13 @@ namespace CALUMI::Motion
         enum class Role
         {
             Label = Qt::UserRole + 1,
+            TagId,
             Tag,
             Value,
             AllowedTypes,
-            Present,
-            CustomDropdown
+            UniqueDropdown
         };
 
-    private:
-        struct Entry
-        {
-            QVariant value;
-            TagId tagId = InvalidTagId;
-            EntryTypes allowedTypes = EntryType::DEFAULT;
-            quint16 customDropdown = 0xFFFF;
-            bool present = true;
-        };
-
-    public:
         [[nodiscard]] QHash<int, QByteArray> roleNames() const override;
         [[nodiscard]] int rowCount(const QModelIndex& parent) const override;
         [[nodiscard]] Qt::ItemFlags flags(const QModelIndex& index) const override;
@@ -107,33 +113,129 @@ namespace CALUMI::Motion
         [[nodiscard]] QVariant data(const QModelIndex& index, int role) const override;
         bool setData(const QModelIndex& index, const QVariant& value, int role) override;
 
-        bool insertRow(int row, Entry entry);
+        bool insertRow(int row, PropertyEntry entry, const QModelIndex& parent = {});
+        bool insertRows(int row, int count, const QModelIndex& parent) override;
+        bool removeRows(int row, int count, const QModelIndex& parent) override;
+        bool moveRows(const QModelIndex& sourceParent, int sourceRow, int count, const QModelIndex& destinationParent, int destinationChild) override;
+
+        //[[nodiscard]] QMimeData* mimeData(const QModelIndexList& indexes) const override;
+        //bool dropMimeData(const QMimeData* data, Qt::DropAction action, int row, int column, const QModelIndex& parent) override;
+        //[[nodiscard]] QStringList mimeTypes() const override;
+        //[[nodiscard]] bool canDropMimeData(const QMimeData* data, Qt::DropAction action, int row, int column, const QModelIndex& parent) const override;
+
+    private:
+        QList<PropertyEntry> m_list;
+    };
+
+    class PropertyTable final : public QAbstractTableModel
+    {
+        Q_OBJECT
+    public:
+        enum class Role
+        {
+            Label = Qt::UserRole + 1,
+            TagId,
+            Tag,
+            Value,
+            DefaultValue,
+            AllowedTypes,
+            UniqueDropdown
+        };
+
+        PropertyTable(const QList<PropertyEntry>& columns, QObject* parent = nullptr);
+
+        [[nodiscard]] int columnCount(const QModelIndex& parent) const override;
+        [[nodiscard]] int rowCount(const QModelIndex& parent) const override;
+        [[nodiscard]] bool hasPartialRow() const;
+        [[nodiscard]] int trueIndex(int row, int column, const QModelIndex& parent = {}) const;
+
+        [[nodiscard]] QVariant data(const QModelIndex& index, int role) const override;
+        bool setData(const QModelIndex& index, const QVariant& value, int role) override;
+        [[nodiscard]] QVariant headerData(int section, Qt::Orientation orientation, int role) const override;
+        bool insertRows(int row, int count, const QModelIndex& parent) override;
+        bool removeRows(int row, int count, const QModelIndex& parent) override;
+        bool moveRows(const QModelIndex& sourceParent, int sourceRow, int count, const QModelIndex& destinationParent, int destinationChild) override;
+        [[nodiscard]] QHash<int, QByteArray> roleNames() const override;
+        [[nodiscard]] Qt::ItemFlags flags(const QModelIndex& index) const override;
+
+    private:
+        const QList<PropertyEntry> m_columns;
+        QVariantList m_table;
+    };
+
+    class PropertyTree final : public QAbstractItemModel
+    {
+        Q_OBJECT
+    public:
+        enum class Role
+        {
+            Label = Qt::UserRole + 1,
+            TagId,
+            Tag,
+            Value,
+            DefaultValue,
+            AllowedTypes,
+            UniqueDropdown
+        };
+
+        using QAbstractItemModel::QAbstractItemModel;
+        ~PropertyTree() override = default;
+
+        [[nodiscard]] QModelIndex parent(const QModelIndex& child) const override;
+        [[nodiscard]] QModelIndex index(int row, int column, const QModelIndex& parent) const override;
+        [[nodiscard]] int rowCount(const QModelIndex& parent) const override;
+        [[nodiscard]] int columnCount(const QModelIndex& parent) const override;
+
+        [[nodiscard]] QVariant data(const QModelIndex& index, int role) const override;
+        bool setData(const QModelIndex& index, const QVariant& value, int role) override;
+
+        Q_INVOKABLE bool addTable(int row, const QList<PropertyEntry>& columns, const QString& localLabel);
+        Q_INVOKABLE bool appendTable(const QList<PropertyEntry>& columns, const QString& label) { return addTable(static_cast<int>(m_tables.size()), columns, label); }
+        Q_INVOKABLE bool addTable(int row, const QList<PropertyEntry>& columns, TagId tag);
+        Q_INVOKABLE bool appendTable(const QList<PropertyEntry>& columns, const TagId tag) { return addTable(static_cast<int>(m_tables.size()), columns, tag); }
+        Q_INVOKABLE bool removeTable(int row);
+
         bool insertRows(int row, int count, const QModelIndex& parent) override;
         bool removeRows(int row, int count, const QModelIndex& parent) override;
         bool moveRows(const QModelIndex& sourceParent, int sourceRow, int count, const QModelIndex& destinationParent, int destinationChild) override;
 
     private:
-        [[nodiscard]] QStringList customDropdown(quint16 index) const;
-
-    signals:
-        void nonStandardRowInserted();
-
-    private:
-        std::vector<Entry> m_list;
-         QPointer<INode> m_parent;
-    };
-
-    class PropertyTable : public QAbstractTableModel
-    {
-        Q_OBJECT
-    public:
-        struct ColumnType
+        static constexpr quintptr s_root_id = std::numeric_limits<quintptr>::max();
+        struct PropertyTable
         {
+            QList<PropertyEntry> columns;
+            QVariantList data;
             TagId tagId = InvalidTagId;
-            EntryTypes allowedTypes = EntryType::DEFAULT;
-            quint16 customDropdown = 0xFFFF;
+            QString localLabel;
+
+            void setLocalLabel(const QString& label)
+            {
+                localLabel = label;
+                tagId = InvalidTagId;
+            }
+
+            void setTagId(const TagId id)
+            {
+                tagId = id;
+            }
+
+            [[nodiscard]] QString label() const
+            {
+                return tagId == InvalidTagId ? localLabel : TagDictionary::Label(tagId);
+            }
+
+            [[nodiscard]] QString tag() const
+            {
+                return tagId == InvalidTagId ? "local_tag" : TagDictionary::Tag(tagId);
+            }
+
+            [[nodiscard]] int trueIndex(const int row, const int column) const
+            {
+                return static_cast<int>(row * columns.size() + column);
+            }
         };
 
+        QList<PropertyTable> m_tables;
     };
 
 }

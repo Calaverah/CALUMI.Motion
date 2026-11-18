@@ -2,6 +2,7 @@
 #include <QPointF>
 #include <QSizeF>
 #include "NodeType.h"
+#include "PortList.h"
 
 namespace CALUMI::Motion
 {
@@ -71,10 +72,21 @@ namespace CALUMI::Motion
     signals:
         void positionChanged();
 ///< }
-///< @name Node Data
+///< @name Port Data
 ///< {
-    public:
-        virtual QStringList customDropdown(quint32 index) = 0;
+        [[nodiscard]] virtual PortId nextPortId() const = 0;
+        [[nodiscard]] virtual PortId peekNextPortId() const = 0;
+
+        [[nodiscard]] virtual PortList* ports(PortType type) = 0;
+        [[nodiscard]] virtual const PortList* ports(PortType type) const = 0;
 ///< }
+///< @name Properties
+///< {
+        [[nodiscard]] virtual QPointer<PropertyList> propertyList() = 0;
+
+        [[nodiscard]] virtual int propertyTableCount() const = 0;
+        [[nodiscard]] virtual QPointer<PropertyTable> propertyTable(int index) = 0;
+///< }
+
     };
 }

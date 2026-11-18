@@ -37,9 +37,12 @@ namespace CALUMI::Motion
         using QObject::QObject;
 
     public:
-        static TagId fetchTag(const QString& tag, const QString& label = {});
-        static QString tag(TagId id);
-        static QString label(TagId id);
-        static TagId id(const QString& tag);
+        static TagId FetchTag(const QString& tag, const QString& label = {});
+        static QString Tag(TagId id);
+        static QString Label(TagId id);
+        static TagId Id(const QString& tag);
+
+    private:
+        quint32 m_runtimeIterator = 0;
     };
 }
