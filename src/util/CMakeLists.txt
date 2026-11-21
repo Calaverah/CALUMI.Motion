@@ -3,10 +3,14 @@ target_sources(${PROJECT_NAME}.Core
         EntryTypes.h
         TagDictionary.h
         DropdownCollection.h
+        OrderedHash.h
+        UniqueIdManager.h
     PRIVATE
         EntryTypes.cpp
         TagDictionary.cpp
         DropdownCollection.cpp
+        OrderedHash.cpp
+        UniqueIdManager.cpp
 )
 
 find_package(Python3 REQUIRED COMPONENTS Interpreter)

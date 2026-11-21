@@ -1,11 +1,11 @@
 #pragma once
-#include <QAbstractListModel>
-
 #include "EntryTypes.h"
 
 namespace CALUMI::Motion
 {
     using PortId = quint32;
+
+    class INode;
 
     class PortList : public QAbstractListModel
     {
@@ -94,4 +94,5 @@ namespace CALUMI::Motion
     };
 
     using PortType = PortList::PortType;
+    using PortTypes = PortList::PortTypes;
 }

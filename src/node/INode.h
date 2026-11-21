@@ -1,6 +1,8 @@
 #pragma once
 #include <QPointF>
 #include <QSizeF>
+#include <QUuid>
+
 #include "NodeType.h"
 #include "PortList.h"
 
@@ -13,6 +15,8 @@ namespace CALUMI::Motion
     class INode : public QObject
     {
         Q_OBJECT
+        QML_UNCREATABLE("Cannot create an abstract node element")
+
         Q_PROPERTY(bool hidden READ hidden WRITE setHidden NOTIFY hiddenChanged)
         Q_PROPERTY(bool collapsed READ collapsed WRITE setCollapsed NOTIFY collapsedChanged)
         Q_PROPERTY(bool hasWarning READ hasWarning NOTIFY diagnosticsChanged)
@@ -26,9 +30,16 @@ namespace CALUMI::Motion
         Q_PROPERTY(QPointF expandedPosition READ expandedPosition NOTIFY positionChanged)
         Q_PROPERTY(QPointF collapsedPosition READ collapsedPosition NOTIFY positionChanged)
 
+        Q_PROPERTY(PortList* inPorts READ inPortListPtr CONSTANT)
+        Q_PROPERTY(PortList* outPorts READ outPortListPtr CONSTANT)
+        Q_PROPERTY(PropertyList* propertyList READ propertyListPtr CONSTANT)
+        Q_PROPERTY(PropertyTree* propertyTables READ propertyTablesPtr CONSTANT)
+
     public:
         using QObject::QObject;
         ~INode() override = default;
+
+        [[nodiscard]] virtual QUuid nodeId() const = 0;
 
 ///< @name Node State
 ///< {
@@ -37,7 +48,6 @@ namespace CALUMI::Motion
         [[nodiscard]] virtual bool hasWarning() const = 0;
         [[nodiscard]] virtual bool hasError() const = 0;
         [[nodiscard]] virtual bool hasFatal() const = 0;
-
 
         virtual void setHidden(bool hidden) {}
         virtual void setCollapsed(bool collapsed) {}
@@ -74,19 +84,39 @@ namespace CALUMI::Motion
 ///< }
 ///< @name Port Data
 ///< {
+    public:
         [[nodiscard]] virtual PortId nextPortId() const = 0;
         [[nodiscard]] virtual PortId peekNextPortId() const = 0;
 
-        [[nodiscard]] virtual PortList* ports(PortType type) = 0;
-        [[nodiscard]] virtual const PortList* ports(PortType type) const = 0;
+        [[nodiscard]] virtual QPointer<PortList> portList(PortType type) = 0;
+        [[nodiscard]] virtual QPointer<const PortList> portList(PortType type) const = 0;
+
+    private:
+        [[nodiscard]] PortList* inPortListPtr() { return portList(PortType::IN); }
+        [[nodiscard]] PortList* outPortListPtr() { return portList(PortType::OUT); }
+
+    signals:
+        void portListPtrChanged(PortTypes types);
+
 ///< }
 ///< @name Properties
 ///< {
+    public:
         [[nodiscard]] virtual QPointer<PropertyList> propertyList() = 0;
-
-        [[nodiscard]] virtual int propertyTableCount() const = 0;
-        [[nodiscard]] virtual QPointer<PropertyTable> propertyTable(int index) = 0;
+        [[nodiscard]] virtual QPointer<const PropertyList> propertyList() const = 0;
+        [[nodiscard]] virtual QPointer<PropertyTree> propertyTables() = 0;
+        [[nodiscard]] virtual QPointer<const PropertyTree> propertyTables() const = 0;
+    private:
+        [[nodiscard]] PropertyList* propertyListPtr() { return propertyList(); }
+        [[nodiscard]] PropertyTree* propertyTablesPtr() { return propertyTables(); }
+    signals:
+        void propertyListPtrChanged();
+        void propertyTablesPtrChanged();
 ///< }
-
+///< @name Embedded Nodes
+///< {
+    public:
+        [[nodiscard]] QList<QUuid> childNodeIds(bool recursive) const;
+///< }
     };
 }

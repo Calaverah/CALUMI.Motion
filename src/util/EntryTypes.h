@@ -7,7 +7,6 @@
 #include <QVector3D>
 
 #include "DropdownCollection.h"
-#include "INode.h"
 #include "TagDictionary.h"
 
 namespace CALUMI::Motion

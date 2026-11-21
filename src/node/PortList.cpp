@@ -1,4 +1,5 @@
 #include "PortList.h"
+#include "INode.h"
 
 namespace CALUMI::Motion
 {

@@ -1,7 +1,6 @@
 #include "EntryTypes.h"
 #include <QVariant>
-#include <utility>
-#include <build/win-debug/_deps/googletest-src/googletest/src/gtest-internal-inl.h>
+#include <memory>
 
 namespace CALUMI::Motion
 {
@@ -766,7 +765,7 @@ namespace CALUMI::Motion
         return false;
     }
 
-    bool PropertyTree::moveRows(const QModelIndex& sourceParent, int sourceRow, int count, const QModelIndex& destinationParent, int destinationChild)
+    bool PropertyTree::moveRows(const QModelIndex& sourceParent, const int sourceRow, const int count, const QModelIndex& destinationParent, const int destinationChild)
     {
         if (count <= 0 || sourceRow < 0 || destinationChild < 0)
             return false;
@@ -782,22 +781,50 @@ namespace CALUMI::Motion
             if (!beginMoveRows(sourceParent, sourceRow, sourceRow + count - 1, destinationParent, destinationChild))
                 return false;
 
-            QList<PropertyTable> movedTables;
-            movedTables.reserve(count);
-            for (int row = 0; row < count; row++)
+            const auto selectBegin = std::next(m_tables.begin(), sourceRow);
+            const auto selectEnd = std::next(m_tables.begin(), sourceRow + count);
+
+            if (sourceRow > destinationChild)
             {
-                movedTables.append(m_tables.takeAt(sourceRow));
+                const auto dest = std::next(m_tables.begin(), destinationChild);
+                std::rotate(dest, selectBegin, selectEnd);
             }
-            const int insertPos = destinationChild > sourceRow ? destinationChild - count : destinationChild;
-            m_tables.reserve(m_tables.size() + movedTables.size());
-            std::ranges::copy(std::as_const(movedTables), std::inserter(m_tables, m_tables.begin() + insertPos));
+            else
+            {
+                const auto dest = std::next(m_tables.begin(), destinationChild + count);
+                std::rotate(selectBegin, selectEnd, dest);
+            }
+
             endMoveRows();
             return true;
         }
 
-        //todo move internal rows
+        if (sourceParent.internalId() == s_root_id && sourceParent.column() == 0)
+        {
+            const auto tableIdx = sourceParent.row();
+            auto& table = m_tables[tableIdx];
+            const auto selectStart = std::next(table.data.begin(), table.trueIndex(sourceRow, 0));
+            const auto selectEnd = std::next(table.data.begin(), table.trueIndex(sourceRow + 1, 0) - 1);
 
+            if (!beginMoveRows(sourceParent, sourceRow, sourceRow + count - 1, destinationParent, destinationChild))
+                return false;
 
+            if (sourceRow > destinationChild)
+            {
+                const auto destStart = std::next(table.data.begin(), table.trueIndex(destinationChild, 0));
+                std::rotate(destStart, selectStart, selectEnd);
+            }
+            else
+            {
+                const auto destStart = std::next(table.data.begin(), table.trueIndex(destinationChild, 0) + count);
+                std::rotate(selectStart, selectEnd, destStart);
+            }
+
+            endMoveRows();
+            return true;
+        }
+
+        return false;
     }
 
     QModelIndex PropertyTree::parent(const QModelIndex& child) const
